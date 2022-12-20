@@ -210,7 +210,7 @@ import { basename, join, changeExt, extname } from 'upath'
 import { ipcRenderer } from 'electron'
 import { defineComponent } from 'vue'
 import { MetaInfo } from 'vue-meta'
-import { FileStat, WebDAVClient } from 'webdav/dist/web/types'
+import { WebDAVClient } from 'webdav/dist/web/types'
 import {
   faArrowDown19,
   faCloud,
@@ -228,7 +228,6 @@ import {
   BYTES_IN_MB,
   HUNDRED_PERCENT,
   MS_IN_SEC,
-  NR_OF_KINGDOM_SONGS,
 } from '~/constants/general'
 export default defineComponent({
   name: 'AddPage',
@@ -302,9 +301,6 @@ export default defineComponent({
     },
     client(): WebDAVClient {
       return this.$store.state.cong.client as WebDAVClient
-    },
-    contents(): FileStat[] {
-      return this.$store.state.cong.contents as FileStat[]
     },
     date(): string {
       return this.$route.query.date as string
@@ -490,34 +486,17 @@ export default defineComponent({
         const mediaPath = join(this.$getPrefs('cong.dir') as string, 'Media')
         const datePath = join(mediaPath, this.date)
         const filePath = join(datePath, file.safeName)
-        const mediaPathExists = !!this.contents.find(
-          ({ filename }) => filename === mediaPath
-        )
-        const datePathExists = !!this.contents.find(
-          ({ filename }) => filename === datePath
-        )
 
         try {
-          if (!mediaPathExists) {
-            await this.client.createDirectory(mediaPath)
-          }
+          await this.$createCongDir(mediaPath)
         } catch (e: unknown) {
-          console.error(e)
-          if (!(await this.client.exists(mediaPath))) {
-            this.$warn('errorWebdavPut', { identifier: mediaPath })
-          }
+          this.$error('errorWebdavPut', e, mediaPath)
         }
 
         try {
-          if (!datePathExists) {
-            console.debug(JSON.stringify(this.contents))
-            await this.client.createDirectory(datePath)
-          }
+          await this.$createCongDir(datePath)
         } catch (e: unknown) {
-          console.debug(JSON.stringify(this.contents))
-          if (!(await this.client.exists(datePath))) {
-            this.$warn('errorWebdavPut', { identifier: datePath })
-          }
+          this.$error('errorWebdavPut', e, datePath)
         }
 
         const perf: any = {
@@ -628,33 +607,7 @@ export default defineComponent({
     },
     async getSongs() {
       this.loadingSongs = true
-      const result = (await this.$getMediaLinks({
-        pubSymbol: this.$store.state.media.songPub,
-        format: 'MP4',
-      })) as VideoFile[]
-
-      const fallbackLang = this.$getPrefs('media.langFallback') as string
-
-      if (fallbackLang && result.length < NR_OF_KINGDOM_SONGS) {
-        const fallback = (await this.$getMediaLinks({
-          pubSymbol: this.$store.state.media.songPub,
-          format: 'MP4',
-          lang: fallbackLang,
-        })) as VideoFile[]
-
-        fallback.forEach((song) => {
-          if (!result.find((s) => s.track === song.track)) {
-            result.push(song)
-          }
-        })
-        result.sort((a, b) => a.track - b.track)
-      }
-
-      result.forEach((song) => {
-        song.safeName =
-          this.$sanitize(`- ${this.$translate('song')} ${song.title}`) + '.mp4'
-      })
-      this.songs = result
+      this.songs = await this.$getSongs()
       this.loadingSongs = false
     },
     getExistingMedia() {

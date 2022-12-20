@@ -194,6 +194,10 @@ const schema: Schema<ElectronStore> = {
         type: 'boolean',
         default: PREFS.media.hideWinAfterMedia,
       },
+      includePrinted: {
+        type: 'boolean',
+        default: PREFS.media.includePrinted,
+      },
       excludeTh: {
         type: 'boolean',
         default: PREFS.media.excludeTh,

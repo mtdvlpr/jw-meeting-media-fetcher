@@ -12,6 +12,7 @@ import {
   HUNDRED_PERCENT,
   JAN_2008,
   MAX_PREFIX_LENGTH,
+  NR_OF_KINGDOM_SONGS,
 } from './../constants/general'
 import {
   MediaFile,
@@ -45,6 +46,7 @@ const plugin: Plugin = (
     $mediaItems,
     $translate,
     $write,
+    $getJWLangs,
     $findOne,
     $error,
     $getDb,
@@ -242,6 +244,12 @@ const plugin: Plugin = (
         }
       } catch (e: unknown) {
         $log.error(e)
+      }
+    } else if (mmItem.FilePath) {
+      const extractedLang = mmItem.FilePath.split('_')[1]
+      const langs = await $getJWLangs()
+      if (langs.find((l) => l.langcode === extractedLang)) {
+        lang = extractedLang
       }
     }
     if (targetParNrExists) {
@@ -452,11 +460,12 @@ const plugin: Plugin = (
         where += ` AND Multimedia.SuppressZoom <> 1`
       }
 
+      const includePrinted = $getPrefs('media.includePrinted')
       const lffiString = `(Multimedia.MimeType LIKE '%video%' OR Multimedia.MimeType LIKE '%audio%')`
-      const lffiImgString = `(Multimedia.MimeType LIKE '%image%' AND Multimedia.CategoryType <> 6 AND Multimedia.CategoryType <> 9 AND Multimedia.CategoryType <> 10 AND Multimedia.CategoryType <> 25)`
+      const lffiImgString = `(Multimedia.MimeType LIKE '%image%' ${
+        includePrinted ? '' : 'AND Multimedia.CategoryType <> 6'
+      } AND Multimedia.CategoryType <> 9 AND Multimedia.CategoryType <> 10 AND Multimedia.CategoryType <> 25)`
 
-      if (keySymbol !== 'lffi')
-        where += ` AND (${lffiString} OR ${lffiImgString})`
       if (keySymbol === 'lffi') {
         if (!excludeLffi && !excludeLffiImages) {
           where += ` AND (${lffiString} OR ${lffiImgString})`
@@ -465,6 +474,8 @@ const plugin: Plugin = (
         } else if (!excludeLffiImages) {
           where += ` AND ${lffiImgString}`
         }
+      } else {
+        where += ` AND (${lffiString} OR ${lffiImgString})`
       }
 
       const promises: Promise<VideoFile | ImageFile | null>[] = []
@@ -841,6 +852,7 @@ const plugin: Plugin = (
         db = (await $getDb({
           pub,
           issue,
+          lang,
           file: (await $getZipContentsByExt(localPath, '.db')) ?? undefined,
         })) as Database
 
@@ -895,6 +907,7 @@ const plugin: Plugin = (
         db = await $getDb({
           pub,
           issue,
+          lang,
           file: readFileSync(dbPath),
         })
       } else return null
@@ -1691,7 +1704,7 @@ const plugin: Plugin = (
       }
     })
 
-    ipcRenderer.send('showMedia', { path })
+    ipcRenderer.send('showMedia', { src: path })
 
     if (!fadeOut) {
       store.commit('media/setMusicFadeOut', '00:00')
@@ -1760,6 +1773,37 @@ const plugin: Plugin = (
     audio.appendChild(source)
     document.body.appendChild(audio)
   }
+
+  inject('getSongs', async (): Promise<VideoFile[]> => {
+    const result = (await getMediaLinks({
+      pubSymbol: store.state.media.songPub,
+      format: 'MP4',
+    })) as VideoFile[]
+
+    const fallbackLang = $getPrefs('media.langFallback') as string
+
+    if (fallbackLang && result.length < NR_OF_KINGDOM_SONGS) {
+      const fallback = (await getMediaLinks({
+        pubSymbol: store.state.media.songPub,
+        format: 'MP4',
+        lang: fallbackLang,
+      })) as VideoFile[]
+
+      fallback.forEach((song) => {
+        if (!result.find((s) => s.track === song.track)) {
+          result.push(song)
+        }
+      })
+      result.sort((a, b) => a.track - b.track)
+    }
+
+    result.forEach((song) => {
+      song.safeName =
+        $sanitize(`- ${$translate('song')} ${song.title}`) + '.mp4'
+    })
+
+    return result
+  })
 }
 
 export default plugin
