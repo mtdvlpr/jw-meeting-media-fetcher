@@ -5,6 +5,7 @@ on:
   pull_request:
     branches: [main, master]
   push:
+    branches: [main, master]
     paths:
       - '.electron-nuxt/**/*'
       - 'builder.config.js'
@@ -89,6 +90,7 @@ jobs:
           retention-days: 30
 
   build:
+    needs: test
     runs-on: ${{ matrix.os }}
 
     strategy:
