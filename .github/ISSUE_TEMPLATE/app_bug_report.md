@@ -2,8 +2,9 @@
 name: Bug report submitted from app
 about: Create a report to help us improve
 title: "[BUG][FROM APP]"
-labels: bug,from-app
+labels: bug
 assignees: sircharlo
+
 ---
 
 **Describe the bug**

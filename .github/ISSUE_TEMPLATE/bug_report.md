@@ -1,9 +1,10 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: "[BUG]"
-labels: bug
-assignees: sircharlo
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 **Describe the bug**
@@ -11,25 +12,27 @@ A clear and concise description of what the bug is.
 
 **To Reproduce**
 Steps to reproduce the behavior:
-
 1. Go to '...'
 2. Click on '....'
-3. Do '....'
+3. Scroll down to '....'
 4. See error
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
-**Logs**
-Please include the contents of the console tab of the inspector view. To open the inspector, hit <kbd>Ctrl</kbd> <kbd>⇧ Shift</kbd> <kbd>I</kbd> (<kbd>⌘ Command</kbd> <kbd>⌥ Option</kbd> <kbd>I</kbd> for Mac) when the app is starting up.
-
 **Screenshots**
-If possible, add screenshots to help explain your problem.
+If applicable, add screenshots to help explain your problem.
 
-**System specs (please complete the following information):**
+**Desktop (please complete the following information):**
+ - OS: [e.g. iOS]
+ - Browser [e.g. chrome, safari]
+ - Version [e.g. 22]
 
-- OS: [e.g. Windows 10]
-- App Version [e.g. 22.12.1]
+**Smartphone (please complete the following information):**
+ - Device: [e.g. iPhone6]
+ - OS: [e.g. iOS8.1]
+ - Browser [e.g. stock browser, safari]
+ - Version [e.g. 22]
 
 **Additional context**
 Add any other context about the problem here.
