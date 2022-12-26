@@ -1,5 +1,7 @@
 files:
   - source: /_data/en.json
-    translation: /_data/%locale%.json
-  - source: /locales/en/**/*
-    translation: /locales/%two_letters_code%/%original_path%
+    translation: /_data/%two_letters_code%.json
+  - source: /locales/en/_posts/*
+    translation: /locales/%two_letters_code%/_posts/%original_file_name%
+  - source: /locales/en/index.md
+    translation: /locales/%two_letters_code%/index.md
