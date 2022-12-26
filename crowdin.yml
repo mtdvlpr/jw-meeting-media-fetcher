@@ -1,6 +1,6 @@
 files:
   - source: /_data/en.json
-    translation: /_data/%locale%.json
+    translation: /_data/%two_letters_code%.json
   - source: /locales/en/_posts/*
     translation: /locales/%two_letters_code%/_posts/%original_file_name%
   - source: /locales/en/index.md
