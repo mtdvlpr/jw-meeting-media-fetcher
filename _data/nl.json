@@ -8,7 +8,7 @@
     "option": "Optie",
     "optionsApp": "Applicatie setup",
     "optionsCongSync": "Gemeente sync setup",
-    "optionsMedia": "Media instellingen",
+    "optionsMedia": "Media setup",
     "optionsMeetings": "Vergadering setup",
     "password": "Wachtwoord",
     "port": "Poort",
@@ -33,9 +33,9 @@
   "present-media": {
     "imgButton": "Knop om de media presentatie modus te openen",
     "imgSelectMeeting": "Selecteer een vergadering waarvoor je media wilt tonen",
-    "imgBG": "Standaard media achtergrond, met jaartekst",
+    "imgBG": "Standaard media-achtergrond, met jaartekst",
     "imgMediaList": "Lijst van de media die getoond kan worden",
-    "imgStandby": "M³ mediascherm in standby modus",
+    "imgStandby": "M³ mediascherm in stand-by modus",
     "imgDisplayPic": "Een afbeelding tonen",
     "imgPlayVideo": "Een filmpje afspelen",
     "imgVideoScrub": "Naar een specifiek moment in het filmpje springen"
