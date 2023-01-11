@@ -49,12 +49,12 @@ test('vlc playlist', async () => {
   // Expand media setup
   await page.locator('button', { hasText: locale.optionsMedia }).click()
 
+  await page.screenshot({ path: 'screenshots/settings/media.png' })
+
   // Enable vlc playlist option
   await page
     .locator(`text=${strip(locale.enableVlcPlaylistCreation, 'html')}`)
     .check()
-
-  await page.screenshot({ path: 'screenshots/settings/media.png' })
 
   // Go back to home page
   await page.locator('[aria-label="home"]').click()

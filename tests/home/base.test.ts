@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import jimp from 'jimp'
 import { ElectronApplication, Page } from 'playwright'
 import { version } from '../../package.json'
+import { delay } from '../helpers/generalHelpers'
 import {
   ipcRendererInvoke,
   startApp,
@@ -34,7 +35,8 @@ test('render the home page correctly', async () => {
 
   // Open date picker
   await page.locator('#week-select').click()
-
+  // eslint-disable-next-line no-magic-numbers
+  await delay(500)
   await page.screenshot({ path: 'screenshots/main/date-picker.png' })
 })
 /*

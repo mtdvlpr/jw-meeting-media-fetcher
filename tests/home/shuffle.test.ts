@@ -54,8 +54,6 @@ test('shuffle button works correctly', async () => {
     true
   )
 
-  await page.screenshot({ path: 'screenshots/main/music-playing.png' })
-
   // Click shuffle button again
   await shuffleBtn.click()
 
@@ -65,6 +63,8 @@ test('shuffle button works correctly', async () => {
 
   // Expect time remaining to appear
   expect(await shuffleBtn.innerText()).toMatch(/\d+:\d{2}/g)
+
+  await page.screenshot({ path: 'screenshots/main/music-playing.png' })
 
   // Click shuffle button to stop
   await shuffleBtn.click()
