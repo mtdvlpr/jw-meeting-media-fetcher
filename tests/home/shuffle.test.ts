@@ -54,6 +54,8 @@ test('shuffle button works correctly', async () => {
     true
   )
 
+  await page.screenshot({ path: 'main/music-playing.png' })
+
   // Click shuffle button again
   await shuffleBtn.click()
 
