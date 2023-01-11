@@ -33,7 +33,7 @@ test('render the settings page correctly', async () => {
 test('app theme', async () => {
   // Expand application setup
   await page.locator('button', { hasText: locale.optionsApp }).click()
-  await page.screenshot({ path: 'settings/app.png' })
+  await page.screenshot({ path: 'screenshots/settings/app.png' })
 
   // Check light theme
   await page.locator(`text=${locale.themePreference}`).click()

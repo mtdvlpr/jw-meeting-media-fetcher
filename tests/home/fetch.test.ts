@@ -65,5 +65,5 @@ test('fetch is successful', async () => {
     sync(join(mediaPath, prefs.lang, getDate('we'), '*')).length
   ).toBeGreaterThan(0)
 
-  await page.screenshot({ path: 'main/sync-complete.png' })
+  await page.screenshot({ path: 'screenshots/main/sync-complete.png' })
 })

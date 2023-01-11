@@ -54,7 +54,7 @@ test('vlc playlist', async () => {
     .locator(`text=${strip(locale.enableVlcPlaylistCreation, 'html')}`)
     .check()
 
-  await page.screenshot({ path: 'settings/media.png' })
+  await page.screenshot({ path: 'screenshots/settings/media.png' })
 
   // Go back to home page
   await page.locator('[aria-label="home"]').click()

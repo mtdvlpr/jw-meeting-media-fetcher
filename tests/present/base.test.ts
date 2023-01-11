@@ -71,11 +71,11 @@ test('render the presentation mode page correctly', async () => {
         .locator('[aria-label="More actions"]')
         .getAttribute('aria-label')
     ).toBeTruthy()
-    await page.screenshot({ path: 'present/media-list.png' })
+    await page.screenshot({ path: 'screenshots/present/media-list.png' })
   } else {
     // Check for correct heading
     expect(await page.locator('h2').innerText()).toBe(locale.meeting)
-    await page.screenshot({ path: 'present/meeting-picker.png' })
+    await page.screenshot({ path: 'screenshots/present/meeting-picker.png' })
   }
 })
 /*

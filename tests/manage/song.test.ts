@@ -69,7 +69,7 @@ test('add song', async () => {
   ).toBe(1)
 
   // Take screenshot
-  await page.screenshot({ path: 'manage/song-media.png' })
+  await page.screenshot({ path: 'screenshots/manage/song-media.png' })
 
   // Click save button
   await page.locator('svg.fa-floppy-disk').click()
@@ -103,7 +103,7 @@ test('rename song', async () => {
   await page.locator('input[type=text]').fill(filename)
 
   // Take screenshot
-  await page.screenshot({ path: 'manage/rename-media.png' })
+  await page.screenshot({ path: 'screenshots/manage/rename-media.png' })
 
   filename = strip(filename) + '.mp4'
 
