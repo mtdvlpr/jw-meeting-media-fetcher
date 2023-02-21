@@ -1,0 +1,115 @@
+name: 'Release Beta Version'
+
+on:
+  push:
+    branches:
+      - 'master'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bump-version:
+    name: 'Bump version'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout repository'
+        uses: 'actions/checkout@v3'
+      - name: 'Automated Version Bump'
+        id: version-bump
+        uses: 'phips28/gh-action-bump-version@master'
+        with:
+          minor-wording:  ''
+          major-wording:  ''
+          patch-wording:  '' 
+          default: prerelease
+          preid: 'beta'
+          tag-prefix: 'v'
+          tag-suffix:  '-beta'
+          skip-push:  'true'
+          bump-policy: 'last-commit'
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+      - name: 'Output new version'
+        env:
+          NEW_VERSION: ${{ steps.version-bump.outputs.newTag }}
+        run: echo "new version $NEW_VERSION"
+    outputs:
+      newTag: ${{ steps.version-bump.outputs.newTag }}
+  
+  draft-release:
+    name: 'Draft release'
+    runs-on: ubuntu-latest
+    needs: bump-version
+    steps:
+      - name: Create draft release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ jobs.bump-version.outputs.newTag }}
+          release_name: ${{ jobs.bump-version.outputs.newTag }}
+          draft: true
+          prerelease: true
+    outputs:
+      id: ${{ steps.create_release.outputs.id }}
+  
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: draft-release
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          check-latest: true
+          cache: 'yarn'
+
+      - name: Install dependencies
+        if: matrix.os != 'windows-latest'
+        run: PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 yarn install
+
+      - name: Install dependencies on Windows
+        if: matrix.os == 'windows-latest'
+        run: yarn install
+
+      - name: Set env variables
+        run: |
+          touch .env
+          echo SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} >> .env
+          echo SENTRY_ORG=${{ secrets.SENTRY_ORG }} >> .env
+          echo SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }} >> .env
+          echo SENTRY_DSN=${{ secrets.SENTRY_DSN }} >> .env
+          echo SENTRY_SOURCE_MAPS=1 >> .env
+
+      - name: Prepare build
+        run: |
+          yarn prebuild
+          yarn compile
+
+      - name: Build Electron app
+        env:
+          GH_TOKEN: ${{ secrets.github_token }}
+        run: yarn run build -p always
+  
+  publish-release:
+    name: 'Publish release'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ jobs.draft_release.outputs.id }}
