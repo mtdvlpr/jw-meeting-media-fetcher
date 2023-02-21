@@ -9,8 +9,8 @@ jobs:
   bump-version:
     name: 'Bump version'
     if: |
-          startsWith(github.event.head_commit.message, 'chore(release)') ||
-          startsWith(github.event.head_commit.message, 'ci: version bump')
+          !startsWith(github.event.head_commit.message, 'chore(release)') &&
+          !startsWith(github.event.head_commit.message, 'ci: version bump')
     runs-on: ubuntu-latest
     permissions:
       contents: write
