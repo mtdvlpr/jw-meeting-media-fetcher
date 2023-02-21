@@ -50,8 +50,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ jobs.bump-version.outputs.newTag }}
-          release_name: ${{ jobs.bump-version.outputs.newTag }}
+          tag_name: ${{ needs.bump-version.outputs.newTag }}
+          release_name: ${{ needs.bump-version.outputs.newTag }}
           draft: true
           prerelease: true
     outputs:
@@ -112,4 +112,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          release_id: ${{ jobs.draft_release.outputs.id }}
+          release_id: ${{ needs.draft_release.outputs.id }}
