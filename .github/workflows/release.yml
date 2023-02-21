@@ -53,7 +53,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           name: ${{ needs.bump-version.outputs.newTag }}
-          release_name: ${{ needs.bump-version.outputs.newTag }}
+          tag: ${{ needs.bump-version.outputs.newTag }}
           draft: true
           prerelease: true
           generateReleaseNotes: true
