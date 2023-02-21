@@ -113,3 +113,4 @@ jobs:
           allowUpdates: true
           updateOnlyUnreleased: true
           generateReleaseNotes: true
+          token: ${{ secrets.PERSONAL_TOKEN }}
