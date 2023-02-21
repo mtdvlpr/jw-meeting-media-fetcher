@@ -29,7 +29,7 @@ jobs:
           preid: 'beta'
           tag-prefix: 'v'
           tag-suffix:  '-beta'
-          skip-push:  'true'
+          skip-tag:  'true'
           bump-policy: 'last-commit'
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
@@ -71,23 +71,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: 'Automated Version Bump'
-        id: version-bump
-        uses: 'phips28/gh-action-bump-version@master'
-        with:
-          minor-wording:  ''
-          major-wording:  ''
-          patch-wording:  ''
-          version-type:  'minor'
-          default: prerelease
-          preid: 'beta'
-          tag-prefix: 'v'
-          tag-suffix:  '-beta'
-          skip-push:  'true'
-          bump-policy: 'last-commit'
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
 
       - name: Setup node
         uses: actions/setup-node@v3
