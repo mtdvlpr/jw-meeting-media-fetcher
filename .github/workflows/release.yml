@@ -76,6 +76,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          ref: master
 
       - name: Setup node
         uses: actions/setup-node@v3
@@ -91,15 +93,6 @@ jobs:
       - name: Install dependencies on Windows
         if: matrix.os == 'windows-latest'
         run: yarn install
-
-      - name: Set env variables
-        run: |
-          touch .env
-          echo SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }} >> .env
-          echo SENTRY_ORG=${{ secrets.SENTRY_ORG }} >> .env
-          echo SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }} >> .env
-          echo SENTRY_DSN=${{ secrets.SENTRY_DSN }} >> .env
-          echo SENTRY_SOURCE_MAPS=1 >> .env
 
       - name: Prepare build
         run: |
