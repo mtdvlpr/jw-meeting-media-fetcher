@@ -23,7 +23,8 @@ jobs:
         with:
           minor-wording:  ''
           major-wording:  ''
-          patch-wording:  '' 
+          patch-wording:  ''
+          version-type:  'minor'
           default: prerelease
           preid: 'beta'
           tag-prefix: 'v'
@@ -77,7 +78,8 @@ jobs:
         with:
           minor-wording:  ''
           major-wording:  ''
-          patch-wording:  '' 
+          patch-wording:  ''
+          version-type:  'minor'
           default: prerelease
           preid: 'beta'
           tag-prefix: 'v'
