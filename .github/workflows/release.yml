@@ -107,7 +107,7 @@ jobs:
   publish-release:
     name: 'Publish release'
     runs-on: ubuntu-latest
-    needs: build
+    needs: [bump-version, build]
     permissions:
       contents: write
     steps:
