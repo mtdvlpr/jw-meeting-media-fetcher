@@ -25,7 +25,7 @@ jobs:
           minor-wording:  ''
           major-wording:  ''
           patch-wording:  ''
-          version-type:  'patch'
+          version-type:  'prerelease'
           default: prerelease
           preid: 'beta'
           tag-prefix: 'v'
