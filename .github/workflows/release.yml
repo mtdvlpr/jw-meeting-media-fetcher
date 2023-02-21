@@ -52,8 +52,10 @@ jobs:
         with:
           name: ${{ needs.bump-version.outputs.newTag }}
           tag: ${{ needs.bump-version.outputs.newTag }}
+          commit: 'master'
           draft: true
           prerelease: true
+          generateReleaseNotes: true
     outputs:
       id: ${{ steps.create_release.outputs.id }}
   
@@ -108,6 +110,6 @@ jobs:
           draft: false
           prerelease: true
           allowUpdates: true
-          generateReleaseNotes: true
+          omitBodyDuringUpdate: true
           updateOnlyUnreleased: true
           token: ${{ secrets.PERSONAL_TOKEN }}
