@@ -13,6 +13,11 @@ jobs:
       contents: write
 
     steps:
+      - name: Fail job
+        if: |
+          startsWith(github.event.head_commit.message, 'chore(release)') ||
+          startsWith(github.event.head_commit.message, 'ci: version bump')
+        run: exit 1
       - name: 'Checkout repository'
         uses: 'actions/checkout@v3'
         with:
