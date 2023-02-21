@@ -9,6 +9,7 @@ jobs:
   bump-version:
     name: 'Bump version'
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       contents: write
 
