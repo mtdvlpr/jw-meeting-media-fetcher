@@ -8,17 +8,14 @@ on:
 jobs:
   bump-version:
     name: 'Bump version'
+    if: |
+          startsWith(github.event.head_commit.message, 'chore(release)') ||
+          startsWith(github.event.head_commit.message, 'ci: version bump')
     runs-on: ubuntu-latest
-    continue-on-error: true
     permissions:
       contents: write
 
     steps:
-      - name: Fail job for release commits
-        if: |
-          startsWith(github.event.head_commit.message, 'chore(release)') ||
-          startsWith(github.event.head_commit.message, 'ci: version bump')
-        run: exit 1
       - name: 'Checkout repository'
         uses: 'actions/checkout@v3'
         with:
