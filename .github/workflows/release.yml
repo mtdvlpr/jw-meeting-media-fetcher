@@ -109,6 +109,6 @@ jobs:
           draft: false
           prerelease: true
           allowUpdates: true
+          omitBodyDuringUpdate: true
           updateOnlyUnreleased: true
-          generateReleaseNotes: true
           token: ${{ secrets.PERSONAL_TOKEN }}
