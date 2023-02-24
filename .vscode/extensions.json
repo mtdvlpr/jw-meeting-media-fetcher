@@ -6,10 +6,10 @@
     "dbaeumer.vscode-eslint",
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
-    "octref.vetur",
     "streetsidesoftware.code-spell-checker",
     "usernamehw.errorlens",
     "visualstudioexptteam.vscodeintellicode",
+    "vue.volar",
     "yzhang.markdown-all-in-one"
   ]
 }

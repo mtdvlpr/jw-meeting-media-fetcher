@@ -1,0 +1,39 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  appId: 'sircharlo.meeting-media-manager',
+  productName: 'Meeting Media Manager',
+  artifactName: 'meeting-media-manager-${version}.${ext}',
+  asar: false,
+  generateUpdatesFilesForAllChannels: true,
+  directories: {
+    output: 'release/${version}',
+  },
+  files: ['.output/**/*', 'dist-electron'],
+  mac: {
+    target: {
+      target: 'dmg',
+      arch: ['universal'],
+    },
+    publish: ['github'],
+  },
+  linux: {
+    target: 'AppImage',
+    category: 'Utility',
+    publish: ['github'],
+  },
+  win: {
+    target: [
+      {
+        target: 'nsis',
+        arch: ['x64', 'ia32'],
+      },
+    ],
+    publish: ['github'],
+  },
+  nsis: {
+    oneClick: false,
+    artifactName: 'meeting-media-manager-${version}-${arch}.${ext}',
+  },
+}

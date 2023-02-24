@@ -5,9 +5,8 @@
 node_modules
 
 # Output
-.nuxt
 .output
-dist
+.nuxt
 dist-electron
 release
 
