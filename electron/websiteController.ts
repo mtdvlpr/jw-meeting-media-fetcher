@@ -9,7 +9,6 @@ import { platform } from 'os'
 import BrowserWinHandler from './BrowserWinHandler'
 import { getMainWindow, resetCloseAttempts } from './mainWindow'
 import { getMediaWin, getMediaWinHandler } from './mediaWindow'
-import { setContentAspectRatio } from './utils'
 
 let websiteController: BrowserWindow | null = null
 let websiteControllerWinHandler: BrowserWinHandler | null = null
@@ -136,6 +135,16 @@ async function openWebsite(url: string) {
     'winSize',
     websiteController.getContentSize()
   )
+}
+
+function setContentAspectRatio(win: BrowserWindow | null) {
+  if (!win) return
+  const [windowWidth, windowHeight] = win.getSize()
+  const [contentWidth, contentHeight] = win.getContentSize()
+  const simulatedContentHeight = contentWidth * (AR_HEIGHT / AR_WIDTH)
+  const aspectRatio =
+    windowWidth / (windowHeight - contentHeight + simulatedContentHeight)
+  win.setAspectRatio(aspectRatio)
 }
 
 function createWebsiteController(

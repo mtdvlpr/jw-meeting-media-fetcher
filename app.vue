@@ -4,11 +4,10 @@
   </div>
 </template>
 <script setup lang="ts">
+import { appLongName } from './constants/general'
 useHead({
   titleTemplate: (titleChunk) => {
-    return titleChunk
-      ? `${titleChunk} - Meeting Media Manager`
-      : 'Meeting Media Manager'
+    return titleChunk ? `${titleChunk} - ${appLongName}` : appLongName
   },
 })
 </script>
