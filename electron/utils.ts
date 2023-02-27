@@ -1,13 +1,10 @@
-import { Display, Point, screen } from 'electron'
+import { Point, screen } from 'electron'
+import { Screen, ScreenInfo } from '~~/types'
 import { getMainWindow } from './mainWindow'
 import { getMediaWin } from './mediaWindow'
 
-interface Screen extends Display {
-  humanFriendlyNumber: number
-}
-
 // Get screen information
-export function getScreenInfo() {
+export function getScreenInfo(): ScreenInfo {
   const win = getMainWindow()
   const mediaWin = getMediaWin()
   let displays: Screen[] = []

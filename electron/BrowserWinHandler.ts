@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
 import { platform } from 'os'
-import { appLongName } from '../constants/general'
+import { appLongName } from './main'
 import {
   BrowserWindow,
   app,

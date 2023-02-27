@@ -19,8 +19,6 @@ export const VIDEO_ICON =
 // Full HD
 const FULL_HD_WIDTH = 1920
 const FULL_HD_HEIGHT = 1080
-export const AR_WIDTH = 16
-export const AR_HEIGHT = 9
 export const FULL_HD = [FULL_HD_WIDTH, FULL_HD_HEIGHT]
 
 // Bits & Bytes

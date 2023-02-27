@@ -1,4 +1,4 @@
-import { AR_HEIGHT, AR_WIDTH } from 'constants/general'
+import { AR_HEIGHT, AR_WIDTH } from './main'
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
@@ -7,7 +7,7 @@ import {
 } from 'electron'
 import { platform } from 'os'
 import { join } from 'upath'
-import { ElectronStore } from 'types'
+import { PrefStore } from 'types'
 import BrowserWinHandler from './BrowserWinHandler'
 import { getMainWindow, getMainWinHandler } from './mainWindow'
 import { getScreenInfo } from './utils'
@@ -102,7 +102,7 @@ export function initMediaWinListeners() {
   })
 
   ipcMain.removeAllListeners('startMediaDisplay')
-  ipcMain.on('startMediaDisplay', (_e, prefs: ElectronStore) => {
+  ipcMain.on('startMediaDisplay', (_e, prefs: PrefStore) => {
     mediaWin?.webContents.send('startMediaDisplay', prefs)
   })
 

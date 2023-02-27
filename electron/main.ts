@@ -21,6 +21,10 @@ import { getScreenInfo } from './utils'
 
 require('dotenv').config()
 const isDev = process.env.NODE_ENV === 'development'
+export const appShortName = 'M³'
+export const appLongName = 'Meeting Media Manager'
+export const AR_WIDTH = 16
+export const AR_HEIGHT = 9
 
 process.env.ROOT = join(__dirname, '..')
 process.env.DIST = join(process.env.ROOT, 'dist-electron')

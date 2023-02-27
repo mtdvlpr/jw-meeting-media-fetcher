@@ -1,4 +1,5 @@
-const PREFS = {
+import { PrefStore } from '~~/types'
+export const PREFS: PrefStore = {
   app: {
     autoOpenFolderWhenDone: false,
     autoQuitWhenDone: false,
@@ -73,7 +74,7 @@ const PREFS = {
   },
 }
 
-const ENUMS = {
+export const ENUMS = {
   theme: ['system', 'light', 'dark'],
   musicFadeOutType: ['smart', 'timer'],
   outputFolderDateFormat: [
@@ -85,7 +86,7 @@ const ENUMS = {
   maxRes: ['240p', '360p', '480p', '720p'],
 }
 
-const FORCABLE = [
+export const FORCABLE = [
   'app.congregationName',
   'app.obs.cameraScene',
   'app.obs.enable',

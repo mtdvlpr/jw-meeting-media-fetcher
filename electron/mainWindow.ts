@@ -1,4 +1,4 @@
-import { appLongName } from 'constants/general'
+import { appLongName } from './main'
 import { BrowserWindow, ipcMain, screen } from 'electron'
 import BrowserWinHandler from './BrowserWinHandler'
 import { fadeWindow, getMediaWin } from './mediaWindow'

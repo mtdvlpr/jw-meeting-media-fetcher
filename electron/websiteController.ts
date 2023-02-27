@@ -1,4 +1,4 @@
-import { AR_HEIGHT, AR_WIDTH } from 'constants/general'
+import { AR_HEIGHT, AR_WIDTH } from './main'
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,

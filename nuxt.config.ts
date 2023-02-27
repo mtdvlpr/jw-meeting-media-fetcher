@@ -1,5 +1,13 @@
 import vuetify from 'vite-plugin-vuetify'
-import { LOCALES, DAYJS_LOCALES } from './constants/lang'
+import { repository, version, dependencies } from './package.json'
+import { LOCALES } from './constants/lang'
+
+const isDev = process.env.NODE_ENV !== 'production'
+const sentryInit =
+  !!process.env.SENTRY_DSN &&
+  !!process.env.SENTRY_ORG &&
+  !!process.env.SENTRY_PROJECT &&
+  !!process.env.SENTRY_AUTH_TOKEN
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -19,13 +27,13 @@ export default defineNuxtConfig({
   },
   srcDir: 'src/',
   imports: {
-    dirs: ['~/stores'],
+    dirs: ['stores'],
   },
   modules: [
     'nuxt-electron',
+    'nuxt-lodash',
     '@vueuse/nuxt',
     '@nuxtjs/i18n',
-    '@nathanchase/nuxt-dayjs-module',
     [
       '@pinia/nuxt',
       {
@@ -40,7 +48,7 @@ export default defineNuxtConfig({
     },
   ],
   i18n: {
-    langDir: '~/locales/',
+    langDir: '/locales/',
     defaultLocale: 'en',
     vueI18n: {
       fallbackLocale: 'en',
@@ -48,35 +56,20 @@ export default defineNuxtConfig({
     detectBrowserLanguage: false,
     locales: LOCALES,
   },
-  dayjs: {
-    locales: DAYJS_LOCALES,
-    defaultLocale: 'en',
-    plugins: [
-      'customParseFormat',
-      'duration',
-      'isBetween',
-      'isSameOrBefore',
-      'isoWeek',
-      'localeData',
-      'updateLocale',
-    ],
-  },
-  hooks: {
-    // Remove aliases to only have one
-    // https://github.com/nuxt/framework/issues/7277
-    'prepare:types': function ({ tsConfig }) {
-      const aliasesToRemoveFromAutocomplete = [
-        '~~',
-        '~~/*',
-        '@',
-        '@/*',
-        '@@',
-        '@@/*',
-      ]
-      for (const alias of aliasesToRemoveFromAutocomplete) {
-        if (tsConfig.compilerOptions!.paths[alias])
-          delete tsConfig.compilerOptions!.paths[alias]
-      }
+  runtimeConfig: {
+    public: {
+      isDev,
+      ci: !!process.env.CI,
+      version: 'v' + version,
+      repo: repository.url.replace('.git', ''),
+      sentryInit,
+      sqlJsVersion: dependencies['sql.js'].replace('^', ''),
+      sentryOrg: process.env.SENTRY_ORG,
+      sentryProject: process.env.SENTRY_PROJECT,
+      sentryDsn: process.env.SENTRY_DSN,
+      sentryAuthToken: process.env.SENTRY_AUTH_TOKEN,
+      sentryEnabled: sentryInit && !process.env.SENTRY_DISABLE,
+      sentrySourceMaps: process.env.SENTRY_SOURCE_MAPS,
     },
   },
   typescript: { shim: false, typeCheck: true },
