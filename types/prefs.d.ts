@@ -16,6 +16,8 @@ export const dateFormats = [
 ] as const
 export type DateFormat = (typeof dateFormats)[number]
 
+export type Theme = 'light' | 'dark' | 'system'
+
 export interface AppPrefs {
   autoOpenFolderWhenDone: boolean
   autoQuitWhenDone: boolean
@@ -31,7 +33,7 @@ export interface AppPrefs {
   obs: ObsPrefs
   offline: boolean
   outputFolderDateFormat: DateFormat
-  theme: 'light' | 'dark' | 'system'
+  theme: Theme
 }
 
 export interface CongPrefs {
@@ -81,13 +83,15 @@ export const enum MeetingDay {
   SU = 6,
 }
 
+type FadeOutType = 'smart' | 'timer'
+
 export interface MeetingPrefs {
   autoStartMusic: boolean
   enableMusicButton: boolean
   enableMusicFadeOut: boolean
   coWeek: string | null
   musicFadeOutTime: number | null
-  musicFadeOutType: 'smart' | 'timer'
+  musicFadeOutType: FadeOutType
   musicVolume: number | null
   mwDay: MeetingDay | null
   mwStartTime: string | null

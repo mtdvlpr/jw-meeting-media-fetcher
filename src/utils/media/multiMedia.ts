@@ -53,7 +53,7 @@ export async function getDocumentMultiMedia(
   }`
   let groupAndSort = ''
 
-  const includePrinted = getPrefs('media.includePrinted')
+  const includePrinted = getPrefs<boolean>('media.includePrinted')
   const videoString = `(Multimedia.MimeType LIKE '%video%' OR Multimedia.MimeType LIKE '%audio%')`
   const imgString = `(Multimedia.MimeType LIKE '%image%' ${
     includePrinted
@@ -163,14 +163,14 @@ async function processMultiMediaItem(
         mmItem.NextParagraphOrdinal = result[0].TargetParagraphOrdinal
     }
   }
-  const fallbackLang = getPrefs('media.langFallback') as string
+  const fallbackLang = getPrefs<string>('media.langFallback')
   try {
     // Get Video file
     if (
       mmItem.MimeType.includes('audio') ||
       mmItem.MimeType.includes('video')
     ) {
-      const mediaLang = getPrefs('media.lang') as string
+      const mediaLang = getPrefs<string>('media.lang')
 
       let json = (
         await getMediaLinks(

@@ -1,7 +1,7 @@
 import { Dayjs } from 'dayjs'
 import { statSync, existsSync, emptyDirSync } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
-import { MeetingFile, SmallMediaFile, VideoFile } from '~~/types'
+import { MeetingFile, SmallMediaFile, VideoFile, DateFormat } from '~~/types'
 
 export async function syncLocalRecurringMedia(baseDate: Dayjs) {
   const path = mediaPath()
@@ -13,7 +13,7 @@ export async function syncLocalRecurringMedia(baseDate: Dayjs) {
     if (date === 'Recurring') return false
     const day = useNuxtApp().$dayjs(
       date,
-      getPrefs('app.outputFolderDateFormat') as string
+      getPrefs<DateFormat>('app.outputFolderDateFormat')
     )
     return (
       day.isValid() &&
@@ -40,7 +40,7 @@ export async function createMediaNames() {
 
   meetings.forEach((parts, date) => {
     let i = 1
-    const day = $dayjs(date, getPrefs('app.outputFolderDateFormat') as string)
+    const day = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
     const isWeDay = isMeetingDay(day) === 'we'
     const sorted = [...parts.entries()].sort((a, b) => a[0] - b[0])
 
@@ -200,7 +200,7 @@ export async function syncJWMedia(
         if (date === 'Recurring') return false
         const dateObj = $dayjs(
           date,
-          getPrefs('app.outputFolderDateFormat') as string
+          getPrefs<DateFormat>('app.outputFolderDateFormat')
         )
         return (
           dateObj.isValid() &&

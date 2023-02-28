@@ -1,13 +1,13 @@
 import { Database } from 'sql.js'
 import { join } from 'upath'
-import { MultiMediaExtractRef } from '~~/types'
+import { MultiMediaExtractRef, DateFormat } from '~~/types'
 
 export async function getMwMedia(
   date: string,
   setProgress?: (loaded: number, total: number, global?: boolean) => void
 ) {
   const { $dayjs } = useNuxtApp()
-  const mwDay = $dayjs(date, getPrefs('app.outputFolderDateFormat') as string)
+  const mwDay = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
   const baseDate = mwDay.startOf('week')
 
   let issue = baseDate.format('YYYYMM') + '00'

@@ -9,7 +9,7 @@ export async function getDocumentExtract(
   setProgress?: (loaded: number, total: number, global?: boolean) => void
 ) {
   const songPub = useMediaStore().songPub
-  const excludeTh = getPrefs('media.excludeTh')
+  const excludeTh = getPrefs<boolean>('media.excludeTh')
   let extractMultimediaItems: MeetingFile[] = []
 
   const extracts = executeQuery(
@@ -33,7 +33,7 @@ export async function getDocumentExtract(
 
   extracts.forEach((extract) => {
     let imagesOnly = false
-    const excludeLffImages = getPrefs('media.excludeLffImages')
+    const excludeLffImages = getPrefs<boolean>('media.excludeLffImages')
     if (extract.UniqueEnglishSymbol === 'lffi') {
       imagesOnly = true
     } else if (extract.UniqueEnglishSymbol === 'lff') {
@@ -70,7 +70,7 @@ async function extractMediaItems(
   setProgress?: (loaded: number, total: number, global?: boolean) => void,
   imagesOnly = false
 ) {
-  extract.Lang = getPrefs('media.lang') as string
+  extract.Lang = getPrefs<string>('media.lang')
   if (extract.Link) {
     try {
       const matches = extract.Link.match(/\/(.*)\//)
@@ -86,8 +86,8 @@ async function extractMediaItems(
 
   // Exclude the "old new songs" songbook, as we don't need images from that
   if (symbol === 'snnw') return []
-  const mediaLang = getPrefs('media.lang') as string
-  const fallbackLang = getPrefs('media.langFallback') as string
+  const mediaLang = getPrefs<string>('media.lang')
+  const fallbackLang = getPrefs<string>('media.langFallback')
 
   let extractDb = await getDbFromJWPUB(
     symbol,

@@ -1,7 +1,7 @@
 import { XMLParser } from 'fast-xml-parser'
 import { join, dirname, basename, resolve } from 'upath'
 import { WebDAVClient, createClient, FileStat } from 'webdav/web'
-import { CongPrefs } from '~~/types'
+import { CongPrefs, DateFormat } from '~~/types'
 
 export async function connect(
   host: string,
@@ -320,7 +320,7 @@ async function removeOldDate(
   const { $dayjs } = useNuxtApp()
   const date = $dayjs(
     dir.basename,
-    getPrefs<string>('app.outputFolderDateFormat')
+    getPrefs<DateFormat>('app.outputFolderDateFormat')
   )
   if (date.isValid() && date.isBefore($dayjs().subtract(1, 'day'))) {
     try {

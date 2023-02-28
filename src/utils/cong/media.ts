@@ -1,7 +1,7 @@
 import { Dayjs } from 'dayjs'
 import { statSync } from 'fs-extra'
 import { join, extname, basename } from 'upath'
-import { MeetingFile } from '~~/types'
+import { MeetingFile, DateFormat } from '~~/types'
 
 export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
   const statStore = useStatStore()
@@ -13,13 +13,11 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
   const tree = updateContentsTree()
   const mediaFolder = tree.find(({ basename }) => basename === 'Media')
   const hiddenFolder = tree.find(({ basename }) => basename === 'Hidden')
-  const dates = [
-    'Recurring',
-    now.format(getPrefs<string>('app.outputFolderDateFormat')),
-  ]
+  const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
+  const dates = ['Recurring', now.format(dateFormat)]
   let day = now.add(1, 'day')
   while (day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]')) {
-    dates.push(day.format(getPrefs<string>('app.outputFolderDateFormat')))
+    dates.push(day.format(dateFormat))
     day = day.add(1, 'day')
   }
 
@@ -39,10 +37,7 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
     mediaFolder.children
       .filter((date) => !!date.children)
       .forEach((date) => {
-        const day = $dayjs(
-          date.basename,
-          getPrefs<string>('app.outputFolderDateFormat')
-        )
+        const day = $dayjs(date.basename, dateFormat)
         const isRecurring = date.basename === 'Recurring'
         const isMeetingDay =
           day.isValid() &&
@@ -104,10 +99,7 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
       .filter((date) => !!date.children)
       .forEach((date) => {
         const mediaMap = meetings.get(date.basename)
-        const day = $dayjs(
-          date.basename,
-          getPrefs<string>('app.outputFolderDateFormat')
-        )
+        const day = $dayjs(date.basename, dateFormat)
         const isMeetingDay =
           day.isValid() &&
           day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]') &&
@@ -168,7 +160,7 @@ export async function syncCongMedia(
         if (date === 'Recurring') return true
         const dateObj = $dayjs(
           date,
-          getPrefs<string>('app.outputFolderDateFormat')
+          getPrefs<DateFormat>('app.outputFolderDateFormat')
         ) as Dayjs
         return (
           dateObj.isValid() &&

@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 import { extname, join, basename, resolve } from 'upath'
 import { pathToFileURL } from 'url'
-import { VideoFile } from '~~/types'
+import { FadeOutType, VideoFile } from '~~/types'
 
 export async function getSongs() {
   const store = useMediaStore()
@@ -10,7 +10,7 @@ export async function getSongs() {
     format: 'MP4',
   })) as VideoFile[]
 
-  const fallbackLang = getPrefs('media.langFallback') as string
+  const fallbackLang = getPrefs<string>('media.langFallback')
 
   if (fallbackLang && result.length < NR_OF_KINGDOM_SONGS) {
     const fallback = (await getMediaLinks({
@@ -61,16 +61,16 @@ export async function shuffleMusic(stop = false, immediately = false) {
 
     store.setMusicFadeOut('')
   } else {
-    if (getPrefs('meeting.enableMusicFadeOut')) {
+    if (getPrefs<boolean>('meeting.enableMusicFadeOut')) {
       const now = useNuxtApp().$dayjs()
-      const fadeOutTime = getPrefs('meeting.musicFadeOutTime') as number
-      if (getPrefs('meeting.musicFadeOutType') === 'smart') {
+      const fadeOutTime = getPrefs<number>('meeting.musicFadeOutTime')
+      if (getPrefs<FadeOutType>('meeting.musicFadeOutType') === 'smart') {
         const day = isMeetingDay()
 
-        if (day && !getPrefs('meeting.specialCong')) {
+        if (day && !getPrefs<boolean>('meeting.specialCong')) {
           // Set stop time depending on mw or we day
-          const meetingStarts = (
-            getPrefs(`meeting.${day}StartTime`) as string
+          const meetingStarts = getPrefs<string>(
+            `meeting.${day}StartTime`
           )?.split(':') ?? ['0', '0']
 
           const timeToStop = now
@@ -91,9 +91,10 @@ export async function shuffleMusic(stop = false, immediately = false) {
     }
 
     // Get songs from jw.org or from local cache
-    const isOnline = useStatStore().online && !getPrefs('app.offline')
+    const isOnline = useStatStore().online && !getPrefs<boolean>('app.offline')
     const signLanguage =
-      store.songPub === 'sjj' && getPrefs('media.enableMediaDisplayButton')
+      store.songPub === 'sjj' &&
+      getPrefs<boolean>('media.enableMediaDisplayButton')
 
     let songPub = 'sjjm'
     let mediaFormat = 'mp3'
@@ -102,7 +103,7 @@ export async function shuffleMusic(stop = false, immediately = false) {
     if (signLanguage) {
       songPub = 'sjj'
       mediaFormat = 'mp4'
-      mediaLang = getPrefs('media.lang') as string
+      mediaLang = getPrefs<string>('media.lang')
     }
 
     const songs = (
@@ -197,7 +198,7 @@ async function createAudioElement(
     )
   }
   audio.oncanplay = () => {
-    audio.volume = (getPrefs('meeting.musicVolume') as number) / 100
+    audio.volume = getPrefs<number>('meeting.musicVolume') / 100
     if (!fadeOut) {
       store.setMusicFadeOut('00:00')
     }

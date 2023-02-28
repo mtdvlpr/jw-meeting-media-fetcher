@@ -15,7 +15,7 @@ import { XMLBuilder } from 'fast-xml-parser'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import { PDFDocumentProxy } from 'pdfjs-dist'
 import { pathToFileURL } from 'url'
-import { Release } from '~~/types'
+import { Release, DateFormat } from '~~/types'
 
 export async function convertToMP4(
   baseDate: Dayjs,
@@ -27,7 +27,10 @@ export async function convertToMP4(
   })
     .map((path) => basename(path))
     .filter((dir) => {
-      const date = dayjs(dir, getPrefs<string>('app.outputFolderDateFormat'))
+      const date = dayjs(
+        dir,
+        getPrefs<DateFormat>('app.outputFolderDateFormat')
+      )
       return (
         date.isValid() &&
         date.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]') &&
@@ -84,7 +87,7 @@ export function convertToVLC() {
   })
     .map((d) => basename(d))
     .filter((d) =>
-      dayjs(d, getPrefs<string>('app.outputFolderDateFormat')).isValid()
+      dayjs(d, getPrefs<DateFormat>('app.outputFolderDateFormat')).isValid()
     )
     .forEach((date) => {
       const playlistItems = {
@@ -277,7 +280,7 @@ async function setupFFmpeg(
       zipPath,
       Buffer.from(
         new Uint8Array(
-          await $fetch(version.browser_download_url, {
+          await $fetch<Iterable<number>>(version.browser_download_url, {
             responseType: 'arrayBuffer',
             // onDownloadProgress: (e) => setProgress(e.loaded, e.total),
           })

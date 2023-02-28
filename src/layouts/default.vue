@@ -8,12 +8,13 @@
   </v-app>
 </template>
 <script setup lang="ts">
+import { useTheme } from 'vuetify'
 import { ipcRenderer } from 'electron'
 import { useIpcRendererOn } from '@vueuse/electron'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { join } from 'upath'
 import { existsSync } from 'fs-extra'
-import { CongPrefs, ObsPrefs } from '~~/types'
+import { CongPrefs, ObsPrefs, Theme } from '~~/types'
 
 const statStore = useStatStore()
 const notifyStore = useNotifyStore()
@@ -22,12 +23,31 @@ const mediaStore = useMediaStore()
 
 const { $sentry, $dayjs, $i18n, $switchLocalePath, $localePath } = useNuxtApp()
 
+// Online/offline
 const { online } = storeToRefs(statStore)
 watch(online, (val) => {
   if (val) {
     notifyStore.dismissByMessage('errorOffline')
   } else {
     warn('errorOffline')
+  }
+})
+useEventListener('online', () => {
+  statStore.setOnline(true)
+})
+useEventListener('offline', () => {
+  statStore.setOnline(false)
+})
+
+// Global theme
+const prefersDark = usePreferredDark()
+const systemTheme = computed(() => (prefersDark.value ? 'dark' : 'light'))
+const setTheme = (theme: string) => {
+  useTheme().global.name.value = theme
+}
+watch(systemTheme, (val) => {
+  if (getPrefs<Theme>('app.theme') === 'system') {
+    setTheme(val)
   }
 })
 
@@ -82,7 +102,7 @@ const initPrefs = async (name: string, isNew = false) => {
   log.debug(appPath())
 
   // Set disabledHardwareAcceleration to user pref
-  const disableHA = getPrefs('app.disableHardwareAcceleration')
+  const disableHA = getPrefs<boolean>('app.disableHardwareAcceleration')
   const haPath = join(appPath(), 'disableHardwareAcceleration')
   const haExists = existsSync(haPath)
 
@@ -98,32 +118,32 @@ const initPrefs = async (name: string, isNew = false) => {
   }
 
   // Set app theme
-  const themePref = getPrefs('app.theme')
+  const themePref = getPrefs<Theme>('app.theme')
   ipcRenderer.send('setTheme', themePref)
-  /* if (themePref === 'system') {
-    $vuetify.theme.dark = isDark
+  if (themePref === 'system') {
+    setTheme(systemTheme.value)
   } else {
-    $vuetify.theme.dark = themePref === 'dark'
-  } */
+    setTheme(themePref)
+  }
 
   // Setup Sentry context
   $sentry.setUser({
-    username: getPrefs('app.congregationName') as string,
+    username: getPrefs<string>('app.congregationName'),
   })
 
   $sentry.setContext('prefs', {
     ...getAllPrefs(),
-    obs: getPrefs('app.obs'),
+    obs: getPrefs<ObsPrefs>('app.obs'),
   })
 
   // Open or close the media window depending on prefs
   if (
-    getPrefs('media.enableMediaDisplayButton') &&
+    getPrefs<boolean>('media.enableMediaDisplayButton') &&
     !presentStore.mediaScreenInit
   ) {
     toggleMediaWindow('open')
   } else if (
-    !getPrefs('media.enableMediaDisplayButton') &&
+    !getPrefs<boolean>('media.enableMediaDisplayButton') &&
     presentStore.mediaScreenInit
   ) {
     toggleMediaWindow('close')
@@ -131,8 +151,12 @@ const initPrefs = async (name: string, isNew = false) => {
 
   // Check if the app is available in the current media lang
   const langs = await getJWLangs()
-  const mediaLang = langs.find((l) => l.langcode === getPrefs('media.lang'))
-  const appLang = langs.find((l) => l.symbol === getPrefs('app.localAppLang'))
+  const mediaLang = langs.find(
+    (l) => l.langcode === getPrefs<string>('media.lang')
+  )
+  const appLang = langs.find(
+    (l) => l.symbol === getPrefs<string>('app.localAppLang')
+  )
 
   if (
     newCong &&
@@ -176,13 +200,16 @@ const initPrefs = async (name: string, isNew = false) => {
 
   // Set runAtBoot depending on prefs and platform
   if (process.platform !== 'linux') {
-    ipcRenderer.send('runAtBoot', getPrefs('app.autoRunAtBoot'))
+    ipcRenderer.send('runAtBoot', getPrefs<boolean>('app.autoRunAtBoot'))
   }
 
   // Set auto updater prefs
-  ipcRenderer.send('toggleAutoUpdate', !getPrefs('app.disableAutoUpdate'))
+  ipcRenderer.send(
+    'toggleAutoUpdate',
+    !getPrefs<boolean>('app.disableAutoUpdate')
+  )
 
-  ipcRenderer.send('toggleUpdateChannel', getPrefs('app.betaUpdates'))
+  ipcRenderer.send('toggleUpdateChannel', getPrefs<boolean>('app.betaUpdates'))
   if (online) {
     ipcRenderer.send('checkForUpdates')
   }
@@ -198,7 +225,7 @@ const initPrefs = async (name: string, isNew = false) => {
 
   // If all cong fields are filled in, try to connect to the server
   useCongStore().clear()
-  if (!getPrefs('app.offline')) {
+  if (!getPrefs<boolean>('app.offline')) {
     const { server, user, password, dir } = getPrefs<CongPrefs>('cong')
     if (server && user && password && dir) {
       const error = await connect(server, user, password, dir)

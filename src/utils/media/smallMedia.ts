@@ -1,4 +1,4 @@
-import { SmallMediaFile, MediaFile, Publication } from '~~/types'
+import { SmallMediaFile, MediaFile, Publication, Res } from '~~/types'
 
 export async function getMediaLinks(
   mediaItem: {
@@ -13,7 +13,7 @@ export async function getMediaLinks(
 ): Promise<SmallMediaFile[]> {
   if (mediaItem.lang) {
     log.debug('mi', mediaItem)
-    log.debug('ml', getPrefs('media.lang'))
+    log.debug('ml', getPrefs<string>('media.lang'))
   }
   let smallMediaFiles: SmallMediaFile[] = []
 
@@ -22,9 +22,10 @@ export async function getMediaLinks(
       getSmallMediaFiles(mediaItem, silent),
     ]
 
-    const mediaLang = mediaItem.lang || (getPrefs('media.lang') as string)
-    const subsLang = getPrefs('media.langSubs') as string
-    const subtitlesEnabled = !!getPrefs('media.enableSubtitles') && !!subsLang
+    const mediaLang = mediaItem.lang || getPrefs<string>('media.lang')
+    const subsLang = getPrefs<string>('media.langSubs')
+    const subtitlesEnabled =
+      getPrefs<boolean>('media.enableSubtitles') && !!subsLang
 
     if (subtitlesEnabled && mediaLang !== subsLang) {
       mediaPromises.push(
@@ -125,7 +126,7 @@ export async function getSmallMediaFiles(
     }
 
     const store = useMediaStore()
-    const mediaLang = mediaItem.lang || getPrefs('media.lang')
+    const mediaLang = mediaItem.lang || getPrefs<string>('media.lang')
 
     // Set correct song publication (e.g. sjj for sign language)
     const mediaLangObj = store.mediaLang
@@ -151,7 +152,7 @@ export async function getSmallMediaFiles(
       params.docid = mediaItem.docId
     }
     params.langwritten = mediaLang
-    const fallbackLang = getPrefs('media.langFallback') as string
+    const fallbackLang = getPrefs<string>('media.langFallback')
 
     if (fallbackLang) {
       if (params.pub === 'w' && store.mediaLang?.wAvailable === false) {
@@ -237,9 +238,7 @@ export async function getSmallMediaFiles(
 
       // Filter on max resolution
       mediaFiles = mediaFiles.filter((file) => {
-        return (
-          parseRes(file.label) <= parseRes(getPrefs('media.maxRes') as string)
-        )
+        return parseRes(file.label) <= parseRes(getPrefs<Res>('media.maxRes'))
       })
 
       const mappedFiles = new Map(mediaFiles.map((file) => [file.title, file]))
@@ -281,7 +280,9 @@ export async function getSmallMediaFiles(
             track,
             pub,
             subtitled,
-            subtitles: getPrefs('media.enableSubtitles') ? subtitles : null,
+            subtitles: getPrefs<boolean>('media.enableSubtitles')
+              ? subtitles
+              : null,
             markers,
           }
         }

@@ -1,14 +1,20 @@
 import { existsSync, statSync } from 'fs-extra'
 import { join } from 'upath'
 import { Database } from 'sql.js'
-import { MultiMediaItem, MeetingFile, ImageFile, VideoFile } from '~~/types'
+import {
+  MultiMediaItem,
+  MeetingFile,
+  DateFormat,
+  ImageFile,
+  VideoFile,
+} from '~~/types'
 
 export async function getWeMedia(
   date: string,
   setProgress?: (loaded: number, total: number, global?: boolean) => void
 ) {
   const { $dayjs } = useNuxtApp()
-  const weDay = $dayjs(date, getPrefs('app.outputFolderDateFormat') as string)
+  const weDay = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
   const baseDate = weDay.startOf('week')
 
   // Get week nr from db
@@ -83,7 +89,7 @@ WHERE Document.DocumentId = ${docId} AND Multimedia.CategoryType <> 9 GROUP BY D
     }`
   ) as MultiMediaItem[]
 
-  let songLangs = songs.map(() => getPrefs('media.lang') as string)
+  let songLangs = songs.map(() => getPrefs<string>('media.lang'))
 
   try {
     songLangs = (
@@ -102,11 +108,9 @@ WHERE Document.DocumentId = ${docId} AND Multimedia.CategoryType <> 9 GROUP BY D
       .map((item) => {
         const match = item.Link.match(/\/(.*)\//)
         if (match) {
-          return (
-            match.pop()?.split(':')[0] ?? (getPrefs('media.lang') as string)
-          )
+          return match.pop()?.split(':')[0] ?? getPrefs<string>('media.lang')
         } else {
-          return getPrefs('media.lang') as string
+          return getPrefs<string>('media.lang')
         }
       })
   } catch (e: unknown) {
@@ -134,7 +138,7 @@ async function addImgToPart(
         pubPath({
           pub: 'w',
           issue,
-          url: `url_${getPrefs('media.langFallback')}.jpg`,
+          url: `url_${getPrefs<string>('media.langFallback')}.jpg`,
         } as MeetingFile),
         img.FilePath
       )
@@ -165,8 +169,8 @@ async function addSongToPart(
   song: MultiMediaItem,
   i: number
 ): Promise<void> {
-  const mediaLang = getPrefs('media.lang') as string
-  const fallbackLang = getPrefs('media.langFallback') as string
+  const mediaLang = getPrefs<string>('media.lang')
+  const fallbackLang = getPrefs<string>('media.langFallback')
   let songMedia = await getMediaLinks({
     pubSymbol: song.KeySymbol as string,
     track: song.Track as number,
