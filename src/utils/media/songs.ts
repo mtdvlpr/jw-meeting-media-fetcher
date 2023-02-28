@@ -1,15 +1,7 @@
 import { ipcRenderer } from 'electron'
 import { extname, join, basename, resolve } from 'upath'
 import { pathToFileURL } from 'url'
-import { NR_OF_KINGDOM_SONGS, MS_IN_SEC } from '~~/constants/general'
 import { VideoFile } from '~~/types'
-import {
-  downloadIfRequired,
-  findAll,
-  getMediaLinks,
-  pubPath,
-  sanitize,
-} from '..'
 
 export async function getSongs() {
   const store = useMediaStore()

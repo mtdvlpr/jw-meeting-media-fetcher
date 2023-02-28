@@ -1,5 +1,3 @@
-import { MS_IN_SEC } from '~~/constants/general'
-
 const intervals: { [key: string]: NodeJS.Timer } = {}
 
 export function executeBeforeMeeting(

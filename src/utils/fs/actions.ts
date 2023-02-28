@@ -6,9 +6,12 @@ import {
   readdirSync,
   removeSync,
   ensureFileSync,
+  readFileSync,
 } from 'fs-extra'
 import { sync, Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
+import { PrefStore } from '~~/types'
+import { ipcRenderer } from 'electron'
 
 export function findOne(path: string | string[], options?: Options) {
   try {
@@ -159,4 +162,73 @@ export function renameAll(
   readdirSync(dir).forEach((file) => {
     rename(join(dir, file), search, newName, action, type)
   })
+}
+
+export async function cleanup() {
+  let lastVersion = '0'
+  const versionPath = join(appPath(), 'lastRunVersion.json')
+  const appDataPath = await ipcRenderer.invoke('appData')
+  const JWMMF = join(appDataPath, 'jw-meeting-media-fetcher')
+
+  // Cleanup old JWMMF/M3 files
+  try {
+    // Try to get previous version
+    if (existsSync(versionPath)) {
+      lastVersion = readFileSync(versionPath, 'utf8')
+    } else if (existsSync(join(JWMMF, 'lastRunVersion.json'))) {
+      lastVersion = readFileSync(join(JWMMF, 'lastRunVersion.json'), 'utf8')
+    }
+  } catch (e: unknown) {
+    error('warnUnknownLastVersion', e)
+  } finally {
+    const { version, repo } = useRuntimeConfig()
+    if (lastVersion !== version) {
+      try {
+        // One-time migrate from JWMMF to mmm
+        if (
+          parseInt(lastVersion.replace(/\D/g, '')) <= LAST_JWMMF_VERSION &&
+          parseInt(version.replace(/\D/g, '')) > LAST_JWMMF_VERSION
+        ) {
+          const files = findAll([
+            join(JWMMF, 'pref*.json'),
+            join(JWMMF, 'Publications'),
+          ]) as string[]
+
+          files.forEach((file) => {
+            move(file, join(appPath(), basename(file)), true)
+          })
+          removeSync(JWMMF)
+        }
+
+        if (lastVersion !== '0') {
+          notify('updateInstalled', {
+            identifier: version,
+            action: {
+              type: 'link',
+              label: 'moreInfo',
+              url: `${repo}/releases/tag/${version}`,
+            },
+          })
+        }
+        write(versionPath, version)
+      } catch (e: unknown) {
+        log.error(e)
+      }
+    }
+  }
+
+  // Cleanup old pref files
+  const cong = useRoute().query.cong
+  if (cong) {
+    const prefFiles = findAll(join(appPath(), 'prefs-*.json'), {
+      ignore: [join(appPath(), `prefs-${cong}.json`)],
+    })
+    prefFiles.forEach((file) => {
+      const prefs = JSON.parse(readFileSync(file, 'utf8')) as PrefStore
+      // @ts-expect-error: congregationName doesn't exist in ElectronStore
+      if (!prefs.congregationName && !prefs.app?.congregationName) {
+        rm(file)
+      }
+    })
+  }
 }

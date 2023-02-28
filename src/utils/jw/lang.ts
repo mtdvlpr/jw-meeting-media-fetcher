@@ -2,7 +2,6 @@ import { ipcRenderer } from 'electron'
 import { existsSync, readFileSync } from 'fs-extra'
 import { join } from 'upath'
 import { ShortJWLang, JWLang, Filter } from '~~/types'
-import { write } from '..'
 
 export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   const { $dayjs } = useNuxtApp()

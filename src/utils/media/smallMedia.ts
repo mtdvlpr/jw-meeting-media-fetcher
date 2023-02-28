@@ -1,11 +1,4 @@
-import { JAN_2008, THV_POSTER } from '~~/constants/general'
-import {
-  SmallMediaFile,
-  MediaFile,
-  ShortJWLang,
-  Publication,
-  MediaItemResult,
-} from '~~/types'
+import { SmallMediaFile, MediaFile, Publication } from '~~/types'
 
 export async function getMediaLinks(
   mediaItem: {

@@ -1,6 +1,6 @@
 import vuetify from 'vite-plugin-vuetify'
 import { repository, version, dependencies } from './package.json'
-import { LOCALES } from './constants/lang'
+import { LOCALES } from './src/constants/lang'
 
 const isDev = process.env.NODE_ENV !== 'production'
 const sentryInit =
@@ -27,7 +27,7 @@ export default defineNuxtConfig({
   },
   srcDir: 'src/',
   imports: {
-    dirs: ['stores'],
+    dirs: ['stores', 'constants'],
   },
   modules: [
     'nuxt-electron',
@@ -37,7 +37,7 @@ export default defineNuxtConfig({
     [
       '@pinia/nuxt',
       {
-        autoImports: ['defineStore'],
+        autoImports: ['defineStore', 'storeToRefs'],
       },
     ],
     /* Treeshaking: https://next.vuetifyjs.com/en/features/treeshaking/ */

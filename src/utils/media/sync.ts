@@ -1,20 +1,7 @@
 import { Dayjs } from 'dayjs'
 import { statSync, existsSync, emptyDirSync } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
-import { MAX_PREFIX_LENGTH } from '~~/constants/general'
 import { MeetingFile, SmallMediaFile, VideoFile } from '~~/types'
-import {
-  findAll,
-  sanitize,
-  findOne,
-  write,
-  mediaPath,
-  copy,
-  rename,
-  pubPath,
-  extractAllTo,
-  rm,
-} from '..'
 
 export async function syncLocalRecurringMedia(baseDate: Dayjs) {
   const path = mediaPath()

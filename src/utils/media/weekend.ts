@@ -2,16 +2,6 @@ import { existsSync, statSync } from 'fs-extra'
 import { join } from 'upath'
 import { Database } from 'sql.js'
 import { MultiMediaItem, MeetingFile, ImageFile, VideoFile } from '~~/types'
-import {
-  addMediaItemToPart,
-  getMediaLinks,
-  isImage,
-  mediaPath,
-  pubPath,
-  sanitize,
-  strip,
-  write,
-} from '..'
 
 export async function getWeMedia(
   date: string,

@@ -15,8 +15,6 @@ import { XMLBuilder } from 'fast-xml-parser'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import { PDFDocumentProxy } from 'pdfjs-dist'
 import { pathToFileURL } from 'url'
-import { FULL_HD } from '~~/constants/general'
-import { findAll, mediaPath, rm, write } from '.'
 import { Release } from '~~/types'
 
 export async function convertToMP4(

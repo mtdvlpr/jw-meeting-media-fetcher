@@ -1,6 +1,5 @@
 import OBSWebSocket from 'obs-websocket-js-v5'
 import OBSWebSocketV4 from 'obs-websocket-js'
-import { OBS_AUTH_ERROR, OBS_CONNECTION_ERROR } from '~~/constants/general'
 import { ObsPrefs } from '~~/types'
 
 let obs = null as OBSWebSocket | OBSWebSocketV4 | null

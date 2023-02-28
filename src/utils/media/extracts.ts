@@ -1,7 +1,6 @@
 import { Dayjs } from 'dayjs'
 import { Database } from 'sql.js'
-import { MeetingFile, MultiMediaExtract, ShortJWLang } from '~~/types'
-import { getDocumentMultiMedia, isVideo } from '..'
+import { MeetingFile, MultiMediaExtract } from '~~/types'
 
 export async function getDocumentExtract(
   db: Database,

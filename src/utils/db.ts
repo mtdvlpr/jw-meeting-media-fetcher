@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs-extra'
 import sqljs, { Database } from 'sql.js'
 import { join } from 'upath'
-import { findOne, getZipContentsByExt, pubPath } from './fs'
+import { VideoFile } from '~~/types'
 
 export function executeQuery<T extends { [key: string]: any }>(
   db: Database,

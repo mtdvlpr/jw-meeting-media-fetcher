@@ -1,13 +1,6 @@
 import { Database } from 'sql.js'
 import { join } from 'upath'
 import { MultiMediaExtractRef } from '~~/types'
-import {
-  addMediaItemToPart,
-  getDocumentExtract,
-  getDocumentMultiMedia,
-  pubPath,
-  write,
-} from '..'
 
 export async function getMwMedia(
   date: string,

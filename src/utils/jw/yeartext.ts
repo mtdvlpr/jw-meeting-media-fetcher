@@ -1,7 +1,5 @@
 import { ipcRenderer } from 'electron'
 import { existsSync, readFileSync, statSync } from 'fs-extra'
-import { WT_CLEARTEXT_FONT, JW_ICONS_FONT } from '~~/constants/general'
-import { localFontPath, ytPath, write } from '..'
 
 export async function getYearText(
   force = false,

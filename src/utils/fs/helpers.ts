@@ -1,8 +1,6 @@
 import { extname, basename, join } from 'upath'
-import { MAX_BYTES_IN_FILENAME } from '~~/constants/general'
-import { mediaPath } from '.'
 
-export function isOneOf(file: string, exts: string[]) {
+function isOneOf(file: string, exts: string[]) {
   if (!file) return false
   return exts.includes(extname(file).slice(1).toLowerCase())
 }

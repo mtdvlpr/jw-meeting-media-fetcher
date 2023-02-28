@@ -1,9 +1,7 @@
-import { useNuxt } from '@nuxt/kit'
 import { ipcRenderer } from 'electron'
 import { join, basename } from 'upath'
 import { pathToFileURL } from 'url'
 import { MediaPrefs, ScreenInfo, MediaWinOptions } from '~~/types'
-import { findAll, getYearText } from '.'
 
 export async function setShortcut(
   shortcut: string,

@@ -3,7 +3,6 @@ import Store, { Schema } from 'electron-store'
 import { readFileSync, removeSync } from 'fs-extra'
 import { sync } from 'fast-glob'
 import { basename, dirname, join, joinSafe, normalizeSafe } from 'upath'
-import { ENUMS, PREFS } from '~~/constants/prefs'
 import {
   AppPrefs,
   CongPrefs,

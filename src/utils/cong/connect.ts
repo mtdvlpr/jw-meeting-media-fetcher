@@ -1,10 +1,7 @@
 import { XMLParser } from 'fast-xml-parser'
 import { join, dirname, basename, resolve } from 'upath'
 import { WebDAVClient, createClient, FileStat } from 'webdav/web'
-import { UNSUPPORTED, HOSTS } from '~~/constants/cong'
-import { LOCKED, NOT_FOUND } from '~~/constants/general'
 import { CongPrefs } from '~~/types'
-import { findAll, write, rm } from '../fs'
 
 export async function connect(
   host: string,
@@ -126,8 +123,28 @@ export async function updateContent() {
   store.setContents(contents)
 }
 
-export // Update the contents tree of the cong server
-function updateContentsTree() {
+export async function createCongDir(dir: string) {
+  const store = useCongStore()
+  const contents = store.contents
+  if (!contents.find(({ filename }) => filename === dir)) {
+    const client = store.client
+    if (!client) return
+    try {
+      await client.createDirectory(dir)
+    } catch (e: any) {
+      if (await client.exists(dir)) {
+        console.debug('Directory already exists')
+      } else if (e.message.includes(LOCKED.toString())) {
+        warn('errorWebdavLocked', { identifier: dir })
+      } else {
+        throw e
+      }
+    }
+  }
+}
+
+// Update the contents tree of the cong server
+export function updateContentsTree() {
   const store = useCongStore()
   const tree: typeof store.contentsTree = []
   let root = getPrefs<string>('cong.dir')

@@ -1,8 +1,7 @@
-import { existsSync, statSync } from 'fs'
-import { join } from 'path'
+import { existsSync, statSync } from 'fs-extra'
+import { join } from 'upath'
 import { Database } from 'sql.js'
 import { MeetingFile, VideoFile, ImageFile, MultiMediaItem } from '~~/types'
-import { getJWLangs, getMediaLinks, pubPath, sanitize } from '..'
 
 export async function getDocumentMultiMedia(
   db: Database,
