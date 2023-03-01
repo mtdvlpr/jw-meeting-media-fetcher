@@ -8,12 +8,10 @@
   "parserOptions": {
     "parser": "@typescript-eslint/parser"
   },
-  "ignorePatterns": ["src/public/*"],
   "extends": [
     "@nuxtjs/eslint-config-typescript",
     "plugin:vuetify/recommended",
     "plugin:prettier/recommended"
   ],
-  "plugins": [],
   "rules": {}
 }
