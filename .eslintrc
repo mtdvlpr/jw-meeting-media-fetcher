@@ -8,7 +8,7 @@
   "parserOptions": {
     "parser": "@typescript-eslint/parser"
   },
-  "ignorePatterns": ["dist/*", "dist-electron/*", "release/*", "src/public/*"],
+  "ignorePatterns": ["src/public/*"],
   "extends": [
     "@nuxtjs/eslint-config-typescript",
     "plugin:vuetify/recommended",

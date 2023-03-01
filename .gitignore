@@ -21,5 +21,5 @@ release
 !.yarn/versions
 
 # sql.js / pdf.js files
-public/sql-wasm.wasm
-public/pdf.worker*
+src/public/sql-wasm.wasm
+src/public/pdf.worker*
