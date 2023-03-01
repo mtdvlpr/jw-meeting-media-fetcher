@@ -10,7 +10,14 @@
     output: 'build',
   },
   files: ['.output/**/*', 'dist-electron'],
+  extraResources: [
+    {
+      from: 'build/icons/media',
+      to: 'icons',
+    },
+  ],
   mac: {
+    icon: 'build/icons/main/icon.icns',
     target: {
       target: 'dmg',
       arch: ['universal'],
@@ -18,11 +25,13 @@
     publish: ['github'],
   },
   linux: {
+    icon: 'build/icons/main',
     target: 'AppImage',
     category: 'Utility',
     publish: ['github'],
   },
   win: {
+    icon: 'build/icons/main/icon.ico',
     target: [
       {
         target: 'nsis',

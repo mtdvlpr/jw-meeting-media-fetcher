@@ -20,11 +20,6 @@ let mediaWin: BrowserWindow | null
 let mediaWinHandler: BrowserWinHandler | null
 let authorizedCloseMediaWin = false
 
-// Set correct app icon
-let iconType = 'png'
-if (platform() === 'darwin') iconType = 'icns'
-if (platform() === 'win32') iconType = 'ico'
-
 export function initMediaWinListeners() {
   ipcMain.removeAllListeners('showMediaWindow')
   ipcMain.on(
@@ -142,12 +137,13 @@ async function initMediaWindow(mediaWinOptions: {
     const screenInfo = getScreenInfo()
     const STARTING_POSITION = 50
 
-    const windowOptions = {
-      icon: join(
-        process.resourcesPath,
-        'videoPlayer',
-        `videoPlayer.${iconType}`
-      ),
+    // Set correct app icon
+    let iconType = 'png'
+    if (platform() === 'darwin') iconType = 'icns'
+    if (platform() === 'win32') iconType = 'ico'
+
+    const windowOptions: BrowserWindowConstructorOptions = {
+      icon: join(process.resourcesPath, 'icons', `videoPlayer.${iconType}`),
       fullscreen: mediaWinOptions.type === 'fullscreen',
       x:
         (screenInfo.displays.find(
