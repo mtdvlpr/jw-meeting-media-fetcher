@@ -31,7 +31,7 @@
     "lint:prettier": "prettier --check .",
     "lint": "yarn lint:js && yarn lint:prettier",
     "lint:fix": "prettier --write --list-different . && yarn lint:js --fix",
-    "test": "xvfb-maybe -- playwright test"
+    "test": "yarn lint"
   },
   "engines": {
     "node": "^16.15.0",

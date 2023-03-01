@@ -7,7 +7,7 @@
   artifactName: 'meeting-media-manager-${version}.${ext}',
   generateUpdatesFilesForAllChannels: true,
   directories: {
-    output: 'release/${version}',
+    output: 'build',
   },
   files: ['.output/**/*', 'dist-electron'],
   mac: {

@@ -70,6 +70,7 @@ watch(
   { immediate: true }
 )
 
+// Congregation Select
 onBeforeMount(async () => {
   setTheme(systemTheme.value)
 

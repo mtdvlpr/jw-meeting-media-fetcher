@@ -7,13 +7,10 @@ on:
   push:
     branches: [main, master]
     paths:
-      - '.electron-nuxt/**/*'
-      - 'builder.config.js'
+      - 'electron-builder.json5'
       - 'package.json'
-      - 'playwright.config.ts'
-      - 'src/main/**/*'
-      - 'src/renderer/nuxt.config.js'
-      - 'tests/**/*.test.ts'
+      - 'electron/**/*'
+      - 'nuxt.config.ts'
       - 'yarn.lock'
 
 concurrency:
@@ -78,7 +75,6 @@ jobs:
       - name: Prepare Build
         run: |
           yarn prebuild
-          yarn compile
 
       - name: Build Electron app
         env:
@@ -160,7 +156,6 @@ jobs:
       - name: Prepare Build
         run: |
           yarn prebuild
-          yarn compile
 
       - name: Build Electron app
         if: |

@@ -8,9 +8,10 @@ vendor
 # Output
 .nuxt
 .output
+build/*
+!build/icons
 dist
 dist-electron
-release
 
 # Jekyll
 _site

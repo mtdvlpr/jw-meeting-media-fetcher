@@ -13,28 +13,3 @@ updates:
     directory: '/' # Location of package manifests
     schedule:
       interval: 'daily'
-    ignore:
-      - dependency-name: '@fortawesome/vue-fontawesome'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'minimatch'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'nuxt'
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@nuxtjs/i18n'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'css-loader'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'eslint-webpack-plugin'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'obs-websocket-js'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'ts-loader'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'vue'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'vue-router'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'vuex'
-        update-types: ['version-update:semver-major']
-      - dependency-name: 'webpack'
-        update-types: ['version-update:semver-major']
