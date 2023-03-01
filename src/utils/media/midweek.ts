@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/named
 import { Database } from 'sql.js'
 import { join } from 'upath'
 import { MultiMediaExtractRef, DateFormat } from '~~/types'
@@ -65,27 +66,18 @@ export async function getMwMedia(
     )
   }
   mms.forEach((mm) => {
-    promises.push(
-      addMediaItemToPart(
-        date,
-        mm.BeginParagraphOrdinal as number,
-        mm,
-        'internal'
-      )
-    )
+    addMediaItemToPart(date, mm.BeginParagraphOrdinal as number, mm, 'internal')
   })
 
   // Get document extracts and add them to the media list
   const extracts = await getDocumentExtract(db, docId, baseDate, setProgress)
 
   extracts.forEach((extract) => {
-    promises.push(
-      addMediaItemToPart(
-        date,
-        extract.BeginParagraphOrdinal as number,
-        extract,
-        'external'
-      )
+    addMediaItemToPart(
+      date,
+      extract.BeginParagraphOrdinal as number,
+      extract,
+      'external'
     )
   })
 
@@ -122,13 +114,11 @@ async function processInternalRefs(
   const refMedia = await getDocumentMultiMedia(db, ref.DocumentId)
 
   refMedia.forEach((refMediaFile) => {
-    promises.push(
-      addMediaItemToPart(
-        date,
-        ref.BeginParagraphOrdinal,
-        refMediaFile,
-        'internal'
-      )
+    addMediaItemToPart(
+      date,
+      ref.BeginParagraphOrdinal,
+      refMediaFile,
+      'internal'
     )
   })
 

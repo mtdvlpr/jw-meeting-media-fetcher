@@ -1,6 +1,6 @@
+import { pathToFileURL } from 'url'
 import { ipcRenderer } from 'electron'
 import { extname, join, basename, resolve } from 'upath'
-import { pathToFileURL } from 'url'
 import { FadeOutType, VideoFile } from '~~/types'
 
 export async function getSongs() {

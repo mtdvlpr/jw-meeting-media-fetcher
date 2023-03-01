@@ -1,24 +1,30 @@
+/* eslint-disable import/named */
+import { platform } from 'os'
 import { join, normalize } from 'upath'
 import {
   app,
   BrowserWindow,
   ipcMain,
   nativeTheme,
+  shell,
+  dialog,
   OpenDialogOptions,
   RelaunchOptions,
   session,
 } from 'electron'
+import axios from 'axios'
 import { existsSync } from 'fs-extra'
-import BrowserWinHandler from './BrowserWinHandler'
 import { init } from '@sentry/electron'
 import { initRenderer } from 'electron-store'
+import installExtension from 'electron-devtools-installer'
+import BrowserWinHandler from './BrowserWinHandler'
 import { initAutoUpdater } from './autoUpdater'
 import { initMainWindow } from './mainWindow'
 import { initWebsiteListeners } from './websiteController'
 import { initMediaWinListeners } from './mediaWindow'
-import { platform } from 'os'
 import { getScreenInfo } from './utils'
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
 const isDev = process.env.NODE_ENV === 'development'
 export const appShortName = 'M³'
@@ -61,9 +67,7 @@ initRenderer()
 try {
   if (existsSync(join(app.getPath('userData'), 'disableHardwareAcceleration')))
     app.disableHardwareAcceleration()
-} catch (err) {
-  console.error(err)
-}
+} catch (err) {}
 
 let win: BrowserWindow
 let winHandler: BrowserWinHandler
@@ -76,6 +80,7 @@ async function boot() {
   initMediaWinListeners()
 
   if (process.env.VITE_DEV_SERVER_URL) {
+    installExtension('nhdogjmejiglipccpnnnanhbledajbpd')
     win.webContents.openDevTools({ mode: 'detach' })
   }
 
@@ -144,7 +149,7 @@ if (gotTheLock) {
   ipcMain.handle('darkMode', () => nativeTheme.shouldUseDarkColors)
 
   ipcMain.handle('openDialog', async (_e, options: OpenDialogOptions) => {
-    const result = await require('electron').dialog.showOpenDialog(options)
+    const result = await dialog.showOpenDialog(options)
     return result
   })
 
@@ -155,7 +160,7 @@ if (gotTheLock) {
     }
     options.url = undefined
     try {
-      const result: any = await require('axios').get(opt.url, options)
+      const result: any = await axios.get(opt.url, options)
       return result.data
     } catch (e) {
       return e
@@ -175,9 +180,7 @@ if (gotTheLock) {
   })
 
   ipcMain.on('openPath', (_e, path: string) => {
-    require('electron').shell.openPath(
-      path.replaceAll('/', platform() === 'win32' ? '\\' : '/')
-    )
+    shell.openPath(path.replaceAll('/', platform() === 'win32' ? '\\' : '/'))
   })
 
   ipcMain.on('restart', () => {

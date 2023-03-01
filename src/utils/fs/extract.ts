@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/named
 import { readFileSync, writeFileSync } from 'fs-extra'
 import { join, extname } from 'upath'
 import JSZip from 'jszip'

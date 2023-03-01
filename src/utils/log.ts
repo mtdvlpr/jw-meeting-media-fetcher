@@ -24,6 +24,7 @@ function logger(type: keyof Logs, args: [msg: any, ...args: any[]]): void {
       ? args[0]
       : args[0]?.message ?? args[0]?.description
   )
+  // eslint-disable-next-line no-console
   console[type](...args)
 }
 

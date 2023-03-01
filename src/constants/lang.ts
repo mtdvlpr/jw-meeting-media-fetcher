@@ -1,4 +1,4 @@
-import { LocaleObject } from 'vue-i18n-routing'
+import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 
 export const DAYJS_LOCALES = [
   'de',

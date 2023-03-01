@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events'
 import { platform } from 'os'
-import { appLongName } from './main'
 import {
   BrowserWindow,
   app,
@@ -8,6 +7,7 @@ import {
   BrowserWindowConstructorOptions,
 } from 'electron'
 import { join } from 'upath'
+import { appLongName } from './main'
 const DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -17,10 +17,7 @@ export default class BrowserWinHandler {
   options: BrowserWindowConstructorOptions
   browserWindow: BrowserWindow | null
 
-  constructor(
-    options: BrowserWindowConstructorOptions,
-    allowRecreate: boolean = true
-  ) {
+  constructor(options: BrowserWindowConstructorOptions, allowRecreate = true) {
     this._eventEmitter = new EventEmitter()
     this.allowRecreate = allowRecreate
     this.options = options
@@ -82,10 +79,10 @@ export default class BrowserWinHandler {
     if (this.browserWindow === null) this._create()
   }
 
-  onCreated(callback: (win: BrowserWindow) => void) {
-    if (this.browserWindow !== null) return callback(this.browserWindow)
+  onCreated(resolve: (win: BrowserWindow) => void) {
+    if (this.browserWindow !== null) return resolve(this.browserWindow)
     this._eventEmitter.once('created', () => {
-      callback(this.browserWindow!)
+      resolve(this.browserWindow!)
     })
   }
 

@@ -2,17 +2,22 @@
   <v-app>
     <v-main>
       <v-container class="fill-height" fluid>
-        <slot />
+        <slot v-if="cong" />
+        <cong-select v-else @selected="initPrefs($event)" />
       </v-container>
     </v-main>
   </v-app>
 </template>
 <script setup lang="ts">
+import { userInfo } from 'os'
+import { fileURLToPath, pathToFileURL } from 'url'
+import getUsername from 'fullname'
 import { useTheme } from 'vuetify'
 import { ipcRenderer } from 'electron'
 import { useIpcRendererOn } from '@vueuse/electron'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
-import { join } from 'upath'
+import { basename, join } from 'upath'
+// eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { CongPrefs, ObsPrefs, Theme } from '~~/types'
 
@@ -39,7 +44,7 @@ useEventListener('offline', () => {
   statStore.setOnline(false)
 })
 
-// Global theme
+// Global Theme
 const prefersDark = usePreferredDark()
 const systemTheme = computed(() => (prefersDark.value ? 'dark' : 'light'))
 const setTheme = (theme: string) => {
@@ -51,9 +56,154 @@ watch(systemTheme, (val) => {
   }
 })
 
+// Active Congregation
 const route = useRoute()
 const router = useRouter()
 const cong = ref(route.query.cong ?? '')
+watch(
+  cong,
+  (val, oldVal) => {
+    if (oldVal && val) {
+      initPrefs('prefs-' + val)
+    }
+  },
+  { immediate: true }
+)
+
+onBeforeMount(async () => {
+  setTheme(systemTheme.value)
+
+  if (cong) {
+    initPrefs('prefs-' + cong.value)
+    return
+  }
+
+  const congs = await getCongPrefs()
+
+  if (congs.length === 0) {
+    const id = Math.random().toString(36).substring(2, 15)
+    if (route.path === $localePath('/')) {
+      initPrefs('prefs-' + id, true)
+    } else {
+      initPrefs('prefs-' + id)
+    }
+  } else if (congs.length === 1) {
+    initPrefs(basename(congs[0].path, '.json'))
+  } else {
+    const username = (await getUsername()) ?? userInfo().username
+    const match = congs.find(
+      (c) => c.name?.toLowerCase().trim() === username.toLowerCase().trim()
+    )
+    if (match) {
+      initPrefs(basename(match.path, '.json'))
+    }
+  }
+})
+
+onMounted(async () => {
+  log.debug('sentry', useRuntimeConfig().public.sentryEnabled)
+  const mediaWinOpen = await ipcRenderer.invoke('mediaWinOpen')
+  presentStore.setMediaScreenInit(mediaWinOpen)
+  if (mediaWinOpen) {
+    const mediaWinVisible = await ipcRenderer.invoke('mediaWinVisible')
+    presentStore.setMediaScreenVisible(mediaWinVisible)
+  }
+
+  useIpcRendererOn('mediaWindoShown', () => {
+    presentStore.setMediaScreenInit(true)
+    ipcRenderer.send('startMediaDisplay', getAllPrefs())
+  })
+  useIpcRendererOn('mediaWindowVisibilityChanged', (_e, status: string) => {
+    presentStore.setMediaScreenVisible(status === 'shown')
+  })
+  useIpcRendererOn('log', (_e, msg) => {
+    log.debug('[main]', msg)
+  })
+  useIpcRendererOn('readyToListen', () => {
+    ipcRenderer.send('startMediaDisplay', getAllPrefs())
+  })
+  useIpcRendererOn('moveMediaWindowToOtherScreen', async () => {
+    if (presentStore.mediaScreenInit) {
+      ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
+    }
+  })
+  useIpcRendererOn('displaysChanged', async () => {
+    if (presentStore.mediaScreenInit) {
+      ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
+    }
+  })
+  useIpcRendererOn('toggleMusicShuffle', () => {
+    shuffleMusic(!!mediaStore.musicFadeOut)
+  })
+  useIpcRendererOn('themeUpdated', (_e, dark: boolean) => {
+    if (getPrefs<Theme>('app.theme') === 'system') {
+      setTheme(dark ? 'dark' : 'light')
+    }
+  })
+  useIpcRendererOn('notifyUser', (_e, msg: any[]) => {
+    if (msg[0]) {
+      notify(msg[0], msg[1], msg[3])
+    } else {
+      log.warn('Notify message is empty: ', msg)
+    }
+    if (msg[0] === 'updateNotDownloaded') {
+      statStore.setUpdateSuccess(false)
+    }
+  })
+  useIpcRendererOn('openPresentMode', () => {
+    if (
+      getPrefs<boolean>('media.enableMediaDisplayButton') &&
+      route.path !== $localePath('/present')
+    ) {
+      log.debug('Trigger present mode via shortcut')
+      router.push({
+        path: $localePath('/present'),
+        query: route.query,
+      })
+    }
+  })
+  useIpcRendererOn('macUpdate', async () => {
+    try {
+      const latestRelease = await fetchRelease(`releases/latest`)
+
+      const macDownload = latestRelease.assets.find(({ name }) =>
+        name.includes('dmg')
+      )!
+
+      notify('updateDownloading', {
+        identifier: latestRelease.tag_name,
+      })
+
+      const downloadsPath = join(
+        (await ipcRenderer.invoke('downloads')) as string,
+        macDownload.name
+      )
+
+      // Download the latest release
+      write(
+        downloadsPath,
+        Buffer.from(
+          new Uint8Array(
+            await $fetch<Iterable<number>>(macDownload.browser_download_url, {
+              responseType: 'arrayBuffer',
+            })
+          )
+        )
+      )
+
+      // Open the downloaded file
+      ipcRenderer.send(
+        'openPath',
+        fileURLToPath(pathToFileURL(downloadsPath).href)
+      )
+    } catch (e: unknown) {
+      error('updateNotDownloaded', e)
+      statStore.setUpdateSuccess(false)
+    }
+  })
+
+  statStore.setOnline(navigator.onLine)
+})
 
 const initPrefs = async (name: string, isNew = false) => {
   initStore(name)
@@ -62,7 +212,7 @@ const initPrefs = async (name: string, isNew = false) => {
   if (!lang) {
     lang = $i18n.getBrowserLocale() ?? $i18n.fallbackLocale.value.toString()
     setPrefs('app.localAppLang', lang)
-    console.debug(`Setting app lang to ${lang}`)
+    log.debug(`Setting app lang to ${lang}`)
   }
 
   let path = route.path
@@ -70,13 +220,13 @@ const initPrefs = async (name: string, isNew = false) => {
   // If current cong does not equal new cong, set new cong
   if ('prefs-' + cong.value !== name) {
     newCong = true
-    if (lang && lang !== $i18n.locale) {
+    if (lang && lang !== $i18n.locale.value) {
       path = $switchLocalePath(lang)
     }
     if (isNew || !mediaPath()) {
       path = $localePath('/settings', lang)
     }
-    console.debug('Set correct lang and/or open settings for new cong')
+    log.debug('Set correct lang and/or open settings for new cong')
     router.replace({
       path,
       query: {
@@ -85,8 +235,8 @@ const initPrefs = async (name: string, isNew = false) => {
     })
   }
   // If congs lang is different from current lang, set new lang
-  else if (lang && lang !== $i18n.locale) {
-    console.debug(`Change lang from ${$i18n.locale} to ${lang}`)
+  else if (lang && lang !== $i18n.locale.value) {
+    log.debug(`Change lang from ${$i18n.locale.value} to ${lang}`)
     path = $switchLocalePath(lang)
 
     if (!mediaPath()) {
@@ -96,7 +246,7 @@ const initPrefs = async (name: string, isNew = false) => {
     router.replace(path)
   }
 
-  const locales = $i18n.locales as LocaleObject[]
+  const locales = $i18n.locales.value as LocaleObject[]
   const locale = locales.find((l) => l.code === lang)
   $dayjs.locale(locale?.dayjs ?? lang ?? 'en')
   log.debug(appPath())
@@ -161,7 +311,7 @@ const initPrefs = async (name: string, isNew = false) => {
   if (
     newCong &&
     mediaLang &&
-    !$i18n.locales
+    !$i18n.locales.value
       .map((l: any) => l.code)
       .includes(convertSignLang(mediaLang.symbol))
   ) {
@@ -172,7 +322,7 @@ const initPrefs = async (name: string, isNew = false) => {
         type: 'link',
         label: 'wannaHelpForSure',
         url: `${
-          useRuntimeConfig().repo
+          useRuntimeConfig().public.repo
         }/discussions/new?category=translations&title=New+translation+in+${
           mediaLang.name
         }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
@@ -188,7 +338,7 @@ const initPrefs = async (name: string, isNew = false) => {
         type: 'link',
         label: 'wannaHelpForSure',
         url: `${
-          useRuntimeConfig().repo
+          useRuntimeConfig().public.repo
         }/discussions/new?category=translations&title=New+translator+for+${
           appLang.name
         }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
@@ -199,9 +349,9 @@ const initPrefs = async (name: string, isNew = false) => {
   }
 
   // Set runAtBoot depending on prefs and platform
-  if (process.platform !== 'linux') {
+  /* if (process.platform !== 'linux') {
     ipcRenderer.send('runAtBoot', getPrefs<boolean>('app.autoRunAtBoot'))
-  }
+  } */
 
   // Set auto updater prefs
   ipcRenderer.send(
@@ -247,34 +397,4 @@ const initPrefs = async (name: string, isNew = false) => {
   // Regular Cleanup
   await cleanup()
 }
-
-onMounted(() => {
-  useIpcRendererOn('mediaWindoShown', () => {
-    presentStore.setMediaScreenInit(true)
-    ipcRenderer.send('startMediaDisplay', getAllPrefs())
-  })
-  useIpcRendererOn('mediaWindowVisibilityChanged', (_e, status: string) => {
-    presentStore.setMediaScreenVisible(status === 'shown')
-  })
-  useIpcRendererOn('log', (_e, msg) => {
-    console.log(msg)
-  })
-  useIpcRendererOn('readyToListen', () => {
-    ipcRenderer.send('startMediaDisplay', getAllPrefs())
-  })
-  useIpcRendererOn('moveMediaWindowToOtherScreen', async () => {
-    if (presentStore.mediaScreenInit) {
-      ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
-    }
-  })
-  useIpcRendererOn('displaysChanged', async () => {
-    if (presentStore.mediaScreenInit) {
-      ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
-    }
-  })
-  useIpcRendererOn('toggleMusicShuffle', () => {
-    shuffleMusic(!!mediaStore.musicFadeOut)
-  })
-  useIpcRendererOn('themeUpdated', (_e, theme: string) => {})
-})
 </script>

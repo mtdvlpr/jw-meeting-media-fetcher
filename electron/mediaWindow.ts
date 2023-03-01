@@ -1,13 +1,12 @@
-import { AR_HEIGHT, AR_WIDTH } from './main'
+import { platform } from 'os'
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   ipcMain,
   Point,
 } from 'electron'
-import { platform } from 'os'
 import { join } from 'upath'
-import { PrefStore } from 'types'
+import { AR_HEIGHT, AR_WIDTH } from './main'
 import BrowserWinHandler from './BrowserWinHandler'
 import { getMainWindow, getMainWinHandler } from './mainWindow'
 import { getScreenInfo } from './utils'
@@ -15,6 +14,7 @@ import {
   getWebsiteController,
   getWebsiteControllerWinHandler,
 } from './websiteController'
+import { PrefStore } from 'types'
 
 let mediaWin: BrowserWindow | null
 let mediaWinHandler: BrowserWinHandler | null
@@ -274,7 +274,6 @@ function setMediaWindowPosition(
     }
   } catch (err) {
     winHandler.send('notifyUser', ['errorUnknown', { type: 'error' }, err])
-    console.error(err)
   }
 }
 

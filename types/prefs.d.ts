@@ -83,7 +83,7 @@ export const enum MeetingDay {
   SU = 6,
 }
 
-type FadeOutType = 'smart' | 'timer'
+export type FadeOutType = 'smart' | 'timer'
 
 export interface MeetingPrefs {
   autoStartMusic: boolean

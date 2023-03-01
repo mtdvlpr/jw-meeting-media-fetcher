@@ -1,11 +1,11 @@
-import { AR_HEIGHT, AR_WIDTH } from './main'
+import { platform } from 'os'
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   ipcMain,
   Point,
 } from 'electron'
-import { platform } from 'os'
+import { AR_HEIGHT, AR_WIDTH } from './main'
 import BrowserWinHandler from './BrowserWinHandler'
 import { getMainWindow, resetCloseAttempts } from './mainWindow'
 import { getMediaWin, getMediaWinHandler } from './mediaWindow'

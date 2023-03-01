@@ -1,5 +1,5 @@
+/* eslint-disable import/no-named-as-default-member */
 import dayjs from 'dayjs'
-import { DAYJS_LOCALES } from '~~/constants/lang'
 
 // Plugins
 import customParseFormat from 'dayjs/plugin/customParseFormat'
@@ -27,7 +27,6 @@ import 'dayjs/locale/ru'
 import 'dayjs/locale/sk'
 import 'dayjs/locale/sv'
 import 'dayjs/locale/uk'
-import { mediaPath } from '../utils'
 
 const config = {
   locales: DAYJS_LOCALES,

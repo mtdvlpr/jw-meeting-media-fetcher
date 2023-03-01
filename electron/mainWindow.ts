@@ -1,10 +1,10 @@
+import { BrowserWindow, ipcMain, screen, globalShortcut } from 'electron'
+import windowStateKeeper from 'electron-window-state'
 import { appLongName } from './main'
-import { BrowserWindow, ipcMain, screen } from 'electron'
 import BrowserWinHandler from './BrowserWinHandler'
 import { fadeWindow, getMediaWin } from './mediaWindow'
 import { getScreenInfo } from './utils'
 import { getWebsiteController } from './websiteController'
-import windowStateKeeper from 'electron-window-state'
 
 let win: BrowserWindow
 let winHandler: BrowserWinHandler
@@ -135,7 +135,6 @@ function registerListeners() {
   ipcMain.handle(
     'registerShortcut',
     (_e, { shortcut, fn }: { shortcut: string; fn: string }) => {
-      const globalShortcut = require('electron').globalShortcut
       const functions: { [key: string]: () => void } = {
         toggleMediaWindow: () => {
           fadeWindow()
@@ -163,7 +162,6 @@ function registerListeners() {
     }
   )
   ipcMain.on('unregisterShortcut', (_e, shortcut: string) => {
-    const globalShortcut = require('electron').globalShortcut
     if (globalShortcut.isRegistered(shortcut)) {
       globalShortcut.unregister(shortcut)
     }

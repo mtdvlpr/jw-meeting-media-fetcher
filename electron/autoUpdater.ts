@@ -1,6 +1,6 @@
+import { platform } from 'os'
 import { ipcMain } from 'electron'
 import { autoUpdater } from 'electron-updater'
-import { platform } from 'os'
 import BrowserWinHandler from './BrowserWinHandler'
 
 let updateDownloaded = false

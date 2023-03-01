@@ -1,3 +1,5 @@
+/* eslint-disable import/named */
+import { pathToFileURL } from 'url'
 import dayjs, { Dayjs } from 'dayjs'
 import {
   existsSync,
@@ -14,7 +16,6 @@ import ffmpeg from 'fluent-ffmpeg'
 import { XMLBuilder } from 'fast-xml-parser'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import { PDFDocumentProxy } from 'pdfjs-dist'
-import { pathToFileURL } from 'url'
 import { Release, DateFormat } from '~~/types'
 
 export async function convertToMP4(
@@ -172,7 +173,6 @@ async function convertPdf(
     let loaded = 0
     const promises: Promise<void>[] = []
 
-    // eslint-disable-next-line no-inner-declarations
     function increasePageProgress() {
       loaded++
       if (setProgress) {
@@ -254,7 +254,7 @@ async function convertPdfPage(
 }
 
 async function setupFFmpeg(
-  setProgress: (loaded: number, total: number, global?: boolean) => void
+  _setProgress: (loaded: number, total: number, global?: boolean) => void
 ): Promise<void> {
   const store = useMediaStore()
   if (store.ffMpeg) return

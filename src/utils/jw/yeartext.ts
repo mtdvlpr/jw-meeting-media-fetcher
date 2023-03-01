@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron'
+// eslint-disable-next-line import/named
 import { existsSync, readFileSync, statSync } from 'fs-extra'
 
 export async function getYearText(
@@ -91,7 +92,7 @@ async function getWtFont(font: string, force = false) {
 
   if (force || !existsSync(fontPath) || statSync(fontPath).size !== size) {
     try {
-      const result = await $fetch(font, {
+      const result = await $fetch<ArrayBuffer | Uint8Array>(font, {
         responseType: 'arrayBuffer',
       })
       if (result instanceof ArrayBuffer || result instanceof Uint8Array) {

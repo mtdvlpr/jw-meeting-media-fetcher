@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 import {
   writeFileSync,
   copyFileSync,
@@ -10,8 +11,8 @@ import {
 } from 'fs-extra'
 import { sync, Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
-import { PrefStore } from '~~/types'
 import { ipcRenderer } from 'electron'
+import { PrefStore } from '~~/types'
 
 export function findOne(path: string | string[], options?: Options) {
   try {
@@ -181,7 +182,7 @@ export async function cleanup() {
   } catch (e: unknown) {
     error('warnUnknownLastVersion', e)
   } finally {
-    const { version, repo } = useRuntimeConfig()
+    const { version, repo } = useRuntimeConfig().public
     if (lastVersion !== version) {
       try {
         // One-time migrate from JWMMF to mmm

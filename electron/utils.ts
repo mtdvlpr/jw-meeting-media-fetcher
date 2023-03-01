@@ -1,7 +1,7 @@
 import { Point, screen } from 'electron'
-import { Screen, ScreenInfo } from '~~/types'
 import { getMainWindow } from './mainWindow'
 import { getMediaWin } from './mediaWindow'
+import { Screen, ScreenInfo } from '~~/types'
 
 // Get screen information
 export function getScreenInfo(): ScreenInfo {
@@ -36,7 +36,6 @@ export function getScreenInfo(): ScreenInfo {
         { type: 'error' },
         err,
       ])
-      console.error(err)
     }
   }
   return {

@@ -1,4 +1,5 @@
 import { Dayjs } from 'dayjs'
+// eslint-disable-next-line import/named
 import { Database } from 'sql.js'
 import { MeetingFile, MultiMediaExtract } from '~~/types'
 

@@ -1,26 +1,17 @@
 import { createVuetify } from 'vuetify'
+import { aliases, fa } from 'vuetify/iconsets/fa-svg'
 // @ts-ignore
 import colors from 'vuetify/lib/util/colors'
 import 'vuetify/styles' // pre-build css styles
 
-/* Add build-in icon used internally in various components */
-/* Described in https://next.vuetifyjs.com/en/features/icon-fonts/ */
-import { mdi, aliases as allAliases } from 'vuetify/iconsets/mdi-svg'
-// const aliases = allAliases
-
-const aliases = {
-  /* Only used icon aliases here */
-  menu: allAliases.menu,
-  close: allAliases.close,
-  info: allAliases.info,
-}
-
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     icons: {
-      defaultSet: 'mdi',
+      defaultSet: 'fa',
       aliases,
-      sets: { mdi },
+      sets: {
+        fa,
+      },
     },
     theme: {
       themes: {
@@ -62,6 +53,4 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
 
   nuxtApp.vueApp.use(vuetify)
-
-  if (!process.server) console.log('❤️ Initialized Vuetify 3', vuetify)
 })

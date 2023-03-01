@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/named
 import { Database } from 'sql.js'
 
 interface State {

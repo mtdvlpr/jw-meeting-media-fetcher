@@ -1,4 +1,5 @@
 import { ipcRenderer } from 'electron'
+// eslint-disable-next-line import/named
 import { existsSync, readFileSync } from 'fs-extra'
 import { join } from 'upath'
 import { ShortJWLang, JWLang, Filter } from '~~/types'

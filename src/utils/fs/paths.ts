@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron'
 import { sync } from 'fast-glob'
+// eslint-disable-next-line import/named
 import { ensureDirSync, readFileSync } from 'fs-extra'
 import { basename, join, joinSafe } from 'upath'
 import { MeetingFile, ShortJWLang } from '~~/types'
@@ -8,7 +9,7 @@ export function pubPath(file?: MeetingFile) {
   // url: something/{pub}_{lang}.jwpub or something/{pub}_{lang}_{track}.mp4
   let validMediaLangs: ShortJWLang[] = []
   if (file) {
-    console.debug('Pub path', file)
+    log.debug('Pub path', file)
     try {
       validMediaLangs = JSON.parse(
         readFileSync(join(appPath(), 'langs.json'), 'utf8') ?? '[]'
@@ -52,7 +53,7 @@ export function pubPath(file?: MeetingFile) {
   }
   if (!mediaFolder) return
 
-  if (file) console.debug('Pub lang', mediaFolder)
+  if (file) log.debug('Pub lang', mediaFolder)
 
   const pubPath = joinSafe(
     getPrefs<string>('app.customCachePath') || appPath(),

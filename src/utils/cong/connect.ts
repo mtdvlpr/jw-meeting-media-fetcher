@@ -73,7 +73,7 @@ export async function connect(
     return 'success'
   } catch (e: any) {
     store.clear()
-    console.debug('error:', e.message)
+    log.debug('error:', e.message)
 
     // Return error message
     if (
@@ -133,7 +133,7 @@ export async function createCongDir(dir: string) {
       await client.createDirectory(dir)
     } catch (e: any) {
       if (await client.exists(dir)) {
-        console.debug('Directory already exists')
+        log.debug('Directory already exists')
       } else if (e.message.includes(LOCKED.toString())) {
         warn('errorWebdavLocked', { identifier: dir })
       } else {

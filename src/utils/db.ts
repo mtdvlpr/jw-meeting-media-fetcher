@@ -1,3 +1,4 @@
+/* eslint-disable import/named */
 import { readFileSync } from 'fs-extra'
 import sqljs, { Database } from 'sql.js'
 import { join } from 'upath'

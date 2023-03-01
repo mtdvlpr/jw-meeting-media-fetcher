@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron'
 import Store, { Schema } from 'electron-store'
+// eslint-disable-next-line import/named
 import { readFileSync, removeSync } from 'fs-extra'
 import { sync } from 'fast-glob'
 import { basename, dirname, join, joinSafe, normalizeSafe } from 'upath'
@@ -311,11 +312,11 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
     schema,
     defaults: PREFS,
     beforeEachMigration: (_store, context) => {
-      console.debug(
+      log.debug(
         `[main-config] migrate from ${context.fromVersion} → ${context.toVersion}`
       )
-      console.debug(`[main-config] final version: ${context.finalVersion}`)
-      console.debug(`[main-config] versions: ${context.versions}`)
+      log.debug(`[main-config] final version: ${context.finalVersion}`)
+      log.debug(`[main-config] versions: ${context.versions}`)
     },
     migrations: {
       '0.0.1': (store) => {
@@ -331,7 +332,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
             continue
           }
 
-          console.debug(
+          log.debug(
             `Processing ${key}=${store.get(key)} (${typeof store.get(key)})...`
           )
 
@@ -345,7 +346,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
             // @ts-ignore: 'cong.port' is not defined as a key of PrefStore
             store.reset('cong.port')
           } catch (e: unknown) {
-            console.error(e)
+            log.error(e)
           }
         }
       },
@@ -535,7 +536,7 @@ export function initStore(name: string) {
   try {
     store = new Store<PrefStore>(storeOptions(name))
   } catch (e: unknown) {
-    console.debug('Resetting the store...')
+    log.debug('Resetting the store...')
     const tempStore = new Store<PrefStore>(storeOptions('temp'))
     removeSync(joinSafe(dirname(tempStore.path), `${name}.json`))
     store = new Store<PrefStore>(storeOptions(name))
@@ -564,7 +565,7 @@ export function appPath() {
   return dirname(storePath() ?? '')
 }
 
-export async function appVersion() {
+export function appVersion() {
   return ipcRenderer.invoke('appVersion') as Promise<string>
 }
 

@@ -1,6 +1,5 @@
 import * as Sentry from '@sentry/vue'
 import { BrowserTracing } from '@sentry/tracing'
-import { appLongName } from '~~/constants/general'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const { isDev, ci, version, sentryDsn, sentryInit, sentryEnabled } =
@@ -14,7 +13,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     Sentry.init({
       app: nuxtApp.vueApp,
       dsn: sentryDsn,
-      dist: process.platform.replace('32', ''),
+      // dist: process.platform.replace('32', ''),
       enabled: sentryEnabled,
       release: `${appName}@${releaseVersion}`,
       environment: isDev ? 'development' : 'production',

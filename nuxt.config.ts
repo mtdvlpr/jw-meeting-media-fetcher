@@ -1,5 +1,6 @@
 import vuetify from 'vite-plugin-vuetify'
-import { repository, version, dependencies } from './package.json'
+import renderer from 'vite-plugin-electron-renderer'
+import { repository, version, devDependencies } from './package.json'
 import { LOCALES } from './src/constants/lang'
 
 const isDev = process.env.NODE_ENV !== 'production'
@@ -11,23 +12,15 @@ const sentryInit =
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  ssr: false,
+  srcDir: 'src/',
+  telemetry: false,
+  imports: {
+    dirs: ['stores', 'constants'],
+  },
   router: {
     options: {
       hashMode: true,
     },
-  },
-  vite: {
-    server: {
-      middlewareMode: false,
-    },
-  },
-  app: {
-    baseURL: './',
-  },
-  srcDir: 'src/',
-  imports: {
-    dirs: ['stores', 'constants'],
   },
   modules: [
     'nuxt-electron',
@@ -56,6 +49,19 @@ export default defineNuxtConfig({
     detectBrowserLanguage: false,
     locales: LOCALES,
   },
+  vite: {
+    build: {
+      target: 'chrome110',
+    },
+    plugins: [
+      renderer({
+        nodeIntegration: true,
+        optimizeDeps: {
+          include: ['fs-extra', 'upath', 'electron-store', 'obs-websocket-js'],
+        },
+      }),
+    ],
+  },
   runtimeConfig: {
     public: {
       isDev,
@@ -63,7 +69,7 @@ export default defineNuxtConfig({
       version: 'v' + version,
       repo: repository.url.replace('.git', ''),
       sentryInit,
-      sqlJsVersion: dependencies['sql.js'].replace('^', ''),
+      sqlJsVersion: devDependencies['sql.js'].replace('^', ''),
       sentryOrg: process.env.SENTRY_ORG,
       sentryProject: process.env.SENTRY_PROJECT,
       sentryDsn: process.env.SENTRY_DSN,

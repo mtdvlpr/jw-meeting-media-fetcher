@@ -10,7 +10,7 @@
   </v-container>
 </template>
 <script setup lang="ts">
-const props = defineProps({ error: Object })
+const props = defineProps({ error: { type: Object, required: true } })
 const pageNotFound = '404 Not Found'
 const otherError = 'An unexpected error occurred'
 const handleError = () => clearError({ redirect: '/' })

@@ -1,9 +1,10 @@
 import { Dayjs } from 'dayjs'
+// eslint-disable-next-line import/named
 import { statSync, existsSync, emptyDirSync } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
 import { MeetingFile, SmallMediaFile, VideoFile, DateFormat } from '~~/types'
 
-export async function syncLocalRecurringMedia(baseDate: Dayjs) {
+export function syncLocalRecurringMedia(baseDate: Dayjs) {
   const path = mediaPath()
   if (!mediaPath) return
 
@@ -28,7 +29,7 @@ export async function syncLocalRecurringMedia(baseDate: Dayjs) {
   })
 }
 
-export async function createMediaNames() {
+export function createMediaNames() {
   const statStore = useStatStore()
   const mediaStore = useMediaStore()
   const { $dayjs } = useNuxtApp()
@@ -80,7 +81,7 @@ export async function createMediaNames() {
 
 export async function downloadIfRequired(
   file: VideoFile,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
+  _setProgress?: (loaded: number, total: number, global?: boolean) => void
 ): Promise<string> {
   const progressMap = useMediaStore().progress
   const downloadInProgress = progressMap.get(file.url)
@@ -104,7 +105,7 @@ export async function downloadIfRequired(
 
   if (subtitlesEnabled && subsLang && file.subtitles) {
     try {
-      subtitle = $fetch(file.subtitles.url, {
+      subtitle = $fetch<Iterable<number>>(file.subtitles.url, {
         responseType: 'arrayBuffer',
       })
     } catch (e: unknown) {
@@ -117,13 +118,13 @@ export async function downloadIfRequired(
     try {
       const downloadedFile = Buffer.from(
         new Uint8Array(
-          await $fetch(file.url, {
+          await $fetch<Iterable<number>>(file.url, {
             responseType: 'arrayBuffer',
             /* onDownloadProgress: (progressEvent) => {
               if (setProgress) {
                 setProgress(progressEvent.loaded, progressEvent.total)
               }
-            },*/
+            }, */
           })
         )
       )
@@ -332,12 +333,12 @@ async function syncMediaItem(
   increaseProgress(setProgress)
 }
 
-export async function addMediaItemToPart(
+export function addMediaItemToPart(
   date: string,
   par: number,
   media: MeetingFile,
   source?: string
-): Promise<void> {
+) {
   const store = useMediaStore()
   const mediaList = store.get({
     date,

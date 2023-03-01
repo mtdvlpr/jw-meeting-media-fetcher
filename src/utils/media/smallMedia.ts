@@ -140,7 +140,7 @@ export async function getSmallMediaFiles(
     }
 
     // Get publication from jw api
-    let result: null | Publication = null
+    let result: any = null
 
     const params: any = {}
     if (mediaItem.pubSymbol) {
@@ -232,8 +232,9 @@ export async function getSmallMediaFiles(
       }
     }
 
-    if (result?.files) {
-      const categories = Object.values(result.files)[0]
+    const publication = result as Publication | null
+    if (publication?.files) {
+      const categories = Object.values(publication.files)[0]
       mediaFiles = categories.MP4 ?? Object.values(categories)[0]
 
       // Filter on max resolution

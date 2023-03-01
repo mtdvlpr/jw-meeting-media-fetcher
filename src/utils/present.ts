@@ -1,6 +1,6 @@
+import { pathToFileURL } from 'url'
 import { ipcRenderer } from 'electron'
 import { join, basename } from 'upath'
-import { pathToFileURL } from 'url'
 import { MediaPrefs, ScreenInfo, MediaWinOptions } from '~~/types'
 
 export async function setShortcut(
