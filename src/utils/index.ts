@@ -32,6 +32,7 @@ export {
 export { isImage, isVideo, isAudio, sanitize, strip } from './fs/helpers'
 
 export {
+  appPath,
   pubPath,
   mediaPath,
   localFontPath,

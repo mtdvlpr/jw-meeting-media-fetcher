@@ -561,20 +561,8 @@ export function prefsInitialized() {
   return !!store
 }
 
-export function appPath() {
-  return dirname(storePath() ?? '')
-}
-
-export function appVersion() {
-  return ipcRenderer.invoke('appVersion') as Promise<string>
-}
-
 export function switchCong(path: string) {
   initStore(basename(path, '.json'))
-}
-
-export function removeCong(path: string) {
-  removeSync(path)
 }
 
 export function getPrefs<T = unknown>(key: string) {

@@ -55,7 +55,7 @@ export const log = {
   },
 }
 
-export const bugURL = (): string => {
+export const bugURL = (error?: unknown): string => {
   const prefs = JSON.stringify(
     Object.fromEntries(
       Object.entries(getAllPrefs()).map(([scope, prefs]) => {
@@ -85,6 +85,15 @@ export const bugURL = (): string => {
     2
   )
 
+  let errorDetails = ''
+  if (error) {
+    errorDetails = `
+### Error details
+\`\`\`
+${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}
+\`\`\``
+  }
+
   const { repo, version } = useRuntimeConfig().public
 
   return (
@@ -98,7 +107,7 @@ export const bugURL = (): string => {
 ### Anonymized \`prefs.json\`
 \`\`\`
 ${prefs}
-\`\`\``
+\`\`\`${errorDetails}`
     ).replace(/\n/g, '%0D%0A')
   )
 }

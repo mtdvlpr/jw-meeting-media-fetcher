@@ -6,7 +6,13 @@ import {
   faChevronRight,
   faChevronDown,
   faCaretDown,
+  faExclamationCircle,
   faBuildingUser,
+  faXmark,
+  faCircleCheck,
+  faInfoCircle,
+  faPause,
+  faPersonRunning,
   faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons'
 
@@ -17,8 +23,14 @@ export default defineNuxtPlugin((nuxtApp) => {
     faChevronDown,
     faChevronLeft,
     faBuildingUser,
+    faExclamationCircle,
+    faCircleCheck,
+    faInfoCircle,
+    faXmark,
     faChevronRight,
     faCaretDown,
+    faPause,
+    faPersonRunning,
     faTimesCircle
   )
 })

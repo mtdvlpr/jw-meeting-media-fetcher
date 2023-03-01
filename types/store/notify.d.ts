@@ -1,7 +1,8 @@
 export interface NotifyAction {
   type: 'link' | 'error'
   label: string
-  url: string | unknown
+  url: string
+  error?: unknown
 }
 
 export interface Notification {

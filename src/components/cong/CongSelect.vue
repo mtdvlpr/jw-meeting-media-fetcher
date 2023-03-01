@@ -26,7 +26,7 @@
 import { basename } from 'upath'
 
 defineEmits<{
-  (event: 'selected', filename: string): void
+  (e: 'selected', filename: string): void
 }>()
 
 const congs = (await getCongPrefs()).map((c) => {

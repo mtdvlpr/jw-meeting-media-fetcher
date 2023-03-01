@@ -11,7 +11,8 @@ export function notify(
     props.action = {
       type: 'error',
       label: 'reportIssue',
-      url: error,
+      url: '',
+      error,
     }
 
     if (props.type === 'warning') {
