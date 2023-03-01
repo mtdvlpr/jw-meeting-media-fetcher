@@ -1,3 +1,5 @@
+import { arch, release, type } from 'os'
+
 interface Log {
   [key: number]: any[]
 }
@@ -92,7 +94,8 @@ export const bugURL = (): string => {
       2
     ).replace(/\n/g, '%0D%0A')}&additional-context=` +
     encodeURIComponent(
-      `### Anonymized \`prefs.json\`
+      `${type()} ${release()} ${arch()}
+### Anonymized \`prefs.json\`
 \`\`\`
 ${prefs}
 \`\`\``

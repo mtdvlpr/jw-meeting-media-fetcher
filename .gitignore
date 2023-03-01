@@ -3,6 +3,7 @@
 
 # Dependencies
 node_modules
+vendor
 
 # Output
 .nuxt
@@ -10,6 +11,11 @@ node_modules
 dist
 dist-electron
 release
+
+# Jekyll
+_site
+.jekyll-cache
+.jekyll-metadata
 
 # Yarn
 .pnp.*
@@ -20,6 +26,14 @@ release
 !.yarn/sdks
 !.yarn/versions
 
-# sql.js / pdf.js files
+# sql.js / pdf.js
 src/public/sql-wasm.wasm
 src/public/pdf.worker*
+
+# MacOS
+.DS_Store
+
+# Playwright
+img
+playwright-report
+test-results

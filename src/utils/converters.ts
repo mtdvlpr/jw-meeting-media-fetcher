@@ -1,5 +1,6 @@
 /* eslint-disable import/named */
 import { pathToFileURL } from 'url'
+import { platform } from 'os'
 import dayjs, { Dayjs } from 'dayjs'
 import {
   existsSync,
@@ -256,7 +257,7 @@ async function setupFFmpeg(
 ): Promise<void> {
   const store = useMediaStore()
   if (store.ffMpeg) return
-  const osType = process.platform
+  const osType = platform()
   let target = 'linux-64'
   if (osType === 'win32') {
     target = 'win-64'

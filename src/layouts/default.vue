@@ -9,7 +9,7 @@
   </v-app>
 </template>
 <script setup lang="ts">
-import { userInfo } from 'os'
+import { platform, userInfo } from 'os'
 import { fileURLToPath, pathToFileURL } from 'url'
 import getUsername from 'fullname'
 import { useTheme } from 'vuetify'
@@ -349,9 +349,9 @@ const initPrefs = async (name: string, isNew = false) => {
   }
 
   // Set runAtBoot depending on prefs and platform
-  /* if (process.platform !== 'linux') {
+  if (platform() !== 'linux') {
     ipcRenderer.send('runAtBoot', getPrefs<boolean>('app.autoRunAtBoot'))
-  } */
+  }
 
   // Set auto updater prefs
   ipcRenderer.send(

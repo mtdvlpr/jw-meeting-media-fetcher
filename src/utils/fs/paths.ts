@@ -1,3 +1,4 @@
+import { platform } from 'os'
 import { ipcRenderer } from 'electron'
 import { sync } from 'fast-glob'
 // eslint-disable-next-line import/named
@@ -117,7 +118,7 @@ export async function wtFontPath() {
     onlyDirectories: true,
   })
   let path = appDataPath
-  if (process.platform === 'win32' && localAppData.length > 0) {
+  if (platform() === 'win32' && localAppData.length > 0) {
     path = localAppData[0]
   }
   return join(

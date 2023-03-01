@@ -1,4 +1,5 @@
 /* eslint-disable import/named */
+import { platform } from 'os'
 import { readFileSync } from 'fs-extra'
 import { Database } from 'sql.js'
 import { join } from 'upath'
@@ -128,7 +129,7 @@ async function getDb({
     const { default: sqljs } = await import('sql.js')
     const SQL = await sqljs({
       locateFile: (filename: string) =>
-        process.platform === 'win32' ? `/${filename}` : remotePath(filename),
+        platform() === 'win32' ? `/${filename}` : remotePath(filename),
     })
     const db = new SQL.Database(file)
     setDb(db, pub, issue, lang)
