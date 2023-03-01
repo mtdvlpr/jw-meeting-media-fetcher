@@ -5,7 +5,6 @@
   appId: 'sircharlo.meeting-media-manager',
   productName: 'Meeting Media Manager',
   artifactName: 'meeting-media-manager-${version}.${ext}',
-  asar: false,
   generateUpdatesFilesForAllChannels: true,
   directories: {
     output: 'release/${version}',

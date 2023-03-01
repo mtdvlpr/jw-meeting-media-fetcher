@@ -1,6 +1,6 @@
 /* eslint-disable import/named */
 import { readFileSync } from 'fs-extra'
-import sqljs, { Database } from 'sql.js'
+import { Database } from 'sql.js'
 import { join } from 'upath'
 import { VideoFile } from '~~/types'
 
@@ -125,6 +125,7 @@ async function getDb({
     const remotePath = (filename: string) =>
       `https://cdnjs.cloudflare.com/ajax/libs/sql.js/${sqlJsVersion}/${filename}`
 
+    const { default: sqljs } = await import('sql.js')
     const SQL = await sqljs({
       locateFile: (filename: string) =>
         process.platform === 'win32' ? `/${filename}` : remotePath(filename),

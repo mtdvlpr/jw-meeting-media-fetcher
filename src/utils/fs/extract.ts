@@ -1,19 +1,14 @@
 // eslint-disable-next-line import/named
 import { readFileSync, writeFileSync } from 'fs-extra'
 import { join, extname } from 'upath'
-import JSZip from 'jszip'
 
-async function getContentsFromJWPUB(jwpub: string) {
-  const zipFile = readFileSync(jwpub)
-  const zipper = new JSZip()
-  const zipContents = await zipper.loadAsync(zipFile)
-  return zipContents.file('contents')?.async('arraybuffer')
-}
-
-export async function extractAllTo(jwpub: string, dest: string) {
+export async function extractAllTo(zip: string, dest: string) {
   try {
+    const { default: JSZip } = await import('jszip')
     const zipper = new JSZip()
-    const fileBuffer = await getContentsFromJWPUB(jwpub)
+    const zipFile = readFileSync(zip)
+    const zipContents = await zipper.loadAsync(zipFile)
+    const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
     if (!fileBuffer) throw new Error('Could not extract files from zip')
     const contents = await zipper.loadAsync(fileBuffer)
     for (const [filename, fileObject] of Object.entries(contents.files)) {
@@ -21,14 +16,17 @@ export async function extractAllTo(jwpub: string, dest: string) {
       writeFileSync(join(dest, filename), data)
     }
   } catch (e: unknown) {
-    warn('errorExtractFromJWPUB', { identifier: jwpub })
+    warn('errorExtractFromJWPUB', { identifier: zip })
   }
 }
 
 export async function getZipContentsByExt(zip: string, ext: string) {
   try {
+    const { default: JSZip } = await import('jszip')
     const zipper = new JSZip()
-    const fileBuffer = await getContentsFromJWPUB(zip)
+    const zipFile = readFileSync(zip)
+    const zipContents = await zipper.loadAsync(zipFile)
+    const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
     if (!fileBuffer) throw new Error('Could not extract files from zip')
     const contents = await zipper.loadAsync(fileBuffer)
     for (const [filename, fileObject] of Object.entries(contents.files)) {
@@ -44,8 +42,11 @@ export async function getZipContentsByExt(zip: string, ext: string) {
 
 export async function getZipContentsByName(zip: string, name: string) {
   try {
+    const { default: JSZip } = await import('jszip')
     const zipper = new JSZip()
-    const fileBuffer = await getContentsFromJWPUB(zip)
+    const zipFile = readFileSync(zip)
+    const zipContents = await zipper.loadAsync(zipFile)
+    const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
     if (!fileBuffer) throw new Error('Could not extract files from zip')
     const contents = await zipper.loadAsync(fileBuffer)
     for (const [filename, fileObject] of Object.entries(contents.files)) {

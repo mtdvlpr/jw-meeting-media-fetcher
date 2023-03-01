@@ -1,6 +1,6 @@
 import { XMLParser } from 'fast-xml-parser'
 import { join, dirname, basename, resolve } from 'upath'
-import { WebDAVClient, createClient, FileStat } from 'webdav/web'
+import { WebDAVClient, FileStat } from 'webdav/web/types'
 import { CongPrefs, DateFormat } from '~~/types'
 
 export async function connect(
@@ -12,12 +12,13 @@ export async function connect(
   if (getPrefs<boolean>('app.offline')) return 'offline'
   const store = useCongStore()
   try {
+    const { createClient } = await import('webdav/web')
     const client = createClient('https://' + host, {
       username,
       password,
     })
 
-    const contents: FileStat[] = await getCongDirectory(
+    const contents = await getCongDirectory(
       client,
       host,
       username,

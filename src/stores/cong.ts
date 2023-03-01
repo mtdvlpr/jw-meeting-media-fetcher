@@ -1,4 +1,4 @@
-import { FileStat, WebDAVClient } from 'webdav/web'
+import { FileStat, WebDAVClient } from 'webdav/web/types'
 import { PrefStore } from '~~/types'
 
 interface CongFile extends FileStat {

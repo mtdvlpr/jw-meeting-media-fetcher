@@ -10,12 +10,10 @@ import {
   accessSync,
   chmodSync,
 } from 'fs-extra'
-import JSZip from 'jszip'
 import sizeOf from 'image-size'
-import ffmpeg from 'fluent-ffmpeg'
 import { XMLBuilder } from 'fast-xml-parser'
 import { join, changeExt, dirname, basename, extname } from 'upath'
-import { PDFDocumentProxy } from 'pdfjs-dist'
+import { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
 import { Release, DateFormat } from '~~/types'
 
 export async function convertToMP4(
@@ -161,8 +159,7 @@ async function convertPdf(
   mediaFile: string,
   setProgress?: (loaded: number, total: number, global?: boolean) => void
 ): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const pdfjsLib = require('pdfjs-dist') as typeof import('pdfjs-dist')
+  const pdfjsLib = await import('pdfjs-dist')
   try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
     const pdf = await pdfjsLib.getDocument({
@@ -254,6 +251,7 @@ async function convertPdfPage(
 }
 
 async function setupFFmpeg(
+  ffmpeg: any,
   _setProgress: (loaded: number, total: number, global?: boolean) => void
 ): Promise<void> {
   const store = useMediaStore()
@@ -289,6 +287,7 @@ async function setupFFmpeg(
     )
   }
 
+  const { default: JSZip } = await import('jszip')
   const zipper = new JSZip()
   const zipFile = await zipper.loadAsync(readFileSync(zipPath))
   let entry
@@ -307,7 +306,6 @@ async function setupFFmpeg(
     } catch (e: unknown) {
       chmodSync(entryPath, '777')
     }
-    // eslint-disable-next-line import/no-named-as-default-member
     ffmpeg.setFfmpegPath(entryPath)
     store.setFFmpeg(true)
   } else {
@@ -344,23 +342,29 @@ function createVideo(
     try {
       // If mp3, just add audio to empty video
       if (extname(file).includes('mp3')) {
-        setupFFmpeg(setProgress)
-          .then(() => {
-            ffmpeg(file)
-              .noVideo()
-              .save(join(output))
-              .on('end', () => {
-                if (!getPrefs<boolean>('media.keepOriginalsAfterConversion'))
-                  rm(file)
-                increaseProgress(setProgress)
-                return resolve()
-              })
-          })
-          .catch((e: unknown) => {
-            warn('warnMp4ConversionFailure', { identifier: basename(file) }, e)
-            increaseProgress(setProgress)
-            return resolve()
-          })
+        import('fluent-ffmpeg').then(({ default: ffmpeg }) => {
+          setupFFmpeg(ffmpeg, setProgress)
+            .then(() => {
+              ffmpeg(file)
+                .noVideo()
+                .save(join(output))
+                .on('end', () => {
+                  if (!getPrefs<boolean>('media.keepOriginalsAfterConversion'))
+                    rm(file)
+                  increaseProgress(setProgress)
+                  return resolve()
+                })
+            })
+            .catch((e: unknown) => {
+              warn(
+                'warnMp4ConversionFailure',
+                { identifier: basename(file) },
+                e
+              )
+              increaseProgress(setProgress)
+              return resolve()
+            })
+        })
       } else {
         // Set video dimensions to image dimensions
         let convertedDimensions: number[] = []
@@ -391,40 +395,39 @@ function createVideo(
           div.append(img, canvas)
           document.body.appendChild(div)
 
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const createH264MP4Encoder = require('h264-mp4-encoder')
-            .createH264MP4Encoder as typeof import('h264-mp4-encoder').createH264MP4Encoder
-          createH264MP4Encoder().then((encoder) => {
-            img.onload = () => {
-              // Set width and height
-              encoder.quantizationParameter = 10
-              img.width = convertedDimensions[0]
-              img.height = convertedDimensions[1]
-              encoder.width = canvas.width =
-                img.width % 2 ? img.width - 1 : img.width
-              encoder.height = canvas.height =
-                img.height % 2 ? img.height - 1 : img.height
-              encoder.initialize()
+          import('h264-mp4-encoder').then(({ createH264MP4Encoder }) => {
+            createH264MP4Encoder().then((encoder) => {
+              img.onload = () => {
+                // Set width and height
+                encoder.quantizationParameter = 10
+                img.width = convertedDimensions[0]
+                img.height = convertedDimensions[1]
+                encoder.width = canvas.width =
+                  img.width % 2 ? img.width - 1 : img.width
+                encoder.height = canvas.height =
+                  img.height % 2 ? img.height - 1 : img.height
+                encoder.initialize()
 
-              // Set canvas
-              const ctx = canvas.getContext('2d')!
-              ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-              encoder.addFrameRgba(
-                ctx.getImageData(0, 0, canvas.width, canvas.height).data
-              )
+                // Set canvas
+                const ctx = canvas.getContext('2d')!
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                encoder.addFrameRgba(
+                  ctx.getImageData(0, 0, canvas.width, canvas.height).data
+                )
 
-              // Save video
-              encoder.finalize()
-              write(output, encoder.FS.readFile(encoder.outputFilename))
-              encoder.delete()
-              div.remove()
-              if (!getPrefs<boolean>('media.keepOriginalsAfterConversion')) {
-                rm(file)
+                // Save video
+                encoder.finalize()
+                write(output, encoder.FS.readFile(encoder.outputFilename))
+                encoder.delete()
+                div.remove()
+                if (!getPrefs<boolean>('media.keepOriginalsAfterConversion')) {
+                  rm(file)
+                }
+                increaseProgress(setProgress)
+                return resolve()
               }
-              increaseProgress(setProgress)
-              return resolve()
-            }
-            img.src = pathToFileURL(file).href
+              img.src = pathToFileURL(file).href
+            })
           })
         } else {
           throw new Error('Could not determine dimensions of image.')

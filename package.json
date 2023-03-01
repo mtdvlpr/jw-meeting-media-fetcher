@@ -24,8 +24,9 @@
   "scripts": {
     "prebuild": "./pre-build.sh",
     "dev": "nuxi dev",
+    "analyze": "nuxi analyze",
     "prepare": "nuxi prepare",
-    "build": "nuxi build --prerender && electron-builder",
+    "build": "nuxi generate && electron-builder",
     "lint:js": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
     "lint:prettier": "prettier --check .",
     "lint": "yarn lint:js && yarn lint:prettier",
