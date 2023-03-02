@@ -1,9 +1,9 @@
-export default function (atClickedTwice: () => void) {
+export function useClickTwice<T = any>(atClickedTwice: (object?: T) => void) {
   const clickedOnce = ref(false)
 
-  const atClick = () => {
+  const atClick = (object?: T) => {
     if (clickedOnce.value) {
-      atClickedTwice()
+      atClickedTwice(object)
       clickedOnce.value = false
     } else {
       clickedOnce.value = true

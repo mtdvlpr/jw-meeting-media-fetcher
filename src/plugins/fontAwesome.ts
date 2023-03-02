@@ -1,5 +1,8 @@
-// eslint-disable-next-line import/named
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+/* eslint-disable import/named */
+import {
+  FontAwesomeIcon,
+  FontAwesomeLayers,
+} from '@fortawesome/vue-fontawesome'
 import { library, config } from '@fortawesome/fontawesome-svg-core'
 import {
   faChevronLeft,
@@ -18,6 +21,7 @@ import {
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('font-awesome-icon', FontAwesomeIcon)
+  nuxtApp.vueApp.component('font-awesome-layers', FontAwesomeLayers)
   config.autoAddCss = false
   library.add(
     faChevronDown,

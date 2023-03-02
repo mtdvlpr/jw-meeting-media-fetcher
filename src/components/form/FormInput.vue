@@ -1,0 +1,431 @@
+<template>
+  <v-text-field
+    v-if="field == 'text' || field == 'password' || field == 'number'"
+    :id="safeId"
+    ref="field"
+    v-model="value"
+    :type="field === 'password' && passwordVisible ? 'text' : field"
+    :disabled="!!$attrs.disabled || locked"
+    v-bind="$attrs"
+    variant="outlined"
+    density="compact"
+    :rules="rules"
+    :counter="max"
+  >
+    <template v-if="field === 'password'" #append-inner>
+      <v-icon
+        :icon="passIcon"
+        size="lg"
+        @click="passwordVisible = !passwordVisible"
+      />
+    </template>
+    <template v-else-if="locked" #append-inner>
+      <v-icon icon="faLock" style="margin-top: 2px">
+        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+      </v-icon>
+    </template>
+    <template v-else-if="explanation && appendOuter" #append>
+      <v-tooltip location="top">
+        <template #activator="{ props: attrs }">
+          <v-icon
+            v-bind="attrs"
+            icon="faCircleQuestion"
+            size="lg"
+            style="margin-top: 2px"
+          />
+        </template>
+        <span>{{ t(explanation) }}</span>
+      </v-tooltip>
+    </template>
+    <template v-else-if="explanation" #append-inner>
+      <v-tooltip location="top">
+        <template #activator="{ props: attrs }">
+          <v-icon
+            v-bind="attrs"
+            icon="faCircleQuestion"
+            size="lg"
+            style="margin-top: 2px"
+          />
+        </template>
+        <span>{{ t(explanation) }}</span>
+      </v-tooltip>
+    </template>
+    <template v-for="(_, name) in $slots" #[name]>
+      <slot :name="name" />
+    </template>
+  </v-text-field>
+  <v-autocomplete
+    v-else-if="field == 'autocomplete'"
+    :id="safeId"
+    ref="field"
+    v-model="value"
+    :disabled="!!$attrs.disabled || locked"
+    v-bind="$attrs"
+    :rules="rules"
+    density="compact"
+    variant="outlined"
+    :counter="max"
+    hide-no-data
+  >
+    <template v-for="(_, name) in $slots" #[name]>
+      <slot :name="name" />
+    </template>
+    <template v-if="locked" #append-inner>
+      <v-icon icon="faLock" style="margin-top: 2px">
+        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+      </v-icon>
+    </template>
+    <template v-else-if="explanation" #append>
+      <v-tooltip location="top">
+        <template #activator="{ props: attrs }">
+          <v-icon
+            v-bind="attrs"
+            size="lg"
+            icon="faCircleQuestion"
+            style="margin-top: 2px"
+          />
+        </template>
+        <span>{{ t(explanation) }}</span>
+      </v-tooltip>
+    </template>
+  </v-autocomplete>
+  <v-select
+    v-else-if="field == 'select'"
+    :id="safeId"
+    ref="field"
+    v-model="value"
+    variant="outlined"
+    density="compact"
+    :readonly="!!$attrs.disabled || locked"
+    :class="{ 'v-input--is-disabled': locked }"
+    v-bind="$attrs"
+    :rules="rules"
+  >
+    <template v-for="(_, name) in $slots" #[name]>
+      <slot :name="name" />
+    </template>
+    <template v-if="locked" #append-inner>
+      <v-icon icon="faLock" style="margin-top: 2px">
+        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+      </v-icon>
+    </template>
+    <template v-else-if="explanation" #append>
+      <v-tooltip location="top">
+        <template #activator="{ props: attrs }">
+          <v-icon
+            v-bind="attrs"
+            icon="faCircleQuestion"
+            size="lg"
+            style="margin-top: 2px"
+          />
+        </template>
+        <span>{{ t(explanation) }}</span>
+      </v-tooltip>
+    </template>
+  </v-select>
+  <v-textarea
+    v-else-if="field == 'textarea'"
+    :id="safeId"
+    ref="field"
+    v-model="value"
+    :disabled="!!$attrs.disabled || locked"
+    v-bind="$attrs"
+    variant="outlined"
+    density="compact"
+    :rules="rules"
+    :counter="max"
+    rows="4"
+  >
+    <template v-for="(_, name) in $slots" #[name]>
+      <slot :name="name" />
+    </template>
+    <template v-if="locked" #append-inner>
+      <v-icon icon="faLock">
+        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+      </v-icon>
+    </template>
+    <template v-else-if="explanation" #append-inner>
+      <v-tooltip location="top">
+        <template #activator="{ props: attrs }">
+          <v-icon v-bind="attrs" size="lg" icon="faCircleQuestion" />
+        </template>
+        <span>{{ t(explanation) }}</span>
+      </v-tooltip>
+    </template>
+  </v-textarea>
+  <v-checkbox
+    v-else-if="field == 'checkbox'"
+    :id="safeId"
+    ref="field"
+    v-model="value"
+    density="compact"
+    variant="outlined"
+    :readonly="!!$attrs.disabled || locked"
+    :class="{ 'v-input--is-disabled': locked }"
+    v-bind="$attrs"
+  >
+    <template v-for="(_, name) in $slots" #[name]>
+      <slot :name="name" />
+    </template>
+    <template v-if="locked" #append-inner>
+      <v-icon icon="faLock" style="margin-top: 3px">
+        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+      </v-icon>
+    </template>
+    <template v-else-if="explanation" #append-inner>
+      <v-tooltip location="top">
+        <template #activator="{ props: attrs }">
+          <v-icon
+            v-bind="attrs"
+            size="lg"
+            icon="faCircleQuestion"
+            style="margin-top: 3px"
+          />
+        </template>
+        <span>{{ t(explanation) }}</span>
+      </v-tooltip>
+    </template>
+  </v-checkbox>
+  <v-switch
+    v-else-if="field == 'switch'"
+    :id="safeId"
+    ref="field"
+    v-model="value"
+    density="compact"
+    variant="outlined"
+    :readonly="!!$attrs.disabled || locked"
+    :class="{ 'v-input--is-disabled': locked }"
+    v-bind="$attrs"
+  >
+    <template v-for="(_, name) in $slots" #[name]>
+      <slot :name="name" />
+    </template>
+    <template v-if="locked" #append-inner>
+      <v-icon icon="faLock" style="margin-top: 3px">
+        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+      </v-icon>
+    </template>
+    <template v-else-if="explanation" #append-inner>
+      <v-tooltip location="top">
+        <template #activator="{ props: attrs }">
+          <v-icon
+            v-bind="attrs"
+            icon="faCircleQuestion"
+            style="margin-top: 3px"
+            size="lg"
+          />
+        </template>
+        <span>{{ t(explanation) }}</span>
+      </v-tooltip>
+    </template>
+  </v-switch>
+  <v-row v-else-if="field == 'btn-group'" class="mb-4" justify="space-between">
+    <v-col align-self="center" class="text-left">
+      <v-tooltip v-if="locked" activator="" location="top">
+        <template #activator="{ props: attrs }">
+          <span v-bind="attrs">{{ groupLabel }}</span>
+        </template>
+        <span>{{ t('settingLocked') }}</span>
+      </v-tooltip>
+      <span v-else>{{ groupLabel }}</span>
+    </v-col>
+    <v-col align-self="center" class="text-right">
+      <v-btn-toggle
+        :id="safeId"
+        ref="field"
+        v-model="value"
+        density="compact"
+        variant="outlined"
+        :color="required && value === null ? 'error' : 'primary'"
+        v-bind="$attrs"
+        :class="{ 'btn-group-error': required && value === null }"
+      >
+        <v-btn
+          v-for="(item, key) in groupItems"
+          :id="safeId + '-' + key"
+          :key="key"
+          :value="item.value"
+          :disabled="!!$attrs.disabled || locked"
+          :style="`height: ${height}`"
+        >
+          {{ item.label }}
+        </v-btn>
+        <v-btn v-if="locked" icon disabled :style="`height: ${height}`">
+          <v-icon icon="faLock" />
+        </v-btn>
+      </v-btn-toggle>
+    </v-col>
+    <v-col
+      v-if="hasSlot()"
+      cols="2"
+      class="d-flex justify-end"
+      align-self="center"
+    >
+      <slot />
+    </v-col>
+  </v-row>
+  <v-row v-else-if="field == 'slider'" class="mb-4" justify="space-between">
+    <v-col align-self="center" class="text-left">
+      {{ groupLabel }}
+    </v-col>
+    <v-col align-self="center" class="text-right">
+      <v-slider
+        :id="safeId"
+        ref="field"
+        v-model="value"
+        :disabled="!!$attrs.disabled || locked"
+        v-bind="$attrs"
+        variant="outlined"
+        density="compact"
+        :max="max ? max : '100'"
+        class="align-center"
+        :step="customInput ? 0.01 : 1"
+        :label="customInput ? undefined : value + labelSuffix"
+        hide-details="auto"
+      >
+        <template v-if="locked" #append-inner>
+          <v-icon icon="faLock" style="margin-top: 2px">
+            <v-tooltip activator="parent" location="top">
+              {{ t('settingLocked') }}
+            </v-tooltip>
+          </v-icon>
+        </template>
+        <template v-else-if="explanation" #append-inner>
+          <v-tooltip location="top">
+            <template #activator="{ props: attrs }">
+              <v-icon
+                v-bind="attrs"
+                size="lg"
+                icon="faCircleQuestion"
+                style="margin-top: 2px"
+              />
+            </template>
+            <span>{{ t(explanation) }}</span>
+          </v-tooltip>
+        </template>
+        <template v-else-if="customInput" #append-inner>
+          <v-text-field
+            :model-value="formattedSlider"
+            class="mt-0 pt-0"
+            hide-details="auto"
+            single-line
+            style="width: 65px"
+            density="compact"
+            variant="outlined"
+            :rules="[
+              (v) => /^[0-1][0-9]:[0-9][0-9]$/.test(v) || 'mm:ss',
+              (v) => v.split(':')[0] >= 1 || '>= 01:00',
+              (v) =>
+                v.split(':')[0] < max || v === `${max}:00` || `<= ${max}:00`,
+            ]"
+            @update:model-value="updateSlider($event)"
+          />
+        </template>
+      </v-slider>
+    </v-col>
+    <v-col v-if="hasSlot()" cols="2" align-self="center">
+      <slot />
+    </v-col>
+  </v-row>
+</template>
+<script setup lang="ts">
+type Field =
+  | 'switch'
+  | 'btn-group'
+  | 'slider'
+  | 'text'
+  | 'password'
+  | 'checkbox'
+  | 'switch'
+  | 'number'
+  | 'select'
+  | 'autocomplete'
+  | 'textarea'
+const props = withDefaults(
+  defineProps<{
+    id?: string
+    modelValue: any
+    field?: Field
+    max?: number
+    groupLabel?: string
+    customInput?: boolean
+    groupItems?: { label: string; value: string }[]
+    height?: string
+    required?: boolean
+    labelSuffix?: string
+    locked?: boolean
+    appendOuter?: boolean
+    explanation?: string
+  }>(),
+  {
+    id: '',
+    max: 0,
+    groupLabel: '',
+    groupItems: () => [],
+    labelSuffix: '',
+    explanation: '',
+    field: 'text',
+    height: '48px',
+  }
+)
+
+const { $i18n } = useNuxtApp()
+const { t } = $i18n
+const emit = defineEmits(['update:modelValue'])
+const value = useVModel(props, 'modelValue', emit)
+const hasSlot = (name = 'default') => !!useSlots()[name]
+
+const passwordVisible = ref(false)
+const safeId = computed(() => (props.id ? strip(props.id) : undefined))
+const passIcon = computed(() =>
+  passwordVisible.value ? 'faEyeSlash' : 'faEye'
+)
+const rules = computed(() => {
+  const rules = (useAttrs().rules as unknown as any[]) ?? []
+  if (props.required) {
+    rules.push((v: unknown) => {
+      if (typeof v === 'string') {
+        return !!v.trim() || t('fieldRequired')
+      }
+      return !!v || t('fieldRequired')
+    })
+  }
+  if (props.max) {
+    rules.push(
+      (v: string) =>
+        !v ||
+        v.length <= props.max ||
+        (t('fieldMax') as string).replace('XX', props.max.toString())
+    )
+  }
+  return rules
+})
+const formattedSlider = computed(() => {
+  const val = parseFloat(value.value.toString())
+  const minutes = Math.floor(val)
+  const seconds = Math.floor((val - minutes) * SEC_IN_MIN)
+  return `${minutes.toString().padStart(2, '0')}:${seconds
+    .toString()
+    .padStart(2, '0')}`
+})
+const formattedToNumber = (val: string) => {
+  const [minutes, seconds] = val.split(':')
+  return parseInt(minutes) + parseInt(seconds) / SEC_IN_MIN
+}
+const updateSlider = (val: string) => {
+  if (/^[0-1][0-9]:[0-9][0-9]$/.test(val)) {
+    const num = formattedToNumber(val)
+    if (num >= 1 && num <= (typeof props.max === 'number' ? props.max : 15)) {
+      emit('update:modelValue', formattedToNumber(val))
+    }
+  }
+}
+</script>
+<style lang="css">
+.v-text-field--filled .v-text-field__prefix {
+  margin-top: 0px !important;
+}
+.btn-group-error {
+  border: solid 1px;
+}
+</style>

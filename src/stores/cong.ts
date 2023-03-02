@@ -1,9 +1,5 @@
-import { FileStat, WebDAVClient } from 'webdav/web/types'
-import { PrefStore } from '~~/types'
-
-interface CongFile extends FileStat {
-  children?: CongFile[]
-}
+import { WebDAVClient } from 'webdav/web/types'
+import { CongFile, PrefStore } from '~~/types'
 
 interface CongStore {
   client: WebDAVClient | null
@@ -28,7 +24,7 @@ export const useCongStore = defineStore('cong', {
     setPrefs(prefs: Partial<PrefStore>) {
       this.prefs = prefs
     },
-    setContents(contents: FileStat[]) {
+    setContents(contents: CongFile[]) {
       this.contents = contents
     },
     setContentsTree(contentsTree: CongFile[]) {
