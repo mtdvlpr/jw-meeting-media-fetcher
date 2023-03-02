@@ -26,7 +26,7 @@ export async function getLatestJWMedia(): Promise<MediaItem[]> {
         media.push(...result.value)
       }
     })
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   }
 
@@ -77,7 +77,7 @@ async function getCategoryMedia(
       }
     }
     return newItems
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   }
   return []

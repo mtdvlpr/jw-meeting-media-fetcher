@@ -34,6 +34,38 @@ export async function getSongs() {
   return result
 }
 
+export function autoStartMusic() {
+  if (!getPrefs<boolean>('meeting.enableMusicButton')) return
+  if (!getPrefs<boolean>('meeting.autoStartMusic')) return
+  const meetingDay = isMeetingDay()
+  if (!meetingDay) return
+
+  const now = useNuxtApp().$dayjs()
+  const autoStop = getPrefs<boolean>('meeting.enableMusicFadeOut')
+  const stopType = getPrefs<FadeOutType>('meeting.musicFadeOutType')
+  const fadeOutTime = autoStop
+    ? getPrefs<number>('meeting.musicFadeOutTime')
+    : 0
+  const meetingTime = getPrefs<string>(`meeting.${meetingDay}StartTime`).split(
+    ':'
+  )
+
+  const meetingStart = now
+    .hour(+meetingTime[0])
+    .minute(+meetingTime[1])
+    .second(0)
+    .millisecond(0)
+
+  const timeToStop = meetingStart
+    .subtract(1, 'm')
+    .subtract(fadeOutTime, stopType === 'smart' ? 's' : 'm')
+    .subtract(6, 's')
+
+  if (now.isBetween(meetingStart.subtract(1, 'h'), timeToStop)) {
+    shuffleMusic()
+  }
+}
+
 export async function shuffleMusic(stop = false, immediately = false) {
   const store = useMediaStore()
   if (stop) {

@@ -45,10 +45,11 @@ useEventListener('offline', () => {
 })
 
 // Global Theme
+const vuetifyTheme = useTheme()
 const prefersDark = usePreferredDark()
 const systemTheme = computed(() => (prefersDark.value ? 'dark' : 'light'))
 const setTheme = (theme: string) => {
-  useTheme().global.name.value = theme
+  vuetifyTheme.global.name.value = theme
 }
 watch(systemTheme, (val) => {
   if (getPrefs<Theme>('app.theme') === 'system') {
@@ -197,7 +198,7 @@ onMounted(async () => {
         'openPath',
         fileURLToPath(pathToFileURL(downloadsPath).href)
       )
-    } catch (e: unknown) {
+    } catch (e) {
       error('updateNotDownloaded', e)
       statStore.setUpdateSuccess(false)
     }
@@ -250,7 +251,9 @@ const initPrefs = async (name: string, isNew = false) => {
   const locales = $i18n.locales.value as LocaleObject[]
   const locale = locales.find((l) => l.code === lang)
   $dayjs.locale(locale?.dayjs ?? lang ?? 'en')
-  log.debug(appPath())
+  log.debug('app', appPath())
+  log.debug('electron', await ipcRenderer.invoke('userData'))
+  log.debug('isDev', await ipcRenderer.invoke('isDev'))
 
   // Set disabledHardwareAcceleration to user pref
   const disableHA = getPrefs<boolean>('app.disableHardwareAcceleration')

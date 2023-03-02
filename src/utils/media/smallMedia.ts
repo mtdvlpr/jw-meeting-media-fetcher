@@ -83,7 +83,7 @@ export async function getMediaLinks(
     })
 
     await Promise.allSettled(promises)
-  } catch (e: unknown) {
+  } catch (e) {
     if (silent) {
       log.warn(e)
     } else {
@@ -293,7 +293,7 @@ export async function getSmallMediaFiles(
         identifier: Object.values(mediaItem).filter(Boolean).join('_'),
       })
     }
-  } catch (e: unknown) {
+  } catch (e) {
     if (silent) {
       log.warn(e)
     } else {

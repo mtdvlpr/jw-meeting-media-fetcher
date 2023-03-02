@@ -35,7 +35,7 @@ async function connectOBS(): Promise<OBSWebSocket | OBSWebSocketV4 | null> {
             ) {
               store.setCurrentScene(newScene['scene-name'])
             }
-          } catch (e: unknown) {
+          } catch (e) {
             log.error(e)
           }
         })
@@ -102,7 +102,7 @@ async function connectOBS(): Promise<OBSWebSocket | OBSWebSocketV4 | null> {
             ) {
               store.setCurrentScene(newScene.sceneName)
             }
-          } catch (e: unknown) {
+          } catch (e) {
             log.error(e)
           }
         })
@@ -170,7 +170,7 @@ export async function resetOBS(): Promise<void> {
     } else if (obs) {
       await obs.disconnect()
     }
-  } catch (e: unknown) {}
+  } catch (e) {}
 
   obs = null
   useObsStore().$reset()

@@ -34,7 +34,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
       } else {
         log.error(result)
       }
-    } catch (e: unknown) {
+    } catch (e) {
       if (useStatStore().online) {
         warn('errorOffline')
       } else {
@@ -53,7 +53,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
     try {
       const fileContent = readFileSync(langPath, 'utf8')
       return fileContent
-    } catch (e: unknown) {
+    } catch (e) {
       if (firstTry) {
         return readLangs(false)
       } else {
@@ -186,7 +186,7 @@ export async function getPubAvailability(
     langObject.mwbAvailable = mwb
     langObject.wAvailable = w
     write(langPath, JSON.stringify(langs, null, 2))
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   }
 

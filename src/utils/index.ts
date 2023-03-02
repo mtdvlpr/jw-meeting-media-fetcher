@@ -50,11 +50,12 @@ export { getDocumentExtract } from './media/extracts'
 export { getMwMedia } from './media/midweek'
 export { getDocumentMultiMedia } from './media/multiMedia'
 export { getMediaLinks, getSmallMediaFiles } from './media/smallMedia'
-export { getSongs, shuffleMusic } from './media/songs'
+export { getSongs, autoStartMusic, shuffleMusic } from './media/songs'
 export {
   syncLocalRecurringMedia,
   downloadIfRequired,
   syncJWMedia,
+  createMediaNames,
   addMediaItemToPart,
 } from './media/sync'
 

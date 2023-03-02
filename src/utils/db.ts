@@ -54,7 +54,7 @@ export async function getDbFromJWPUB(
         pub = jwpubInfo.UniqueEnglishSymbol.replace(/\d/g, '')
         issue = jwpubInfo.IssueTagNumber
         setDb(db, pub, issue, lang)
-      } catch (e: unknown) {
+      } catch (e) {
         log.error(e)
       }
     } else if (pub) {
@@ -96,7 +96,7 @@ export async function getDbFromJWPUB(
         file: readFileSync(dbPath),
       })
     } else return null
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorJwpubDbFetch', { identifier: `${pub}-${issue}` }, e)
     return null
   }
@@ -134,7 +134,7 @@ async function getDb({
     const db = new SQL.Database(file)
     setDb(db, pub, issue, lang)
     return db
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   }
 

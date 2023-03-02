@@ -158,7 +158,7 @@ const updatePrefs = async () => {
       JSON.stringify(forcedPrefs, null, 2)
     )
     await forcePrefs(true)
-  } catch (e: unknown) {
+  } catch (e) {
     error(
       'errorForcedSettingsEnforce',
       e,

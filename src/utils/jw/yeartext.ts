@@ -53,7 +53,7 @@ export async function getYearText(
   } else {
     try {
       yeartext = readFileSync(path, 'utf8')
-    } catch (e: unknown) {
+    } catch (e) {
       warn('errorOffline')
     }
   }
@@ -85,7 +85,7 @@ async function getWtFont(font: string, force = false) {
       })
 
       size = +(result.headers.get('content-length') ?? 0)
-    } catch (e: unknown) {
+    } catch (e) {
       log.error(e)
     }
   }
@@ -100,7 +100,7 @@ async function getWtFont(font: string, force = false) {
       } else {
         log.error(result)
       }
-    } catch (e: unknown) {
+    } catch (e) {
       log.error(e)
     }
   }

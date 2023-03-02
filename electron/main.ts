@@ -143,6 +143,7 @@ if (gotTheLock) {
 
   ipcMain.handle('userData', () => normalize(app.getPath('userData')))
   ipcMain.handle('appData', () => normalize(app.getPath('appData')))
+  ipcMain.handle('isDev', () => isDev)
   ipcMain.handle('downloads', () => normalize(app.getPath('downloads')))
   ipcMain.handle('appVersion', () => app.getVersion())
   ipcMain.handle('getScreenInfo', () => getScreenInfo())

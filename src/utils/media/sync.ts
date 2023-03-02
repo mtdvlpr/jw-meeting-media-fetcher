@@ -108,7 +108,7 @@ export async function downloadIfRequired(
       subtitle = $fetch<Iterable<number>>(file.subtitles.url, {
         responseType: 'arrayBuffer',
       })
-    } catch (e: unknown) {
+    } catch (e) {
       warn('errorDownloadSubs', { identifier: file.destFilename }, e)
     }
   }
@@ -156,7 +156,7 @@ export async function downloadIfRequired(
       if (extname(file.cacheFile) === '.jwpub') {
         await extractAllTo(file.cacheFile, file.cacheDir)
       }
-    } catch (e: unknown) {
+    } catch (e) {
       warn('errorDownload', { identifier: file.destFilename }, e)
     }
   } else {

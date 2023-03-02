@@ -78,7 +78,7 @@ async function extractMediaItems(
       if (matches && matches.length > 0) {
         extract.Lang = (matches.pop() as string).split(':')[0]
       }
-    } catch (e: unknown) {
+    } catch (e) {
       log.error(e)
     }
   }

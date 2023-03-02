@@ -345,7 +345,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
 
             // @ts-ignore: 'cong.port' is not defined as a key of PrefStore
             store.reset('cong.port')
-          } catch (e: unknown) {
+          } catch (e) {
             log.error(e)
           }
         }
@@ -462,7 +462,7 @@ export function migrate2290(key: string, newVal: any) {
   if (key === 'congServerPort') {
     try {
       newVal = newVal.toString()
-    } catch (e: unknown) {
+    } catch (e) {
       setDefaultValue()
     }
   }
@@ -480,7 +480,7 @@ export function migrate2290(key: string, newVal: any) {
         if (isNaN(newVal)) {
           setDefaultValue()
         }
-      } catch (e: unknown) {
+      } catch (e) {
         setDefaultValue()
       }
     }
@@ -535,7 +535,7 @@ export function storePath() {
 export function initStore(name: string) {
   try {
     store = new Store<PrefStore>(storeOptions(name))
-  } catch (e: unknown) {
+  } catch (e) {
     log.debug('Resetting the store...')
     const tempStore = new Store<PrefStore>(storeOptions('temp'))
     removeSync(joinSafe(dirname(tempStore.path), `${name}.json`))
@@ -547,7 +547,7 @@ export function initStore(name: string) {
   }
 }
 
-export function setPrefs(key: string, value: unknown) {
+export function setPrefs(key: string, value: any) {
   store.set(key, value)
   const prefs = JSON.parse(readFileSync(store.path, 'utf8')) as PrefStore
   const { $sentry } = useNuxtApp()

@@ -129,7 +129,7 @@ async function processMultiMediaItem(
       if (matches && matches.length > 0) {
         lang = (matches.pop() as string).split(':')[0]
       }
-    } catch (e: unknown) {
+    } catch (e) {
       log.error(e)
     }
   } else if (mmItem.FilePath) {
@@ -264,7 +264,7 @@ async function processMultiMediaItem(
 
       return picture
     }
-  } catch (e: unknown) {
+  } catch (e) {
     warn(
       'errorJwpubMediaExtract',
       {

@@ -19,7 +19,7 @@ export function pubPath(file?: MeetingFile) {
       validMediaLangs = JSON.parse(
         readFileSync(join(appPath(), 'langs.json'), 'utf8') ?? '[]'
       ) as ShortJWLang[]
-    } catch (e: unknown) {
+    } catch (e) {
       log.error(e)
       validMediaLangs = []
     }
@@ -45,7 +45,7 @@ export function pubPath(file?: MeetingFile) {
       if (matches && matches.length > 0) {
         mediaFolder = matches.pop()!.split(':')[0]
       }
-    } catch (e: unknown) {
+    } catch (e) {
       log.error(e)
     }
   }
@@ -67,7 +67,7 @@ export function pubPath(file?: MeetingFile) {
   )
   try {
     ensureDirSync(pubPath)
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorSetVars', { identifier: pubPath }, e)
   }
 
@@ -99,7 +99,7 @@ export function mediaPath(file?: MeetingFile): string | undefined {
 
   try {
     ensureDirSync(mediaPath)
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorSetVars', { identifier: mediaPath }, e)
   }
 

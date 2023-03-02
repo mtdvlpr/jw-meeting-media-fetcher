@@ -3,7 +3,7 @@ import renderer from 'vite-plugin-electron-renderer'
 import { repository, version, devDependencies } from './package.json'
 import { LOCALES } from './src/constants/lang'
 
-const isDev = process.env.NODE_ENV !== 'production'
+const isDev = !!process.env.VITE_DEV_SERVER_URL
 const sentryInit =
   !!process.env.SENTRY_DSN &&
   !!process.env.SENTRY_ORG &&
@@ -58,7 +58,7 @@ export default defineNuxtConfig({
       renderer({
         nodeIntegration: true,
         optimizeDeps: {
-          include: ['fs-extra', 'upath', 'electron-store', 'obs-websocket-js'],
+          include: ['fs-extra', 'obs-websocket-js', 'upath'],
         },
       }),
     ],

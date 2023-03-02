@@ -15,7 +15,7 @@ export async function extractAllTo(zip: string, dest: string) {
       const data = await fileObject.async('nodebuffer')
       writeFileSync(join(dest, filename), data)
     }
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorExtractFromJWPUB', { identifier: zip })
   }
 }
@@ -34,7 +34,7 @@ export async function getZipContentsByExt(zip: string, ext: string) {
         return fileObject.async('nodebuffer')
       }
     }
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorExtractFromJWPUB', { identifier: zip })
   }
   return null
@@ -54,7 +54,7 @@ export async function getZipContentsByName(zip: string, name: string) {
         return fileObject.async('nodebuffer')
       }
     }
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorExtractFromJWPUB', { identifier: zip })
   }
   return null

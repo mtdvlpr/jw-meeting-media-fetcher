@@ -17,7 +17,7 @@ import { PrefStore } from '~~/types'
 export function findOne(path: string | string[], options?: Options) {
   try {
     return sync(path, options)[0]
-  } catch (e: unknown) {
+  } catch (e) {
     const identifier = path instanceof Array ? path[0] : path
     warn('errorSetVars', { identifier }, e)
   }
@@ -66,7 +66,7 @@ export function rm(files: string | string[]) {
   files.forEach((file) => {
     try {
       removeSync(file)
-    } catch (e: unknown) {
+    } catch (e) {
       warn('errorWebdavRm', { identifier: file }, e)
     }
   })
@@ -76,7 +76,7 @@ export function write(file: string, data: string | NodeJS.ArrayBufferView) {
   try {
     ensureFileSync(file)
     writeFileSync(file, data)
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorSetVars', { identifier: dirname(file) }, e)
   }
 }
@@ -85,7 +85,7 @@ export function copy(src: string, dest: string) {
   try {
     ensureFileSync(dest)
     copyFileSync(src, dest)
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorSetVars', { identifier: dirname(dest) }, e)
   }
 }
@@ -103,7 +103,7 @@ export function move(src: string, dest: string, overwrite = false) {
 
   try {
     renameSync(src, dest)
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorSetVars', { identifier: dest }, e)
   }
 }
@@ -146,7 +146,7 @@ export function rename(
       default:
         throw new Error('Invalid type for rename() function: ' + type)
     }
-  } catch (e: unknown) {
+  } catch (e) {
     warn('errorRename', { identifier: path }, e)
   }
 }
@@ -179,7 +179,7 @@ export async function cleanup() {
     } else if (existsSync(join(JWMMF, 'lastRunVersion.json'))) {
       lastVersion = readFileSync(join(JWMMF, 'lastRunVersion.json'), 'utf8')
     }
-  } catch (e: unknown) {
+  } catch (e) {
     error('warnUnknownLastVersion', e)
   } finally {
     const { version, repo } = useRuntimeConfig().public
@@ -212,7 +212,7 @@ export async function cleanup() {
           })
         }
         write(versionPath, version)
-      } catch (e: unknown) {
+      } catch (e) {
         log.error(e)
       }
     }

@@ -22,7 +22,7 @@ export async function setShortcut(
         fn,
       })
     }
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   } finally {
     if (!res) {
@@ -88,7 +88,7 @@ export function unsetShortcut(func: string) {
 
   try {
     ipcRenderer.send('unregisterShortcut', match.name)
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   }
 
@@ -105,7 +105,7 @@ export function unsetShortcuts(filter = 'all') {
     if (filter === 'all' || domain === filter) {
       try {
         ipcRenderer.send('unregisterShortcut', name)
-      } catch (e: unknown) {
+      } catch (e) {
         log.error(e)
       }
     } else {
@@ -183,7 +183,7 @@ export async function refreshBackgroundImgPreview(force = false) {
     }
     ipcRenderer.send('startMediaDisplay', getAllPrefs())
     return type
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   }
 }
@@ -224,7 +224,7 @@ export async function getMediaWindowDestination() {
     } else {
       mediaWinOptions.destination = screenInfo.displays[0]?.id ?? null
     }
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   }
   return mediaWinOptions

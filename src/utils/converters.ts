@@ -185,7 +185,7 @@ async function convertPdf(
     }
     await Promise.allSettled(promises)
     rm(mediaFile)
-  } catch (e: unknown) {
+  } catch (e) {
     warn('warnPdfConversionFailure', { identifier: basename(mediaFile) }, e)
   }
   if (setProgress) increaseProgress(setProgress)
@@ -239,7 +239,7 @@ async function convertPdfPage(
         'base64'
       )
     )
-  } catch (e: unknown) {
+  } catch (e) {
     warn(
       'warnPdfConversionFailure',
       {
@@ -304,7 +304,7 @@ async function setupFFmpeg(
     writeFileSync(entryPath, await entry.async('nodebuffer'))
     try {
       accessSync(entryPath, constants.X_OK)
-    } catch (e: unknown) {
+    } catch (e) {
       chmodSync(entryPath, '777')
     }
     ffmpeg.setFfmpegPath(entryPath)
@@ -356,7 +356,7 @@ function createVideo(
                   return resolve()
                 })
             })
-            .catch((e: unknown) => {
+            .catch((e) => {
               warn(
                 'warnMp4ConversionFailure',
                 { identifier: basename(file) },
@@ -434,7 +434,7 @@ function createVideo(
           throw new Error('Could not determine dimensions of image.')
         }
       }
-    } catch (e: unknown) {
+    } catch (e) {
       warn('warnMp4ConversionFailure', { identifier: basename(file) }, e)
       increaseProgress(setProgress)
       return resolve()

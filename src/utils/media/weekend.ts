@@ -114,7 +114,7 @@ WHERE Document.DocumentId = ${docId} AND Multimedia.CategoryType <> 9 GROUP BY D
           return getPrefs<string>('media.lang')
         }
       })
-  } catch (e: unknown) {
+  } catch (e) {
     log.error(e)
   }
 
