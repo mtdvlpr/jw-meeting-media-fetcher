@@ -251,10 +251,6 @@ const initPrefs = async (name: string, isNew = false) => {
   const locales = $i18n.locales.value as LocaleObject[]
   const locale = locales.find((l) => l.code === lang)
   $dayjs.locale(locale?.dayjs ?? lang ?? 'en')
-  log.debug('app', appPath())
-  log.debug('electron', await ipcRenderer.invoke('userData'))
-  log.debug('isDev', await ipcRenderer.invoke('isDev'))
-  log.debug('version', await ipcRenderer.invoke('appVersion'))
 
   // Set disabledHardwareAcceleration to user pref
   const disableHA = getPrefs<boolean>('app.disableHardwareAcceleration')
