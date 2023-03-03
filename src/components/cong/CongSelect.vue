@@ -13,7 +13,7 @@
           <v-list-item
             v-for="cong in congs"
             :key="cong.filename"
-            @click="$emit('selected', cong.filename)"
+            @click="emit('selected', cong.filename)"
           >
             <v-list-item-title>{{ cong.name }}</v-list-item-title>
           </v-list-item>

@@ -15,9 +15,7 @@
       <v-list v-else-if="missingMedia.length > 0">
         <template v-for="item in missingMedia" :key="item">
           <v-list-item class="text-center" @click="uploadMissingFile(item)">
-            <v-list-item-content>
-              <v-list-item-title>{{ item }}</v-list-item-title>
-            </v-list-item-content>
+            <v-list-item-title>{{ item }}</v-list-item-title>
           </v-list-item>
           <v-divider />
         </template>
@@ -25,9 +23,7 @@
       <v-list v-else style="max-height: 300px; overflow-y: auto">
         <template v-for="item in items" :key="item.DocumentId">
           <v-list-item class="text-center" @click="selectDoc(item.DocumentId)">
-            <v-list-item-content>
-              <v-list-item-title>{{ item.Title }}</v-list-item-title>
-            </v-list-item-content>
+            <v-list-item-title>{{ item.Title }}</v-list-item-title>
           </v-list-item>
           <v-divider />
         </template>
@@ -40,7 +36,7 @@
             color="primary"
             @click="finish()"
           >
-            <font-awesome-icon icon="faSave" size="lg" />
+            <v-icon icon="faSave" size="lg" />
           </v-btn>
         </v-col>
       </v-card-actions>

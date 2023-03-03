@@ -7999,6 +7999,8 @@ __metadata:
     vite-plugin-vuetify: ^1.0.2
     vue: ^3.2.47
     vue-tsc: ^1.2.0
+    vue3-runtime-template: ^1.0.2
+    vuedraggable: next
     vuetify: ^3.1.7
     webdav: ^4.11.2
   languageName: unknown
@@ -10672,6 +10674,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sortablejs@npm:1.14.0":
+  version: 1.14.0
+  resolution: "sortablejs@npm:1.14.0"
+  checksum: 7b9d2cbb0331f3f259b8703a17174ff46a941b6d59c77c75ca05a5bd484bf2b409a9c1d21344f9c933939880450803b254825c7c7d7f88034e8c7e675420b389
+  languageName: node
+  linkType: hard
+
 "source-map-js@npm:>=0.6.2 <2.0.0, source-map-js@npm:^1.0.2":
   version: 1.0.2
   resolution: "source-map-js@npm:1.0.2"
@@ -11996,7 +12005,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:^3.2.47":
+"vue3-runtime-template@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "vue3-runtime-template@npm:1.0.2"
+  dependencies:
+    vue: ^3.0.0
+  checksum: 7aa04fef7d763834039cfccc1e92960ecb0936e91e44eb0378f06e34f243999895bde3e0af53c6eeda87125629a02f6b0bbf7fa57620ab5a72e1537d3ea0281a
+  languageName: node
+  linkType: hard
+
+"vue@npm:^3.0.0, vue@npm:^3.2.47":
   version: 3.2.47
   resolution: "vue@npm:3.2.47"
   dependencies:
@@ -12006,6 +12024,17 @@ __metadata:
     "@vue/server-renderer": 3.2.47
     "@vue/shared": 3.2.47
   checksum: 3b586f61fd2cdfdd24459a946a2831c0f164056993cc005badde4fea10d53e430f1cedf1b62d52a6992b58fe656fc5fc67b32f594a2832dfe440c6db46d6f158
+  languageName: node
+  linkType: hard
+
+"vuedraggable@npm:next":
+  version: 4.1.0
+  resolution: "vuedraggable@npm:4.1.0"
+  dependencies:
+    sortablejs: 1.14.0
+  peerDependencies:
+    vue: ^3.0.1
+  checksum: 8b4c5a6b384361df97f7a3595d7772dfbb086bf97c6702a1117b532a9e49db2908cb5d21b7959cb10179714c4c2225e4be0b77b29f778923169ea8a8197a429f
   languageName: node
   linkType: hard
 

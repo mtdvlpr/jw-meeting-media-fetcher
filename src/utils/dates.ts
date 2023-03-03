@@ -4,7 +4,7 @@ export function isMeetingDay(date?: Dayjs) {
   const { $dayjs } = useNuxtApp()
   const dateToCheck = date ?? $dayjs()
   if (!dateToCheck.isValid() || getPrefs<boolean>('meeting.specialCong'))
-    return false
+    return ''
   const mwDay = getMwDay(dateToCheck.startOf('week'))
   const weDay = getPrefs<number>('meeting.weDay')
   const day = dateToCheck.day() === 0 ? 6 : dateToCheck.day() - 1 // Day is 0 indexed and starts with Sunday

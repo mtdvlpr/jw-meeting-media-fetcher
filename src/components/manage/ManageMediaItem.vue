@@ -37,31 +37,29 @@
       </v-btn>
     </v-list-item-action>
     <v-hover v-slot="{ isHovering }">
-      <v-list-item-content>
-        <v-img
-          v-if="isHovering && getPreview(item)"
-          :src="preview"
-          alt="Loading..."
-          class="tooltip-img"
-          style="max-width=200px"
-        />
-        <v-list-item-title
-          v-if="item.isLocal === undefined"
-          :class="{
-            'text-decoration-line-through': item.ignored,
-          }"
-        >
-          {{ prefix + ' ' + item.safeName }}
-        </v-list-item-title>
-        <v-list-item-title
-          v-else
-          :class="{
-            'text-decoration-line-through': item.hidden,
-          }"
-        >
-          {{ item.safeName }}
-        </v-list-item-title>
-      </v-list-item-content>
+      <v-img
+        v-if="isHovering && getPreview(item)"
+        :src="preview"
+        alt="Loading..."
+        class="tooltip-img"
+        style="max-width=200px"
+      />
+      <v-list-item-title
+        v-if="item.isLocal === undefined"
+        :class="{
+          'text-decoration-line-through': item.ignored,
+        }"
+      >
+        {{ prefix + ' ' + item.safeName }}
+      </v-list-item-title>
+      <v-list-item-title
+        v-else
+        :class="{
+          'text-decoration-line-through': item.hidden,
+        }"
+      >
+        {{ item.safeName }}
+      </v-list-item-title>
     </v-hover>
     <v-list-item-action class="my-0">
       <v-icon v-if="item.recurring" icon="faSyncAlt" class="text-info" />

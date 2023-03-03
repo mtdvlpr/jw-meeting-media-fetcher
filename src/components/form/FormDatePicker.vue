@@ -21,13 +21,13 @@
         append-outer
         hide-details
         @click:clear="
-          $emit('input', null)
+          emit('input', null)
           $refs.dialog.save(null)
         "
         v-on="on"
       >
         <template v-if="!locked" #append>
-          <font-awesome-icon :icon="faCalendar" style="margin-top: 2px" />
+          <v-icon icon="faCalendar" style="margin-top: 2px" />
         </template>
       </form-input>
     </template>
@@ -42,7 +42,7 @@
       :allowed-dates="allowedDates"
       :min="min ? min : undefined"
       @change="
-        $emit('input', $event)
+        emit('input', $event)
         $refs.dialog.save($attrs.value)
       "
     />

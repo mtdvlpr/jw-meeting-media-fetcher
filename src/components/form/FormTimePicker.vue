@@ -22,7 +22,7 @@
         v-on="on"
       >
         <template v-if="!locked" #append>
-          <font-awesome-icon :icon="faClock" style="margin-top: 2px" />
+          <v-icon icon="faClock" style="margin-top: 2px" />
         </template>
       </form-input>
     </template>
@@ -35,7 +35,7 @@
       :use-seconds="useSeconds"
       format="24hr"
       @click:minute="$refs.dialog.save($attrs.value)"
-      @change="$emit('input', $event)"
+      @change="emit('input', $event)"
     />
   </v-dialog>
 </template>

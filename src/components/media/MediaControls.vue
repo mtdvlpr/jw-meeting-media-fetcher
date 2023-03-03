@@ -61,9 +61,11 @@ type MediaItem = {
 const route = useRoute()
 const manageMedia = ref(false)
 const sortable = ref(false)
+provide(sortableKey, sortable)
 const loading = ref(true)
 const addSong = ref(false)
 const ccEnable = ref(true)
+provide(ccEnableKey, ccEnable)
 const { isDark } = useTheme()
 const items = ref<MediaItem[]>([])
 const date = computed(() => route.query.date ?? '')
@@ -163,6 +165,7 @@ const getMedia = () => {
 }
 
 const showPrefix = ref(false)
+provide(showPrefixKey, showPrefix)
 const togglePrefix = () => {
   showPrefix.value = true
   setTimeout(() => {

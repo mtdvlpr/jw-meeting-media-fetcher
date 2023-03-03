@@ -6,7 +6,7 @@
         color="primary"
         style="height: 40px"
         :disabled="loading"
-        @click="$emit('click')"
+        @click="emit('click')"
       >
         {{ $t('browse') }}
       </v-btn>

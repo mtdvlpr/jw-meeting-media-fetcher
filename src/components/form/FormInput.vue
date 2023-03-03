@@ -50,8 +50,8 @@
         <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
-    <template v-for="(_, name) in $slots" #[name]>
-      <slot :name="name" />
+    <template v-for="(_, name) in $slots" #[name]="slotData">
+      <slot :name="name" v-bind="slotData" />
     </template>
   </v-text-field>
   <v-autocomplete
@@ -67,8 +67,8 @@
     :counter="max"
     hide-no-data
   >
-    <template v-for="(_, name) in $slots" #[name]>
-      <slot :name="name" />
+    <template v-for="(_, name) in $slots" #[name]="slotData">
+      <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 2px">
@@ -101,8 +101,8 @@
     v-bind="$attrs"
     :rules="rules"
   >
-    <template v-for="(_, name) in $slots" #[name]>
-      <slot :name="name" />
+    <template v-for="(_, name) in $slots" #[name]="slotData">
+      <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 2px">
@@ -136,8 +136,8 @@
     :counter="max"
     rows="4"
   >
-    <template v-for="(_, name) in $slots" #[name]>
-      <slot :name="name" />
+    <template v-for="(_, name) in $slots" #[name]="slotData">
+      <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock">
@@ -164,8 +164,8 @@
     :class="{ 'v-input--is-disabled': locked }"
     v-bind="$attrs"
   >
-    <template v-for="(_, name) in $slots" #[name]>
-      <slot :name="name" />
+    <template v-for="(_, name) in $slots" #[name]="slotData">
+      <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 3px">
@@ -197,8 +197,8 @@
     :class="{ 'v-input--is-disabled': locked }"
     v-bind="$attrs"
   >
-    <template v-for="(_, name) in $slots" #[name]>
-      <slot :name="name" />
+    <template v-for="(_, name) in $slots" #[name]="slotData">
+      <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 3px">

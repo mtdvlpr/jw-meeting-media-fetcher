@@ -2,7 +2,7 @@
 <!--<template>
   <v-row align="center" class="my-n4" style="width: 100%">
     <v-col cols="1" class="text-center" align-self="center">
-      <font-awesome-icon icon="faArrowDown19" />
+      <v-icon icon="faArrowDown19" />
     </v-col>
     <v-col cols="11" class="d-flex">
       <v-col cols="4">

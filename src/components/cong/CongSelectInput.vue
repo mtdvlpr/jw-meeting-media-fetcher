@@ -25,20 +25,13 @@
           </v-tooltip>
         </v-icon>
       </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>{{ item.name }}</v-list-item-title>
-      </v-list-item-content>
+      <v-list-item-title>{{ item.name }}</v-list-item-title>
     </template>
     <template #append-item>
       <v-list-item id="add-cong-option" @click="addCong()">
         <v-list-item-action>
-          <font-awesome-icon
-            icon="faSquarePlus"
-            class="text-success"
-            size="xs"
-          />
+          <v-icon icon="faSquarePlus" class="text-success" size="xs" />
         </v-list-item-action>
-        <v-list-item-content />
       </v-list-item>
     </template>
   </v-select>

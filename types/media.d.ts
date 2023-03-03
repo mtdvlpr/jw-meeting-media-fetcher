@@ -24,6 +24,9 @@ export interface VideoFile extends SmallMediaFile, MeetingFileBase {
   contents?: Buffer
   filepath?: string
   queryInfo?: MultiMediaItem
+  play?: boolean
+  stop?: boolean
+  deactivate?: boolean
 }
 
 export interface ImageFile extends MeetingFileBase {

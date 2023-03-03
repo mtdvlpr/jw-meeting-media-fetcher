@@ -1,0 +1,312 @@
+<template>
+  <div
+    id="media-list-container"
+    :style="`
+        width: 100%;
+        overflow-y: auto;
+        ${listHeight}
+      `"
+  >
+    <song-picker
+      v-if="addSong"
+      ref="songPicker"
+      v-model="song"
+      class="pa-4"
+      clearable
+    />
+    <template v-if="song">
+      <v-list class="ma-4">
+        <media-item
+          :key="song.url"
+          :src="song.url"
+          :play-now="song.play"
+          :stop-now="song.stop"
+          :deactivate="song.deactivate"
+          :streaming-file="song"
+          @playing="emit('index', -1)"
+          @deactivated="deactivateSong"
+        />
+      </v-list>
+      <v-divider class="mx-4" />
+    </template>
+    <template v-if="isMwDay">
+      <v-divider class="mx-4 mt-4 treasures" />
+      <v-list-item-title class="mx-4 my-2 treasures--text text-overline">
+        {{ mwbHeadings.treasures }}
+      </v-list-item-title>
+      <draggable
+        v-model="treasureItems"
+        item-key="id"
+        tag="v-list"
+        handle=".sort-btn"
+        group="media-items"
+        class="ma-4"
+        @start="dragging = true"
+        @end="dragging = false"
+      >
+        <template #item="{ element, index }">
+          <media-item
+            :src="element.path"
+            :play-now="element.play"
+            :stop-now="element.stop"
+            :deactivate="element.deactivate"
+            @playing="emit('index', index)"
+            @deactivated="emit('deactivate', index)"
+          />
+        </template>
+      </draggable>
+      <template v-if="applyItems.length > 0">
+        <v-divider class="mx-4 apply" />
+        <v-list-item-title class="mx-4 my-2 apply--text text-overline">
+          {{ mwbHeadings.apply }}
+        </v-list-item-title>
+        <draggable
+          v-model="applyItems"
+          item-key="id"
+          tag="v-list"
+          handle=".sort-btn"
+          group="media-items"
+          class="ma-4"
+          @start="dragging = true"
+          @end="dragging = false"
+        >
+          <template #item="{ element, index }">
+            <media-item
+              :src="element.path"
+              :play-now="element.play"
+              :stop-now="element.stop"
+              :deactivate="element.deactivate"
+              @playing="emit('index', treasureItems.length + index)"
+              @deactivated="emit('deactivate', treasureItems.length + index)"
+            />
+          </template>
+        </draggable>
+      </template>
+      <v-divider class="mx-4 living" />
+      <v-list-item-title class="mx-4 my-2 living--text text-overline">
+        {{ mwbHeadings.living }}
+      </v-list-item-title>
+      <draggable
+        v-model="livingItems"
+        item-key="id"
+        tag="v-list"
+        handle=".sort-btn"
+        group="media-items"
+        class="ma-4"
+        @start="dragging = true"
+        @end="dragging = false"
+      >
+        <template #item="{ element, index }">
+          <media-item
+            :src="element.path"
+            :play-now="element.play"
+            :stop-now="element.stop"
+            :deactivate="element.deactivate"
+            @playing="
+              emit('index', treasureItems.length + applyItems.length + index)
+            "
+            @deactivated="
+              emit(
+                'deactivate',
+                treasureItems.length + applyItems.length + index
+              )
+            "
+          />
+        </template>
+      </draggable>
+    </template>
+    <template v-else-if="isWeDay">
+      <v-list-item-title class="mx-4 my-4 treasures--text text-overline">
+        {{ $t('publicTalk') }}
+      </v-list-item-title>
+      <draggable
+        v-model="publicTalkItems"
+        item-key="id"
+        tag="v-list"
+        handle=".sort-btn"
+        group="media-items"
+        class="ma-4"
+        @start="dragging = true"
+        @end="dragging = false"
+      >
+        <template #item="{ element, index }">
+          <media-item
+            :src="element.path"
+            :play-now="element.play"
+            :stop-now="element.stop"
+            :deactivate="element.deactivate"
+            @playing="emit('index', index)"
+            @deactivated="emit('deactivate', index)"
+          />
+        </template>
+      </draggable>
+      <v-divider class="mx-4 living" />
+      <v-list-item-title class="mx-4 my-2 living--text text-overline">
+        {{ wtTitle }}
+      </v-list-item-title>
+      <draggable
+        v-model="wtItems"
+        item-key="id"
+        tag="v-list"
+        handle=".sort-btn"
+        group="media-items"
+        class="ma-4"
+        @start="dragging = true"
+        @end="dragging = false"
+      >
+        <template #item="{ element, index }">
+          <media-item
+            :src="element.path"
+            :play-now="element.play"
+            :stop-now="element.stop"
+            :deactivate="element.deactivate"
+            @playing="emit('index', publicTalkItems.length + index)"
+            @deactivated="emit('deactivate', publicTalkItems.length + index)"
+          />
+        </template>
+      </draggable>
+    </template>
+    <draggable
+      v-else
+      v-model="mediaItems"
+      item-key="id"
+      tag="v-list"
+      handle=".sort-btn"
+      group="media-items"
+      class="ma-4"
+      @start="dragging = true"
+      @end="dragging = false"
+    >
+      <template #item="{ element, index }">
+        <media-item
+          :src="element.path"
+          :play-now="element.play"
+          :stop-now="element.stop"
+          :deactivate="element.deactivate"
+          @playing="emit('index', index)"
+          @deactivated="emit('deactivate', index)"
+        />
+      </template>
+    </draggable>
+  </div>
+</template>
+<script setup lang="ts">
+// eslint-disable-next-line import/named
+import { readFileSync } from 'fs-extra'
+import { basename, join } from 'upath'
+import draggable from 'vuedraggable'
+import { DateFormat, VideoFile } from '~~/types'
+type MediaItem = {
+  id: string
+  path: string
+  play: boolean
+  stop: boolean
+  deactivate: boolean
+}
+const emit = defineEmits<{
+  (e: 'song'): void
+  (e: 'index', index: number): void
+  (e: 'deactivate', index: number): void
+}>()
+
+const props = defineProps<{
+  items: MediaItem[]
+  addSong?: boolean
+}>()
+
+watch(
+  () => props.items,
+  (val) => {
+    setItems(val)
+  }
+)
+
+const setItems = (val: MediaItem[]) => {
+  mediaItems.value = val
+  publicTalkItems.value = val.slice(0, firstWtSong.value)
+  wtItems.value = val.slice(firstWtSong.value)
+  treasureItems.value = val.slice(
+    0,
+    firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
+  )
+  livingItems.value = val.slice(secondMwbSong.value)
+  if (firstApplyItem.value !== -1) {
+    applyItems.value = []
+  } else {
+    applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
+  }
+}
+
+const dragging = ref(false)
+const meetingDay = ref('')
+const isMwDay = computed(() => meetingDay.value === 'mw')
+const isWeDay = computed(() => meetingDay.value === 'we')
+const fallback = {
+  treasures: 'TREASURES FROM GOD’S WORD',
+  apply: 'APPLY YOURSELF TO THE FIELD MINISTRY',
+  living: 'LIVING AS CHRISTIANS',
+}
+const mwbHeadings = ref(fallback)
+const getMwbHeadings = () => {
+  try {
+    const file = readFileSync(join(pubPath(), 'mwb', 'headings.json'), 'utf8')
+    mwbHeadings.value = file ? JSON.parse(file) : fallback
+  } catch (e: any) {
+    mwbHeadings.value = fallback
+  }
+}
+
+const firstWtSong = computed(() => {
+  return mediaItems.value.findIndex((item) =>
+    basename(item.path).startsWith('03-01')
+  )
+})
+const firstApplyItem = computed(() => {
+  return mediaItems.value.findIndex((item) =>
+    basename(item.path).startsWith('02')
+  )
+})
+const secondMwbSong = computed(() => {
+  return mediaItems.value.findIndex((item) =>
+    basename(item.path).startsWith('03')
+  )
+})
+
+const mediaItems = ref<MediaItem[]>([])
+const treasureItems = ref<MediaItem[]>([])
+const applyItems = ref<MediaItem[]>([])
+const livingItems = ref<MediaItem[]>([])
+const publicTalkItems = ref<MediaItem[]>([])
+const wtItems = ref<MediaItem[]>([])
+const song = ref<VideoFile | null>(null)
+watch(song, () => emit('song'))
+const deactivateSong = () => {
+  if (song.value) song.value.deactivate = false
+}
+const route = useRoute()
+const { client: zoomIntegration } = storeToRefs(useZoomStore())
+const date = computed(() => (route.query.date ?? '') as string)
+const windowHeight = inject(windowHeightKey, ref(0))
+const wtTitle = computed(() => {
+  const file = findOne(join(mediaPath(), date.value, '*.title'))
+  return file ? basename(file, '.title') : 'Watchtower'
+})
+
+onMounted(() => {
+  setItems(props.items)
+  getMwbHeadings()
+  const { $dayjs } = useNuxtApp()
+  meetingDay.value = isMeetingDay(
+    $dayjs(date.value, getPrefs<DateFormat>('app.outputFolderDateFormat'))
+  )
+})
+
+const listHeight = computed(() => {
+  const TOP_BAR = 64
+  const FOOTER = 72
+  const ZOOM_BAR = 56
+  let otherElements = TOP_BAR + FOOTER
+  if (zoomIntegration.value) otherElements += ZOOM_BAR
+  return `max-height: ${windowHeight.value - otherElements}px`
+})
+</script>
