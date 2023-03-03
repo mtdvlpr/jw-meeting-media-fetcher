@@ -21,7 +21,7 @@
     </template>
     <template v-else-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 2px">
-        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
     <template v-else-if="explanation && appendOuter" #append>
@@ -34,7 +34,7 @@
             style="margin-top: 2px"
           />
         </template>
-        <span>{{ t(explanation) }}</span>
+        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
     <template v-else-if="explanation" #append-inner>
@@ -47,7 +47,7 @@
             style="margin-top: 2px"
           />
         </template>
-        <span>{{ t(explanation) }}</span>
+        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
     <template v-for="(_, name) in $slots" #[name]>
@@ -72,7 +72,7 @@
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 2px">
-        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
     <template v-else-if="explanation" #append>
@@ -85,7 +85,7 @@
             style="margin-top: 2px"
           />
         </template>
-        <span>{{ t(explanation) }}</span>
+        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
   </v-autocomplete>
@@ -106,7 +106,7 @@
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 2px">
-        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
     <template v-else-if="explanation" #append>
@@ -119,7 +119,7 @@
             style="margin-top: 2px"
           />
         </template>
-        <span>{{ t(explanation) }}</span>
+        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
   </v-select>
@@ -141,7 +141,7 @@
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock">
-        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
     <template v-else-if="explanation" #append-inner>
@@ -149,7 +149,7 @@
         <template #activator="{ props: attrs }">
           <v-icon v-bind="attrs" size="lg" icon="faCircleQuestion" />
         </template>
-        <span>{{ t(explanation) }}</span>
+        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
   </v-textarea>
@@ -169,7 +169,7 @@
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 3px">
-        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
     <template v-else-if="explanation" #append-inner>
@@ -182,7 +182,7 @@
             style="margin-top: 3px"
           />
         </template>
-        <span>{{ t(explanation) }}</span>
+        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
   </v-checkbox>
@@ -202,7 +202,7 @@
     </template>
     <template v-if="locked" #append-inner>
       <v-icon icon="faLock" style="margin-top: 3px">
-        <v-tooltip location="top">{{ t('settingLocked') }}</v-tooltip>
+        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
     <template v-else-if="explanation" #append-inner>
@@ -215,7 +215,7 @@
             size="lg"
           />
         </template>
-        <span>{{ t(explanation) }}</span>
+        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
   </v-switch>
@@ -225,7 +225,7 @@
         <template #activator="{ props: attrs }">
           <span v-bind="attrs">{{ groupLabel }}</span>
         </template>
-        <span>{{ t('settingLocked') }}</span>
+        <span>{{ $t('settingLocked') }}</span>
       </v-tooltip>
       <span v-else>{{ groupLabel }}</span>
     </v-col>
@@ -286,7 +286,7 @@
         <template v-if="locked" #append-inner>
           <v-icon icon="faLock" style="margin-top: 2px">
             <v-tooltip activator="parent" location="top">
-              {{ t('settingLocked') }}
+              {{ $t('settingLocked') }}
             </v-tooltip>
           </v-icon>
         </template>
@@ -300,7 +300,7 @@
                 style="margin-top: 2px"
               />
             </template>
-            <span>{{ t(explanation) }}</span>
+            <span>{{ $t(explanation) }}</span>
           </v-tooltip>
         </template>
         <template v-else-if="customInput" #append-inner>
