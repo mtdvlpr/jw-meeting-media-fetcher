@@ -8,6 +8,18 @@ export interface ObsPrefs {
   useV4: boolean
 }
 
+export interface ZoomPrefs {
+  enable: boolean
+  name: string | null
+  id: string | null
+  password: string | null
+  spotlight: boolean
+  hideComponent: boolean
+  autoRename: string[]
+  autoStartMeeting: boolean
+  autoStartTime: number | null
+}
+
 export const dateFormats = [
   'DD-MM-YYYY',
   'YYYY-MM-DD',
@@ -34,6 +46,7 @@ export interface AppPrefs {
   offline: boolean
   outputFolderDateFormat: DateFormat
   theme: Theme
+  zoom: ZoomPrefs
 }
 
 export interface CongPrefs {

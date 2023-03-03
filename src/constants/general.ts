@@ -1,6 +1,13 @@
-// App
+// M3 Specific
 export const appShortName = 'M³'
 export const appLongName = 'Meeting Media Manager'
+export const MAX_PREFIX_LENGTH = 8
+export const LAST_JWMMF_VERSION = 2255
+
+// JW Specific
+export const JAN_2008 = 20080101
+export const NR_OF_KINGDOM_SONGS = 151
+export const BIBLE_READING_PAR_NR = 12
 
 // Fonts
 export const WT_CLEARTEXT_FONT =
@@ -46,12 +53,3 @@ export const CHAR_AMP = 38
 export const CHAR_SQ = 39
 export const CHAR_LT = 60
 export const CHAR_GT = 62
-
-// JW Specific
-export const JAN_2008 = 20080101
-export const NR_OF_KINGDOM_SONGS = 151
-export const BIBLE_READING_PAR_NR = 12
-
-// M3 Specific
-export const MAX_PREFIX_LENGTH = 8
-export const LAST_JWMMF_VERSION = 2255

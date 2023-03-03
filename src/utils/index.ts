@@ -60,3 +60,14 @@ export {
 } from './media/sync'
 
 export { getWeMedia } from './media/weekend'
+
+// Zoom
+export { connectZoom, zoomSocket } from './zoom/connect'
+export {
+  startMeeting,
+  stopMeeting,
+  toggleMic,
+  toggleOnHold,
+  toggleSplotlight,
+  renameParticipant,
+} from './zoom/actions'

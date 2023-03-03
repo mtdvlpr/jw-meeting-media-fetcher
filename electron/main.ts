@@ -32,6 +32,16 @@ export const appLongName = 'Meeting Media Manager'
 export const AR_WIDTH = 16
 export const AR_HEIGHT = 9
 
+if (isDev) {
+  app.setPath(
+    'userData',
+    join(
+      app.getPath('appData'),
+      appLongName.toLowerCase().replace(' ', '-') + '-dev'
+    )
+  )
+}
+
 process.env.ROOT = join(__dirname, '..')
 process.env.DIST = join(process.env.ROOT, 'dist-electron')
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL

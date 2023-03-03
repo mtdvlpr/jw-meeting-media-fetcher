@@ -44,11 +44,11 @@ import { LocalFile, VideoFile } from '~~/types'
 const props = defineProps<{
   media: (LocalFile | VideoFile)[]
   date: string
-  newFile: VideoFile
+  newFile: VideoFile | null
   newFiles: (LocalFile | VideoFile)[]
   prefix: string
-  showPrefix: boolean
-  showInput: boolean
+  showPrefix?: boolean
+  showInput?: boolean
 }>()
 
 const emit = defineEmits(['refresh'])
@@ -62,13 +62,10 @@ interface Edit {
 
 const edit = ref<Edit | null>(null)
 const renaming = ref(false)
-const { height } = useWindowSize()
+const windowHeight = inject(windowHeightKey, ref(0))
 const mediaList = ref<(VideoFile | LocalFile)[]>([])
 const { client, contents } = storeToRefs(useCongStore())
-const { online: appOnline } = storeToRefs(useStatStore())
-const online = computed(
-  () => appOnline.value && getPrefs<boolean>('app.offline')
-)
+const { online } = useOnline()
 
 watch(
   [
@@ -90,11 +87,11 @@ onMounted(() => {
 const setMediaList = () => {
   // If new files are being uploaded, add them to the list
   if (props.newFile || (props.newFiles && props.newFiles.length > 0)) {
-    mediaList.value = [
-      props.newFile,
-      ...(props.newFiles ?? []),
-      ...(props.media ?? []),
-    ]
+    const media = [...(props.newFiles ?? []), ...(props.media ?? [])]
+    if (props.newFile) {
+      media.push(props.newFile)
+    }
+    mediaList.value = media
       .filter(Boolean)
       .map((m) => {
         m.color = 'warning'
@@ -224,6 +221,6 @@ const listHeight = computed(() => {
   if (props.showPrefix) {
     otherElements += PREFIX
   }
-  return height.value - otherElements
+  return windowHeight.value - otherElements
 })
 </script>

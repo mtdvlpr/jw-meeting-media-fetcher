@@ -19,9 +19,9 @@
 </template>
 <script setup lang="ts">
 const props = defineProps<{
-  toggled: boolean
+  toggled?: boolean
   tooltip?: 'top' | 'bottom' | 'start' | 'end'
-  video: boolean
+  video?: boolean
 }>()
 
 const emit = defineEmits(['click'])

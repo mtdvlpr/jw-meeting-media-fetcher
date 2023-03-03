@@ -52,7 +52,7 @@ import { ipcRenderer } from 'electron'
 // eslint-disable-next-line import/named
 import { Database } from 'sql.js'
 import { extname, trimExt } from 'upath'
-import { LocalFile, MultiMediaItem, VideoFile } from '~~/types'
+import { LocalFile, MultiMediaItem } from '~~/types'
 
 const props = defineProps<{
   file: string
@@ -61,7 +61,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'empty'): void
-  (e: 'select', files: (LocalFile | VideoFile)[]): void
+  (e: 'select', files: LocalFile[]): void
 }>()
 
 const docId = ref(0)
@@ -69,7 +69,7 @@ const loading = ref(true)
 const db = ref<Database | null>(null)
 const missingMedia = ref<string[]>([])
 const items = ref<{ DocumentId: number; Title: string }[]>([])
-const mediaFiles = ref<(LocalFile | VideoFile)[]>([])
+const mediaFiles = ref<LocalFile[]>([])
 watch(
   mediaFiles,
   () => {

@@ -21,6 +21,6 @@ defineEmits(['click'])
 defineProps<{
   type: string
   path: string
-  loading: boolean
+  loading?: boolean
 }>()
 </script>

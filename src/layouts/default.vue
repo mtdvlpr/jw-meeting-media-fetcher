@@ -254,6 +254,7 @@ const initPrefs = async (name: string, isNew = false) => {
   log.debug('app', appPath())
   log.debug('electron', await ipcRenderer.invoke('userData'))
   log.debug('isDev', await ipcRenderer.invoke('isDev'))
+  log.debug('version', await ipcRenderer.invoke('appVersion'))
 
   // Set disabledHardwareAcceleration to user pref
   const disableHA = getPrefs<boolean>('app.disableHardwareAcceleration')

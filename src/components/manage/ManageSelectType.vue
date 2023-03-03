@@ -27,7 +27,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   modelValue: string
-  disabled: boolean
+  disabled?: boolean
 }>()
 const { $i18n } = useNuxtApp()
 const emit = defineEmits(['update:modelValue'])

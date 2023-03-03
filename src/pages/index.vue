@@ -174,10 +174,8 @@ const resetColors = () => {
 }
 
 const statStore = useStatStore()
-const { initialLoad, online: appOnline } = storeToRefs(statStore)
-const online = computed(
-  () => appOnline.value && !getPrefs<boolean>('app.offline')
-)
+const { initialLoad } = storeToRefs(statStore)
+const { online } = useOnline()
 
 const congParam = useRouteQuery<string>('cong', '-1')
 watch(congParam, (val) => {

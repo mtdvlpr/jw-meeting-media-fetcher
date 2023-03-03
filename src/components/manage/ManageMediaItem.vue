@@ -109,10 +109,7 @@ const preview = ref('')
 const previewName = ref('')
 const loading = ref(false)
 const { client, contents } = storeToRefs(useCongStore())
-const { online: appOnline } = storeToRefs(useStatStore())
-const online = computed(
-  () => appOnline.value && getPrefs<boolean>('app.offline')
-)
+const { online } = useOnline()
 
 const getPreview = (item: VideoFile | LocalFile) => {
   if (previewName.value === item.safeName) {

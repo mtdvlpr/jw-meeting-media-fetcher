@@ -31,10 +31,7 @@ export const useCongStore = defineStore('cong', {
       this.contentsTree = contentsTree
     },
     clear() {
-      this.client = null
-      this.contents = []
-      this.contentsTree = []
-      this.prefs = null
+      this.$state = useCloneDeep(defaultState)
     },
   },
 })

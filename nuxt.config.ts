@@ -77,6 +77,8 @@ export default defineNuxtConfig({
       sentryAuthToken: process.env.SENTRY_AUTH_TOKEN,
       sentryEnabled: sentryInit && !process.env.SENTRY_DISABLE,
       sentrySourceMaps: process.env.SENTRY_SOURCE_MAPS,
+      zoomSdkKey: process.env.ZOOM_SDK_KEY,
+      zoomSignatureEndpoint: process.env.ZOOM_SIGNATURE_ENDPOINT,
     },
   },
   typescript: { shim: false, typeCheck: true },
