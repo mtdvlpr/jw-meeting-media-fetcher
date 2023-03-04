@@ -158,16 +158,16 @@ onMounted(async () => {
       })
     }
   })
-  useIpcRendererOn('macUpdate', async () => {
+  useIpcRendererOn('macUpdate', async (_e, version) => {
     try {
-      const latestRelease = await fetchRelease(`releases/latest`)
+      const release = await fetchRelease(`releases/tag/${version}`)
 
-      const macDownload = latestRelease.assets.find(({ name }) =>
+      const macDownload = release.assets.find(({ name }) =>
         name.includes('dmg')
       )!
 
       notify('updateDownloading', {
-        identifier: latestRelease.tag_name,
+        identifier: release.tag_name,
       })
 
       const downloadsPath = join(

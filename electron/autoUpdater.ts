@@ -34,7 +34,7 @@ export function initAutoUpdater(winHandler: BrowserWinHandler) {
   })
   autoUpdater.on('update-available', (info) => {
     if (platform() === 'darwin') {
-      winHandler.send('macUpdate')
+      winHandler.send('macUpdate', 'v' + info.version)
     } else {
       winHandler.send('notifyUser', [
         'updateDownloading',
