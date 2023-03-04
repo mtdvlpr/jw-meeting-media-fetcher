@@ -67,13 +67,13 @@
     "@zoomus/websdk": "^2.10.1",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
-    "electron": "23.1.1",
+    "electron": "23.1.2",
     "electron-builder": "23.6.0",
     "electron-devtools-installer": "^3.2.0",
     "electron-store": "^8.1.0",
     "electron-updater": "^5.3.0",
     "electron-window-state": "^5.0.3",
-    "esbuild": "^0.17.10",
+    "esbuild": "^0.17.11",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -105,10 +105,8 @@
     "vue": "^3.2.47",
     "vue-tsc": "^1.2.0",
     "vue3-runtime-template": "^1.0.2",
+    "vuedraggable": "next",
     "vuetify": "^3.1.7",
     "webdav": "^4.11.2"
-  },
-  "dependencies": {
-    "vuedraggable": "next"
   }
 }
