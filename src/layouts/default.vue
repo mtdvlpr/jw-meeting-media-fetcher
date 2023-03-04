@@ -12,7 +12,6 @@
 import { platform, userInfo } from 'os'
 import { fileURLToPath, pathToFileURL } from 'url'
 import getUsername from 'fullname'
-import { useTheme } from 'vuetify'
 import { ipcRenderer } from 'electron'
 import { useIpcRendererOn } from '@vueuse/electron'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
@@ -45,15 +44,10 @@ useEventListener('offline', () => {
 })
 
 // Global Theme
-const vuetifyTheme = useTheme()
-const prefersDark = usePreferredDark()
-const systemTheme = computed(() => (prefersDark.value ? 'dark' : 'light'))
-const setTheme = (theme: string) => {
-  vuetifyTheme.global.name.value = theme
-}
-watch(systemTheme, (val) => {
+const { prefersDark, setTheme } = useTheme()
+watch(prefersDark, (val) => {
   if (getPrefs<Theme>('app.theme') === 'system') {
-    setTheme(val)
+    setTheme(val ? 'dark' : 'light')
   }
 })
 
@@ -73,7 +67,7 @@ watch(
 
 // Congregation Select
 onBeforeMount(async () => {
-  setTheme(systemTheme.value)
+  setTheme(prefersDark.value ? 'dark' : 'light')
 
   if (cong) {
     initPrefs('prefs-' + cong.value)
@@ -137,9 +131,9 @@ onMounted(async () => {
   useIpcRendererOn('toggleMusicShuffle', () => {
     shuffleMusic(!!mediaStore.musicFadeOut)
   })
-  useIpcRendererOn('themeUpdated', (_e, dark: boolean) => {
+  useIpcRendererOn('themeUpdated', (_e, theme: string) => {
     if (getPrefs<Theme>('app.theme') === 'system') {
-      setTheme(dark ? 'dark' : 'light')
+      setTheme(theme)
     }
   })
   useIpcRendererOn('notifyUser', (_e, msg: any[]) => {
@@ -272,7 +266,7 @@ const initPrefs = async (name: string, isNew = false) => {
   const themePref = getPrefs<Theme>('app.theme')
   ipcRenderer.send('setTheme', themePref)
   if (themePref === 'system') {
-    setTheme(systemTheme.value)
+    setTheme(prefersDark.value ? 'dark' : 'light')
   } else {
     setTheme(themePref)
   }

@@ -2,6 +2,8 @@ import { Dayjs } from 'dayjs'
 // eslint-disable-next-line import/named
 import { statSync } from 'fs-extra'
 import { join, extname, basename } from 'upath'
+import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import { CongFile } from './../../../types/cong.d'
 import { MeetingFile, DateFormat } from '~~/types'
 
 export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
@@ -304,4 +306,52 @@ function increaseProgress(
 ): void {
   progress++
   setProgress(progress, total, true)
+}
+
+export async function renameCongFile(
+  file: CongFile,
+  oldLocale: LocaleObject,
+  newLocale: LocaleObject
+): Promise<void> {
+  const store = useCongStore()
+  if (!store.client) return
+  const oldVal = oldLocale.code
+  const newVal = newLocale.code
+  if (file.basename.includes(' - ' + translate('song', oldVal))) {
+    const newName = file.filename.replace(
+      ' - ' + translate('song', oldVal),
+      ' - ' + translate('song', newVal)
+    )
+
+    if (file.filename !== newName) {
+      await store.client.moveFile(file.filename, newName)
+    }
+  } else if (file.basename.includes(' - ' + translate('paragraph', oldVal))) {
+    const newName = file.filename.replace(
+      ' - ' + translate('paragraph', oldVal),
+      ' - ' + translate('paragraph', newVal)
+    )
+    if (file.filename !== newName) {
+      await store.client.moveFile(file.filename, newName)
+    }
+  } else if (file.type === 'directory') {
+    const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
+    const date = useNuxtApp().$dayjs(
+      file.basename,
+      dateFormat,
+      oldLocale?.dayjs ?? oldVal
+    )
+
+    if (date.isValid()) {
+      const newName = file.filename.replace(
+        file.basename,
+        date.locale(newVal).format(dateFormat)
+      )
+      if (file.filename !== newName) {
+        if (!store.contents.find(({ filename }) => filename === newName)) {
+          await store.client.moveFile(file.filename, newName)
+        }
+      }
+    }
+  }
 }

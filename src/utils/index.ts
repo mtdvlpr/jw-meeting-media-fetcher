@@ -6,7 +6,7 @@ export {
   createCongDir,
 } from './cong/connect'
 
-export { getCongMedia, syncCongMedia } from './cong/media'
+export { getCongMedia, syncCongMedia, renameCongFile } from './cong/media'
 export { isLocked, forcePrefs } from './cong/prefs'
 
 // fs
@@ -18,6 +18,7 @@ export {
   move,
   rename,
   renameAll,
+  renamePubs,
   findOne,
   findAll,
   findAllStats,

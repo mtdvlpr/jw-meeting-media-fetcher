@@ -1,7 +1,11 @@
 import { useTheme } from 'vuetify'
 
 export default function () {
-  const theme = useTheme().global.name
-  const isDark = computed(() => theme.value === 'dark')
-  return { isDark }
+  const vuetifyTheme = useTheme().global.name
+  const prefersDark = usePreferredDark()
+  const isDark = computed(() => vuetifyTheme.value === 'dark')
+  const setTheme = (theme: string) => {
+    vuetifyTheme.value = theme
+  }
+  return { isDark, prefersDark, setTheme }
 }

@@ -148,7 +148,10 @@ if (gotTheLock) {
   })
 
   nativeTheme.on('updated', () => {
-    win?.webContents.send('themeUpdated', nativeTheme.shouldUseDarkColors)
+    win?.webContents.send(
+      'themeUpdated',
+      nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+    )
   })
 
   ipcMain.handle('userData', () => normalize(app.getPath('userData')))
@@ -157,7 +160,9 @@ if (gotTheLock) {
   ipcMain.handle('downloads', () => normalize(app.getPath('downloads')))
   ipcMain.handle('appVersion', () => app.getVersion())
   ipcMain.handle('getScreenInfo', () => getScreenInfo())
-  ipcMain.handle('darkMode', () => nativeTheme.shouldUseDarkColors)
+  ipcMain.handle('theme', () =>
+    nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+  )
 
   ipcMain.handle('openDialog', async (_e, options: OpenDialogOptions) => {
     const result = await dialog.showOpenDialog(options)
@@ -183,7 +188,9 @@ if (gotTheLock) {
   })
 
   ipcMain.on('runAtBoot', (_e, val: boolean) => {
-    app.setLoginItemSettings({ openAtLogin: val })
+    if (platform() !== 'linux') {
+      app.setLoginItemSettings({ openAtLogin: val })
+    }
   })
 
   ipcMain.on('exit', () => {
