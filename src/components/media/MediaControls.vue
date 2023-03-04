@@ -50,26 +50,24 @@ import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import { basename, dirname, join } from 'upath'
 import { LocalFile } from '~~/types'
 
-type MediaItem = {
-  id: string
-  path: string
-  play: boolean
-  stop: boolean
-  deactivate: boolean
-}
-
-const route = useRoute()
-const manageMedia = ref(false)
-const sortable = ref(false)
-provide(sortableKey, sortable)
 const loading = ref(true)
 const addSong = ref(false)
+const { isDark } = useTheme()
+
+// Current meeting date
+const route = useRoute()
+const date = computed(() => route.query.date ?? '')
+
+// Sorting
+const sortable = ref(false)
+provide(sortableKey, sortable)
+
+// Subtitles
 const ccEnable = ref(true)
 provide(ccEnableKey, ccEnable)
-const { isDark } = useTheme()
-const items = ref<MediaItem[]>([])
-const date = computed(() => route.query.date ?? '')
-const { client: zoomIntegration } = storeToRefs(useZoomStore())
+
+// Manage media dialog
+const manageMedia = ref(false)
 const localMedia = computed((): LocalFile[] =>
   items.value.map((item) => {
     return {
@@ -80,16 +78,13 @@ const localMedia = computed((): LocalFile[] =>
   })
 )
 
+// Zoom store
+const { client: zoomIntegration } = storeToRefs(useZoomStore())
+
 onMounted(() => {
   getMedia()
-  useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
-    if (type === 'next') {
-      next()
-    } else {
-      previous()
-    }
-  })
 
+  // Auto play first media item
   if (getPrefs<boolean>('media.autoPlayFirst')) {
     executeBeforeMeeting(
       'play',
@@ -104,15 +99,18 @@ onMounted(() => {
   }
 })
 
+// Media active state
 const zoomPart = inject(zoomPartKey, ref(false))
 const mediaActive = inject(mediaActiveKey, ref(false))
 watch(mediaActive, (val) => {
+  // Reset playback state
   items.value.forEach((item) => {
     item.play = false
     item.stop = false
     item.deactivate = false
   })
 
+  // Toggle Zoom spotlight
   const zoomStore = useZoomStore()
   const hostID = zoomStore.hostID
   if (zoomStore.client && !zoomPart.value && zoomStore.spotlights.length > 0) {
@@ -123,12 +121,14 @@ watch(mediaActive, (val) => {
     })
   }
 
+  // Toggle OBS scene
   const scene = useObsStore().currentScene
   const zoomScene = getPrefs<string>('app.obs.zoomScene')
   if (!val && scene) {
     setScene(zoomPart.value ? zoomScene ?? scene : scene)
   }
 
+  // Toggle media window
   if (
     !val &&
     (zoomPart.value || getPrefs<boolean>('media.hideWinAfterMedia')) &&
@@ -138,6 +138,15 @@ watch(mediaActive, (val) => {
   }
 })
 
+// Get media files
+type MediaItem = {
+  id: string
+  path: string
+  play: boolean
+  stop: boolean
+  deactivate: boolean
+}
+const items = ref<MediaItem[]>([])
 const getMedia = () => {
   const mPath = mediaPath()
   if (!mPath || !date.value) return
@@ -164,6 +173,7 @@ const getMedia = () => {
   loading.value = false
 }
 
+// File prefix
 const showPrefix = ref(false)
 provide(showPrefixKey, showPrefix)
 const togglePrefix = () => {
@@ -172,11 +182,17 @@ const togglePrefix = () => {
     showPrefix.value = false
   }, 3 * MS_IN_SEC)
 }
-const resetDeactivate = (index: number) => {
-  items.value[index].deactivate = false
-}
 
+// Media playback with shortcuts
 const currentIndex = ref(-1)
+useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
+  if (type === 'next') {
+    next()
+  } else {
+    previous()
+  }
+})
+
 const setIndex = (index: number) => {
   currentIndex.value = index
   const previousItem = items.value[currentIndex.value]
@@ -211,5 +227,8 @@ const next = () => {
     items.value[currentIndex.value].play = true
     scrollToItem(currentIndex.value)
   }
+}
+const resetDeactivate = (index: number) => {
+  items.value[index].deactivate = false
 }
 </script>

@@ -25,7 +25,7 @@
 <script setup lang="ts">
 import { basename } from 'upath'
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'selected', filename: string): void
 }>()
 

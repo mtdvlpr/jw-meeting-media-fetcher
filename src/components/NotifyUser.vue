@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <div class="n-messages">
+  <div class="notifications">
     <v-snackbar
       v-for="(m, i) in notifications"
       :id="`msg-${m.timestamp}-${m.message}-${m.identifier}`"
@@ -132,7 +132,7 @@ const getHeight = (index: number) => {
 }
 </script>
 <style scoped lang="scss">
-.n-messages {
+.notifications {
   .message-content {
     width: 100%;
     padding: 4px 6px !important;

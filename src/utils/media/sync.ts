@@ -278,7 +278,7 @@ async function syncMediaItem(
       ? findOne(
           join(
             path,
-            item.folder as string,
+            item.folder,
             '*' +
               item.safeName
                 ?.substring(MAX_PREFIX_LENGTH)
@@ -289,20 +289,19 @@ async function syncMediaItem(
 
     if (
       duplicate &&
+      item.safeName &&
       basename(duplicate) !== item.safeName &&
       (statSync(duplicate).size === item.filesize ||
-        extname(item.safeName as string) === '.svg')
+        extname(item.safeName) === '.svg')
     ) {
       rename(
         duplicate,
         basename(duplicate),
-        (item.safeName as string).replace('.svg', '.png')
+        item.safeName.replace('.svg', '.png')
       )
     } else if (item.url) {
       const store = useMediaStore()
-      const newItem = JSON.parse(
-        JSON.stringify(item as SmallMediaFile)
-      ) as SmallMediaFile
+      const newItem = <SmallMediaFile>JSON.parse(JSON.stringify(item))
       store.setProgress({
         key: newItem.url,
         promise: downloadIfRequired(newItem, setProgress),

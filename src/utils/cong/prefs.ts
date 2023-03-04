@@ -56,7 +56,7 @@ export async function forcePrefs(refresh = false) {
         format: 'text',
       })
 
-      const prefs = JSON.parse(json as string)
+      const prefs = JSON.parse(<string>json)
 
       // Migration of old pref structures
       for (const key of Object.keys(prefs)) {

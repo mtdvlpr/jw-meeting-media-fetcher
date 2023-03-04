@@ -117,6 +117,11 @@
 import { useIpcRenderer } from '@vueuse/electron'
 import { join } from 'upath'
 
+defineProps<{
+  mediaCount: number
+  currentIndex: number
+}>()
+
 const emit = defineEmits([
   'song',
   'cc',
@@ -127,25 +132,31 @@ const emit = defineEmits([
   'manageMedia',
   'showPrefix',
 ])
-defineProps<{
-  mediaCount: number
-  currentIndex: number
-}>()
+
 const { $i18n } = useNuxtApp()
-const ccAvailable = ref(false)
-const mediaActive = inject(mediaActiveKey, ref(false))
 const sortable = inject(sortableKey, ref(false))
-const ccEnable = inject(ccEnableKey, ref(false))
+const mediaActive = inject(mediaActiveKey, ref(false))
+
 const route = useRoute()
 const date = computed(() => route.query.data as string)
+
+// Subtitles
+const ccAvailable = ref(false)
+const ccEnable = inject(ccEnableKey, ref(false))
 const ccIcon = computed(() => (ccEnable.value ? 'fa' : 'far'))
-const refresh = () => {
-  emit('refresh')
-  setCcAvailable()
-}
 const setCcAvailable = () => {
   ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
 }
+
+// Refresh media
+const refresh = () => {
+  emit('refresh')
+  setTimeout(() => {
+    setCcAvailable()
+  }, MS_IN_SEC)
+}
+
+// Change meeting date
 const clearDate = () => {
   useRouter().push({
     query: {
@@ -154,6 +165,8 @@ const clearDate = () => {
     },
   })
 }
+
+// Open local media folder
 const openFolder = () => {
   try {
     useIpcRenderer().send('openPath', join(mediaPath(), date.value))
@@ -161,9 +174,11 @@ const openFolder = () => {
     warn('errorSetVars', { identifier: join(mediaPath(), date.value) }, e)
   }
 }
+
+// Open jw.org
 const openWebsite = () => {
   if (useObsStore().currentScene) {
-    const mediaScene = getPrefs('app.obs.mediaScene') as string
+    const mediaScene = getPrefs<string>('app.obs.mediaScene')
     if (mediaScene) {
       setScene(mediaScene)
     } else {
@@ -175,6 +190,8 @@ const openWebsite = () => {
     `https://www.jw.org/${getPrefs<string>('app.localAppLang')}/`
   )
 }
+
+// More actions
 const actions = [
   {
     title: $i18n.t('manageMedia'),

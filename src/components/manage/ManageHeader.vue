@@ -22,9 +22,13 @@ const { isDark } = useTheme()
 const { $i18n, $dayjs } = useNuxtApp()
 const { client } = useCongStore()
 const date = useRouteQuery<string>('date')
+
+// Heading
 const title = computed(() =>
   date.value === 'Recurring' ? $i18n.t('recurring') : date.value
 )
+
+// Check if date is a meeting day
 const meetingDay = computed(() => {
   const day = $dayjs(date.value, getPrefs<string>('app.outputFolderDateFormat'))
   return day.isValid() && isMeetingDay(day)

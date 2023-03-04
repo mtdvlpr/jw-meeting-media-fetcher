@@ -34,22 +34,28 @@ const props = defineProps<{
   firstChoice?: boolean
 }>()
 
-const dates = ref<string[]>([])
 const { $dayjs, $localePath } = useNuxtApp()
-const windowHeight = inject(windowHeightKey, ref(0))
 const today = computed(() => {
   return $dayjs().format(getPrefs<DateFormat>('app.outputFolderDateFormat'))
 })
-const listHeight = computed(() => {
-  const OTHER_ELEMENTS = 181
-  return `max-height: ${windowHeight.value - OTHER_ELEMENTS}px`
+
+onMounted(() => {
+  getDates()
+
+  if (props.firstChoice && dates.value.length === 1) {
+    selectDate(dates.value[0])
+  } else if (props.firstChoice && dates.value.includes(today.value)) {
+    selectDate(today.value)
+  }
 })
+
 const validDate = (date: string) => {
   return $dayjs(
     date,
     getPrefs<DateFormat>('app.outputFolderDateFormat')
   ).isValid()
 }
+
 const selectDate = (date: string) => {
   useRouter().push({
     query: {
@@ -59,7 +65,8 @@ const selectDate = (date: string) => {
   })
 }
 
-onMounted(() => {
+const dates = ref<string[]>([])
+const getDates = () => {
   const mPath = mediaPath()
   if (!mPath) {
     useRouter().push({
@@ -78,11 +85,12 @@ onMounted(() => {
         validDate(date) &&
         findAll(join(mPath, date, '*.!(title|vtt|json)')).length > 0
     )
+}
 
-  if (props.firstChoice && dates.value.length === 1) {
-    selectDate(dates.value[0])
-  } else if (props.firstChoice && dates.value.includes(today.value)) {
-    selectDate(today.value)
-  }
+// Computed list height
+const windowHeight = inject(windowHeightKey, ref(0))
+const listHeight = computed(() => {
+  const OTHER_ELEMENTS = 181
+  return `max-height: ${windowHeight.value - OTHER_ELEMENTS}px`
 })
 </script>

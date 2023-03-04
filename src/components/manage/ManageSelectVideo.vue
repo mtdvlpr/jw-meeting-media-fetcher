@@ -50,13 +50,12 @@ const emit = defineEmits<{
   (event: 'cancel'): void
 }>()
 
-const loading = ref(false)
-const videos = ref<MediaItem[]>([])
-
 onMounted(() => {
   getVideos()
 })
 
+const loading = ref(false)
+const videos = ref<MediaItem[]>([])
 const getVideos = async () => {
   loading.value = true
   try {
@@ -103,10 +102,5 @@ const selectVideo = (video: MediaItem) => {
     log.error(e)
   }
   loading.value = false
-}
-
-const parseRes = (res?: string) => {
-  if (!res) return 0
-  return +res.replace(/\D/g, '')
 }
 </script>

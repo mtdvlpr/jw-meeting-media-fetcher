@@ -30,7 +30,7 @@ export interface VideoFile extends SmallMediaFile, MeetingFileBase {
 }
 
 export interface ImageFile extends MeetingFileBase {
-  BeginParagraphOrdinal: number
+  BeginParagraphOrdinal?: number
   checksum?: undefined
   contents?: undefined
   filepath?: string
@@ -66,3 +66,19 @@ export interface LocalFile {
 }
 
 export declare type MeetingFile = ImageFile | VideoFile
+
+export interface Time {
+  start: number
+  end: number
+}
+
+export interface TimeString {
+  start: string
+  end: string
+}
+
+export interface Times {
+  original: Time
+  clipped: Time
+  formatted?: TimeString
+}

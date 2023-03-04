@@ -3,6 +3,7 @@
   <v-list-item
     :key="item.safeName"
     dense
+    class="manage-media-item"
     style="position: static"
     :disabled="item.loading"
   >
@@ -103,11 +104,12 @@ const props = defineProps<{
   item: VideoFile | LocalFile
 }>()
 
-const preview = ref('')
-const previewName = ref('')
+// Get media preview
 const loading = ref(false)
-const { client, contents } = storeToRefs(useCongStore())
+const preview = ref('')
 const { online } = useOnline()
+const previewName = ref('')
+const { client, contents } = storeToRefs(useCongStore())
 
 const getPreview = (item: VideoFile | LocalFile) => {
   if (previewName.value === item.safeName) {
@@ -130,9 +132,7 @@ const getPreview = (item: VideoFile | LocalFile) => {
       client.value.getFileContents(item.url).then((contents) => {
         preview.value =
           `data:;base64,` +
-          Buffer.from(new Uint8Array(contents as ArrayBuffer)).toString(
-            'base64'
-          )
+          Buffer.from(new Uint8Array(contents)).toString('base64')
       })
     } else if (item.url) {
       preview.value = pathToFileURL(item.url).href
@@ -143,6 +143,21 @@ const getPreview = (item: VideoFile | LocalFile) => {
   return preview.value
 }
 
+// When clicking on a file
+const atClick = (item: VideoFile | LocalFile) => {
+  if (item.loading) return
+  if (!item.recurring && (item.isLocal || item.congSpecific)) {
+    item.loading = item.color === 'error'
+    emit('remove', item)
+  } else if (item.isLocal !== undefined) {
+    item.loading = true
+    toggleVisibility(item)
+  } else if (item.isLocal === undefined) {
+    item.ignored = !item.ignored
+  }
+}
+
+// Toggle visibility
 const toggleVisibility = async (item: VideoFile | LocalFile) => {
   const mediaMap = useMediaStore().meetings.get(props.date)
   if (mediaMap && (!item.isLocal || (item.recurring && item.congSpecific))) {
@@ -191,19 +206,7 @@ const toggleVisibility = async (item: VideoFile | LocalFile) => {
   }
 }
 
-const atClick = (item: VideoFile | LocalFile) => {
-  if (item.loading) return
-  if (!item.recurring && (item.isLocal || item.congSpecific)) {
-    item.loading = item.color === 'error'
-    emit('remove', item)
-  } else if (item.isLocal !== undefined) {
-    item.loading = true
-    toggleVisibility(item)
-  } else if (item.isLocal === undefined) {
-    item.ignored = !item.ignored
-  }
-}
-
+// File type icon
 const typeIcon = (filename?: string) => {
   if (!filename) return 'faQuestionCircle'
   if (isImage(filename)) {
@@ -224,11 +227,13 @@ const typeIcon = (filename?: string) => {
 }
 </script>
 <style lang="scss" scoped>
-.tooltip-img {
-  content: ' ';
-  position: absolute;
-  bottom: calc(100% - 13px);
-  left: 50%;
-  transform: translate(-50%, 0);
+.manage-media-item {
+  .tooltip-img {
+    content: ' ';
+    position: absolute;
+    bottom: calc(100% - 13px);
+    left: 50%;
+    transform: translate(-50%, 0);
+  }
 }
 </style>

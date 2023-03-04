@@ -1,5 +1,10 @@
 const intervals: { [key: string]: NodeJS.Timer } = {}
 
+export const parseRes = (res?: string) => {
+  if (!res) return 0
+  return +res.replace(/\D/g, '')
+}
+
 export function executeBeforeMeeting(
   name: string,
   mins: number,

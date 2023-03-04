@@ -18,7 +18,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
       })) as { languages: JWLang[] }
 
       if (result.languages) {
-        const langs = result.languages
+        const langs: ShortJWLang[] = result.languages
           .filter((lang) => lang.hasWebContent)
           .map((lang) => {
             return {
@@ -27,7 +27,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
               symbol: lang.symbol,
               vernacularName: lang.vernacularName,
               isSignLanguage: lang.isSignLanguage,
-            } as ShortJWLang
+            }
           })
         write(langPath, JSON.stringify(langs, null, 2))
         setPrefs('media.langUpdatedLast', $dayjs().toISOString())
@@ -66,7 +66,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   const fileContent = readLangs()
   if (fileContent) {
     try {
-      langs = JSON.parse(fileContent) as ShortJWLang[]
+      langs = <ShortJWLang[]>JSON.parse(fileContent)
     } catch (e: any) {
       if (e.message.includes('Unexpected token')) {
         log.debug(`Invalid JSON: ${fileContent}`)
@@ -129,9 +129,9 @@ export async function getPubAvailability(
 
   try {
     const langPath = join(appPath(), 'langs.json')
-    const langs = JSON.parse(
-      readFileSync(langPath, 'utf8') ?? '[]'
-    ) as ShortJWLang[]
+    const langs = <ShortJWLang[]>(
+      JSON.parse(readFileSync(langPath, 'utf8') ?? '[]')
+    )
 
     const langObject = langs.find((l) => l.langcode === lang)
     if (!langObject) return { lang, w, mwb }

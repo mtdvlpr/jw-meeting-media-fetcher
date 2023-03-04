@@ -27,7 +27,7 @@ export async function getYearText(
         },
       })
       if (result.content) {
-        yeartext = JSON.parse(JSON.stringify(result.content)) as string
+        yeartext = <string>JSON.parse(JSON.stringify(result.content))
         write(path, yeartext)
       } else if (result.message === 'Request failed with status code 404') {
         if (fallbackLang && wtlocale !== fallbackLang) {

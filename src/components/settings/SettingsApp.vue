@@ -488,10 +488,12 @@ watch(
 
 // Zoom options
 const autoStartMeeting = computed(() => {
-  return ($i18n.t('minutesBeforeMeeting') as string).replace(
-    '<span>XX</span>',
-    (app.value.zoom.autoStartTime ?? PREFS.app.zoom.autoStartTime!).toString()
-  )
+  return $i18n
+    .t('minutesBeforeMeeting')
+    .replace(
+      '<span>XX</span>',
+      (app.value.zoom.autoStartTime ?? PREFS.app.zoom.autoStartTime!).toString()
+    )
 })
 const newAutoRename = ref('')
 const addAutoRename = () => {

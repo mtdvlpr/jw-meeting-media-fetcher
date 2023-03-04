@@ -370,24 +370,20 @@ const props = withDefaults(
 )
 
 const { $i18n } = useNuxtApp()
-const { t } = $i18n
 const emit = defineEmits(['update:modelValue'])
 const value = useVModel(props, 'modelValue', emit)
+const safeId = computed(() => (props.id ? strip(props.id) : undefined))
 const hasSlot = (name = 'default') => !!useSlots()[name]
 
-const passwordVisible = ref(false)
-const safeId = computed(() => (props.id ? strip(props.id) : undefined))
-const passIcon = computed(() =>
-  passwordVisible.value ? 'faEyeSlash' : 'faEye'
-)
+// Rules
 const rules = computed(() => {
-  const rules = (useAttrs().rules as unknown as any[]) ?? []
+  const rules = (useAttrs().rules as any[]) ?? []
   if (props.required) {
     rules.push((v: unknown) => {
       if (typeof v === 'string') {
-        return !!v.trim() || t('fieldRequired')
+        return !!v.trim() || $i18n.t('fieldRequired')
       }
-      return !!v || t('fieldRequired')
+      return !!v || $i18n.t('fieldRequired')
     })
   }
   if (props.max) {
@@ -395,11 +391,19 @@ const rules = computed(() => {
       (v: string) =>
         !v ||
         v.length <= props.max ||
-        (t('fieldMax') as string).replace('XX', props.max.toString())
+        $i18n.t<string>('fieldMax').replace('XX', props.max.toString())
     )
   }
   return rules
 })
+
+// Password
+const passwordVisible = ref(false)
+const passIcon = computed(() =>
+  passwordVisible.value ? 'faEyeSlash' : 'faEye'
+)
+
+// Slider
 const formattedSlider = computed(() => {
   const val = parseFloat(value.value.toString())
   const minutes = Math.floor(val)

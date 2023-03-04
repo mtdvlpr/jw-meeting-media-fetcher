@@ -1,6 +1,6 @@
 import { MediaItem } from '~~/types'
 
-export async function getLatestJWMedia(): Promise<MediaItem[]> {
+export async function getLatestJWMedia() {
   const categories = [
     'FeaturedLibraryLanding',
     'FeaturedLibraryVideos',

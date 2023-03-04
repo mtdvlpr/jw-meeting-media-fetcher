@@ -239,7 +239,7 @@ export async function cleanup() {
           const files = findAll([
             join(JWMMF, 'pref*.json'),
             join(JWMMF, 'Publications'),
-          ]) as string[]
+          ])
 
           files.forEach((file) => {
             move(file, join(appPath(), basename(file)), true)
@@ -271,7 +271,7 @@ export async function cleanup() {
       ignore: [join(appPath(), `prefs-${cong}.json`)],
     })
     prefFiles.forEach((file) => {
-      const prefs = JSON.parse(readFileSync(file, 'utf8')) as PrefStore
+      const prefs = <PrefStore>JSON.parse(readFileSync(file, 'utf8'))
       // @ts-expect-error: congregationName doesn't exist in ElectronStore
       if (!prefs.congregationName && !prefs.app?.congregationName) {
         rm(file)

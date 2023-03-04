@@ -82,23 +82,7 @@ import { Duration } from 'dayjs/plugin/duration'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
-import { VideoFile } from '~~/types'
-
-interface Time {
-  start: number
-  end: number
-}
-
-interface TimeString {
-  start: string
-  end: string
-}
-
-interface Times {
-  original: Time
-  clipped: Time
-  formatted?: TimeString
-}
+import { Time, Times, TimeString, VideoFile } from '~~/types'
 
 const emit = defineEmits<{
   (e: 'resetClipped'): void
@@ -113,39 +97,40 @@ const props = defineProps<{
 }>()
 
 const { $dayjs } = useNuxtApp()
-const progress = ref<string[]>([])
-const ccEnable = inject(ccEnableKey, ref(false))
-const ccAvailable = ref(false)
-const ccTop = ref(false)
-watch(ccTop, (val) => {
-  if (props.playing) toggleSubtitles(ccEnable.value, val)
-})
-watch(
-  () => ccEnable.value,
-  (val) => {
-    if (props.playing) toggleSubtitles(val, ccTop.value)
-  }
-)
-const ccIcon = computed(() => (ccEnable.value ? 'fa' : 'far'))
-const toggleSubtitles = (enabled: boolean, top = false) => {
-  ipcRenderer.send('toggleSubtitles', enabled, top)
-}
-const setCCAvailable = () => {
-  ccAvailable.value =
-    getPrefs<boolean>('media.enableSubtitles') &&
-    existsSync(changeExt(props.src, '.vtt'))
-}
-const validStart = ref(false)
-const validEnd = ref(false)
-const route = useRoute()
-const id = computed(() => strip('video-' + basename(props.src)))
-const poster = computed(() => (isVideo(props.src) ? VIDEO_ICON : AUDIO_ICON))
-const current = ref(0)
-const date = computed(() => (route.query.date ?? '') as string)
-const { meetings } = storeToRefs(useMediaStore())
 
 onMounted(() => {
   setCCAvailable()
+  initVideoPreview()
+})
+
+// Video properties
+const isShortVideo = computed(() => duration.value === '00:00')
+const id = computed(() => strip('video-' + basename(props.src)))
+const poster = computed(() => (isVideo(props.src) ? VIDEO_ICON : AUDIO_ICON))
+const url = computed(() => {
+  return (props.stream ? props.src : pathToFileURL(props.src).href) +
+    thumbnail.value
+    ? ''
+    : '#t=5'
+})
+const thumbnail = computed(() => {
+  const meetingMedia = meetings.value.get(date.value)
+  if (!meetingMedia) return ''
+  let t: string | undefined
+  meetingMedia.forEach((media) => {
+    if (t !== undefined) return
+    const file = media.find((m) => m.safeName === basename(props.src))
+    if (file?.pub?.startsWith('sjj')) {
+      t = ''
+    } else if (file) {
+      t = file.thumbnail || file.trackImage || ''
+    }
+  })
+  return t ?? ''
+})
+
+// Video preview
+const initVideoPreview = () => {
   const div = document.querySelector(`#${id.value}-container`)
   const source = document.createElement('source')
   source.src = url.value
@@ -172,12 +157,18 @@ onMounted(() => {
     })
   }
   if (div) div.appendChild(video)
-})
+}
 
+// Video state
+const current = ref(0)
+const route = useRoute()
+const date = computed(() => (route.query.date ?? '') as string)
+const { meetings } = storeToRefs(useMediaStore())
 watch(
   () => props.playing,
   (val) => {
     if (val) {
+      // Activate subtitles
       if (ccAvailable.value) {
         let top = false
         const meetingMap = meetings.value.get(date.value)
@@ -197,6 +188,7 @@ watch(
       }
       ipcRenderer.on('videoProgress', onProgress)
     } else {
+      // Reset values
       current.value = 0
       progress.value = []
       ipcRenderer.removeListener('videoProgress', onProgress)
@@ -208,6 +200,8 @@ watch(
   }
 )
 
+// Track video progress
+const progress = ref<string[]>([])
 const onProgress = (_e: IpcRendererEvent, progressArray: number[]) => {
   const percentage = (100 * MS_IN_SEC * progressArray[0]) / original.value.end
   progress.value = progressArray.map((seconds: number) => {
@@ -216,28 +210,37 @@ const onProgress = (_e: IpcRendererEvent, progressArray: number[]) => {
   if (props.playing) emit('progress', percentage)
 }
 
-const thumbnail = computed(() => {
-  const meetingMedia = meetings.value.get(date.value)
-  if (!meetingMedia) return ''
-  let t: string | undefined
-  meetingMedia.forEach((media) => {
-    if (t !== undefined) return
-    const file = media.find((m) => m.safeName === basename(props.src))
-    if (file?.pub?.startsWith('sjj')) {
-      t = ''
-    } else if (file) {
-      t = file.thumbnail || file.trackImage || ''
-    }
-  })
-  return t ?? ''
+// Subtitles
+const ccEnable = inject(ccEnableKey, ref(false))
+const ccAvailable = ref(false)
+const ccTop = ref(false)
+watch(ccTop, (val) => {
+  if (props.playing) toggleSubtitles(ccEnable.value, val)
 })
-const url = computed(() => {
-  return (props.stream ? props.src : pathToFileURL(props.src).href) +
-    thumbnail.value
-    ? ''
-    : '#t=5'
-})
+watch(
+  () => ccEnable.value,
+  (val) => {
+    if (props.playing) toggleSubtitles(val, ccTop.value)
+  }
+)
+const ccIcon = computed(() => (ccEnable.value ? 'fa' : 'far'))
+const toggleSubtitles = (enabled: boolean, top = false) => {
+  ipcRenderer.send('toggleSubtitles', enabled, top)
+}
+const setCCAvailable = () => {
+  ccAvailable.value =
+    getPrefs<boolean>('media.enableSubtitles') &&
+    existsSync(changeExt(props.src, '.vtt'))
+}
 
+// Custom start/end times
+const validStart = ref(false)
+const validEnd = ref(false)
+const duration = computed(() =>
+  formatDuration(
+    $dayjs.duration(clippedMs.value.end - clippedMs.value.start, 'ms')
+  )
+)
 const formatDuration = (duration: Duration) => {
   if (duration.hours() > 0) {
     return duration.format('HH:mm:ss')
@@ -245,12 +248,6 @@ const formatDuration = (duration: Duration) => {
     return duration.format('mm:ss')
   }
 }
-const isShortVideo = computed(() => duration.value === '00:00')
-const duration = computed(() =>
-  formatDuration(
-    $dayjs.duration(clippedMs.value.end - clippedMs.value.start, 'ms')
-  )
-)
 const original = ref<Time>({
   start: 0,
   end: 0,

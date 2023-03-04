@@ -114,13 +114,9 @@ export async function updateContent() {
 
   const { server, user, password, dir } = getPrefs<CongPrefs>('cong')
   let contents: FileStat[] = []
-  contents = await getCongDirectory(
-    store.client,
-    server as string,
-    user as string,
-    password as string,
-    dir as string
-  )
+  if (server && user && password && dir) {
+    contents = await getCongDirectory(store.client, server, user, password, dir)
+  }
   store.setContents(contents)
 }
 
@@ -240,7 +236,7 @@ async function getFolderContent(
               ? 'directory'
               : 'file',
           size: item.propstat.prop.getcontentlength ?? 0,
-        } as FileStat
+        }
       })
     return items
   } else if (parsed?.multistatus?.response.propstat?.status?.includes('200')) {

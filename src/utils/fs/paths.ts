@@ -16,9 +16,9 @@ export function pubPath(file?: MeetingFile) {
   if (file) {
     log.debug('Pub path', file)
     try {
-      validMediaLangs = JSON.parse(
-        readFileSync(join(appPath(), 'langs.json'), 'utf8') ?? '[]'
-      ) as ShortJWLang[]
+      validMediaLangs = <ShortJWLang[]>(
+        JSON.parse(readFileSync(join(appPath(), 'langs.json'), 'utf8') ?? '[]')
+      )
     } catch (e) {
       log.error(e)
       validMediaLangs = []

@@ -17,7 +17,7 @@
   </v-row>
 </template>
 <script setup lang="ts">
-defineEmits(['click'])
+const emit = defineEmits(['click'])
 defineProps<{
   type: string
   path: string

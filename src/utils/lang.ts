@@ -7,7 +7,7 @@ export function translate(word: string, fallback?: string) {
   const locale =
     langs.find((l) => l.jw === mediaLang)?.code ?? fallback ?? $i18n.locale
 
-  return $i18n.t(word, locale) as string
+  return $i18n.t<string>(word, locale)
 }
 
 export function convertSignLang(symbol: string) {

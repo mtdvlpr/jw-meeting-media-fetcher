@@ -98,11 +98,11 @@ export const useMediaStore = defineStore('media', {
       let dateMap = this.meetings.get(date)
       if (!dateMap) {
         this.meetings.set(date, new Map())
-        dateMap = this.meetings.get(date) as Map<number, MeetingFile[]>
+        dateMap = this.meetings.get(date)!
       }
       let mediaList = dateMap.get(par)
       if (!mediaList) dateMap.set(par, [])
-      mediaList = dateMap.get(par) as MeetingFile[]
+      mediaList = dateMap.get(par) ?? []
       mediaList.push(media)
       const parMap = new Map(dateMap.set(par, mediaList))
       this.meetings = new Map(this.meetings.set(date, parMap))
@@ -145,11 +145,11 @@ export const useMediaStore = defineStore('media', {
       let dateMap = this.meetings.get(date)
       if (!dateMap) {
         this.meetings.set(date, new Map())
-        dateMap = this.meetings.get(date) as Map<number, MeetingFile[]>
+        dateMap = this.meetings.get(date)!
       }
       let mediaList = dateMap.get(par)
       if (!mediaList) dateMap.set(par, [])
-      mediaList = dateMap.get(par) as MeetingFile[]
+      mediaList = dateMap.get(par) ?? []
       if (overwrite) {
         mediaList = [...media]
       } else {

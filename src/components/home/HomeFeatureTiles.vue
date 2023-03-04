@@ -19,7 +19,7 @@
       </v-card>
     </v-col>
     <v-col
-      v-if="$getPrefs('media.enableMp4Conversion')"
+      v-if="getPrefs('media.enableMp4Conversion')"
       class="text-center flex-shrink-1 px-1 pb-0"
     >
       <v-card

@@ -52,9 +52,6 @@
 <script setup lang="ts">
 import { join } from 'upath'
 
-const loading = ref(true)
-const change = ref(false)
-
 const store = useCongStore()
 const { prefs } = storeToRefs(store)
 const forced = computed(() => flattenObject(prefs.value))
@@ -72,22 +69,31 @@ const forcable = ref([
 
 const getDescription = (key: string) => {
   const lastKey = key.split('.').pop()!
+
+  // OBS
+  if (key === 'app.obs.enable') return 'enableObs'
+  const obsKeys = ['cameraScene', 'mediaScene']
+  if (obsKeys.includes(lastKey)) {
+    return `obs${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
+  }
+
+  // Zoom
+  if (key === 'app.zoom.enable') return 'enableZoom'
+  const zoomKeys = [
+    'autoStartMeeting',
+    'autoStartTime',
+    'autoRename',
+    'hideComponent',
+    'id',
+    'name',
+    'spotlight',
+  ]
+  if (zoomKeys.includes(lastKey)) {
+    return `zoom${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
+  }
+
+  // Others
   switch (key) {
-    case 'app.obs.enable':
-      return 'enableObs'
-    case 'app.obs.cameraScene':
-    case 'app.obs.mediaScene':
-      return `obs${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
-    case 'app.zoom.enable':
-      return 'enableZoom'
-    case 'app.zoom.autoStartMeeting':
-    case 'app.zoom.autoStartTime':
-    case 'app.zoom.autoRename':
-    case 'app.zoom.hideComponent':
-    case 'app.zoom.id':
-    case 'app.zoom.name':
-    case 'app.zoom.spotlight':
-      return `zoom${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
     case 'media.autoPlayFirstTime':
       return 'minutesBeforeMeeting'
     case 'media.enableMp4Conversion':
@@ -111,28 +117,9 @@ const getDescription = (key: string) => {
   }
 }
 
-const flattenObject = (ob: any) => {
-  const toReturn = {} as { [key: string]: any }
-
-  for (const i in ob) {
-    if (ob[i] === undefined) continue
-
-    if (typeof ob[i] === 'object' && ob[i] !== null) {
-      const flatObject = flattenObject(ob[i])
-      for (const x in flatObject) {
-        if (flatObject[x] === undefined) continue
-
-        toReturn[i + '.' + x] = flatObject[x]
-      }
-    } else {
-      toReturn[i] = ob[i]
-    }
-  }
-  return toReturn
-}
-
+const loading = ref(true)
+const change = ref(false)
 const emit = defineEmits(['done'])
-
 const updatePrefs = async () => {
   // If nothing changed, just close the modal
   if (!change || !store.client) {
@@ -164,7 +151,7 @@ const updatePrefs = async () => {
     // Update forcedPrefs.json
     log.debug('prefs', JSON.stringify(forcedPrefs))
     await store.client.putFileContents(
-      join(getPrefs('cong.dir'), 'forcedPrefs.json'),
+      join(getPrefs<string>('cong.dir'), 'forcedPrefs.json'),
       JSON.stringify(forcedPrefs, null, 2)
     )
     await forcePrefs(true)
@@ -172,11 +159,31 @@ const updatePrefs = async () => {
     error(
       'errorForcedSettingsEnforce',
       e,
-      join(getPrefs('cong.dir'), 'forcedPrefs.json')
+      join(getPrefs<string>('cong.dir'), 'forcedPrefs.json')
     )
   } finally {
     loading.value = false
     emit('done')
   }
+}
+
+const flattenObject = (ob: any) => {
+  const toReturn = {} as { [key: string]: any }
+
+  for (const i in ob) {
+    if (ob[i] === undefined) continue
+
+    if (typeof ob[i] === 'object' && ob[i] !== null) {
+      const flatObject = flattenObject(ob[i])
+      for (const x in flatObject) {
+        if (flatObject[x] === undefined) continue
+
+        toReturn[i + '.' + x] = flatObject[x]
+      }
+    } else {
+      toReturn[i] = ob[i]
+    }
+  }
+  return toReturn
 }
 </script>

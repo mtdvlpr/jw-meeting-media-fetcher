@@ -41,6 +41,7 @@
 import { extname, join, trimExt } from 'upath'
 import { LocalFile, VideoFile } from '~~/types'
 
+const emit = defineEmits(['refresh'])
 const props = defineProps<{
   media: (LocalFile | VideoFile)[]
   date: string
@@ -51,21 +52,9 @@ const props = defineProps<{
   showInput?: boolean
 }>()
 
-const emit = defineEmits(['refresh'])
-
-interface Edit {
-  safeName: string
-  congSpecific: boolean
-  ext: string
-  newName: string
-}
-
-const edit = ref<Edit | null>(null)
-const renaming = ref(false)
-const windowHeight = inject(windowHeightKey, ref(0))
-const mediaList = ref<(VideoFile | LocalFile)[]>([])
-const { client, contents } = storeToRefs(useCongStore())
-const { online } = useOnline()
+onMounted(() => {
+  setMediaList()
+})
 
 watch(
   [
@@ -80,10 +69,8 @@ watch(
   { deep: true }
 )
 
-onMounted(() => {
-  setMediaList()
-})
-
+// Set media list
+const mediaList = ref<(VideoFile | LocalFile)[]>([])
 const setMediaList = () => {
   // If new files are being uploaded, add them to the list
   if (props.newFile || (props.newFiles && props.newFiles.length > 0)) {
@@ -99,13 +86,13 @@ const setMediaList = () => {
       })
       .sort((a, b) => {
         return (
-          ((!!props.prefix && a.isLocal === undefined
+          (!!props.prefix && a.isLocal === undefined
             ? props.prefix + ' '
-            : '') + a.safeName) as string
+            : '') + a.safeName
         ).localeCompare(
-          ((!!props.prefix && b.isLocal === undefined
+          (!!props.prefix && b.isLocal === undefined
             ? props.prefix + ' '
-            : '') + b.safeName) as string,
+            : '') + b.safeName,
           undefined,
           { numeric: true }
         )
@@ -120,6 +107,17 @@ const setMediaList = () => {
   }
 }
 
+// Rename file
+interface Edit {
+  safeName: string
+  congSpecific: boolean
+  ext: string
+  newName: string
+}
+const renaming = ref(false)
+const edit = ref<Edit | null>(null)
+const { online } = useOnline()
+const { client, contents } = storeToRefs(useCongStore())
 const saveNewName = async () => {
   if (renaming.value) return
   if (!edit.value) return
@@ -154,6 +152,7 @@ const saveNewName = async () => {
   emit('refresh')
 }
 
+// Select file for renaming
 const editItem = (item: VideoFile | LocalFile) => {
   edit.value = {
     safeName: item.safeName!,
@@ -163,26 +162,27 @@ const editItem = (item: VideoFile | LocalFile) => {
   }
 }
 
+// Remove file
 const removeItem = async (item: VideoFile | LocalFile) => {
   if (item.color === 'error') {
     mediaList.value.splice(mediaList.value.indexOf(item), 1)
-    rm(join(mediaPath(), props.date, item.safeName as string))
+    rm(join(mediaPath(), props.date, item.safeName))
 
     if (props.date === 'Recurring') {
-      rm(findAll(join(mediaPath(), '*', item.safeName as string)))
+      rm(findAll(join(mediaPath(), '*', item.safeName)))
     }
 
     // Remove item in cong server
-    if (item.congSpecific && online.value && client.value) {
+    if (item.congSpecific && item.url && online.value && client.value) {
       try {
-        await client.value.deleteFile(item.url as string)
+        await client.value.deleteFile(item.url)
       } catch (e: any) {
         if (e.message.includes(LOCKED.toString())) {
           warn('errorWebdavLocked', {
-            identifier: item.url as string,
+            identifier: item.url,
           })
         } else if (e.status !== NOT_FOUND) {
-          error('errorWebdavRm', e, item.url as string)
+          error('errorWebdavRm', e, item.url)
         }
       }
       await updateContent()
@@ -206,6 +206,8 @@ const removeItem = async (item: VideoFile | LocalFile) => {
   }
 }
 
+// Available list height
+const windowHeight = inject(windowHeightKey, ref(0))
 const listHeight = computed(() => {
   const TOP_PADDING = 12
   const HEADER = 88

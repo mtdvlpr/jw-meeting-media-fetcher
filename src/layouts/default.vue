@@ -383,7 +383,7 @@ const initPrefs = async (name: string, isNew = false) => {
   }
 
   // Connect to OBS depending on prefs
-  useObsStore().$reset()
+  useObsStore().clear()
   const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')
   if (enable && port && password) {
     await getScenes()

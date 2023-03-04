@@ -50,13 +50,13 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
         if (isRecurring || isMeetingDay) {
           const media: MeetingFile[] =
             date.children?.map((mediaFile) => {
-              return {
+              return <MeetingFile>{
                 safeName: mediaFile.basename,
                 congSpecific: true,
                 filesize: mediaFile.size,
                 folder: date.basename,
                 url: mediaFile.filename,
-              } as MeetingFile
+              }
             }) ?? []
           mediaStore.setMultiple({
             date: date.basename,
@@ -164,7 +164,7 @@ export async function syncCongMedia(
         const dateObj = $dayjs(
           date,
           getPrefs<DateFormat>('app.outputFolderDateFormat')
-        ) as Dayjs
+        )
         return (
           dateObj.isValid() &&
           dateObj.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]')
@@ -222,21 +222,22 @@ async function syncCongMediaItem(
       const duplicate = findOne(
         join(
           mediaPath(),
-          item.folder as string,
+          item.folder,
           '*' +
             item.safeName?.substring(PREFIX_MAX_LENGTH).replace('.svg', '.png')
         )
       )
       if (
         duplicate &&
+        item.safeName &&
         (statSync(duplicate).size === item.filesize ||
-          extname(item.safeName as string) === '.svg')
+          extname(item.safeName) === '.svg')
       ) {
         if (basename(duplicate) !== item.safeName) {
           rename(
             duplicate,
             basename(duplicate),
-            (item.safeName as string).replace('.svg', '.png')
+            item.safeName.replace('.svg', '.png')
           )
         }
         statStore.setDownloads({
@@ -246,13 +247,13 @@ async function syncCongMediaItem(
         })
       } else {
         const client = useCongStore().client
-        if (client) {
+        if (client && item.url) {
           const perf: any = {
             start: performance.now(),
             bytes: item.filesize,
             name: item.safeName,
           }
-          const file = (await client.getFileContents(item.url as string, {
+          const file = (await client.getFileContents(item.url, {
             onDownloadProgress: (progress) => {
               setProgress(progress.loaded, progress.total)
             },
@@ -268,7 +269,7 @@ async function syncCongMediaItem(
           log.debug(perf)
 
           write(
-            join(mediaPath(), item.folder as string, item.safeName as string),
+            join(mediaPath(), item.folder, item.safeName),
             Buffer.from(new Uint8Array(file))
           )
           statStore.setDownloads({

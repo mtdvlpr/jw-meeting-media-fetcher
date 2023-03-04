@@ -13,7 +13,7 @@ export async function getDocumentExtract(
   const excludeTh = getPrefs<boolean>('media.excludeTh')
   let extractMultimediaItems: MeetingFile[] = []
 
-  const extracts = executeQuery(
+  const extracts = executeQuery<MultiMediaExtract>(
     db,
     `SELECT DocumentExtract.BeginParagraphOrdinal,DocumentExtract.EndParagraphOrdinal,DocumentExtract.DocumentId,
       Extract.RefMepsDocumentId,Extract.RefPublicationId,Extract.RefMepsDocumentId,UniqueEnglishSymbol,IssueTagNumber,
@@ -28,7 +28,7 @@ export async function getDocumentExtract(
       AND NOT UniqueEnglishSymbol LIKE 'mwbr%'
       ${excludeTh ? "AND NOT UniqueEnglishSymbol = 'th' " : ''}
     ORDER BY DocumentExtract.BeginParagraphOrdinal`
-  ) as MultiMediaExtract[]
+  )
 
   const promises: Promise<MeetingFile[]>[] = []
 
@@ -76,7 +76,7 @@ async function extractMediaItems(
     try {
       const matches = extract.Link.match(/\/(.*)\//)
       if (matches && matches.length > 0) {
-        extract.Lang = (matches.pop() as string).split(':')[0]
+        extract.Lang = matches.pop()!.split(':')[0]
       }
     } catch (e) {
       log.error(e)

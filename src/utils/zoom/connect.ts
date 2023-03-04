@@ -65,7 +65,7 @@ const onUserAdded: typeof event_user_added = (payload) => {
   users
     .filter((user) => !user.bHold)
     .forEach((user) => {
-      const renameList = getPrefs('app.zoom.autoRename') as string[]
+      const renameList = getPrefs<string[]>('app.zoom.autoRename')
       const names = renameList.map((name) => {
         const [old, new_] = name.split('=')
         return { old: old.trim(), new: new_.trim() }

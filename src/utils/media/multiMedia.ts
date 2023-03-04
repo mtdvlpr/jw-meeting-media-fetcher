@@ -19,29 +19,29 @@ export async function getDocumentMultiMedia(
 
   const mmTable = result.length === 0 ? 'Multimedia' : 'DocumentMultimedia'
 
-  const keySymbol = (
-    executeQuery(db, 'SELECT UniqueEnglishSymbol FROM Publication') as {
-      UniqueEnglishSymbol: string
-    }[]
-  )[0].UniqueEnglishSymbol.replace(/\d*/g, '') as string
+  const keySymbol = executeQuery<{ UniqueEnglishSymbol: string }>(
+    db,
+    'SELECT UniqueEnglishSymbol FROM Publication'
+  )[0].UniqueEnglishSymbol.replace(/\d*/g, '')
 
-  const issueTagNumber = (
-    executeQuery(db, 'SELECT IssueTagNumber FROM Publication') as {
-      IssueTagNumber: string
-    }[]
+  const issueTagNumber = executeQuery<{ IssueTagNumber: string }>(
+    db,
+    'SELECT IssueTagNumber FROM Publication'
   )[0].IssueTagNumber
 
-  const targetParNrExists = (
-    executeQuery(db, "PRAGMA table_info('Question')") as { name: string }[]
+  const targetParNrExists = executeQuery<{ name: string }>(
+    db,
+    "PRAGMA table_info('Question')"
   )
     .map((item) => item.name)
     .includes('TargetParagraphNumberLabel')
 
-  const suppressZoomExists = (
-    executeQuery(db, "PRAGMA table_info('Multimedia')") as { name: string }[]
+  const suppressZoomExists = executeQuery<{ name: string }>(
+    db,
+    "PRAGMA table_info('Multimedia')"
   )
     .map((item) => item.name)
-    .includes('SuppressZoom') as boolean
+    .includes('SuppressZoom')
 
   const mmItems: MeetingFile[] = []
 
@@ -82,10 +82,10 @@ export async function getDocumentMultiMedia(
 
   const promises: Promise<VideoFile | ImageFile | null>[] = []
 
-  const items = executeQuery(
+  const items = executeQuery<MultiMediaItem>(
     db,
     `${select} ${from} ${where} ${groupAndSort}`
-  ) as MultiMediaItem[]
+  )
 
   items.forEach((mmItem) => {
     promises.push(
@@ -127,7 +127,7 @@ async function processMultiMediaItem(
     try {
       const matches = mmItem.Link.match(/\/(.*)\//)
       if (matches && matches.length > 0) {
-        lang = (matches.pop() as string).split(':')[0]
+        lang = matches.pop()!.split(':')[0]
       }
     } catch (e) {
       log.error(e)
@@ -146,20 +146,19 @@ async function processMultiMediaItem(
     )
     if (result.length === 1) Object.assign(mmItem, result[0])
     if (
-      (
-        executeQuery(db, 'SELECT COUNT(*) as Count FROM Question') as {
-          Count: number
-        }[]
+      executeQuery<{ Count: number }>(
+        db,
+        'SELECT COUNT(*) AS Count FROM Question'
       )[0].Count > 0
     ) {
       mmItem.tableQuestionIsUsed = true
-      const result = executeQuery(
-        db,
-        `SELECT TargetParagraphNumberLabel, TargetParagraphOrdinal From Question WHERE DocumentId = ${mmItem.DocumentId} AND TargetParagraphOrdinal > ${mmItem.BeginParagraphOrdinal} LIMIT 1`
-      ) as {
+      const result = executeQuery<{
         TargetParagraphNumberLabel: string
         TargetParagraphOrdinal: number
-      }[]
+      }>(
+        db,
+        `SELECT TargetParagraphNumberLabel, TargetParagraphOrdinal From Question WHERE DocumentId = ${mmItem.DocumentId} AND TargetParagraphOrdinal > ${mmItem.BeginParagraphOrdinal} LIMIT 1`
+      )
       if (result.length > 0)
         mmItem.NextParagraphOrdinal = result[0].TargetParagraphOrdinal
     }
@@ -173,39 +172,38 @@ async function processMultiMediaItem(
     ) {
       const mediaLang = getPrefs<string>('media.lang')
 
-      let json = (
+      let json: VideoFile = (
         await getMediaLinks(
           {
-            pubSymbol: mmItem.KeySymbol as string,
-            track: mmItem.Track as number,
-            issue: (mmItem.IssueTagNumber as number)?.toString(),
-            docId: mmItem.MultiMeps as number,
+            pubSymbol: mmItem.KeySymbol ?? '',
+            track: mmItem.Track ?? 0,
+            issue: (mmItem.IssueTagNumber ?? 0)?.toString(),
+            docId: mmItem.MultiMeps ?? 0,
             lang: fallbackLang ? mediaLang : lang,
           },
           silent
         )
-      )[0] as VideoFile
+      )[0]
 
       if (!json && fallbackLang) {
-        json =
-          ((
-            await getMediaLinks(
-              {
-                pubSymbol: mmItem.KeySymbol as string,
-                track: mmItem.Track as number,
-                issue: (mmItem.IssueTagNumber as number)?.toString(),
-                docId: mmItem.MultiMeps as number,
-                lang: lang === mediaLang ? fallbackLang : lang ?? fallbackLang,
-              },
-              silent
-            )
-          )[0] as VideoFile) ?? {}
+        json = (
+          await getMediaLinks(
+            {
+              pubSymbol: mmItem.KeySymbol ?? '',
+              track: mmItem.Track ?? 0,
+              issue: (mmItem.IssueTagNumber ?? 0)?.toString(),
+              docId: mmItem.MultiMeps ?? 0,
+              lang: lang === mediaLang ? fallbackLang : lang ?? fallbackLang,
+            },
+            silent
+          )
+        )[0]
       } else if (!json) {
-        json = {} as VideoFile
+        json = <VideoFile>{}
       }
       json.queryInfo = mmItem
       json.BeginParagraphOrdinal = mmItem.BeginParagraphOrdinal
-      return json as VideoFile
+      return json
     } else {
       if (!mmItem.KeySymbol) {
         mmItem.KeySymbol = keySymbol
@@ -216,30 +214,30 @@ async function processMultiMediaItem(
               BeginParagraphOrdinal: 0,
               title: '',
               queryInfo: mmItem,
-            } as MeetingFile)!,
+            })!,
             mmItem.FilePath
           )
 
           if (lang && !mmItem.Link && !existsSync(mmItem.LocalPath)) {
             mmItem.LocalPath = join(
-              pubPath({
+              pubPath(<MeetingFile>{
                 BeginParagraphOrdinal: 0,
                 title: '',
                 url: `url_${lang}.jpg`,
                 queryInfo: mmItem,
-              } as MeetingFile)!,
+              })!,
               mmItem.FilePath
             )
           }
 
           if (fallbackLang && !existsSync(mmItem.LocalPath)) {
             mmItem.LocalPath = join(
-              pubPath({
+              pubPath(<MeetingFile>{
                 BeginParagraphOrdinal: 0,
                 title: '',
                 url: `url_${fallbackLang}.jpg`,
                 queryInfo: mmItem,
-              } as MeetingFile)!,
+              })!,
               mmItem.FilePath
             )
           }
@@ -252,15 +250,13 @@ async function processMultiMediaItem(
           : mmItem.Label
       )
 
-      const picture = {
+      const picture: ImageFile = {
         BeginParagraphOrdinal: mmItem.BeginParagraphOrdinal,
         title: mmItem.FileName,
         queryInfo: mmItem,
         filepath: memOnly ? undefined : mmItem.LocalPath,
-        filesize: memOnly
-          ? undefined
-          : statSync(mmItem.LocalPath as string).size,
-      } as ImageFile
+        filesize: memOnly ? undefined : statSync(mmItem.LocalPath!).size,
+      }
 
       return picture
     }

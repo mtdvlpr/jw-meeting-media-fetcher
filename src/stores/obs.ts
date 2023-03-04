@@ -22,5 +22,8 @@ export const useObsStore = defineStore('obs', {
     setCurrentScene(currentScene: string) {
       this.currentScene = currentScene
     },
+    clear() {
+      this.$reset()
+    },
   },
 })

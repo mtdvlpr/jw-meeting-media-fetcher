@@ -3,7 +3,6 @@ import { platform } from 'os'
 import { readFileSync } from 'fs-extra'
 import { Database } from 'sql.js'
 import { join } from 'upath'
-import { VideoFile } from '~~/types'
 
 export function executeQuery<T extends { [key: string]: any }>(
   db: Database,
@@ -34,23 +33,22 @@ export async function getDbFromJWPUB(
   try {
     // Extract db from local JWPUB file
     if (localPath) {
-      db = (await getDb({
+      db = await getDb({
         pub,
         issue,
         lang,
         file: (await getZipContentsByExt(localPath, '.db')) ?? undefined,
-      })) as Database
+      })
+      if (!db) {
+        log.debug('No db file found', localPath)
+        return null
+      }
 
       try {
-        const jwpubInfo: {
+        const jwpubInfo = executeQuery<{
           UniqueEnglishSymbol: string
           IssueTagNumber: string
-        } = (
-          executeQuery(
-            db,
-            'SELECT UniqueEnglishSymbol, IssueTagNumber FROM Publication'
-          ) as { UniqueEnglishSymbol: string; IssueTagNumber: string }[]
-        )[0]
+        }>(db, 'SELECT UniqueEnglishSymbol, IssueTagNumber FROM Publication')[0]
         pub = jwpubInfo.UniqueEnglishSymbol.replace(/\d/g, '')
         issue = jwpubInfo.IssueTagNumber
         setDb(db, pub, issue, lang)
@@ -65,7 +63,7 @@ export async function getDbFromJWPUB(
           format: 'JWPUB',
           lang,
         })
-      )[0] as VideoFile
+      )[0]
 
       if (!jwpub) {
         log.debug(`No JWPUB file found for ${pub} ${issue}`)

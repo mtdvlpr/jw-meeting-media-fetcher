@@ -46,37 +46,17 @@ interface Cong {
 const loading = ref(true)
 const cong = ref('')
 const congs = ref<Cong[]>([])
-const { atClick, clickedOnce } = useClickTwice<Cong>((item) => {
-  if (!item) return
-  rm(item.path)
-  if (item.path === cong.value) {
-    // Switch to the first other congregation found
-    log.debug('Switch to existing cong')
-    useRouter().push({
-      query: {
-        cong: basename(
-          congs.value.find((c) => c.path !== item.path)?.path as string,
-          '.json'
-        ).replace('prefs-', ''),
-      },
-    })
-  } else {
-    window.location.reload()
-  }
+onMounted(async () => {
+  loading.value = true
+  congs.value = await getCongPrefs()
+  cong.value = storePath()!
+  loading.value = false
 })
 
-const changeCong = (path: string) => {
-  log.debug('Switched cong via select')
-  useRouter().push({
-    query: {
-      cong: basename(path, '.json').replace('prefs-', ''),
-    },
-  })
-}
-
+// Add congregation
 const addCong = () => {
   useCongStore().clear()
-  useObsStore().$reset()
+  useObsStore().clear()
   if (usePresentStore().mediaScreenInit) {
     toggleMediaWindow('close')
   }
@@ -90,8 +70,33 @@ const addCong = () => {
   })
 }
 
-onMounted(async () => {
-  congs.value = await getCongPrefs()
-  loading.value = false
+// Switch congregation
+const changeCong = (path: string) => {
+  log.debug('Switched cong via select')
+  useRouter().push({
+    query: {
+      cong: basename(path, '.json').replace('prefs-', ''),
+    },
+  })
+}
+
+// Remove congregation
+const { atClick, clickedOnce } = useClickTwice<Cong>((item) => {
+  if (!item) return
+  rm(item.path)
+  if (congs.value.length > 1 && item.path === cong.value) {
+    // Switch to the first other congregation found
+    log.debug('Switch to existing cong')
+    useRouter().push({
+      query: {
+        cong: basename(
+          congs.value.find((c) => c.path !== item.path)!.path,
+          '.json'
+        ).replace('prefs-', ''),
+      },
+    })
+  } else {
+    window.location.reload()
+  }
 })
 </script>

@@ -98,7 +98,7 @@ export function unsetShortcut(func: string) {
 export function unsetShortcuts(filter = 'all') {
   const store = usePresentStore()
   const shortcuts = store.shortcuts
-  const keepers = [] as typeof shortcuts
+  const keepers: typeof shortcuts = []
 
   for (let i = shortcuts.length - 1; i >= 0; i--) {
     const { name, domain } = shortcuts[i]

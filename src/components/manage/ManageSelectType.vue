@@ -25,12 +25,13 @@
   </v-row>
 </template>
 <script setup lang="ts">
+const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
   modelValue: string
   disabled?: boolean
 }>()
+
 const { $i18n } = useNuxtApp()
-const emit = defineEmits(['update:modelValue'])
 const value = useVModel(props, 'modelValue', emit)
 const types = [
   {

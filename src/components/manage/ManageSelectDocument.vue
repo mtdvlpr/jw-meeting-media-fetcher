@@ -48,7 +48,7 @@ import { ipcRenderer } from 'electron'
 // eslint-disable-next-line import/named
 import { Database } from 'sql.js'
 import { extname, trimExt } from 'upath'
-import { LocalFile, MultiMediaItem } from '~~/types'
+import { LocalFile } from '~~/types'
 
 const props = defineProps<{
   file: string
@@ -60,30 +60,32 @@ const emit = defineEmits<{
   (e: 'select', files: LocalFile[]): void
 }>()
 
-const docId = ref(0)
 const loading = ref(true)
-const db = ref<Database | null>(null)
-const missingMedia = ref<string[]>([])
-const items = ref<{ DocumentId: number; Title: string }[]>([])
-const mediaFiles = ref<LocalFile[]>([])
-watch(
-  mediaFiles,
-  () => {
-    if (!loading.value && missingMedia.value.length === 0) {
-      finish()
-    }
-  },
-  { deep: true }
-)
 
+// Select first if only one, warn if none
 onMounted(async () => {
-  const database = (await getDbFromJWPUB(
+  await getDocuments()
+  if (items.value.length === 0) {
+    warn('warnNoDocumentsFound')
+    emit('empty')
+  } else if (items.value.length === 1) {
+    selectDoc(items.value[0].DocumentId)
+  }
+})
+
+// Fetch available documents from jwpub file
+const db = ref<Database | null>(null)
+const items = ref<{ DocumentId: number; Title: string }[]>([])
+const getDocuments = async () => {
+  loading.value = true
+  const database = await getDbFromJWPUB(
     undefined,
     undefined,
     props.setProgress,
     undefined,
     props.file
-  )) as Database
+  )
+  if (!database) return
   db.value = database
 
   const table =
@@ -93,16 +95,14 @@ onMounted(async () => {
     ).length === 0
       ? 'Multimedia'
       : 'DocumentMultimedia'
-  const suppressZoom = (
-    executeQuery(
-      database,
-      "SELECT COUNT(*) AS CNT_REC FROM pragma_table_info('Multimedia') WHERE name='SuppressZoom'"
-    ) as { CNT_REC: number }[]
+  const suppressZoom = executeQuery<{ CNT_REC: number }>(
+    database,
+    "SELECT COUNT(*) AS CNT_REC FROM pragma_table_info('Multimedia') WHERE name='SuppressZoom'"
   ).map((item) => {
     return item.CNT_REC > 0
   })[0]
 
-  items.value = executeQuery(
+  items.value = executeQuery<{ DocumentId: number; Title: string }>(
     database,
     `SELECT DISTINCT ${table}.DocumentId, Document.Title 
     FROM Document 
@@ -115,39 +115,22 @@ onMounted(async () => {
     WHERE Multimedia.CategoryType <> 9
     ${suppressZoom ? 'AND Multimedia.SuppressZoom = 0' : ''}
     ORDER BY ${table}.DocumentId`
-  ) as { DocumentId: number; Title: string }[]
-  loading.value = false
-
-  if (items.value.length === 0) {
-    warn('warnNoDocumentsFound')
-    emit('empty')
-  } else if (items.value.length === 1) {
-    selectDoc(items.value[0].DocumentId)
-  }
-})
-
-const finish = () => {
-  emit(
-    'select',
-    mediaFiles.value
-      .filter((m) => !missingMedia.value.includes(m.filename!))
-      .sort((a, b) => a.safeName!.localeCompare(b.safeName!))
   )
+  loading.value = false
 }
 
-const uploadMissingFile = async (name: string) => {
-  const result = await ipcRenderer.invoke('openDialog', {
-    title: name,
-    filters: [{ name, extensions: [extname(name).substring(1)] }],
-    properties: ['openFile'],
-  })
-  if (result && !result.canceled) {
-    missingMedia.value = missingMedia.value.filter((f) => f !== name)
-    const find = mediaFiles.value.find((f) => f.filename === name)
-    if (find) find.filepath = result.filePaths[0]
-  }
-}
-
+// Select a document and load media
+const docId = ref(0)
+const mediaFiles = ref<LocalFile[]>([])
+watch(
+  mediaFiles,
+  () => {
+    if (!loading.value && missingMedia.value.length === 0) {
+      finish()
+    }
+  },
+  { deep: true }
+)
 const selectDoc = async (id: number) => {
   loading.value = true
   docId.value = id
@@ -172,11 +155,10 @@ const selectDoc = async (id: number) => {
       IssueTagNumber,
       MimeType,
       CategoryType,
-    } = mm.queryInfo as MultiMediaItem
+    } = mm.queryInfo ?? {}
 
     const prefix = (i + 1).toString().padStart(2, '0')
-    const type =
-      '.' + MimeType ? (MimeType.includes('video') ? '.mp4' : '.mp3') : ''
+    const type = MimeType ? (MimeType.includes('video') ? '.mp4' : '.mp3') : ''
 
     const title =
       mm.title ||
@@ -185,27 +167,49 @@ const selectDoc = async (id: number) => {
       trimExt(FilePath ?? '') ||
       [KeySymbol, Track, IssueTagNumber].filter(Boolean).join('_')
 
-    const ext = FilePath ? extname(FilePath) : type ?? ''
+    const ext = FilePath ? extname(FilePath) : type
     const name = sanitize(title, true) + ext
 
-    const tempMedia = {
+    const tempMedia: LocalFile = {
       safeName: `${prefix} - ${name}`,
       filename: name,
-      contents: undefined as undefined | Buffer,
-      url: undefined as string | undefined,
-      filepath: undefined as string | undefined,
-    } as LocalFile
+    }
 
-    if (CategoryType && CategoryType !== -1) {
+    if (FilePath && CategoryType && CategoryType !== -1) {
       tempMedia.contents =
         (await getZipContentsByName(props.file, FilePath)) ?? undefined
     } else if (mm.url) {
       Object.assign(tempMedia, mm)
     } else {
-      missingMedia.value.push(tempMedia.filename as string)
+      missingMedia.value.push(tempMedia.filename!)
     }
     mediaFiles.value.push(tempMedia)
   }
   loading.value = false
+}
+
+// Add missing media from local path
+const missingMedia = ref<string[]>([])
+const uploadMissingFile = async (name: string) => {
+  const result = await ipcRenderer.invoke('openDialog', {
+    title: name,
+    filters: [{ name, extensions: [extname(name).substring(1)] }],
+    properties: ['openFile'],
+  })
+  if (result && !result.canceled) {
+    missingMedia.value = missingMedia.value.filter((f) => f !== name)
+    const find = mediaFiles.value.find((f) => f.filename === name)
+    if (find) find.filepath = result.filePaths[0]
+  }
+}
+
+// Emit selected media
+const finish = () => {
+  emit(
+    'select',
+    mediaFiles.value
+      .filter((m) => !missingMedia.value.includes(m.filename!))
+      .sort((a, b) => a.safeName!.localeCompare(b.safeName!))
+  )
 }
 </script>

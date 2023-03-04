@@ -5,19 +5,19 @@ import { FadeOutType, VideoFile } from '~~/types'
 
 export async function getSongs() {
   const store = useMediaStore()
-  const result = (await getMediaLinks({
+  const result: VideoFile[] = await getMediaLinks({
     pubSymbol: store.songPub,
     format: 'MP4',
-  })) as VideoFile[]
+  })
 
   const fallbackLang = getPrefs<string>('media.langFallback')
 
   if (fallbackLang && result.length < NR_OF_KINGDOM_SONGS) {
-    const fallback = (await getMediaLinks({
+    const fallback = await getMediaLinks({
       pubSymbol: store.songPub,
       format: 'MP4',
       lang: fallbackLang,
-    })) as VideoFile[]
+    })
 
     fallback.forEach((song) => {
       if (!result.find((s) => s.track === song.track)) {
@@ -66,6 +66,12 @@ export function autoStartMusic() {
   }
 }
 
+interface LocalSong {
+  title: string
+  track: string
+  path: string
+}
+
 export async function shuffleMusic(stop = false, immediately = false) {
   const store = useMediaStore()
   if (stop) {
@@ -73,7 +79,7 @@ export async function shuffleMusic(stop = false, immediately = false) {
     ipcRenderer.removeAllListeners('videoEnd')
 
     if (store.songPub === 'sjjm') {
-      const audio = document.querySelector('#meetingMusic') as HTMLAudioElement
+      const audio = document.querySelector<HTMLAudioElement>('#meetingMusic')
 
       if (!audio) return
 
@@ -138,14 +144,14 @@ export async function shuffleMusic(stop = false, immediately = false) {
       mediaLang = getPrefs<string>('media.lang')
     }
 
-    const songs = (
+    const songs: (VideoFile | LocalSong)[] = (
       isOnline
         ? (
-            (await getMediaLinks({
+            await getMediaLinks({
               pubSymbol: songPub,
               format: mediaFormat.toUpperCase(),
               lang: mediaLang,
-            })) as VideoFile[]
+            })
           ).filter((item) => extname(item.url) === `.${mediaFormat}`)
         : findAll(
             join(pubPath(), '..', mediaLang, songPub, '**', `*.${mediaFormat}`)
@@ -167,7 +173,7 @@ export async function shuffleMusic(stop = false, immediately = false) {
 }
 
 async function playSignLanguageSong(
-  songs: (VideoFile | { title: string; track: string; path: string })[],
+  songs: (VideoFile | LocalSong)[],
   index: number,
   fadeOut: boolean,
   isOnline: boolean
@@ -180,7 +186,7 @@ async function playSignLanguageSong(
 
   const path = isOnline
     ? await downloadIfRequired(songs[index] as VideoFile)
-    : (songs[index] as { title: string; track: string; path: string })?.path
+    : (songs[index] as LocalSong)?.path
 
   ipcRenderer.on('videoProgress', (_e, progress) => {
     if (store.musicFadeOut && !fadeOut) {
@@ -210,7 +216,7 @@ async function playSignLanguageSong(
 }
 
 async function createAudioElement(
-  songs: (VideoFile | { title: string; track: string; path: string })[],
+  songs: (VideoFile | LocalSong)[],
   index: number,
   fadeOut: boolean,
   isOnline: boolean
@@ -253,10 +259,7 @@ async function createAudioElement(
       await downloadIfRequired(songs[index] as VideoFile)
     ).href
   } else {
-    source.src = pathToFileURL(
-      (songs[index] as { title: string; track: string; path: string })?.path ??
-        ''
-    ).href
+    source.src = pathToFileURL((songs[index] as LocalSong)?.path ?? '').href
   }
   audio.appendChild(source)
   document.body.appendChild(audio)

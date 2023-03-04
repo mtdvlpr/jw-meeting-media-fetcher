@@ -214,33 +214,30 @@ const props = defineProps<{
   addSong?: boolean
 }>()
 
-watch(
-  () => props.items,
-  (val) => {
-    setItems(val)
-  }
-)
-
-const setItems = (val: MediaItem[]) => {
-  mediaItems.value = val
-  publicTalkItems.value = val.slice(0, firstWtSong.value)
-  wtItems.value = val.slice(firstWtSong.value)
-  treasureItems.value = val.slice(
-    0,
-    firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
-  )
-  livingItems.value = val.slice(secondMwbSong.value)
-  if (firstApplyItem.value !== -1) {
-    applyItems.value = []
-  } else {
-    applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
-  }
-}
-
 const dragging = ref(false)
+const route = useRoute()
+const date = computed(() => (route.query.date ?? '') as string)
+const { client: zoomIntegration } = storeToRefs(useZoomStore())
+
+// Meeting day
 const meetingDay = ref('')
 const isMwDay = computed(() => meetingDay.value === 'mw')
 const isWeDay = computed(() => meetingDay.value === 'we')
+
+onMounted(() => {
+  setItems(props.items)
+  getMwbHeadings()
+  const { $dayjs } = useNuxtApp()
+  meetingDay.value = isMeetingDay(
+    $dayjs(date.value, getPrefs<DateFormat>('app.outputFolderDateFormat'))
+  )
+})
+
+// Meeting headings
+const wtTitle = computed(() => {
+  const file = findOne(join(mediaPath(), date.value, '*.title'))
+  return file ? basename(file, '.title') : 'Watchtower'
+})
 const fallback = {
   treasures: 'TREASURES FROM GOD’S WORD',
   apply: 'APPLY YOURSELF TO THE FIELD MINISTRY',
@@ -272,35 +269,44 @@ const secondMwbSong = computed(() => {
   )
 })
 
+// Media items
 const mediaItems = ref<MediaItem[]>([])
 const treasureItems = ref<MediaItem[]>([])
 const applyItems = ref<MediaItem[]>([])
 const livingItems = ref<MediaItem[]>([])
 const publicTalkItems = ref<MediaItem[]>([])
 const wtItems = ref<MediaItem[]>([])
+watch(
+  () => props.items,
+  (val) => {
+    setItems(val)
+  }
+)
+const setItems = (val: MediaItem[]) => {
+  mediaItems.value = val
+  publicTalkItems.value = val.slice(0, firstWtSong.value)
+  wtItems.value = val.slice(firstWtSong.value)
+  treasureItems.value = val.slice(
+    0,
+    firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
+  )
+  livingItems.value = val.slice(secondMwbSong.value)
+  if (firstApplyItem.value !== -1) {
+    applyItems.value = []
+  } else {
+    applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
+  }
+}
+
+// Song
 const song = ref<VideoFile | null>(null)
 watch(song, () => emit('song'))
 const deactivateSong = () => {
   if (song.value) song.value.deactivate = false
 }
-const route = useRoute()
-const { client: zoomIntegration } = storeToRefs(useZoomStore())
-const date = computed(() => (route.query.date ?? '') as string)
+
+// Computed list height
 const windowHeight = inject(windowHeightKey, ref(0))
-const wtTitle = computed(() => {
-  const file = findOne(join(mediaPath(), date.value, '*.title'))
-  return file ? basename(file, '.title') : 'Watchtower'
-})
-
-onMounted(() => {
-  setItems(props.items)
-  getMwbHeadings()
-  const { $dayjs } = useNuxtApp()
-  meetingDay.value = isMeetingDay(
-    $dayjs(date.value, getPrefs<DateFormat>('app.outputFolderDateFormat'))
-  )
-})
-
 const listHeight = computed(() => {
   const TOP_BAR = 64
   const FOOTER = 72

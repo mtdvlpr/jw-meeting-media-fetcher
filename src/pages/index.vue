@@ -10,7 +10,7 @@
     <home-header :loading="loading" :jw="jwSyncColor" :cong="congSyncColor" />
     <v-col cols="12">
       <home-week-tiles
-        :current-week="currentWeek"
+        :base-date="baseDate"
         :day-colors="dayColors"
         :recurring-color="recurringColor"
       />

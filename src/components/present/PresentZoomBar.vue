@@ -135,30 +135,51 @@
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
 import { Participant } from '@zoomus/websdk/embedded'
-import { muteParticipants } from '~~/src/utils/zoom/actions'
 
-const loadingZoom = ref(false)
+const store = useZoomStore()
+const { started, coHost, hostID } = storeToRefs(store)
+
+onMounted(() => {
+  setTimeout(() => {
+    showZoomComponent.value = !getPrefs<boolean>('app.zoom.hideComponent')
+    const el = document.querySelector<HTMLButtonElement>(
+      '#zoom-app-bar button.v-app-bar__nav-icon'
+    )
+
+    if (el) el.disabled = true
+  }, MS_IN_SEC)
+})
+
+// Participant selector
+const participantSearch = ref('')
+const participants = ref<Participant[]>([])
+const allParticipants = computed(() => {
+  return store.participants.filter(
+    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name')
+  )
+})
+const toggleParticipant = (participant: Participant) => {
+  if (participants.value.includes(participant)) {
+    participants.value = participants.value.filter(
+      (p) => p.userId !== participant.userId
+    )
+  } else {
+    participants.value.push(participant)
+  }
+}
+
+// Zoom component
 const showZoomComponent = ref(false)
 watch(showZoomComponent, (show: boolean) => {
   const el = document.getElementById('zoomMeeting')
   if (!el) return
   el.style.display = show ? 'flex' : 'none'
 })
-onMounted(() => {
-  setTimeout(() => {
-    showZoomComponent.value = !getPrefs<boolean>('app.zoom.hideComponent')
-    const el = document.querySelector(
-      '#zoom-app-bar button.v-app-bar__nav-icon'
-    ) as HTMLButtonElement
 
-    if (el) el.disabled = true
-  }, MS_IN_SEC)
-})
-const spotlightActive = ref(false)
-const participantSearch = ref('')
+// Rename participant
 const newName = ref('')
-const saveRename = ref(true)
 const renaming = ref(false)
+const saveRename = ref(true)
 const participant = ref<Participant | null>(null)
 const atRename = (p: Participant) => {
   participant.value = p
@@ -182,23 +203,9 @@ const renamePerson = async (p: Participant | null, name = '') => {
   participant.value = null
   renaming.value = false
 }
-const participants = ref<Participant[]>([])
-const store = useZoomStore()
-const { started, coHost, hostID } = storeToRefs(store)
-const allParticipants = computed(() => {
-  return store.participants.filter(
-    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name')
-  )
-})
-const toggleParticipant = (participant: Participant) => {
-  if (participants.value.includes(participant)) {
-    participants.value = participants.value.filter(
-      (p) => p.userId !== participant.userId
-    )
-  } else {
-    participants.value.push(participant)
-  }
-}
+
+// Toggle meeting
+const loadingZoom = ref(false)
 const toggleZoomMeeting = async () => {
   loadingZoom.value = true
   if (started.value) {
@@ -208,6 +215,9 @@ const toggleZoomMeeting = async () => {
   }
   loadingZoom.value = false
 }
+
+// Spotlight
+const spotlightActive = ref(false)
 const spotlightParticipants = () => {
   if (!coHost.value) {
     warn('errorNotCoHost')

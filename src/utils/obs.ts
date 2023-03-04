@@ -2,9 +2,11 @@ import OBSWebSocket from 'obs-websocket-js-v5'
 import OBSWebSocketV4 from 'obs-websocket-js'
 import { ObsPrefs } from '~~/types'
 
-let obs = null as OBSWebSocket | OBSWebSocketV4 | null
+let obs: OBSWebSocket | OBSWebSocketV4 | null = null
 
-async function connectOBS(): Promise<OBSWebSocket | OBSWebSocketV4 | null> {
+async function connectOBS<
+  T extends OBSWebSocket | OBSWebSocketV4
+>(): Promise<T | null> {
   const { enable, port, password, useV4 } = getPrefs<ObsPrefs>('app.obs')
   if (!enable && obs) {
     await resetOBS()
@@ -14,7 +16,7 @@ async function connectOBS(): Promise<OBSWebSocket | OBSWebSocketV4 | null> {
         (useV4 && obs instanceof OBSWebSocketV4) ||
         (!useV4 && obs instanceof OBSWebSocket)
       if (correctVersion) {
-        return obs
+        return <T>obs
       }
     }
 
@@ -145,7 +147,7 @@ async function connectOBS(): Promise<OBSWebSocket | OBSWebSocketV4 | null> {
           // Caused by resetOBS trying to disconnect
           else if (e.code === OBS_CONNECTION_ERROR) {
             await resetOBS()
-            return obs
+            return <T>obs
           } else {
             log.debug('OBS connect v5')
             error('errorObs', e)
@@ -160,10 +162,10 @@ async function connectOBS(): Promise<OBSWebSocket | OBSWebSocketV4 | null> {
       await resetOBS()
     }
   }
-  return obs
+  return <T>obs
 }
 
-export async function resetOBS(): Promise<void> {
+export async function resetOBS() {
   try {
     if (obs && obs instanceof OBSWebSocketV4) {
       obs.disconnect()
@@ -173,7 +175,7 @@ export async function resetOBS(): Promise<void> {
   } catch (e) {}
 
   obs = null
-  useObsStore().$reset()
+  useObsStore().clear()
   unsetShortcuts('obs')
 }
 
@@ -183,11 +185,11 @@ export async function getScenes(current = false): Promise<string | string[]> {
     let currentScene = ''
     let scenes: string[] = []
     if (getPrefs<boolean>('app.obs.useV4')) {
-      obs = (await connectOBS()) as OBSWebSocketV4
+      obs = await connectOBS<OBSWebSocketV4>()
 
       // Try once again if connection failed
       if (!store.connected) {
-        obs = (await connectOBS()) as OBSWebSocketV4
+        obs = await connectOBS<OBSWebSocketV4>()
       }
 
       // Return empty list on second failure
@@ -198,11 +200,11 @@ export async function getScenes(current = false): Promise<string | string[]> {
       scenes = result.scenes.map(({ name }) => name)
       currentScene = result['current-scene']
     } else {
-      obs = (await connectOBS()) as OBSWebSocket
+      obs = await connectOBS<OBSWebSocket>()
 
       // Try once again if connection failed
       if (!store.connected) {
-        obs = (await connectOBS()) as OBSWebSocket
+        obs = await connectOBS<OBSWebSocket>()
       }
 
       // Return empty list on second failure
@@ -211,8 +213,8 @@ export async function getScenes(current = false): Promise<string | string[]> {
       // Get scene list and current scene from obs
       const result = await obs.call('GetSceneList')
       scenes = result.scenes
-        .sort((a, b) => (b.sceneIndex as number) - (a.sceneIndex as number))
-        .map(({ sceneName }) => sceneName as string)
+        .sort((a, b) => <number>b.sceneIndex - <number>a.sceneIndex)
+        .map(({ sceneName }) => <string>sceneName)
 
       currentScene = result.currentProgramSceneName
     }
@@ -273,11 +275,11 @@ export async function getScenes(current = false): Promise<string | string[]> {
 export async function setScene(scene: string): Promise<void> {
   try {
     if (getPrefs<boolean>('app.obs.useV4')) {
-      obs = (await connectOBS()) as OBSWebSocketV4
+      obs = await connectOBS<OBSWebSocketV4>()
       if (!obs) return
       await obs.send('SetCurrentScene', { 'scene-name': scene })
     } else {
-      obs = (await connectOBS()) as OBSWebSocket
+      obs = await connectOBS<OBSWebSocket>()
       if (!obs) return
       await obs.call('SetCurrentProgramScene', { sceneName: scene })
     }

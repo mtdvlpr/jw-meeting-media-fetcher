@@ -270,7 +270,7 @@ export async function getSmallMediaFiles(
           subtitles,
           markers,
         }) => {
-          return {
+          return <SmallMediaFile>{
             title,
             issue: mediaItem.issue,
             url: file.url,
@@ -287,7 +287,7 @@ export async function getSmallMediaFiles(
             markers,
           }
         }
-      ) as SmallMediaFile[]
+      )
     } else if (!silent && (!fallbackLang || !mediaItem.lang)) {
       warn('infoPubIgnored', {
         identifier: Object.values(mediaItem).filter(Boolean).join('_'),
@@ -321,9 +321,4 @@ async function getAdditionalData(item: SmallMediaFile, id: string) {
       item.primaryCategory = result?.media[0]?.primaryCategory
     }
   }
-}
-
-function parseRes(res?: string): number {
-  if (!res) return 0
-  return +res.replace(/\D/g, '')
 }

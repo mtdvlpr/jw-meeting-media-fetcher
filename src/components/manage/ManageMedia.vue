@@ -116,32 +116,32 @@ const props = defineProps<{
   media: (VideoFile | LocalFile)[]
 }>()
 
+// File prefix
 const prefix = ref('')
-const selectDoc = ref(false)
-const fileString = ref('')
-watch(fileString, (val) => (prefix.value = val ? prefix.value : ''))
-const saving = ref(false)
-const jwFile = ref<VideoFile | null>(null)
-const selectVideo = (video: VideoFile) => (jwFile.value = video)
-watch(jwFile, (val) => (prefix.value = val ? '00-00' : prefix.value))
-const files = ref<(LocalFile | VideoFile)[]>([])
-const uploadedFiles = ref(0)
-const totalFiles = ref(0)
-const { online } = useOnline()
-const route = useRoute()
-const date = computed(() => (route.query.date ?? '') as string)
-const { client } = storeToRefs(useCongStore())
-const { currentProgress, totalProgress, setProgress } = useProgress()
+
+// Type of media to add
 const type = ref('custom')
 watch(type, (val) => {
   reset()
   selectDoc.value = val === 'jwpub'
 })
+
+// Add video from JW.org
+const jwFile = ref<VideoFile | null>(null)
+watch(jwFile, (val) => (prefix.value = val ? '00-00' : prefix.value))
+const selectVideo = (video: VideoFile) => (jwFile.value = video)
+
+// Add media from JWPUB
+const selectDoc = ref(false)
+const files = ref<(LocalFile | VideoFile)[]>([])
 const addMedia = (media: LocalFile[]) => {
   files.value = media
   selectDoc.value = false
 }
 
+// Add local files
+const fileString = ref('')
+watch(fileString, (val) => (prefix.value = val ? prefix.value : ''))
 const addFiles = async (multi = true, ...exts: string[]) => {
   if (exts.length === 0) {
     exts.push('*')
@@ -164,93 +164,22 @@ const addFiles = async (multi = true, ...exts: string[]) => {
   }
 }
 
-const processFile = async (file: LocalFile | VideoFile) => {
-  if (!file?.safeName || file.ignored) {
-    increaseProgress()
-    return
-  }
-  if (prefix) {
-    file.safeName = prefix + ' ' + file.safeName
-  }
-
-  const congPromises: Promise<void>[] = []
-  const path = join(mediaPath(), date, file.safeName)
-
-  // JWPUB extract
-  if (file.contents) {
-    write(path, file.contents as Buffer)
-  }
-  // Local file
-  else if (file.filepath) {
-    copy(file.filepath, path)
-  }
-  // External file from jw.org
-  else if (file.safeName) {
-    file.folder = date.value
-    await downloadIfRequired(file as VideoFile, setProgress)
-
-    if ((file as VideoFile).subtitles) {
-      congPromises.push(uploadFile(changeExt(path, 'vtt')))
-    }
-
-    // Download markers if required
-    if ((file as VideoFile).markers) {
-      const markers = Array.from(
-        new Set(
-          (file as VideoFile).markers?.markers?.map(
-            ({ duration, label, startTime, endTransitionDuration }) =>
-              JSON.stringify({
-                duration,
-                label,
-                startTime,
-                endTransitionDuration,
-              })
-          )
-        )
-      ).map((m) => JSON.parse(m))
-
-      const markerPath = join(
-        mediaPath(),
-        file.folder as string,
-        changeExt(file.safeName as string, 'json')
-      )
-      write(markerPath, JSON.stringify(markers))
-      congPromises.push(uploadFile(markerPath))
-    }
-  }
-
-  // Upload media to the cong server
-  if (client && online && props.uploadMedia) {
-    const perf: any = {
-      start: performance.now(),
-      bytes: statSync(path).size,
-      name: file.safeName,
-    }
-
-    congPromises.push(uploadFile(path))
-    await Promise.allSettled(congPromises)
-
-    perf.end = performance.now()
-    perf.bits = perf.bytes * BITS_IN_BYTE
-    perf.ms = perf.end - perf.start
-    perf.s = perf.ms / MS_IN_SEC
-    perf.bps = perf.bits / perf.s
-    perf.MBps = perf.bps / BYTES_IN_MB
-    perf.dir = 'up'
-    log.debug(perf)
-  }
-  increaseProgress()
-}
-
+// Save files
+const saving = ref(false)
+const { online } = useOnline()
+const route = useRoute()
+const date = computed(() => (route.query.date ?? '') as string)
+const { client } = storeToRefs(useCongStore())
 const saveFiles = async () => {
   saving.value = true
   try {
     const promises: Promise<void>[] = []
-    const fileArray = [...files.value, jwFile] as (VideoFile | LocalFile)[]
+    const fileArray = [...files.value]
+    if (jwFile.value) fileArray.push(jwFile.value)
     totalFiles.value = fileArray.length
 
     if (client.value && online.value && props.uploadMedia) {
-      const mediaPath = join(getPrefs('cong.dir') as string, 'Media')
+      const mediaPath = join(getPrefs<string>('cong.dir'), 'Media')
       const datePath = join(mediaPath, date)
 
       try {
@@ -283,6 +212,86 @@ const saveFiles = async () => {
   }
 }
 
+// Process single file
+const processFile = async (file: LocalFile | VideoFile) => {
+  if (!file?.safeName || file.ignored) {
+    increaseProgress()
+    return
+  }
+  if (prefix) {
+    file.safeName = prefix + ' ' + file.safeName
+  }
+
+  const congPromises: Promise<void>[] = []
+  const path = join(mediaPath(), date, file.safeName)
+
+  // JWPUB extract
+  if (file.contents) {
+    write(path, file.contents)
+  }
+  // Local file
+  else if (file.filepath) {
+    copy(file.filepath, path)
+  }
+  // External file from jw.org
+  else if (file.safeName) {
+    file.folder = date.value
+    await downloadIfRequired(file as VideoFile, setProgress)
+
+    if ((file as VideoFile).subtitles) {
+      congPromises.push(uploadFile(changeExt(path, 'vtt')))
+    }
+
+    // Download markers if required
+    if ((file as VideoFile).markers) {
+      const markers = Array.from(
+        new Set(
+          (file as VideoFile).markers?.markers?.map(
+            ({ duration, label, startTime, endTransitionDuration }) =>
+              JSON.stringify({
+                duration,
+                label,
+                startTime,
+                endTransitionDuration,
+              })
+          )
+        )
+      ).map((m) => JSON.parse(m))
+
+      const markerPath = join(
+        mediaPath(),
+        file.folder!,
+        changeExt(file.safeName!, 'json')
+      )
+      write(markerPath, JSON.stringify(markers))
+      congPromises.push(uploadFile(markerPath))
+    }
+  }
+
+  // Upload media to the cong server
+  if (client && online && props.uploadMedia) {
+    const perf: any = {
+      start: performance.now(),
+      bytes: statSync(path).size,
+      name: file.safeName,
+    }
+
+    congPromises.push(uploadFile(path))
+    await Promise.allSettled(congPromises)
+
+    perf.end = performance.now()
+    perf.bits = perf.bytes * BITS_IN_BYTE
+    perf.ms = perf.end - perf.start
+    perf.s = perf.ms / MS_IN_SEC
+    perf.bps = perf.bits / perf.s
+    perf.MBps = perf.bps / BYTES_IN_MB
+    perf.dir = 'up'
+    log.debug(perf)
+  }
+  increaseProgress()
+}
+
+// Upload file to cong server
 const uploadFile = async (path: string) => {
   if (!client.value || !online.value || !props.uploadMedia) return
   const filePath = join(
@@ -310,25 +319,33 @@ const uploadFile = async (path: string) => {
   }
 }
 
-const cancel = () => {
-  emit('cancel')
-  reset()
-}
+// Reset values
 const reset = () => {
   jwFile.value = null
   files.value = []
   fileString.value = ''
   type.value = 'custom'
   selectDoc.value = false
-  uploadedFiles.value = 0
+  processedFiles.value = 0
   totalFiles.value = 0
 }
 
-const increaseProgress = () => {
-  uploadedFiles.value++
-  setProgress(uploadedFiles.value, totalFiles.value, true)
+// Cancel adding media from manage dialog
+const cancel = () => {
+  emit('cancel')
+  reset()
 }
 
+// Show progress
+const processedFiles = ref(0)
+const totalFiles = ref(0)
+const { currentProgress, totalProgress, setProgress } = useProgress()
+const increaseProgress = () => {
+  processedFiles.value++
+  setProgress(processedFiles.value, totalFiles.value, true)
+}
+
+// Drag and drop
 const onDrop = (dropped: File[] | null) => {
   if (!dropped) return
   files.value = dropped.map((f) => {
@@ -351,6 +368,7 @@ const onDrop = (dropped: File[] | null) => {
 const dropzone = ref<HTMLElement>()
 const { isOverDropZone } = useDropZone(dropzone, onDrop)
 
+// Go home
 const goHome = () => {
   log.debug('Go back home')
   const { $localePath } = useNuxtApp()

@@ -19,27 +19,25 @@ export async function getMwMedia(
   // Get document id of this weeks mwb issue
   const db = await getDbFromJWPUB('mwb', issue, setProgress)
   if (!db) throw new Error(`No MW media data found for ${date}!`)
-  const docId = (
-    executeQuery(
-      db,
-      `SELECT DocumentId FROM DatedText WHERE FirstDateOffset = ${baseDate.format(
-        'YYYYMMDD'
-      )}`
-    ) as { DocumentId: number }[]
+  const docId = executeQuery<{ DocumentId: number }>(
+    db,
+    `SELECT DocumentId FROM DatedText WHERE FirstDateOffset = ${baseDate.format(
+      'YYYYMMDD'
+    )}`
   )[0].DocumentId
 
-  const treasures = executeQuery(
+  const treasures = executeQuery<{ FeatureTitle: string }>(
     db,
     'SELECT FeatureTitle FROM Document WHERE Class = 21'
-  )[0] as { FeatureTitle: string }
-  const apply = executeQuery(
+  )[0]
+  const apply = executeQuery<{ FeatureTitle: string }>(
     db,
     'SELECT FeatureTitle FROM Document WHERE Class = 94'
-  )[0] as { FeatureTitle: string }
-  const living = executeQuery(
+  )[0]
+  const living = executeQuery<{ FeatureTitle: string }>(
     db,
     'SELECT FeatureTitle FROM Document WHERE Class = 10 ORDER BY FeatureTitle'
-  ) as { FeatureTitle: string }[]
+  )
   let livingTitle = living[0].FeatureTitle
   if (living.length > 1) {
     livingTitle = living[living.length / 2].FeatureTitle
@@ -66,7 +64,7 @@ export async function getMwMedia(
     )
   }
   mms.forEach((mm) => {
-    addMediaItemToPart(date, mm.BeginParagraphOrdinal as number, mm, 'internal')
+    addMediaItemToPart(date, mm.BeginParagraphOrdinal ?? 0, mm, 'internal')
   })
 
   // Get document extracts and add them to the media list
@@ -75,17 +73,17 @@ export async function getMwMedia(
   extracts.forEach((extract) => {
     addMediaItemToPart(
       date,
-      extract.BeginParagraphOrdinal as number,
+      extract.BeginParagraphOrdinal ?? 0,
       extract,
       'external'
     )
   })
 
   // Get document multimedia of internal references
-  const internalRefs = executeQuery(
+  const internalRefs = executeQuery<MultiMediaExtractRef>(
     db,
     `SELECT DocumentInternalLink.DocumentId AS SourceDocumentId, DocumentInternalLink.BeginParagraphOrdinal, Document.DocumentId FROM DocumentInternalLink INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId INNER JOIN Document ON InternalLink.MepsDocumentId = Document.MepsDocumentId WHERE DocumentInternalLink.DocumentId = ${docId} AND Document.Class <> 94`
-  ) as MultiMediaExtractRef[]
+  )
 
   internalRefs.forEach((ref) => {
     promises.push(processInternalRefs(db, ref, date))
@@ -102,10 +100,10 @@ async function processInternalRefs(
   const promises: Promise<void>[] = []
 
   // Process internalRefs of the internalRefs
-  const internalRefs = executeQuery(
+  const internalRefs = executeQuery<MultiMediaExtractRef>(
     db,
     `SELECT DocumentInternalLink.DocumentId AS SourceDocumentId, DocumentInternalLink.BeginParagraphOrdinal, Document.DocumentId FROM DocumentInternalLink INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId INNER JOIN Document ON InternalLink.MepsDocumentId = Document.MepsDocumentId WHERE DocumentInternalLink.DocumentId = ${ref.DocumentId} AND Document.Class <> 94`
-  ) as MultiMediaExtractRef[]
+  )
 
   internalRefs.forEach((ref) => {
     promises.push(processInternalRefs(db, ref, date))

@@ -82,13 +82,11 @@ const props = defineProps<{
   windowWidth: number
   participant: Participant | null
 }>()
-const { $localePath } = useNuxtApp()
-const mediaActive = inject(mediaActiveKey, ref(false))
-const zoomPart = inject(zoomPartKey, ref(false))
-const obsLoading = ref(false)
-const cong = useRoute().query.cong
-const obsStore = useObsStore()
 
+const cong = useRoute().query.cong
+const { $localePath } = useNuxtApp()
+
+const obsStore = useObsStore()
 onMounted(async () => {
   if (obsEnabled.value) {
     await initOBS()
@@ -104,6 +102,15 @@ onMounted(async () => {
   }
 })
 
+// OBS scenes
+const obsLoading = ref(false)
+const initOBS = async () => {
+  obsLoading.value = true
+  await getScenes()
+  obsLoading.value = false
+}
+
+const mediaActive = inject(mediaActiveKey, ref(false))
 const { currentScene, scenes: allScenes } = storeToRefs(obsStore)
 const scene = computed({
   get: () => currentScene.value,
@@ -141,11 +148,7 @@ const scenes = computed(() => {
       }
     })
 })
-const initOBS = async () => {
-  obsLoading.value = true
-  await getScenes()
-  obsLoading.value = false
-}
+
 useIpcRendererOn('setObsScene', (_e, key: number) => {
   log.debug('Set obs scene via shortcut', key)
   const index = key === 0 ? 9 : key - 1
@@ -159,12 +162,15 @@ const obsEnabled = computed(() => {
   return enable && !!port && !!password
 })
 
+// Zoom part/scene
+const zoomPart = inject(zoomPartKey, ref(false))
 const zoomScene = computed(() => {
   const zScene = getPrefs<string>('app.obs.zoomScene')
   if (!zScene || !allScenes.value.includes(zScene)) return null
   return zScene
 })
 
+// Computed width of the buttons
 const showButtons = computed(
   () => shortScenesLength.value < availableWidth.value
 )

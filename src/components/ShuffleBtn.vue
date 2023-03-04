@@ -4,8 +4,6 @@
     <template #activator="data">
       <v-btn
         id="shuffle"
-        ref="btn"
-        v-model="$attrs.value"
         v-click-outside="(clickedOnce = false)"
         aria-label="shuffle"
         :color="musicFadeOut ? 'error' : 'warning'"
@@ -36,7 +34,7 @@
     id="shuffle"
     aria-label="shuffle"
     color="warning"
-    :title="$getPrefs('meeting.shuffleShortcut')"
+    :title="getPrefs('meeting.shuffleShortcut')"
     :loading="loading"
     :style="{ color: isDark ? 'white' : 'black' }"
     @click="atClick"
@@ -54,10 +52,8 @@
   <v-btn
     v-else
     id="shuffle"
-    ref="btn"
-    v-model="$attrs.value"
     aria-label="shuffle"
-    :title="$getPrefs('meeting.shuffleShortcut')"
+    :title="getPrefs('meeting.shuffleShortcut')"
     color="info"
     @click.stop="atClick()"
   >

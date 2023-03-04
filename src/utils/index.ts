@@ -69,6 +69,7 @@ export {
   stopMeeting,
   toggleMic,
   toggleOnHold,
+  muteParticipants,
   toggleSplotlight,
   renameParticipant,
 } from './zoom/actions'

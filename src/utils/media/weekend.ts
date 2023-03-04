@@ -19,8 +19,8 @@ export async function getWeMedia(
   const baseDate = weDay.startOf('week')
 
   // Get week nr from db
-  const getWeekNr = (database: Database) => {
-    if (!db) return -1
+  const getWeekNr = (database: Database | null) => {
+    if (!database) return -1
     return executeQuery(
       database,
       'SELECT FirstDateOffset FROM DatedText'
@@ -35,31 +35,32 @@ export async function getWeMedia(
   }
 
   let issue = baseDate.subtract(8, 'weeks').format('YYYYMM') + '00'
-  let db = (await getDbFromJWPUB('w', issue, setProgress)) as Database
+  let db = await getDbFromJWPUB('w', issue, setProgress)
   let weekNr = getWeekNr(db)
 
   if (weekNr < 0) {
     issue = baseDate.subtract(9, 'weeks').format('YYYYMM') + '00'
-    db = (await getDbFromJWPUB('w', issue, setProgress)) as Database
+    db = await getDbFromJWPUB('w', issue, setProgress)
     weekNr = getWeekNr(db)
   }
-  if (weekNr < 0) throw new Error(`No WE meeting data found for ${date}!`)
+  if (!db || weekNr < 0) {
+    throw new Error(`No WE meeting data found for ${date}!`)
+  }
 
-  const docId = (
-    executeQuery(
-      db,
-      `SELECT Document.DocumentId FROM Document WHERE Document.Class=40 LIMIT 1 OFFSET ${weekNr}`
-    ) as { DocumentId: number }[]
+  const docId = executeQuery<{ DocumentId: number }>(
+    db,
+    `SELECT Document.DocumentId FROM Document WHERE Document.Class=40 LIMIT 1 OFFSET ${weekNr}`
   )[0].DocumentId
 
-  const magazine = executeQuery(
+  const magazine = executeQuery<{ Title: string }>(
     db,
     `SELECT Title FROM PublicationIssueProperty LIMIT 1`
-  )[0] as { Title: string }
-  const article = executeQuery(
+  )[0]
+  const article = executeQuery<{ Title: string }>(
     db,
     `SELECT Title FROM Document WHERE DocumentId = ${docId}`
-  )[0] as { Title: string }
+  )[0]
+
   write(
     join(
       mediaPath(),
@@ -69,7 +70,7 @@ export async function getWeMedia(
     ''
   )
 
-  const images = executeQuery(
+  const images = executeQuery<MultiMediaItem>(
     db,
     `SELECT DocumentMultimedia.MultimediaId,Document.DocumentId, Multimedia.CategoryType,Multimedia.KeySymbol,Multimedia.Track,Multimedia.IssueTagNumber,Multimedia.MimeType, DocumentMultimedia.BeginParagraphOrdinal,Multimedia.FilePath,Label,Caption, Question.TargetParagraphNumberLabel
 FROM DocumentMultimedia
@@ -77,33 +78,31 @@ FROM DocumentMultimedia
   INNER JOIN Multimedia ON DocumentMultimedia.MultimediaId = Multimedia.MultimediaId
   LEFT JOIN Question ON Question.DocumentId = DocumentMultimedia.DocumentId AND Question.TargetParagraphOrdinal = DocumentMultimedia.BeginParagraphOrdinal
 WHERE Document.DocumentId = ${docId} AND Multimedia.CategoryType <> 9 GROUP BY DocumentMultimedia.MultimediaId`
-  ) as MultiMediaItem[]
+  )
 
   const promises: Promise<void>[] = []
 
   images.forEach((img) => promises.push(addImgToPart(date, issue, img)))
 
-  const songs = executeQuery(
+  const songs = executeQuery<MultiMediaItem>(
     db,
     `SELECT * FROM Multimedia INNER JOIN DocumentMultimedia ON Multimedia.MultimediaId = DocumentMultimedia.MultimediaId WHERE DataType = 2 ORDER BY BeginParagraphOrdinal LIMIT 2 OFFSET ${
       2 * weekNr
     }`
-  ) as MultiMediaItem[]
+  )
 
   let songLangs = songs.map(() => getPrefs<string>('media.lang'))
 
   try {
-    songLangs = (
-      executeQuery(
-        db,
-        `SELECT Extract.ExtractId, Extract.Link, DocumentExtract.BeginParagraphOrdinal FROM Extract INNER JOIN DocumentExtract ON Extract.ExtractId = DocumentExtract.ExtractId WHERE Extract.RefMepsDocumentClass = 31 ORDER BY Extract.ExtractId LIMIT 2 OFFSET ${
-          2 * weekNr
-        }`
-      ) as {
-        ExtractId: number
-        Link: string
-        BeginParagraphOrdinal: number
-      }[]
+    songLangs = executeQuery<{
+      Link: string
+      ExtractId: number
+      BeginParagraphOrdinal: number
+    }>(
+      db,
+      `SELECT Extract.ExtractId, Extract.Link, DocumentExtract.BeginParagraphOrdinal FROM Extract INNER JOIN DocumentExtract ON Extract.ExtractId = DocumentExtract.ExtractId WHERE Extract.RefMepsDocumentClass = 31 ORDER BY Extract.ExtractId LIMIT 2 OFFSET ${
+        2 * weekNr
+      }`
     )
       .sort((a, b) => a.BeginParagraphOrdinal - b.BeginParagraphOrdinal)
       .map((item) => {
@@ -147,20 +146,20 @@ async function addImgToPart(
     const FileName = sanitize(
       img.Caption.length > img.Label.length ? img.Caption : img.Label
     )
-    const pictureObj = {
+    const pictureObj: ImageFile = {
       title: FileName,
       filepath: LocalPath,
       filesize: statSync(LocalPath).size,
       queryInfo: img,
-    } as ImageFile
-    await addMediaItemToPart(date, 1, pictureObj)
+    }
+    addMediaItemToPart(date, 1, pictureObj)
   } else {
     const media = await getMediaLinks({
       pubSymbol: img.KeySymbol ?? '',
-      track: img.Track as number,
+      track: img.Track ?? 0,
       issue: img.IssueTagNumber?.toString(),
     })
-    if (media?.length > 0) addMediaItemToPart(date, 1, media[0] as VideoFile)
+    if (media?.length > 0) addMediaItemToPart(date, 1, media[0])
   }
 }
 
@@ -172,22 +171,22 @@ async function addSongToPart(
 ): Promise<void> {
   const mediaLang = getPrefs<string>('media.lang')
   const fallbackLang = getPrefs<string>('media.langFallback')
-  let songMedia = await getMediaLinks({
-    pubSymbol: song.KeySymbol as string,
-    track: song.Track as number,
+  let songMedia: VideoFile[] = await getMediaLinks({
+    pubSymbol: song.KeySymbol ?? '',
+    track: song.Track ?? 0,
     lang: fallbackLang ? mediaLang : songLangs[i],
   })
 
   if (fallbackLang && (!songMedia || songMedia.length === 0)) {
     songMedia = await getMediaLinks({
-      pubSymbol: song.KeySymbol as string,
-      track: song.Track as number,
+      pubSymbol: song.KeySymbol ?? '',
+      track: song.Track ?? 0,
       lang: mediaLang === songLangs[i] ? fallbackLang : songLangs[i],
     })
   }
 
   if (songMedia?.length > 0) {
-    const songObj = songMedia[0] as VideoFile
+    const songObj = songMedia[0]
     songObj.queryInfo = song
     await addMediaItemToPart(date, 2 * i, songObj)
   } else {

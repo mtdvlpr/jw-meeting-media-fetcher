@@ -30,15 +30,18 @@
   </v-col>
 </template>
 <script setup lang="ts">
+import { Dayjs } from 'dayjs'
 import { DateFormat } from '~~/types'
 
 const props = defineProps<{
-  currentWeek: number
+  baseDate: Dayjs
   recurringColor: string
   dayColors: { [key: number]: string }
 }>()
 
 const { $dayjs, $localePath } = useNuxtApp()
+
+// Open manage page for specific day
 const openDate = (date: string) => {
   log.debug('Manage specific day')
   useRouter().push({
@@ -47,22 +50,14 @@ const openDate = (date: string) => {
   })
 }
 
+// Remaining days of the week
 const now = $dayjs().hour(0).minute(0).second(0).millisecond(0)
-const baseDate = computed(() => {
-  let y = 0
-  if (props.currentWeek < $dayjs().isoWeek()) y = 1
-  const week = $dayjs()
-    .startOf('week')
-    .add(y, 'years')
-    .isoWeek(props.currentWeek)
-  return week.startOf('week')
-})
 const daysOfWeek = computed(() => {
   const specialCong = getPrefs<boolean>('meeting.specialCong')
   const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
   const days: { first: string; second: string; formatted: string }[] = []
   for (let i = 0; i < DAYS_IN_WEEK; i++) {
-    const day = baseDate.value.add(i, 'days')
+    const day = props.baseDate.add(i, 'days')
     if (day.isBefore(now)) continue
 
     // Add meeting day

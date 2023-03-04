@@ -139,7 +139,7 @@ import { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRenderer } from '@vueuse/electron'
 // eslint-disable-next-line import/named
 import { existsSync, readFileSync } from 'fs-extra'
-import { Marker, VideoFile } from '~~/types'
+import { Marker, Times, TimeString, VideoFile } from '~~/types'
 
 const emit = defineEmits(['playing', 'deactivated'])
 const props = defineProps<{
@@ -150,57 +150,23 @@ const props = defineProps<{
   streamingFile?: VideoFile
 }>()
 
-interface Time {
-  start: number
-  end: number
-}
+onMounted(() => {
+  // Sign language markers
+  getMarkers()
 
-interface TimeString {
-  start: string
-  end: string
-}
-
-interface Times {
-  original: Time
-  clipped: Time
-  formatted?: TimeString
-}
-
-const { currentScene: scene } = storeToRefs(useObsStore())
-const scale = ref(1)
-const sortable = inject(sortableKey, ref(false))
-const showPrefix = inject(showPrefixKey, ref(false))
-watch(showPrefix, (val) => {
-  const prefix = document.querySelector(
-    `#${id.value} .sort-prefix`
-  ) as HTMLSpanElement
-  if (prefix) {
-    if (val) {
-      prefix.style.display = 'inline'
-    } else {
-      prefix.style.display = 'none'
+  // Streaming song
+  if (props.streamingFile) {
+    streamDownloaded.value = existsSync(localStreamPath.value)
+    if (!streamDownloaded.value) {
+      downloadSong()
     }
   }
+
+  // Panzoom
+  if (isImage(props.src)) initPanzoom()
 })
-const downloading = ref(false)
-const streamDownloaded = ref(false)
-const panzoom = ref<PanzoomObject | null>(null)
-const current = ref(false)
-const active = ref(false)
-const played = ref(false)
-const video = ref<Times | null>(null)
-const paused = ref(false)
-const progress = ref(0)
-watch(progress, (val) => {
-  if (active.value && val > 0) {
-    videoStarted.value = true
-  }
-})
-const newProgress = ref(0)
-watch(newProgress, () => {
-  if (paused.value) scrubVideo()
-})
-const videoStarted = ref(false)
+
+// Media active state
 const mediaActive = inject(mediaActiveKey, ref(false))
 watch(mediaActive, (val) => {
   if (val && !active.value) {
@@ -209,29 +175,20 @@ watch(mediaActive, (val) => {
     active.value = false
   }
 })
-const videoActive = inject(videoActiveKey, ref(false))
+
+// OBS
 const zoomPart = inject(zoomPartKey, ref(false))
-const start = ref<string | null>(null)
-const end = ref<string | null>(null)
-const markers = ref<Marker[]>([])
-const tempClipped = ref<TimeString | null>(null)
+const { currentScene: scene } = storeToRefs(useObsStore())
+
+// Media properties
 const id = computed(() => strip('mediaitem-' + basename(props.src)))
 const url = computed(() => pathToFileURL(props.src).href)
-const localStreamPath = computed(() => {
-  if (!props.streamingFile) return ''
-  return join(pubPath(props.streamingFile), basename(props.streamingFile.url))
-})
-const isLongVideo = computed(() => {
-  return isVideo(props.src) && !end.value?.startsWith('00:00:00')
-})
-const clippedStart = computed(() => {
-  if (!video.value) return 0
-  return (video.value.clipped.start / video.value.original.end) * 100
-})
-const clippedEnd = computed(() => {
-  if (!video.value) return 0
-  return (1 - video.value.clipped.end / video.value.original.end) * 100
-})
+const sortable = inject(sortableKey, ref(false))
+const current = ref(false)
+const active = ref(false)
+const played = ref(false)
+const videoStarted = ref(false)
+const videoActive = inject(videoActiveKey, ref(false))
 const title = computed(() => {
   const filenameArray = (
     props.streamingFile?.safeName ?? basename(props.src)
@@ -278,78 +235,23 @@ const title = computed(() => {
         </div>`
 })
 
-onMounted(async () => {
-  getMarkers()
-  if (props.streamingFile) {
-    streamDownloaded.value = existsSync(localStreamPath.value)
-    if (!streamDownloaded.value) {
-      downloadSong()
-    }
-  }
-
-  if (isImage(props.src)) {
-    const { default: Panzoom } = await import('@panzoom/panzoom')
-    panzoom.value = Panzoom(
-      document.querySelector(`#${id.value}-preview`) as HTMLElement,
-      {
-        animate: true,
-        canvas: true,
-        contain: 'outside',
-        cursor: 'default',
-        panOnlyWhenZoomed: true,
-        setTransform: (
-          el: HTMLElement,
-          { scale, x, y }: { scale: number; x: number; y: number }
-        ) => {
-          pan({
-            x: x / el.clientWidth,
-            y: y / el.clientHeight,
-          })
-          if (panzoom.value) {
-            panzoom.value.setStyle(
-              'transform',
-              `scale(${scale}) translate(${scale === 1 ? 0 : x}px, ${
-                scale === 1 ? 0 : y
-              }px)`
-            )
-          }
-        },
-      }
-    )
-    resetZoom()
-  }
+// Download streaming song
+const downloading = ref(false)
+const streamDownloaded = ref(false)
+const localStreamPath = computed(() => {
+  if (!props.streamingFile) return ''
+  return join(pubPath(props.streamingFile), basename(props.streamingFile.url))
 })
+const downloadSong = async () => {
+  if (!props.streamingFile) return
+  downloading.value = true
+  await downloadIfRequired(props.streamingFile)
+  downloading.value = false
+  streamDownloaded.value = existsSync(localStreamPath.value)
+}
 
-watch(
-  () => props.playNow,
-  (val) => {
-    if (val) {
-      current.value = true
-      play()
-    }
-  }
-)
-
-watch(
-  () => props.stopNow,
-  (val) => {
-    if (val) {
-      stop()
-    }
-  }
-)
-
-watch(
-  () => props.deactivate,
-  (val) => {
-    if (val) {
-      current.value = false
-      active.value = false
-      emit('deactivated')
-    }
-  }
-)
-
+// Play media
+const tempClipped = ref<TimeString | null>(null)
 const play = (marker?: Marker) => {
   if (!usePresentStore().mediaScreenVisible) {
     useIpcRenderer().send('toggleMediaWindowFocus')
@@ -381,23 +283,11 @@ const play = (marker?: Marker) => {
   })
 }
 
-const downloadSong = async () => {
-  if (!props.streamingFile) return
-  downloading.value = true
-  await downloadIfRequired(props.streamingFile)
-  downloading.value = false
-  streamDownloaded.value = existsSync(localStreamPath.value)
-}
-
-const enableMediaScene = () => {
-  const mediaScene = getPrefs<string>('app.obs.mediaScene')
-  if (mediaScene) {
-    setScene(mediaScene)
-  } else {
-    warn('errorObsMediaScene')
-  }
-}
-
+// Pause media
+const paused = ref(false)
+const isLongVideo = computed(() => {
+  return isVideo(props.src) && !end.value?.startsWith('00:00:00')
+})
 const togglePaused = () => {
   if (scene.value && paused.value) {
     enableMediaScene()
@@ -413,6 +303,16 @@ const togglePaused = () => {
   paused.value = !paused.value
 }
 
+const enableMediaScene = () => {
+  const mediaScene = getPrefs<string>('app.obs.mediaScene')
+  if (mediaScene) {
+    setScene(mediaScene)
+  } else {
+    warn('errorObsMediaScene')
+  }
+}
+
+// Stop media
 const stop = () => {
   active.value = false
   if (isImage(props.src)) {
@@ -422,14 +322,70 @@ const stop = () => {
   }
 }
 
+// Scrub video
+const progress = ref(0)
+watch(progress, (val) => {
+  if (active.value && val > 0) {
+    videoStarted.value = true
+  }
+})
+const newProgress = ref(0)
+watch(newProgress, () => {
+  if (paused.value) scrubVideo()
+})
 const scrubVideo = () => useIpcRenderer().send('videoScrub', newProgress.value)
 
+// Set custom start/end times for video
+const start = ref<string | null>(null)
+const end = ref<string | null>(null)
+const video = ref<Times | null>(null)
+const clippedStart = computed(() => {
+  if (!video.value) return 0
+  return (video.value.clipped.start / video.value.original.end) * 100
+})
+const clippedEnd = computed(() => {
+  if (!video.value) return 0
+  return (1 - video.value.clipped.end / video.value.original.end) * 100
+})
 const setTime = (time: Times) => {
   start.value = time.formatted?.start ?? null
   end.value = time.formatted?.end ?? null
   video.value = time
 }
 
+// Media playback controls
+watch(
+  () => props.playNow,
+  (val) => {
+    if (val) {
+      current.value = true
+      play()
+    }
+  }
+)
+
+watch(
+  () => props.stopNow,
+  (val) => {
+    if (val) {
+      stop()
+    }
+  }
+)
+
+watch(
+  () => props.deactivate,
+  (val) => {
+    if (val) {
+      current.value = false
+      active.value = false
+      emit('deactivated')
+    }
+  }
+)
+
+// Get sign language video markers
+const markers = ref<Marker[]>([])
 const getMarkers = () => {
   if (isImage(props.src) || existsSync(changeExt(props.src, '.json'))) return
   const { $dayjs } = useNuxtApp()
@@ -475,7 +431,57 @@ const getMarkers = () => {
   markers.value = markerArray
 }
 
-// Panzoom
+// Show prefix
+const showPrefix = inject(showPrefixKey, ref(false))
+watch(showPrefix, (val) => {
+  const prefix = document.querySelector<HTMLSpanElement>(
+    `#${id.value} .sort-prefix`
+  )
+  if (prefix) {
+    if (val) {
+      prefix.style.display = 'inline'
+    } else {
+      prefix.style.display = 'none'
+    }
+  }
+})
+
+// Zoom and pan image
+const scale = ref(1)
+const panzoom = ref<PanzoomObject | null>(null)
+const initPanzoom = async () => {
+  const { default: Panzoom } = await import('@panzoom/panzoom')
+  panzoom.value = Panzoom(
+    document.querySelector<HTMLElement>(`#${id.value}-preview`)!,
+    {
+      animate: true,
+      canvas: true,
+      contain: 'outside',
+      cursor: 'default',
+      panOnlyWhenZoomed: true,
+      setTransform: (
+        el: HTMLElement,
+        { scale, x, y }: { scale: number; x: number; y: number }
+      ) => {
+        pan({
+          x: x / el.clientWidth,
+          y: y / el.clientHeight,
+        })
+        if (panzoom.value) {
+          panzoom.value.setStyle(
+            'transform',
+            `scale(${scale}) translate(${scale === 1 ? 0 : x}px, ${
+              scale === 1 ? 0 : y
+            }px)`
+          )
+        }
+      },
+    }
+  )
+  resetZoom()
+}
+
+// At double click, zoom in or out
 const { atClick } = useClickTwice(() => {
   if (!panzoom.value || !active.value) return
   let deltaY = 1000
@@ -485,6 +491,8 @@ const { atClick } = useClickTwice(() => {
   useIpcRenderer().send('zoom', deltaY)
   zoomPreview(deltaY)
 })
+
+// Zoom image preview
 const zoomPreview = (deltaY: number) => {
   if (!panzoom.value) return
   scale.value += (-1 * deltaY) / 100
@@ -495,6 +503,8 @@ const zoomPreview = (deltaY: number) => {
     resetZoom()
   }
 }
+
+// Reset zoom
 const resetZoom = () => {
   if (!panzoom.value) return
   scale.value = 1

@@ -36,7 +36,6 @@
 import { useRouteParams } from '@vueuse/router'
 
 type Variant = 'home' | 'cancel' | 'settings' | 'play' | 'stop' | 'present'
-
 const props = withDefaults(
   defineProps<{
     variant: Variant
@@ -52,25 +51,35 @@ const props = withDefaults(
   }
 )
 
-const { $localePath } = useNuxtApp()
-
+// Emit click event
 const emit = defineEmits(['click'])
 const { atClick, clickedOnce } = useClickTwice(() => {
   emit('click')
 })
 
+// Update state for settings button
 const statStore = useStatStore()
 const { updateSuccess } = storeToRefs(statStore)
 
+// Icon
+const getIcon = (
+  icon: string | { text: string; props?: Record<string, any> }
+) => {
+  return typeof icon === 'string' ? icon : icon.text
+}
+
+// Icon link
+const { $localePath } = useNuxtApp()
 const cong = useRouteParams('cong', '')
 const weekNr = useRouteParams('week', '-1')
-
 const link = computed(() => {
   if (style.value.to) {
     return $localePath(`${style.value.to}?cong=${cong}&week=${weekNr}`)
   }
   return useAttrs().to as string | undefined
 })
+
+// Icon title
 const title = computed(() => {
   if (props.variant === 'present') {
     return getPrefs<string>('media.presentShortcut')
@@ -78,6 +87,7 @@ const title = computed(() => {
   return undefined
 })
 
+// Icon style
 const iconStyle = computed(() => {
   if (clickedOnce) {
     return {
@@ -91,19 +101,6 @@ const iconStyle = computed(() => {
   }
   return undefined
 })
-
-const getIcon = (
-  icon: string | { text: string; props?: Record<string, any> }
-) => {
-  return typeof icon === 'string' ? icon : icon.text
-}
-
-const getIconProps = (
-  icon: string | { text: string; props?: Record<string, any> }
-) => {
-  return typeof icon === 'string' ? {} : icon.props
-}
-
 const getIconStyle = (
   icon?: string | { text: string; props?: Record<string, any> }
 ) => {
@@ -114,6 +111,13 @@ const getIconStyle = (
     }
   }
   return {}
+}
+
+// Icon props
+const getIconProps = (
+  icon: string | { text: string; props?: Record<string, any> }
+) => {
+  return typeof icon === 'string' ? {} : icon.props
 }
 
 interface Style {
