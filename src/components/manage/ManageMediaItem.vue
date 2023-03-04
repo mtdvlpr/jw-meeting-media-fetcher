@@ -132,7 +132,9 @@ const getPreview = (item: VideoFile | LocalFile) => {
       client.value.getFileContents(item.url).then((contents) => {
         preview.value =
           `data:;base64,` +
-          Buffer.from(new Uint8Array(contents)).toString('base64')
+          Buffer.from(new Uint8Array(contents as ArrayBuffer)).toString(
+            'base64'
+          )
       })
     } else if (item.url) {
       preview.value = pathToFileURL(item.url).href
