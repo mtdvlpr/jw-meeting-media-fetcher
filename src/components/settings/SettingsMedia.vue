@@ -136,7 +136,7 @@
             min-width="32px"
             @click="refreshBg()"
           >
-            <v-icon icon="faArrowsRotate" class="text-black" />
+            <v-icon icon="fa-arrows-rotate" class="text-black" />
           </v-btn>
         </v-col>
       </v-row>

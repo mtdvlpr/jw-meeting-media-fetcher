@@ -1,10 +1,17 @@
 <template>
-  <manage-media
-    :media="media"
-    :loading="loading"
-    upload-media
-    @refresh="getExistingMedia()"
-  />
+  <div>
+    <Head>
+      <Title>
+        {{ date ? `Manage ${date}` : 'Manage Media' }}
+      </Title>
+    </Head>
+    <manage-media
+      :media="media"
+      :loading="loading"
+      upload-media
+      @refresh="getExistingMedia()"
+    />
+  </div>
 </template>
 <script setup lang="ts">
 // eslint-disable-next-line import/named
@@ -14,7 +21,6 @@ import { DateFormat, LocalFile, MeetingFile } from '~~/types'
 
 const date = computed(() => useRoute().query.date as string)
 definePageMeta({
-  title: `Manage ${date.value}`,
   titleTemplate: '%s - M³',
 })
 

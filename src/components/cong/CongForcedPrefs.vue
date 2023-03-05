@@ -44,7 +44,7 @@
     </v-row>
     <v-footer position="fixed" style="justify-content: right">
       <v-btn color="primary" @click="updatePrefs()">
-        <v-icon icon="faCheck" size="xl" />
+        <v-icon icon="fa-check" size="xl" />
       </v-btn>
     </v-footer>
   </v-card>

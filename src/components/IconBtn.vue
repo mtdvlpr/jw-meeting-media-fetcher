@@ -137,7 +137,7 @@ const styles: Styles = {
       'min-width': '32px',
       color: 'btn',
     },
-    icons: [{ text: 'faHome', props: { class: 'white--text' } }],
+    icons: [{ text: 'fa-home', props: { class: 'white--text' } }],
   },
   cancel: {
     props: {
@@ -146,7 +146,7 @@ const styles: Styles = {
     },
     icons: [
       {
-        text: 'faCircleArrowLeft',
+        text: 'fa-circle-arrow-left',
         props: { class: 'white--text', size: 'lg' },
       },
     ],
@@ -154,7 +154,7 @@ const styles: Styles = {
   present: {
     to: '/present',
     props: { color: 'primary' },
-    icons: ['faPlay', 'faSliders'],
+    icons: ['fa-play', 'fa-sliders'],
   },
   settings: {
     to: '/settings',
@@ -162,17 +162,17 @@ const styles: Styles = {
       'min-width': '32px',
       color: 'btn',
     },
-    icons: [{ text: 'faUserCog', props: { class: 'white--text' } }],
+    icons: [{ text: 'fa-user-cog', props: { class: 'white--text' } }],
   },
   play: {
     props: { color: 'primary' },
-    icons: [{ text: 'faPlay', props: { size: 'lg' } }],
+    icons: [{ text: 'fa-play', props: { size: 'lg' } }],
   },
   stop: {
     props: { color: 'warning' },
     icons: [
       {
-        text: 'faStop',
+        text: 'fa-stop',
         props: { size: 'xl', class: 'black--text' },
       },
     ],

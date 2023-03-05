@@ -15,12 +15,12 @@
       class="my-0"
     >
       <v-btn v-if="item.color === 'warning'" icon @click="atClick(item)">
-        <v-icon icon="faSquareMinus" class="text-warning" size="xs" />
+        <v-icon icon="fa-square-minus" class="text-warning" size="xs" />
       </v-btn>
       <v-tooltip v-else location="right" :model-value="true">
         <template #activator="data">
           <v-btn icon @click="atClick(item)">
-            <v-icon icon="faSquareMinus" class="text-error" size="xs" />
+            <v-icon icon="fa-square-minus" class="text-error" size="xs" />
           </v-btn>
         </template>
         <span>{{ $t('clickAgain') }}</span>
@@ -30,11 +30,11 @@
       <v-btn icon @click="atClick(item)">
         <v-icon
           v-if="item.isLocal === undefined"
-          icon="faSquarePlus"
+          icon="fa-square-plus"
           size="xs"
         />
-        <v-icon v-else-if="item.hidden" icon="faSquare" size="xs" />
-        <v-icon v-else icon="faSquareCheck" size="xs" />
+        <v-icon v-else-if="item.hidden" icon="fa-square" size="xs" />
+        <v-icon v-else icon="fa-square-check" size="xs" />
       </v-btn>
     </v-list-item-action>
     <v-hover v-slot="{ isHovering }">
@@ -63,14 +63,14 @@
       </v-list-item-title>
     </v-hover>
     <v-list-item-action class="my-0">
-      <v-icon v-if="item.recurring" icon="faSyncAlt" class="text-info" />
+      <v-icon v-if="item.recurring" icon="fa-sync-alt" class="text-info" />
       <v-btn
         v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
         icon
         aria-label="rename file"
         @click="emit('edit', item)"
       >
-        <v-icon icon="faPen" size="sm" />
+        <v-icon icon="fa-pen" size="sm" />
       </v-btn>
     </v-list-item-action>
     <v-list-item-action>
@@ -79,12 +79,12 @@
     <v-list-item-action class="ms-2">
       <v-icon
         v-if="item.congSpecific"
-        icon="faCloud"
+        icon="fa-cloud"
         class="text-info"
         size="sm"
       />
-      <v-icon v-else-if="item.isLocal" icon="faFolderOpen" size="sm" />
-      <v-icon v-else icon="faGlobeAmericas" class="text-primary" size="sm" />
+      <v-icon v-else-if="item.isLocal" icon="fa-folder-open" size="sm" />
+      <v-icon v-else icon="fa-globe-americas" class="text-primary" size="sm" />
     </v-list-item-action>
   </v-list-item>
 </template>
@@ -210,21 +210,21 @@ const toggleVisibility = async (item: MeetingFile | LocalFile) => {
 
 // File type icon
 const typeIcon = (filename?: string) => {
-  if (!filename) return 'faQuestionCircle'
+  if (!filename) return 'fa-question-circle'
   if (isImage(filename)) {
-    return 'faImage'
+    return 'fa-image'
   } else if (isVideo(filename)) {
-    return 'faFilm'
+    return 'fa-film'
   } else if (isAudio(filename)) {
-    return 'faHeadphones'
+    return 'fa-headphones'
   } else if (extname(filename) === '.pdf') {
-    return 'faFilePdf'
+    return 'fa-file-pdf'
   } else if (extname(filename) === '.vtt') {
-    return 'faClosedCaptioning'
+    return 'fa-closed-captioning'
   } else if (['.xspf', '.json'].includes(extname(filename))) {
-    return 'faFileCode'
+    return 'fa-file-code'
   } else {
-    return 'faQuestionCircle'
+    return 'fa-question-circle'
   }
 }
 </script>

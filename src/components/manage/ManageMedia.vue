@@ -22,7 +22,7 @@
       <manage-select-type v-model="type" :disabled="loading || saving" />
       <v-row v-if="type" align="center" class="mb-0">
         <v-col cols="1" class="text-center" align-self="center">
-          <v-icon icon="faFileExport" />
+          <v-icon icon="fa-file-export" />
         </v-col>
         <v-col cols="11">
           <song-picker
@@ -46,7 +46,7 @@
         <loading-icon v-if="loading || saving" />
         <template v-else>
           <v-overlay :model-value="isOverDropZone">
-            <v-icon icon="faDownload" size="3x" bounce />
+            <v-icon icon="fa-download" size="3x" bounce />
           </v-overlay>
           <manage-media-list
             :date="date"
@@ -84,7 +84,7 @@
             :loading="loading || saving"
             @click="saveFiles()"
           >
-            <v-icon icon="faSave" size="lg" />
+            <v-icon icon="fa-save" size="lg" />
           </v-btn>
           <v-btn
             v-else-if="dialog"
@@ -92,7 +92,7 @@
             min-width="32px"
             @click="cancel()"
           >
-            <v-icon icon="faXmark" size="lg" class="text-white" />
+            <v-icon icon="fa-xmark" size="lg" class="text-white" />
           </v-btn>
           <icon-btn v-else variant="home" :disabled="loading || saving" />
         </v-col>

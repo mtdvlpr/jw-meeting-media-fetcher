@@ -20,7 +20,7 @@
       />
     </template>
     <template v-else-if="locked" #append-inner>
-      <v-icon icon="faLock" style="margin-top: 2px">
+      <v-icon icon="fa-lock" style="margin-top: 2px">
         <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
@@ -29,7 +29,7 @@
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
-            icon="faCircleQuestion"
+            icon="fa-circle-question"
             size="lg"
             style="margin-top: 2px"
           />
@@ -42,7 +42,7 @@
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
-            icon="faCircleQuestion"
+            icon="fa-circle-question"
             size="lg"
             style="margin-top: 2px"
           />
@@ -71,7 +71,7 @@
       <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
-      <v-icon icon="faLock" style="margin-top: 2px">
+      <v-icon icon="fa-lock" style="margin-top: 2px">
         <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
@@ -81,7 +81,7 @@
           <v-icon
             v-bind="attrs"
             size="lg"
-            icon="faCircleQuestion"
+            icon="fa-circle-question"
             style="margin-top: 2px"
           />
         </template>
@@ -105,7 +105,7 @@
       <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
-      <v-icon icon="faLock" style="margin-top: 2px">
+      <v-icon icon="fa-lock" style="margin-top: 2px">
         <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
@@ -114,7 +114,7 @@
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
-            icon="faCircleQuestion"
+            icon="fa-circle-question"
             size="lg"
             style="margin-top: 2px"
           />
@@ -140,14 +140,14 @@
       <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
-      <v-icon icon="faLock">
+      <v-icon icon="fa-lock">
         <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
     <template v-else-if="explanation" #append-inner>
       <v-tooltip location="top">
         <template #activator="{ props: attrs }">
-          <v-icon v-bind="attrs" size="lg" icon="faCircleQuestion" />
+          <v-icon v-bind="attrs" size="lg" icon="fa-circle-question" />
         </template>
         <span>{{ $t(explanation) }}</span>
       </v-tooltip>
@@ -168,7 +168,7 @@
       <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
-      <v-icon icon="faLock" style="margin-top: 3px">
+      <v-icon icon="fa-lock" style="margin-top: 3px">
         <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
@@ -178,7 +178,7 @@
           <v-icon
             v-bind="attrs"
             size="lg"
-            icon="faCircleQuestion"
+            icon="fa-circle-question"
             style="margin-top: 3px"
           />
         </template>
@@ -201,7 +201,7 @@
       <slot :name="name" v-bind="slotData" />
     </template>
     <template v-if="locked" #append-inner>
-      <v-icon icon="faLock" style="margin-top: 3px">
+      <v-icon icon="fa-lock" style="margin-top: 3px">
         <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
       </v-icon>
     </template>
@@ -210,7 +210,7 @@
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
-            icon="faCircleQuestion"
+            icon="fa-circle-question"
             style="margin-top: 3px"
             size="lg"
           />
@@ -251,7 +251,7 @@
           {{ item.title }}
         </v-btn>
         <v-btn v-if="locked" icon disabled :style="`height: ${height}`">
-          <v-icon icon="faLock" />
+          <v-icon icon="fa-lock" />
         </v-btn>
       </v-btn-toggle>
     </v-col>
@@ -284,7 +284,7 @@
         hide-details="auto"
       >
         <template v-if="locked" #append-inner>
-          <v-icon icon="faLock" style="margin-top: 2px">
+          <v-icon icon="fa-lock" style="margin-top: 2px">
             <v-tooltip activator="parent" location="top">
               {{ $t('settingLocked') }}
             </v-tooltip>
@@ -296,7 +296,7 @@
               <v-icon
                 v-bind="attrs"
                 size="lg"
-                icon="faCircleQuestion"
+                icon="fa-circle-question"
                 style="margin-top: 2px"
               />
             </template>
@@ -400,7 +400,7 @@ const rules = computed(() => {
 // Password
 const passwordVisible = ref(false)
 const passIcon = computed(() =>
-  passwordVisible.value ? 'faEyeSlash' : 'faEye'
+  passwordVisible.value ? 'fa-eye-slash' : 'fa-eye'
 )
 
 // Slider

@@ -4,6 +4,11 @@
       mediaWidth && ratioX !== 0 ? `max-height: ${mediaHeight * ratioY}px` : ''
     }`"
   >
+    <Head>
+      <Title>
+        {{ controller ? 'Website Controller' : 'Media Window' }}
+      </Title>
+    </Head>
     <span v-if="!controller" class="pointer" />
     <iframe
       id="website"
@@ -27,7 +32,6 @@ const url = computed(() => route.query.url as string)
 const controller = computed(() => route.query.controller === 'true')
 
 definePageMeta({
-  title: controller.value ? 'Website Controller' : 'Media Window',
   layout: 'media',
 })
 

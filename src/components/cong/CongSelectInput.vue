@@ -15,7 +15,7 @@
     <template #item="{ item }">
       <v-list-item-action v-if="congs.length > 1" class="me-0">
         <v-icon
-          icon="faSquareMinus"
+          icon="fa-square-minus"
           :class="`text-${clickedOnce ? 'error' : 'warning'}`"
           size="xs"
           @click.stop="atClick(item)"
@@ -30,7 +30,7 @@
     <template #append-item>
       <v-list-item id="add-cong-option" @click="addCong()">
         <v-list-item-action>
-          <v-icon icon="faSquarePlus" class="text-success" size="xs" />
+          <v-icon icon="fa-square-plus" class="text-success" size="xs" />
         </v-list-item-action>
       </v-list-item>
     </template>

@@ -4,7 +4,7 @@
 <script setup lang="ts">
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
-  modelValue: string
+  modelValue: string | null
 }>()
 
 const value = useVModel(props, 'modelValue', emit)
@@ -37,7 +37,7 @@ const value = useVModel(props, 'modelValue', emit)
         v-on="on"
       >
         <template v-if="!locked" #append>
-          <v-icon icon="faCalendar" style="margin-top: 2px" />
+          <v-icon icon="fa-calendar" style="margin-top: 2px" />
         </template>
       </form-input>
     </template>

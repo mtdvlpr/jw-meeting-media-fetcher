@@ -7,14 +7,18 @@
           :class="{ 'mr-2': true, 'pulse-danger': !updateSuccess }"
           @click="openReleases()"
         >
-          <v-icon v-if="!updateSuccess" icon="faHandPointRight" class="mr-1" />
+          <v-icon
+            v-if="!updateSuccess"
+            icon="fa-hand-point-right"
+            class="mr-1"
+          />
           M³ {{ isDev ? 'dev' : version }}
         </v-btn>
         <v-btn class="mr-2" @click="report()">
           <v-tooltip activator="parent" location="top">
             {{ $t('reportIssue') }}
           </v-tooltip>
-          <v-icon icon="faBug" />
+          <v-icon icon="fa-bug" />
         </v-btn>
         <v-btn
           v-if="cacheColor === 'warning'"
@@ -31,7 +35,7 @@
           >
             {{ $t('cleanCache') }}
           </v-tooltip>
-          <v-icon icon="faTrash" pull="left" />
+          <v-icon icon="fa-trash" pull="left" />
           {{ `${cache}MB` }}
         </v-btn>
         <v-btn
@@ -44,7 +48,7 @@
           <v-tooltip :model-value="true" location="top">
             {{ $t('clickAgain') }}
           </v-tooltip>
-          <v-icon icon="faTrash" pull="left" />
+          <v-icon icon="fa-trash" pull="left" />
           {{ `${cache}MB` }}
         </v-btn>
       </v-col>

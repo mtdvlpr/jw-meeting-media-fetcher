@@ -3,14 +3,16 @@
     fluid
     class="present-page align-start align-content-space-between pa-0 fill-height"
   >
+    <Head>
+      <Title>
+        {{ date ? `Present ${date}` : 'Presentation Mode' }}
+      </Title>
+    </Head>
     <confirm-dialog
       v-model="dialog"
       content="obsZoomSceneActivate"
       @cancel="dialog = false"
-      @confirm="
-        dialog = false
-        zoomPart = true
-      "
+      @confirm="confirmZoomPart()"
     >
       <form-input
         v-if="!!zoomClient"
@@ -44,8 +46,7 @@ import { ZoomPrefs } from '~~/types'
 
 const date = computed(() => useRoute().query.date as string)
 definePageMeta({
-  title: date ?? 'Present',
-  titleTemplate: date ? 'Present %s - M³' : '%s - Meeting Media Manager',
+  titleTemplate: '%s - M³',
 })
 
 // General state
@@ -99,6 +100,10 @@ onMounted(() => {
 const dialog = ref(false)
 const zoomPart = ref(false)
 provide(zoomPartKey, zoomPart)
+const confirmZoomPart = () => {
+  dialog.value = false
+  zoomPart.value = true
+}
 const toggleZoomPart = () => {
   if (zoomPart.value) {
     zoomPart.value = false

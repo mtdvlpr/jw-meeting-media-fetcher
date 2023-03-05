@@ -34,7 +34,7 @@
             class="align-right"
             @click="store.dismiss(i)"
           >
-            <v-icon icon="faXmark" />
+            <v-icon icon="fa-xmark" />
           </v-btn>
         </v-col>
       </v-row>
@@ -82,11 +82,11 @@ const icon = (type: string) => {
   switch (type) {
     case 'warning':
     case 'error':
-      return 'faExclamationCircle'
+      return 'fa-circle-exclamation'
     case 'success':
-      return 'faCircleCheck'
+      return 'fa-check-circle'
     default:
-      return 'faInfoCircle'
+      return 'fa-info-circle'
   }
 }
 

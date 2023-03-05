@@ -25,15 +25,25 @@
 <script setup lang="ts">
 import { basename } from 'upath'
 
+interface Cong {
+  name: string
+  path: string
+  filename: string
+}
+
+const congs = ref<Cong[]>([])
 const emit = defineEmits<{
   (e: 'selected', filename: string): void
 }>()
 
-const congs = (await getCongPrefs()).map((c) => {
-  return {
-    name: c.name,
-    path: c.path,
-    filename: basename(c.path, '.json'),
-  }
+onMounted(async () => {
+  congs.value = (await getCongPrefs()).map((c) => {
+    return {
+      name: c.name,
+      path: c.path,
+      filename: basename(c.path, '.json'),
+    }
+  })
+  log.debug('congs', congs.value)
 })
 </script>

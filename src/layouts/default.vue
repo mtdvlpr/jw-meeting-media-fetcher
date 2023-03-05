@@ -30,7 +30,7 @@ const { $sentry, $dayjs, $i18n, $switchLocalePath, $localePath } = useNuxtApp()
 // Active Congregation
 const route = useRoute()
 const router = useRouter()
-const cong = ref(route.query.cong ?? '')
+const cong = computed(() => route.query.cong as string)
 watch(
   cong,
   (val, oldVal) => {
@@ -249,7 +249,7 @@ const initPrefs = async (name: string, isNew = false) => {
 onBeforeMount(async () => {
   setTheme(prefersDark.value ? 'dark' : 'light')
 
-  if (cong) {
+  if (cong.value) {
     initPrefs('prefs-' + cong.value)
     return
   }

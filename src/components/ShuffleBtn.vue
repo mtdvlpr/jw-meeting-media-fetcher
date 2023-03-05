@@ -9,7 +9,7 @@
         :color="musicFadeOut ? 'error' : 'warning'"
         @click="atClick"
       >
-        <v-icon v-if="musicFadeOut" start icon="faStop" />
+        <v-icon v-if="musicFadeOut" start icon="fa-stop" />
         <template v-else>
           <v-icon
             v-for="(icon, i) in icons"
@@ -68,7 +68,7 @@
   </v-btn>
 </template>
 <script setup lang="ts">
-const icons = ['faMusic', 'faShuffle']
+const icons = ['fa-music', 'fa-shuffle']
 const { isDark } = useTheme()
 const store = useMediaStore()
 const { musicFadeOut } = storeToRefs(store)

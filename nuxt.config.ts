@@ -1,4 +1,5 @@
 import vuetify from 'vite-plugin-vuetify'
+import alias from '@rollup/plugin-alias'
 import renderer from 'vite-plugin-electron-renderer'
 import { repository, version, devDependencies } from './package.json'
 import { LOCALES } from './src/constants/lang'
@@ -61,6 +62,18 @@ export default defineNuxtConfig({
   vite: {
     build: {
       target: 'chrome110',
+      rollupOptions: {
+        plugins: [
+          alias({
+            entries: [
+              {
+                find: './lib-cov/fluent-ffmpeg',
+                replacement: './lib/fluent-ffmpeg',
+              },
+            ],
+          }),
+        ],
+      },
     },
     plugins: [
       renderer({

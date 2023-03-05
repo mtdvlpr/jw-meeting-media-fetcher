@@ -71,7 +71,7 @@
         :disabled="!complete"
         @click="submit()"
       >
-        <v-icon icon="faGlobe" size="lg" />
+        <v-icon icon="fa-globe" size="lg" />
       </v-btn>
     </v-col>
     <template v-if="client">
@@ -85,7 +85,7 @@
         </v-col>
         <v-col class="text-right pr-0">
           <v-btn color="primary" @click="forcingPrefs = true">
-            <v-icon icon="faCog" size="lg" />
+            <v-icon icon="fa-cog" size="lg" />
           </v-btn>
         </v-col>
       </v-col>

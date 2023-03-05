@@ -68,8 +68,8 @@
             )
           }}
         </v-tooltip>
-        <v-icon icon="faMusic" size="lg" pull="left" />
-        <v-icon icon="faDownload" size="lg" pull="right" />
+        <v-icon icon="fa-music" size="lg" pull="left" />
+        <v-icon icon="fa-download" size="lg" pull="right" />
       </v-btn>
     </v-col>
     <template v-if="meeting.enableMusicButton">

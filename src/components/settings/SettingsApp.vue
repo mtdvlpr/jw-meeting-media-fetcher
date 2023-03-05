@@ -166,7 +166,7 @@
           :color="scenes.length > 0 ? 'success' : 'primary'"
           @click="refreshOBS()"
         >
-          <v-icon icon="faGlobe" />
+          <v-icon icon="fa-globe" />
         </v-btn>
       </v-col>
       <form-input
@@ -284,7 +284,7 @@
           hide-details="auto"
         />
         <v-btn class="ml-2" color="primary" @click="addAutoRename()">
-          <v-icon icon="faAdd" size="lg" />
+          <v-icon icon="fa-add" size="lg" />
         </v-btn>
       </v-col>
       <v-col>

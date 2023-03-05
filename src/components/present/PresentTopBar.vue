@@ -2,7 +2,7 @@
   <v-app-bar style="height: 64px; width: 100%">
     <v-col class="text-left" cols="4">
       <v-btn icon aria-label="More actions">
-        <v-icon icon="faEllipsisVertical" size="lg" />
+        <v-icon icon="fa-ellipsis-vertical" size="lg" />
         <v-menu location="bottom" activator="parent">
           <v-list>
             <v-list-item
@@ -26,8 +26,8 @@
       </v-btn>
 
       <v-btn icon aria-label="Add song" @click="emit('song')">
-        <v-icon icon="faMusic" pull="left" size="lg" />
-        <v-icon icon="faPlus" pull="right" size="lg" />
+        <v-icon icon="fa-music" pull="left" size="lg" />
+        <v-icon icon="fa-plus" pull="right" size="lg" />
         <v-tooltip activator="parent" location="bottom">
           {{ $t('lastMinuteSong') }}
         </v-tooltip>
@@ -66,7 +66,7 @@
           :disabled="!mediaActive && currentIndex < 1"
           @click="emit('previous')"
         >
-          <v-icon icon="faBackward" size="lg" />
+          <v-icon icon="fa-backward" size="lg" />
           <v-tooltip activator="parent" location="bottom">
             {{ getPrefs('media.ppBackward') }}
           </v-tooltip>
@@ -82,7 +82,7 @@
           <v-tooltip activator="parent" location="bottom">
             {{ getPrefs('media.ppForward') }}
           </v-tooltip>
-          <v-icon icon="faForward" size="lg" />
+          <v-icon icon="fa-forward" size="lg" />
         </v-btn>
       </template>
       <v-btn
@@ -95,7 +95,7 @@
         <v-tooltip activator="parent" location="bottom">
           {{ $t('sortSave') }}
         </v-tooltip>
-        <v-icon icon="faArrowDownUpLock" size="lg" />
+        <v-icon icon="fa-arrow-down-up-lock" size="lg" />
       </v-btn>
       <v-btn
         v-else
@@ -108,7 +108,7 @@
         <v-tooltip activator="parent" location="bottom">
           {{ $t('sortMedia') }}
         </v-tooltip>
-        <v-icon icon="faArrowDownUpAcrossLine" size="lg" />
+        <v-icon icon="fa-arrow-down-up-across-line" size="lg" />
       </v-btn>
     </v-col>
   </v-app-bar>
@@ -195,28 +195,28 @@ const openWebsite = () => {
 const actions = [
   {
     title: $i18n.t('manageMedia'),
-    icons: ['faFolderPlus'],
+    icons: ['fa-folder-plus'],
     action: () => emit('manageMedia'),
   },
   {
     title: $i18n.t('refresh'),
-    icons: ['faRotateRight'],
+    icons: ['fa-rotate-right'],
     action: refresh,
     disabled: true,
   },
   {
     title: $i18n.t('openFolder'),
-    icons: ['faFolderOpen'],
+    icons: ['fa-folder-open'],
     action: openFolder,
   },
   {
     title: $i18n.t('showPrefix'),
-    icons: ['faListOl'],
+    icons: ['fa-list-ol'],
     action: () => emit('showPrefix'),
   },
   {
     title: $i18n.t('openJWorg') + ' [BETA]',
-    icons: ['faGlobe'],
+    icons: ['fa-globe'],
     action: openWebsite,
     disabled: true,
   },

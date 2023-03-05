@@ -356,9 +356,9 @@ const action = ref('')
 const icon = (action: string) => {
   switch (action) {
     case 'quitApp':
-      return 'faPersonRunning'
+      return 'fa-person-running'
     case 'startMediaSync':
-      return 'faPause'
+      return 'fa-pause'
     default:
       throw new Error(`Unknown action: ${action}`)
   }

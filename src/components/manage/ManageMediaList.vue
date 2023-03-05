@@ -19,7 +19,7 @@
             aria-label="save"
             @click="saveNewName()"
           >
-            <v-icon icon="faCheck" />
+            <v-icon icon="fa-check" />
           </v-btn>
         </v-col>
       </v-card>

@@ -19,7 +19,7 @@
               <v-tooltip activator="parent" location="top">
                 {{ $t('videoTimeReset') }}
               </v-tooltip>
-              <v-icon icon="faRotateLeft" />
+              <v-icon icon="fa-rotate-left" />
             </v-btn>
           </form-timestamp>
           <form-timestamp
@@ -33,7 +33,7 @@
                 {{ $t('videoTimeSet') }}
               </v-tooltip>
               <v-icon
-                icon="faSquareCheck"
+                icon="fa-square-check"
                 :class="`${validStart && validEnd ? 'success' : 'error'}--text`"
               />
             </v-btn>
@@ -53,7 +53,7 @@
       <v-tooltip v-if="clickedOnce" location="right" :model-value="true">
         {{ $t('clickAgain') }}
       </v-tooltip>
-      <v-icon icon="faFilm" pull="left" />
+      <v-icon icon="fa-film" pull="left" />
       {{
         (playing || isClipped) && !isShortVideo
           ? `${progress[0] ?? limits.start}/${limits.end}`

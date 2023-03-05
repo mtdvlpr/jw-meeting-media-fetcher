@@ -24,7 +24,7 @@
               aria-label="save"
               @click="renamePerson(participant, newName)"
             >
-              <v-icon icon="faCheck" />
+              <v-icon icon="fa-check" />
             </v-btn>
           </v-col>
         </v-row>
@@ -38,7 +38,7 @@
       class="text-left"
     >
       <v-app-bar-nav-icon>
-        <v-icon icon="faZ" size="lg" />
+        <v-icon icon="fa-z" size="lg" />
       </v-app-bar-nav-icon>
       <v-col cols="auto">
         <v-btn
@@ -50,7 +50,7 @@
             {{ $t('zoomToggleComponent') }}
           </v-tooltip>
           <v-icon
-            :icon="showZoomComponent ? 'faEyeSlash' : 'faEye'"
+            :icon="showZoomComponent ? 'fa-eye-slash' : 'fa-eye'"
             size="lg"
           />
         </v-btn>
@@ -63,7 +63,7 @@
           <v-tooltip activator="parent" location="bottom">
             {{ $t(`zoom${started ? 'Stop' : 'Start'}Meeting`) }}
           </v-tooltip>
-          <v-icon :icon="started ? 'faStop' : 'faPlay'" size="lg" />
+          <v-icon :icon="started ? 'fa-stop' : 'fa-play'" size="lg" />
         </v-btn>
         <v-btn
           icon
@@ -73,7 +73,7 @@
           <v-tooltip activator="parent" location="bottom">
             {{ $t('zoomMuteParticipants') }}
           </v-tooltip>
-          <v-icon icon="faMicrophoneSlash" size="lg" />
+          <v-icon icon="fa-microphone-slash" size="lg" />
         </v-btn>
       </v-col>
       <v-col class="d-flex flex-row pr-0">
@@ -109,7 +109,7 @@
               <v-list-item-title>{{ item.displayName }}</v-list-item-title>
               <v-list-item-action>
                 <v-btn icon @click.stop="atRename(item)">
-                  <v-icon icon="faPencil" size="lg" />
+                  <v-icon icon="fa-pencil" size="lg" />
                 </v-btn>
               </v-list-item-action>
             </template>
@@ -123,7 +123,7 @@
             @click="spotlightParticipants()"
           >
             <v-icon
-              :icon="spotlightActive ? 'faUsersSlash' : 'faUsersRectangle'"
+              :icon="spotlightActive ? 'fa-users-slash' : 'fa-users-rectangle'"
               size="lg"
             />
           </v-btn>

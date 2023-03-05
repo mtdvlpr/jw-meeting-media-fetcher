@@ -4,7 +4,7 @@
 <script setup lang="ts">
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
-  modelValue: string
+  modelValue: any
 }>()
 
 const value = useVModel(props, 'modelValue', emit)
@@ -32,7 +32,7 @@ const value = useVModel(props, 'modelValue', emit)
         v-on="on"
       >
         <template v-if="!locked" #append>
-          <v-icon icon="faClock" style="margin-top: 2px" />
+          <v-icon icon="fa-clock" style="margin-top: 2px" />
         </template>
       </form-input>
     </template>

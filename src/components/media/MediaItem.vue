@@ -70,7 +70,7 @@
           class="sort-btn ml-2"
           aria-label="Sort items"
         >
-          <v-icon icon="faSort" />
+          <v-icon icon="fa-sort" />
         </v-btn>
       </v-list-item-action>
       <template v-if="!isImage(src)">
@@ -211,7 +211,7 @@ const title = computed(() => {
                   'song'
                 )} ${filenameArray[3].replace(/'/g, '&#39;')}'>
               <span class='song v-btn pa-1'>
-              <v-icon :icon='faMusic' size='sm' pull='left'/>
+              <v-icon :icon='fa-music' size='sm' pull='left'/>
               ${filenameArray[3]}
               </span></div>`
               : ''
@@ -222,7 +222,7 @@ const title = computed(() => {
                   'paragraph'
                 )} ${filenameArray[5].replace(/'/g, '&#39;')}'>
               <span class='paragraph v-btn pa-1'>
-              <v-icon :icon='faParagraph' size='sm' pull='left'/>
+              <v-icon :icon='fa-paragraph' size='sm' pull='left'/>
               ${filenameArray[5]}
               </span></div>`
               : ''

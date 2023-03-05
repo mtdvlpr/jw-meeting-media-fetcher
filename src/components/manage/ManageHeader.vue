@@ -3,7 +3,7 @@
     <v-col cols="1" class="text-center">
       <v-icon
         size="2x"
-        :icon="meetingDay || client ? 'faCloud' : 'faFolderOpen'"
+        :icon="meetingDay || client ? 'fa-cloud' : 'fa-folder-open'"
         :class="{
           'secondary--text': !isDark,
           'accent--text': isDark,

@@ -26,8 +26,8 @@ const props = defineProps<{
 
 const emit = defineEmits(['click'])
 
-const pauseIcon = computed(() => (props.toggled ? 'faPlay' : 'faPause'))
+const pauseIcon = computed(() => (props.toggled ? 'fa-play' : 'fa-pause'))
 const pauseImageIcon = computed(() =>
-  props.toggled ? 'faVideo' : 'faVideoSlash'
+  props.toggled ? 'fa-video' : 'fa-video-slash'
 )
 </script>

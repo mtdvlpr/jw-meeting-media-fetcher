@@ -9,7 +9,7 @@
     open-on-click
   >
     <template #prepend="{ item, open }">
-      <v-icon v-if="item.type === 'file'" icon="faFile" />
+      <v-icon v-if="item.type === 'file'" icon="fa-file" />
       <v-icon v-else :icon="open ? faFolderOpen : faFolder" />
     </template>
     <template #append="{ item }">
@@ -18,7 +18,7 @@
         icon
         @click="emit('open', item.filename)"
       >
-        <v-icon icon="faArrowRight" />
+        <v-icon icon="fa-arrow-right" />
       </v-btn>
     </template>
   </v-treeview>

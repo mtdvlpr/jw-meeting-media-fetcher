@@ -28,9 +28,9 @@ const props = defineProps<{
 const { isDark } = useTheme()
 const { musicFadeOut: musicPlaying } = storeToRefs(useMediaStore())
 const statusIcon = computed(() => {
-  if (props.cong === 'warning') return 'faCloud'
-  if (props.jw === 'warning') return 'faDownload'
-  if (props.loading) return 'faGlobeAmericas'
-  return 'faPhotoVideo'
+  if (props.cong === 'warning') return 'fa-cloud'
+  if (props.jw === 'warning') return 'fa-download'
+  if (props.loading) return 'fa-globe-americas'
+  return 'fa-photo-video'
 })
 </script>

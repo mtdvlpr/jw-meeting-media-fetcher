@@ -1,7 +1,7 @@
 <template>
   <v-row align="center" style="width: 100%">
     <v-col cols="1" class="text-center" align-self="center">
-      <v-icon icon="faPhotoFilm" />
+      <v-icon icon="fa-photo-film" />
     </v-col>
     <v-col cols="11">
       <v-btn-toggle
