@@ -191,6 +191,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useRouteQuery } from '@vueuse/router'
 // eslint-disable-next-line import/named
 import { readFileSync } from 'fs-extra'
 import { basename, join } from 'upath'
@@ -215,8 +216,7 @@ const props = defineProps<{
 }>()
 
 const dragging = ref(false)
-const route = useRoute()
-const date = computed(() => (route.query.date ?? '') as string)
+const date = useRouteQuery<string>('date', '')
 const { client: zoomIntegration } = storeToRefs(useZoomStore())
 
 // Meeting day

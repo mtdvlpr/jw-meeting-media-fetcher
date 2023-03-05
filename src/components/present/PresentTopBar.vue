@@ -115,6 +115,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
+import { useRouteQuery } from '@vueuse/router'
 import { join } from 'upath'
 
 defineProps<{
@@ -137,8 +138,7 @@ const { $i18n } = useNuxtApp()
 const sortable = inject(sortableKey, ref(false))
 const mediaActive = inject(mediaActiveKey, ref(false))
 
-const route = useRoute()
-const date = computed(() => route.query.data as string)
+const date = useRouteQuery<string>('date', '')
 
 // Subtitles
 const ccAvailable = ref(false)
@@ -160,7 +160,7 @@ const refresh = () => {
 const clearDate = () => {
   useRouter().push({
     query: {
-      ...route.query,
+      ...useRoute().query,
       date: undefined,
     },
   })

@@ -18,6 +18,7 @@ import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { basename, join } from 'upath'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
+import { useRouteQuery } from '@vueuse/router'
 import { CongPrefs, ObsPrefs, Theme } from '~~/types'
 
 const statStore = useStatStore()
@@ -28,12 +29,12 @@ const mediaStore = useMediaStore()
 const { $sentry, $dayjs, $i18n, $switchLocalePath, $localePath } = useNuxtApp()
 
 // Active Congregation
-const route = useRoute()
 const router = useRouter()
-const cong = computed(() => route.query.cong as string)
+const cong = useRouteQuery<string>('cong', '')
 watch(
   cong,
   (val, oldVal) => {
+    log.debug('cong changed', val, oldVal)
     if (oldVal && val) {
       initPrefs('prefs-' + val)
     }
@@ -63,7 +64,7 @@ const initPrefs = async (name: string, isNew = false) => {
     log.debug(`Setting app lang to ${lang}`)
   }
 
-  let path = route.path
+  let path = useRoute().path
 
   // If current cong does not equal new cong, set new cong
   if ('prefs-' + cong.value !== name) {
@@ -74,13 +75,14 @@ const initPrefs = async (name: string, isNew = false) => {
     if (isNew || !mediaPath()) {
       path = $localePath('/settings', lang)
     }
-    log.debug('Set correct lang and/or open settings for new cong')
-    router.replace({
+    log.debug('Set correct lang and/or open settings for new cong', name)
+    const result = await router.push({
       path,
       query: {
         cong: name.replace('prefs-', ''),
       },
     })
+    log.debug('router result', result)
   }
   // If congs lang is different from current lang, set new lang
   else if (lang && lang !== $i18n.locale.value) {
@@ -91,7 +93,8 @@ const initPrefs = async (name: string, isNew = false) => {
       path = $localePath('/settings', lang)
     }
 
-    router.replace(path)
+    const result = await router.replace(path)
+    log.debug('router result', result)
   }
 
   const locales = $i18n.locales.value as LocaleObject[]
@@ -258,7 +261,7 @@ onBeforeMount(async () => {
 
   if (congs.length === 0) {
     const id = Math.random().toString(36).substring(2, 15)
-    if (route.path === $localePath('/')) {
+    if (useRoute().path === $localePath('/')) {
       initPrefs('prefs-' + id, true)
     } else {
       initPrefs('prefs-' + id)
@@ -330,12 +333,12 @@ useIpcRendererOn('notifyUser', (_e, msg: any[]) => {
 useIpcRendererOn('openPresentMode', () => {
   if (
     getPrefs<boolean>('media.enableMediaDisplayButton') &&
-    route.path !== $localePath('/present')
+    useRoute().path !== $localePath('/present')
   ) {
     log.debug('Trigger present mode via shortcut')
     router.push({
       path: $localePath('/present'),
-      query: route.query,
+      query: useRoute().query,
     })
   }
 })

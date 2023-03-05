@@ -1,5 +1,8 @@
 <template>
-  <v-footer style="position: fixed" class="justify-space-between">
+  <v-footer
+    style="position: fixed; bottom: 0; width: 100%"
+    class="justify-space-between"
+  >
     <v-col cols="12" align-self="end" class="d-flex">
       <v-col class="d-flex pa-0 align-center" align-self="center">
         <v-btn
@@ -27,12 +30,7 @@
           class="text-black"
           @click="removeCache()"
         >
-          <v-tooltip
-            activator="parent"
-            :open-on-click="false"
-            :open-on-focus="false"
-            location="top"
-          >
+          <v-tooltip activator="parent" location="top">
             {{ $t('cleanCache') }}
           </v-tooltip>
           <v-icon icon="fa-trash" pull="left" />
@@ -45,7 +43,12 @@
           class="text-black"
           @click="removeCache()"
         >
-          <v-tooltip :model-value="true" location="top">
+          <v-tooltip
+            activator="parent"
+            model-value
+            location="top"
+            @update:model-value="() => {}"
+          >
             {{ $t('clickAgain') }}
           </v-tooltip>
           <v-icon icon="fa-trash" pull="left" />
@@ -74,6 +77,7 @@
   </v-footer>
 </template>
 <script setup lang="ts">
+import { useRouteQuery } from '@vueuse/router'
 import { removeSync } from 'fs-extra'
 import { join } from 'upath'
 import { PrefStore } from '~~/types'
@@ -90,8 +94,7 @@ const emit = defineEmits<{
   (e: 'cache', cache: number): void
 }>()
 
-const route = useRoute()
-const isNew = computed(() => route.query.new === 'true')
+const isNew = useRouteQuery<string>('new', '')
 const cancel = ref(false)
 const { version, isDev } = useRuntimeConfig().public
 
@@ -106,7 +109,7 @@ const openReleases = () => {
   )
 }
 
-const cong = computed(() => route.query.cong as string)
+const cong = useRouteQuery('cong', '')
 const goBack = () => {
   log.debug('Go back')
   removeSync(join(appPath(), `prefs-${cong.value}.json`))

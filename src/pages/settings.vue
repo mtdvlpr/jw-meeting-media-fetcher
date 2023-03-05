@@ -23,20 +23,19 @@
           v-for="(header, i) in headers"
           v-show="tab === 0 || tab === i + 1"
           :key="header.component"
+          :title="header.name"
         >
-          <v-expansion-panel-header>
-            {{ header.name }}
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="pt-4">
+          <template #text>
             <component
               :is="header.component"
               :prefs="prefs"
               :cache="cache"
+              class="pt-4"
               @valid="setValid(header.component, $event)"
               @refresh="refreshPrefs(header.key, $event)"
               @cache="calcCache()"
             />
-          </v-expansion-panel-content>
+          </template>
         </v-expansion-panel>
       </v-expansion-panels>
     </v-col>

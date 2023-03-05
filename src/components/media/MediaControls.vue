@@ -47,6 +47,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
+import { useRouteQuery } from '@vueuse/router'
 import { basename, dirname, join } from 'upath'
 import { LocalFile } from '~~/types'
 
@@ -55,8 +56,7 @@ const addSong = ref(false)
 const { isDark } = useTheme()
 
 // Current meeting date
-const route = useRoute()
-const date = computed(() => route.query.date ?? '')
+const date = useRouteQuery<string>('date', '')
 
 // Sorting
 const sortable = ref(false)

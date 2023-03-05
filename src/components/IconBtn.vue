@@ -33,7 +33,7 @@
   </v-btn>
 </template>
 <script setup lang="ts">
-import { useRouteParams } from '@vueuse/router'
+import { useRouteQuery } from '@vueuse/router'
 
 type Variant = 'home' | 'cancel' | 'settings' | 'play' | 'stop' | 'present'
 const props = withDefaults(
@@ -70,8 +70,8 @@ const getIcon = (
 
 // Icon link
 const { $localePath } = useNuxtApp()
-const cong = useRouteParams('cong', '')
-const weekNr = useRouteParams('week', '-1')
+const cong = useRouteQuery('cong', '')
+const weekNr = useNumberQuery('week')
 const link = computed(() => {
   if (style.value.to) {
     return $localePath(`${style.value.to}?cong=${cong}&week=${weekNr}`)

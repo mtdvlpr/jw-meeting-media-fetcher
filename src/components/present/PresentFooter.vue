@@ -74,6 +74,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRendererOn } from '@vueuse/electron'
+import { useRouteQuery } from '@vueuse/router'
 import { Participant } from '@zoomus/websdk/embedded'
 import { ObsPrefs } from '~~/types'
 
@@ -83,7 +84,7 @@ const props = defineProps<{
   participant: Participant | null
 }>()
 
-const cong = useRoute().query.cong
+const cong = useRouteQuery('cong', '')
 const { $localePath } = useNuxtApp()
 
 const obsStore = useObsStore()

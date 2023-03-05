@@ -82,6 +82,7 @@ import { Duration } from 'dayjs/plugin/duration'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
+import { useRouteQuery } from '@vueuse/router'
 import { Time, Times, TimeString, VideoFile } from '~~/types'
 
 const emit = defineEmits<{
@@ -161,8 +162,7 @@ const initVideoPreview = () => {
 
 // Video state
 const current = ref(0)
-const route = useRoute()
-const date = computed(() => (route.query.date ?? '') as string)
+const date = useRouteQuery<string>('date', '')
 const { meetings } = storeToRefs(useMediaStore())
 watch(
   () => props.playing,

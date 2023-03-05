@@ -102,6 +102,7 @@
   </v-container>
 </template>
 <script setup lang="ts">
+import { useRouteQuery } from '@vueuse/router'
 import { ipcRenderer } from 'electron'
 // eslint-disable-next-line import/named
 import { readFileSync, statSync } from 'fs-extra'
@@ -167,8 +168,7 @@ const addFiles = async (multi = true, ...exts: string[]) => {
 // Save files
 const saving = ref(false)
 const { online } = useOnline()
-const route = useRoute()
-const date = computed(() => (route.query.date ?? '') as string)
+const date = useRouteQuery<string>('date', '')
 const { client } = storeToRefs(useCongStore())
 const saveFiles = async () => {
   saving.value = true

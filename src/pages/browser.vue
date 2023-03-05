@@ -26,10 +26,10 @@
 <script setup lang="ts">
 import { Point } from 'electron'
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
+import { useRouteQuery } from '@vueuse/router'
 
-const route = useRoute()
-const url = computed(() => route.query.url as string)
-const controller = computed(() => route.query.controller === 'true')
+const url = useRouteQuery<string>('url', '')
+const controller = useRouteQuery<string>('controller', '')
 
 definePageMeta({
   layout: 'media',
