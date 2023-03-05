@@ -38,7 +38,7 @@
   </v-container>
 </template>
 <script setup lang="ts">
-import { useIpcRendererOn } from '@vueuse/electron'
+import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import { Participant } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
 
@@ -68,6 +68,7 @@ useIpcRendererOn('showingMedia', (_e, val: boolean[]) => {
 })
 
 onMounted(() => {
+  useIpcRenderer().send('allowQuit', false)
   initZoomIntegration()
   if (getPrefs<boolean>('media.enablePp')) {
     const ppForward = getPrefs<string>('media.ppForward')
@@ -122,6 +123,7 @@ const participants = computed(() =>
   )
 )
 onBeforeUnmount(() => {
+  useIpcRenderer().send('allowQuit', true)
   if (zoomClient.value) {
     stopMeeting(zoomSocket())
     zoomClient.value.leaveMeeting().then(() => {

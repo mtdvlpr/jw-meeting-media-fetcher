@@ -24,6 +24,11 @@ provide(windowHeightKey, height)
 const now = getNow()
 const loading = ref(true)
 const { online } = useOnline()
+onBeforeUnmount(() => {
+  if (useCongStore().client) {
+    notify('dontForgetToGetMedia')
+  }
+})
 onMounted(async () => {
   if (online.value) {
     await getMeetingData()
