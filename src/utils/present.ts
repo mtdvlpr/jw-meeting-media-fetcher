@@ -31,7 +31,22 @@ export async function setShortcut(
   }
 }
 
-export function isShortcutAvailable(shortcut: string, func: string) {
+export function changeShortcut(shortcut: string | null, fn: string) {
+  if (!shortcut) return
+  if (isShortcutValid(shortcut) && isShortcutAvailable(shortcut, fn)) {
+    unsetShortcut(fn)
+    setShortcut(shortcut, fn)
+  }
+}
+export function getShortcutRules(fn: string) {
+  const { $i18n } = useNuxtApp()
+  return [
+    (v: string) => isShortcutValid(v) || $i18n.t('fieldShortcutInvalid'),
+    (v: string) => isShortcutAvailable(v, fn) || $i18n.t('fieldShortcutTaken'),
+  ]
+}
+
+function isShortcutAvailable(shortcut: string, func: string) {
   const { ppForward, ppBackward, mediaWinShortcut, presentShortcut } =
     getPrefs<MediaPrefs>('media')
 
@@ -52,7 +67,7 @@ export function isShortcutAvailable(shortcut: string, func: string) {
   return !shortcuts.find(({ name, fn }) => name === shortcut && fn !== func)
 }
 
-export function isShortcutValid(shortcut: string) {
+function isShortcutValid(shortcut: string) {
   if (!shortcut) return false
 
   const modifiers =
@@ -143,7 +158,7 @@ export async function toggleMediaWindow(action?: string) {
 }
 
 export async function refreshBackgroundImgPreview(force = false) {
-  if (!getPrefs<boolean>('media.enableMediaDisplayButton')) return
+  if (!getPrefs<boolean>('media.enableMediaDisplayButton')) return ''
 
   try {
     let type = 'yeartext'
@@ -186,6 +201,7 @@ export async function refreshBackgroundImgPreview(force = false) {
   } catch (e) {
     log.error(e)
   }
+  return ''
 }
 
 export async function getMediaWindowDestination() {

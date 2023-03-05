@@ -248,7 +248,7 @@
           :disabled="!!$attrs.disabled || locked"
           :style="`height: ${height}`"
         >
-          {{ item.label }}
+          {{ item.title }}
         </v-btn>
         <v-btn v-if="locked" icon disabled :style="`height: ${height}`">
           <v-icon icon="faLock" />
@@ -349,7 +349,7 @@ const props = withDefaults(
     max?: number
     groupLabel?: string
     customInput?: boolean
-    groupItems?: { label: string; value: string }[]
+    groupItems?: { title: string; value: any }[]
     height?: string
     required?: boolean
     labelSuffix?: string

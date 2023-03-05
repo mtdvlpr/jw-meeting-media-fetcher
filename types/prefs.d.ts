@@ -57,12 +57,12 @@ export interface CongPrefs {
   dir: string | null
 }
 
-export const resolutions = ['240p', '360p', '480p', '720p'] as const
-export type Res = (typeof resolutions)[number]
+export const RESOLUTIONS = ['240p', '360p', '480p', '720p'] as const
+export type Res = (typeof RESOLUTIONS)[number]
 
 export interface MediaPrefs {
   autoPlayFirst: boolean
-  autoPlayFirstTime: number | null
+  autoPlayFirstTime: number
   enableMediaDisplayButton: boolean
   enableMp4Conversion: boolean
   enablePp: boolean
@@ -103,9 +103,9 @@ export interface MeetingPrefs {
   enableMusicButton: boolean
   enableMusicFadeOut: boolean
   coWeek: string | null
-  musicFadeOutTime: number | null
+  musicFadeOutTime: number
   musicFadeOutType: FadeOutType
-  musicVolume: number | null
+  musicVolume: number
   mwDay: MeetingDay | null
   mwStartTime: string | null
   shuffleShortcut: string | null

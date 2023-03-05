@@ -27,30 +27,6 @@ const mediaStore = useMediaStore()
 
 const { $sentry, $dayjs, $i18n, $switchLocalePath, $localePath } = useNuxtApp()
 
-// Online/offline
-const { online } = storeToRefs(statStore)
-watch(online, (val) => {
-  if (val) {
-    notifyStore.dismissByMessage('errorOffline')
-  } else {
-    warn('errorOffline')
-  }
-})
-useEventListener('online', () => {
-  statStore.setOnline(true)
-})
-useEventListener('offline', () => {
-  statStore.setOnline(false)
-})
-
-// Global Theme
-const { prefersDark, setTheme } = useTheme()
-watch(prefersDark, (val) => {
-  if (getPrefs<Theme>('app.theme') === 'system') {
-    setTheme(val ? 'dark' : 'light')
-  }
-})
-
 // Active Congregation
 const route = useRoute()
 const router = useRouter()
@@ -65,37 +41,6 @@ watch(
   { immediate: true }
 )
 
-// Congregation Select
-onBeforeMount(async () => {
-  setTheme(prefersDark.value ? 'dark' : 'light')
-
-  if (cong) {
-    initPrefs('prefs-' + cong.value)
-    return
-  }
-
-  const congs = await getCongPrefs()
-
-  if (congs.length === 0) {
-    const id = Math.random().toString(36).substring(2, 15)
-    if (route.path === $localePath('/')) {
-      initPrefs('prefs-' + id, true)
-    } else {
-      initPrefs('prefs-' + id)
-    }
-  } else if (congs.length === 1) {
-    initPrefs(basename(congs[0].path, '.json'))
-  } else {
-    const username = (await getUsername()) ?? userInfo().username
-    const match = congs.find(
-      (c) => c.name?.toLowerCase().trim() === username.toLowerCase().trim()
-    )
-    if (match) {
-      initPrefs(basename(match.path, '.json'))
-    }
-  }
-})
-
 onMounted(async () => {
   log.debug('sentry', useRuntimeConfig().public.sentryEnabled)
   const mediaWinOpen = await ipcRenderer.invoke('mediaWinOpen')
@@ -104,99 +49,6 @@ onMounted(async () => {
     const mediaWinVisible = await ipcRenderer.invoke('mediaWinVisible')
     presentStore.setMediaScreenVisible(mediaWinVisible)
   }
-
-  useIpcRendererOn('mediaWindoShown', () => {
-    presentStore.setMediaScreenInit(true)
-    ipcRenderer.send('startMediaDisplay', getAllPrefs())
-  })
-  useIpcRendererOn('mediaWindowVisibilityChanged', (_e, status: string) => {
-    presentStore.setMediaScreenVisible(status === 'shown')
-  })
-  useIpcRendererOn('log', (_e, msg) => {
-    log.debug('[main]', msg)
-  })
-  useIpcRendererOn('readyToListen', () => {
-    ipcRenderer.send('startMediaDisplay', getAllPrefs())
-  })
-  useIpcRendererOn('moveMediaWindowToOtherScreen', async () => {
-    if (presentStore.mediaScreenInit) {
-      ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
-    }
-  })
-  useIpcRendererOn('displaysChanged', async () => {
-    if (presentStore.mediaScreenInit) {
-      ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
-    }
-  })
-  useIpcRendererOn('toggleMusicShuffle', () => {
-    shuffleMusic(!!mediaStore.musicFadeOut)
-  })
-  useIpcRendererOn('themeUpdated', (_e, theme: string) => {
-    if (getPrefs<Theme>('app.theme') === 'system') {
-      setTheme(theme)
-    }
-  })
-  useIpcRendererOn('notifyUser', (_e, msg: any[]) => {
-    if (msg[0]) {
-      notify(msg[0], msg[1], msg[3])
-    } else {
-      log.warn('Notify message is empty: ', msg)
-    }
-    if (msg[0] === 'updateNotDownloaded') {
-      statStore.setUpdateSuccess(false)
-    }
-  })
-  useIpcRendererOn('openPresentMode', () => {
-    if (
-      getPrefs<boolean>('media.enableMediaDisplayButton') &&
-      route.path !== $localePath('/present')
-    ) {
-      log.debug('Trigger present mode via shortcut')
-      router.push({
-        path: $localePath('/present'),
-        query: route.query,
-      })
-    }
-  })
-  useIpcRendererOn('macUpdate', async (_e, version) => {
-    try {
-      const release = await fetchRelease(`releases/tag/${version}`)
-
-      const macDownload = release.assets.find(({ name }) =>
-        name.includes('dmg')
-      )!
-
-      notify('updateDownloading', {
-        identifier: release.tag_name,
-      })
-
-      const downloadsPath = join(
-        (await ipcRenderer.invoke('downloads')) as string,
-        macDownload.name
-      )
-
-      // Download the latest release
-      write(
-        downloadsPath,
-        Buffer.from(
-          new Uint8Array(
-            await $fetch<Iterable<number>>(macDownload.browser_download_url, {
-              responseType: 'arrayBuffer',
-            })
-          )
-        )
-      )
-
-      // Open the downloaded file
-      ipcRenderer.send(
-        'openPath',
-        fileURLToPath(pathToFileURL(downloadsPath).href)
-      )
-    } catch (e) {
-      error('updateNotDownloaded', e)
-      statStore.setUpdateSuccess(false)
-    }
-  })
 
   statStore.setOnline(navigator.onLine)
 })
@@ -392,4 +244,156 @@ const initPrefs = async (name: string, isNew = false) => {
   // Regular Cleanup
   await cleanup()
 }
+
+// Congregation Select
+onBeforeMount(async () => {
+  setTheme(prefersDark.value ? 'dark' : 'light')
+
+  if (cong) {
+    initPrefs('prefs-' + cong.value)
+    return
+  }
+
+  const congs = await getCongPrefs()
+
+  if (congs.length === 0) {
+    const id = Math.random().toString(36).substring(2, 15)
+    if (route.path === $localePath('/')) {
+      initPrefs('prefs-' + id, true)
+    } else {
+      initPrefs('prefs-' + id)
+    }
+  } else if (congs.length === 1) {
+    initPrefs(basename(congs[0].path, '.json'))
+  } else {
+    const username = (await getUsername()) ?? userInfo().username
+    const match = congs.find(
+      (c) => c.name?.toLowerCase().trim() === username.toLowerCase().trim()
+    )
+    if (match) {
+      initPrefs(basename(match.path, '.json'))
+    }
+  }
+})
+
+// Online/offline
+const { online } = storeToRefs(statStore)
+watch(online, (val) => {
+  if (val) {
+    notifyStore.dismissByMessage('errorOffline')
+  } else {
+    warn('errorOffline')
+  }
+})
+useEventListener('online', () => {
+  statStore.setOnline(true)
+})
+useEventListener('offline', () => {
+  statStore.setOnline(false)
+})
+
+// Global Theme
+const { prefersDark, setTheme } = useTheme()
+watch(prefersDark, (val) => {
+  if (getPrefs<Theme>('app.theme') === 'system') {
+    setTheme(val ? 'dark' : 'light')
+  }
+})
+
+// Global listeners
+useIpcRendererOn('readyToListen', () => {
+  ipcRenderer.send('startMediaDisplay', getAllPrefs())
+})
+useIpcRendererOn('toggleMusicShuffle', () => {
+  shuffleMusic(!!mediaStore.musicFadeOut)
+})
+useIpcRendererOn('themeUpdated', (_e, theme: string) => {
+  if (getPrefs<Theme>('app.theme') === 'system') {
+    setTheme(theme)
+  }
+})
+useIpcRendererOn('log', (_e, msg) => {
+  log.debug('[main]', msg)
+})
+useIpcRendererOn('notifyUser', (_e, msg: any[]) => {
+  if (msg[0]) {
+    notify(msg[0], msg[1], msg[3])
+  } else {
+    log.warn('Notify message is empty: ', msg)
+  }
+  if (msg[0] === 'updateNotDownloaded') {
+    statStore.setUpdateSuccess(false)
+  }
+})
+
+// Presentation Mode
+useIpcRendererOn('openPresentMode', () => {
+  if (
+    getPrefs<boolean>('media.enableMediaDisplayButton') &&
+    route.path !== $localePath('/present')
+  ) {
+    log.debug('Trigger present mode via shortcut')
+    router.push({
+      path: $localePath('/present'),
+      query: route.query,
+    })
+  }
+})
+
+useIpcRendererOn('mediaWindoShown', () => {
+  presentStore.setMediaScreenInit(true)
+  ipcRenderer.send('startMediaDisplay', getAllPrefs())
+})
+useIpcRendererOn('mediaWindowVisibilityChanged', (_e, status: string) => {
+  presentStore.setMediaScreenVisible(status === 'shown')
+})
+useIpcRendererOn('displaysChanged', async () => {
+  if (presentStore.mediaScreenInit) {
+    ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
+  }
+})
+useIpcRendererOn('moveMediaWindowToOtherScreen', async () => {
+  if (presentStore.mediaScreenInit) {
+    ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
+  }
+})
+
+// MacOS update
+useIpcRendererOn('macUpdate', async (_e, version) => {
+  try {
+    const release = await fetchRelease(`releases/tag/${version}`)
+
+    const macDownload = release.assets.find(({ name }) => name.includes('dmg'))!
+
+    notify('updateDownloading', {
+      identifier: release.tag_name,
+    })
+
+    const downloadsPath = join(
+      (await ipcRenderer.invoke('downloads')) as string,
+      macDownload.name
+    )
+
+    // Download the latest release
+    write(
+      downloadsPath,
+      Buffer.from(
+        new Uint8Array(
+          await $fetch<Iterable<number>>(macDownload.browser_download_url, {
+            responseType: 'arrayBuffer',
+          })
+        )
+      )
+    )
+
+    // Open the downloaded file
+    ipcRenderer.send(
+      'openPath',
+      fileURLToPath(pathToFileURL(downloadsPath).href)
+    )
+  } catch (e) {
+    error('updateNotDownloaded', e)
+    statStore.setUpdateSuccess(false)
+  }
+})
 </script>

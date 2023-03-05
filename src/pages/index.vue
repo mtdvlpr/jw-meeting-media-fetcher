@@ -81,12 +81,38 @@ import { basename, join } from 'upath'
 
 definePageMeta({ title: 'Home' })
 const { $dayjs, $localePath } = useNuxtApp()
-const now = $dayjs().hour(0).minute(0).second(0).millisecond(0)
-const action = ref('')
-const loading = ref(true)
 const { isDev } = useRuntimeConfig().public
-const { currentProgress, totalProgress, setProgress } = useProgress()
+const { online } = useOnline()
 
+const congParam = useRouteQuery<string>('cong', '-1')
+watch(congParam, (val) => {
+  if (val) window.location.reload()
+})
+
+const statStore = useStatStore()
+const { initialLoad } = storeToRefs(statStore)
+onMounted(async () => {
+  const promise = getJWLangs()
+  useNotifyStore().dismissByMessage('cantCloseMediaWindowOpen')
+
+  // Open settings when invalid
+  if (!mediaPath()) {
+    log.debug('Open settings to fill in mediaLang/localOutputFolder')
+    useRouter().push({
+      path: $localePath('/settings'),
+      query: useRoute().query,
+    })
+    return
+  }
+  setMeetingColors()
+  loading.value = false
+  if (initialLoad) autoStartMusic()
+  statStore.setInitialLoad(false)
+  await promise
+})
+
+// Dates
+const now = $dayjs().hour(0).minute(0).second(0).millisecond(0)
 const currentWeek = useNumberQuery('week', $dayjs().isoWeek())
 const {
   baseDate,
@@ -131,6 +157,7 @@ const upcomingWeeks = computed(() => {
   return weeks
 })
 
+// Colors
 const defaultColor = 'secondary'
 const defaultDayColor = 'accent'
 const jwSyncColor = ref(defaultColor)
@@ -173,38 +200,86 @@ const resetColors = () => {
   }
 }
 
-const statStore = useStatStore()
-const { initialLoad } = storeToRefs(statStore)
-const { online } = useOnline()
-
-const congParam = useRouteQuery<string>('cong', '-1')
-watch(congParam, (val) => {
-  if (val) window.location.reload()
-})
-
-const mediaStore = useMediaStore()
-const { mediaLang, fallbackLang } = storeToRefs(mediaStore)
-
+// Media sync
+const loading = ref(true)
 const { client } = useCongStore()
 const congSync = computed(() => !!client)
+const mediaStore = useMediaStore()
+const { mediaLang, fallbackLang } = storeToRefs(mediaStore)
+const startMediaSync = async (dryrun = false) => {
+  const mPath = mediaPath()
+  if (!mPath) return
+  useNotifyStore().dismissByMessage('dontForgetToGetMedia')
+  loading.value = true
+  statStore.startPerf({ func: 'total', start: performance.now() })
 
-onMounted(async () => {
-  const promise = getJWLangs()
-  useNotifyStore().dismissByMessage('cantCloseMediaWindowOpen')
-  if (!mediaPath()) {
-    log.debug('Open settings to fill in mediaLang/localOutputFolder')
-    useRouter().push({
-      path: $localePath('/settings'),
-      query: useRoute().query,
-    })
-    return
+  try {
+    if (!dryrun) {
+      rm(
+        findAll(join(mediaPath, '*'), {
+          ignore: [join(mediaPath, 'Recurring')],
+          onlyDirectories: true,
+        }).filter((dir: string) => {
+          const date = $dayjs(
+            basename(dir),
+            getPrefs<string>('app.outputFolderDateFormat')
+          )
+          return !date.isValid() || date.isBefore(now)
+        })
+      )
+    }
+
+    if (!getPrefs<boolean>('meeting.specialCong')) {
+      statStore.startPerf({ func: 'getJwOrgMedia', start: performance.now() })
+      await Promise.allSettled([getMidweekMedia(), getWeekendMedia()])
+      statStore.stopPerf({ func: 'getJwOrgMedia', stop: performance.now() })
+    }
+
+    createMediaNames()
+
+    if (congSync.value) {
+      try {
+        congSyncColor.value = 'warning'
+        getCongMedia(baseDate.value, now)
+        if (dryrun) congSyncColor.value = 'success'
+      } catch (e) {
+        error('errorGetCongMedia', e)
+        congSyncColor.value = 'error'
+      }
+    }
+
+    if (!dryrun) {
+      await Promise.allSettled([
+        syncCongServerMedia(),
+        syncLocalRecurring(),
+        syncJWorgMedia(dryrun),
+      ])
+    }
+  } catch (e) {
+    error('errorUnknown', e)
+  } finally {
+    loading.value = false
+    statStore.clearPerf()
+    statStore.clearDownloads()
+    mediaStore.clearProgress()
   }
-  setMeetingColors()
-  loading.value = false
-  if (initialLoad) autoStartMusic()
-  statStore.setInitialLoad(false)
-  await promise
-})
+}
+
+const { currentProgress, totalProgress, setProgress } = useProgress()
+const syncJWorgMedia = async (dryrun = false) => {
+  statStore.startPerf({ func: 'syncJWorgMedia', start: performance.now() })
+  jwSyncColor.value = 'warning'
+
+  try {
+    await syncJWMedia(dryrun, baseDate.value, setProgress)
+    jwSyncColor.value = 'success'
+  } catch (e) {
+    log.error(e)
+    jwSyncColor.value = 'error'
+  }
+
+  statStore.stopPerf({ func: 'syncJWorgMedia', stop: performance.now() })
+}
 
 const getMidweekMedia = async () => {
   const mwbAvailable = mediaLang.value?.mwbAvailable !== false
@@ -276,80 +351,8 @@ const syncLocalRecurring = () => {
   }
 }
 
-const syncJWorgMedia = async (dryrun = false) => {
-  statStore.startPerf({ func: 'syncJWorgMedia', start: performance.now() })
-  jwSyncColor.value = 'warning'
-
-  try {
-    await syncJWMedia(dryrun, baseDate.value, setProgress)
-    jwSyncColor.value = 'success'
-  } catch (e) {
-    log.error(e)
-    jwSyncColor.value = 'error'
-  }
-
-  statStore.stopPerf({ func: 'syncJWorgMedia', stop: performance.now() })
-}
-
-const startMediaSync = async (dryrun = false) => {
-  const mPath = mediaPath()
-  if (!mPath) return
-  useNotifyStore().dismissByMessage('dontForgetToGetMedia')
-  loading.value = true
-  statStore.startPerf({ func: 'total', start: performance.now() })
-
-  try {
-    if (!dryrun) {
-      rm(
-        findAll(join(mediaPath, '*'), {
-          ignore: [join(mediaPath, 'Recurring')],
-          onlyDirectories: true,
-        }).filter((dir: string) => {
-          const date = $dayjs(
-            basename(dir),
-            getPrefs<string>('app.outputFolderDateFormat')
-          )
-          return !date.isValid() || date.isBefore(now)
-        })
-      )
-    }
-
-    if (!getPrefs<boolean>('meeting.specialCong')) {
-      statStore.startPerf({ func: 'getJwOrgMedia', start: performance.now() })
-      await Promise.allSettled([getMidweekMedia(), getWeekendMedia()])
-      statStore.stopPerf({ func: 'getJwOrgMedia', stop: performance.now() })
-    }
-
-    createMediaNames()
-
-    if (congSync.value) {
-      try {
-        congSyncColor.value = 'warning'
-        getCongMedia(baseDate.value, now)
-        if (dryrun) congSyncColor.value = 'success'
-      } catch (e) {
-        error('errorGetCongMedia', e)
-        congSyncColor.value = 'error'
-      }
-    }
-
-    if (!dryrun) {
-      await Promise.allSettled([
-        syncCongServerMedia(),
-        syncLocalRecurring(),
-        syncJWorgMedia(dryrun),
-      ])
-    }
-  } catch (e) {
-    error('errorUnknown', e)
-  } finally {
-    loading.value = false
-    statStore.clearPerf()
-    statStore.clearDownloads()
-    mediaStore.clearProgress()
-  }
-}
-
+// Perform automatic actions
+const action = ref('')
 const icon = (action: string) => {
   switch (action) {
     case 'quitApp':

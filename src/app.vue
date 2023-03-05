@@ -17,6 +17,11 @@ useHead({
 })
 </script>
 <style lang="scss">
+@font-face {
+  font-family: NotoSerif;
+  src: url('/NotoSerif-Bold.ttf') format('truetype');
+}
+
 html {
   overflow-y: auto !important;
   user-select: none;

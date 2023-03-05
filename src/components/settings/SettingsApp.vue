@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <v-form ref="form" v-model="valid">
+  <v-form ref="appForm" v-model="valid">
     <form-input
       id="app.offline"
       v-model="app.offline"
@@ -331,7 +331,7 @@ import { extname, join } from 'upath'
 import { LocaleObject } from 'vue-i18n-routing'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
-import { AppPrefs, dateFormats, PrefStore } from '~~/types'
+import { AppPrefs, VFormRef, dateFormats, PrefStore } from '~~/types'
 
 const emit = defineEmits<{
   (e: 'valid', val: boolean): void
@@ -341,49 +341,23 @@ const props = defineProps<{
   prefs: PrefStore
 }>()
 
-type VFormRef = {
-  id: number | string
-  validate: () => Promise<string[]>
-  reset: () => void
-  resetValidation: () => void
-}
-
 const { $dayjs, $i18n, $sentry, $switchLocalePath } = useNuxtApp()
 const valid = ref(true)
 watch(valid, (val) => emit('valid', val))
-const form = ref<VFormRef | null>()
+const appForm = ref<VFormRef | null>()
 onMounted(async () => {
-  app.value = getPrefs<AppPrefs>('app')
   oldName.value = app.value.congregationName
   app.value.localAppLang = $i18n.locale
-  emit('refresh', app.value)
   if (obsComplete.value) {
     await getScenes()
   }
-  if (form.value) {
-    form.value.validate()
+  if (appForm.value) {
+    appForm.value.validate()
   }
 })
 
 // Prefs
-const app = ref<AppPrefs>({ ...PREFS.app })
-watch(
-  app,
-  (val) => {
-    setPrefs('app', val)
-    emit('refresh', val)
-  },
-  { deep: true }
-)
-const { prefs: forcedPrefs, client } = storeToRefs(useCongStore())
-watch(
-  forcedPrefs,
-  () => {
-    app.value = { ...app.value, ...forcedPrefs.value }
-    oldName.value = app.value.congregationName
-  },
-  { deep: true }
-)
+const { client, prefs: app } = usePrefs<AppPrefs>('app', emit)
 
 const isLinux = platform() === 'linux'
 const disableOptions: (keyof AppPrefs)[] = [
@@ -508,12 +482,11 @@ const removeAutoRename = (index: number) => {
 // OBS options
 watch(
   () => app.value.obs.enable,
-  async (val) => {
+  (val) => {
     if (val && obsComplete.value) {
-      await getScenes()
-      if (form.value) {
-        form.value.validate()
-      }
+      getScenes().then(() => {
+        if (appForm.value) appForm.value.validate()
+      })
     } else {
       resetOBS()
     }
