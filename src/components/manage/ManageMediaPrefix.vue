@@ -1,4 +1,21 @@
-<template>MISSING</template>
+<template>
+  <v-row align="center" class="my-n4" style="width: 100%">
+    <v-col cols="1" class="text-center" align-self="center">
+      <v-icon icon="faArrowDown19" />
+    </v-col>
+    <v-col cols="11" class="d-flex">
+      <form-input v-model="value" />
+    </v-col>
+  </v-row>
+</template>
+<script setup lang="ts">
+const emit = defineEmits(['update:modelValue'])
+const props = defineProps<{
+  modelValue: string
+}>()
+
+const value = useVModel(props, 'modelValue', emit)
+</script>
 <!--<template>
   <v-row align="center" class="my-n4" style="width: 100%">
     <v-col cols="1" class="text-center" align-self="center">
