@@ -76,13 +76,12 @@ const initPrefs = async (name: string, isNew = false) => {
       path = $localePath('/settings', lang)
     }
     log.debug('Set correct lang and/or open settings for new cong', name)
-    const result = await router.push({
+    await router.push({
       path,
       query: {
         cong: name.replace('prefs-', ''),
       },
     })
-    log.debug('router result', result)
   }
   // If congs lang is different from current lang, set new lang
   else if (lang && lang !== $i18n.locale.value) {
@@ -93,8 +92,7 @@ const initPrefs = async (name: string, isNew = false) => {
       path = $localePath('/settings', lang)
     }
 
-    const result = await router.replace(path)
-    log.debug('router result', result)
+    await router.replace(path)
   }
 
   const locales = $i18n.locales.value as LocaleObject[]
