@@ -1,6 +1,7 @@
 import { pathToFileURL } from 'url'
 import { ipcRenderer } from 'electron'
 import { join, basename } from 'upath'
+import { ShortcutScope } from './../../types/electron.d'
 import {
   MediaPrefs,
   ScreenInfo,
@@ -113,7 +114,7 @@ export function unsetShortcut(fn: ShortcutAction) {
   store.setShortcuts(shortcuts.filter(({ key }) => key !== match.key))
 }
 
-export function unsetShortcuts(filter = 'all') {
+export function unsetShortcuts(filter: ShortcutScope | 'all' = 'all') {
   const store = usePresentStore()
   const shortcuts = store.shortcuts
   const keepers: typeof shortcuts = []
@@ -146,7 +147,7 @@ export async function showMediaWindow() {
 }
 
 export function closeMediaWindow() {
-  unsetShortcuts('mediaWindow')
+  unsetShortcuts('mediaWin')
   ipcRenderer.send('closeMediaWindow')
   usePresentStore().setMediaScreenInit(false)
 }

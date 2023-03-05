@@ -39,7 +39,8 @@ export async function convertToMP4(
     })
     .map((dir) =>
       findAll(join(mediaPath(), dir, '*'), {
-        ignore: ['!**/(*.mp4|*.xspf|*.vtt|*.json)'], // Don't convert videos, playlists or markers
+        // Don't convert videos, playlists, markers or titles
+        ignore: ['!**/(*.mp4|*.xspf|*.vtt|*.json|*.title)'],
       })
     )
     .flat()
