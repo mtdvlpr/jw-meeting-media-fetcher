@@ -1,4 +1,14 @@
-<template>MISSING</template>
+<template>
+  <form-input v-model="value" />
+</template>
+<script setup lang="ts">
+const emit = defineEmits(['update:modelValue'])
+const props = defineProps<{
+  modelValue: string
+}>()
+
+const value = useVModel(props, 'modelValue', emit)
+</script>
 <!--
 <template>
   <v-dialog

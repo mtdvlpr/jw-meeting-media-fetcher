@@ -1,7 +1,7 @@
 <template>
   <div :id="id">
     <div :id="id + '-container'" class="align-center d-flex" />
-    <v-overlay
+    <!--<v-overlay
       absolute
       :model-value="changeTime"
       style="opacity: 1"
@@ -40,7 +40,7 @@
           </form-timestamp>
         </v-col>
       </v-row>
-    </v-overlay>
+    </v-overlay>-->
     <v-btn
       size="x-small"
       absolute
@@ -234,8 +234,8 @@ const setCCAvailable = () => {
 }
 
 // Custom start/end times
-const validStart = ref(false)
-const validEnd = ref(false)
+// const validStart = ref(false)
+// const validEnd = ref(false)
 const duration = computed(() =>
   formatDuration(
     $dayjs.duration(clippedMs.value.end - clippedMs.value.start, 'ms')
