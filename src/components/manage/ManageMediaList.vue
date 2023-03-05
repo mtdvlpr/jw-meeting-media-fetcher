@@ -39,11 +39,11 @@
 </template>
 <script setup lang="ts">
 import { extname, join, trimExt } from 'upath'
-import { LocalFile, VideoFile } from '~~/types'
+import { LocalFile, MeetingFile, VideoFile } from '~~/types'
 
 const emit = defineEmits(['refresh'])
 const props = defineProps<{
-  media: (LocalFile | VideoFile)[]
+  media: (LocalFile | MeetingFile)[]
   date: string
   newFile: VideoFile | null
   newFiles: (LocalFile | VideoFile)[]
@@ -70,7 +70,7 @@ watch(
 )
 
 // Set media list
-const mediaList = ref<(VideoFile | LocalFile)[]>([])
+const mediaList = ref<(MeetingFile | LocalFile)[]>([])
 const setMediaList = () => {
   // If new files are being uploaded, add them to the list
   if (props.newFile || (props.newFiles && props.newFiles.length > 0)) {
@@ -153,7 +153,7 @@ const saveNewName = async () => {
 }
 
 // Select file for renaming
-const editItem = (item: VideoFile | LocalFile) => {
+const editItem = (item: MeetingFile | LocalFile) => {
   edit.value = {
     safeName: item.safeName!,
     congSpecific: !!item.congSpecific,
@@ -163,7 +163,7 @@ const editItem = (item: VideoFile | LocalFile) => {
 }
 
 // Remove file
-const removeItem = async (item: VideoFile | LocalFile) => {
+const removeItem = async (item: MeetingFile | LocalFile) => {
   if (item.color === 'error') {
     mediaList.value.splice(mediaList.value.indexOf(item), 1)
     rm(join(mediaPath(), props.date, item.safeName))

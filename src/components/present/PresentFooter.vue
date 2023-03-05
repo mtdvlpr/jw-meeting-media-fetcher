@@ -41,7 +41,7 @@
               {{ showShortButtons ? s.shortText : s.value }}
             </v-btn>
           </template>
-          <span>{{ showShortButtons ? s.text : s.shortcut }}</span>
+          <span>{{ showShortButtons ? s.title : s.shortcut }}</span>
         </v-tooltip>
       </v-btn-toggle>
       <form-input
@@ -136,7 +136,7 @@ const scenes = computed(() => {
       if (i > 9) shortcut = ''
       return {
         shortcut,
-        text: `${shortcut}: ${s}`,
+        title: `${shortcut}: ${s}`,
         value: s,
         shortText: s
           .replace('+', ' + ')

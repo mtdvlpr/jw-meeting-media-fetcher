@@ -39,7 +39,7 @@ const props = defineProps<{
   dayColors: { [key: number]: string }
 }>()
 
-const { $dayjs, $localePath } = useNuxtApp()
+const { $localePath } = useNuxtApp()
 
 // Open manage page for specific day
 const openDate = (date: string) => {
@@ -51,7 +51,7 @@ const openDate = (date: string) => {
 }
 
 // Remaining days of the week
-const now = $dayjs().hour(0).minute(0).second(0).millisecond(0)
+const now = getNow()
 const daysOfWeek = computed(() => {
   const specialCong = getPrefs<boolean>('meeting.specialCong')
   const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')

@@ -213,11 +213,11 @@ const initPrefs = async (name: string, isNew = false) => {
 
   // Set music shuffle shortcut if enabled
   if (getPrefs<boolean>('meeting.enableMusicButton')) {
-    await setShortcut(
-      getPrefs<string>('meeting.shuffleShortcut'),
-      'toggleMusicShuffle',
-      'music'
-    )
+    await setShortcut({
+      key: getPrefs<string>('meeting.shuffleShortcut'),
+      fn: 'toggleMusicShuffle',
+      scope: 'music',
+    })
   }
 
   // If all cong fields are filled in, try to connect to the server
@@ -302,7 +302,7 @@ watch(prefersDark, (val) => {
 
 // Global listeners
 useIpcRendererOn('readyToListen', () => {
-  ipcRenderer.send('startMediaDisplay', getAllPrefs())
+  ipcRenderer.send('startMediaDisplay')
 })
 useIpcRendererOn('toggleMusicShuffle', () => {
   shuffleMusic(!!mediaStore.musicFadeOut)
@@ -342,7 +342,7 @@ useIpcRendererOn('openPresentMode', () => {
 
 useIpcRendererOn('mediaWindoShown', () => {
   presentStore.setMediaScreenInit(true)
-  ipcRenderer.send('startMediaDisplay', getAllPrefs())
+  ipcRenderer.send('startMediaDisplay')
 })
 useIpcRendererOn('mediaWindowVisibilityChanged', (_e, status: string) => {
   presentStore.setMediaScreenVisible(status === 'shown')

@@ -91,17 +91,17 @@
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
 import { extname, join } from 'upath'
-import { LocalFile, VideoFile } from '~~/types'
+import { LocalFile, MeetingFile } from '~~/types'
 
 const emit = defineEmits<{
   (e: 'refresh'): void
-  (e: 'edit', item: VideoFile | LocalFile): void
-  (e: 'remove', item: VideoFile | LocalFile): void
+  (e: 'edit', item: MeetingFile | LocalFile): void
+  (e: 'remove', item: MeetingFile | LocalFile): void
 }>()
 const props = defineProps<{
   date: string
   prefix: string
-  item: VideoFile | LocalFile
+  item: MeetingFile | LocalFile
 }>()
 
 // Get media preview
@@ -111,7 +111,7 @@ const { online } = useOnline()
 const previewName = ref('')
 const { client, contents } = storeToRefs(useCongStore())
 
-const getPreview = (item: VideoFile | LocalFile) => {
+const getPreview = (item: MeetingFile | LocalFile) => {
   if (previewName.value === item.safeName) {
     return preview.value
   }
@@ -146,7 +146,7 @@ const getPreview = (item: VideoFile | LocalFile) => {
 }
 
 // When clicking on a file
-const atClick = (item: VideoFile | LocalFile) => {
+const atClick = (item: MeetingFile | LocalFile) => {
   if (item.loading) return
   if (!item.recurring && (item.isLocal || item.congSpecific)) {
     item.loading = item.color === 'error'
@@ -160,7 +160,7 @@ const atClick = (item: VideoFile | LocalFile) => {
 }
 
 // Toggle visibility
-const toggleVisibility = async (item: VideoFile | LocalFile) => {
+const toggleVisibility = async (item: MeetingFile | LocalFile) => {
   const mediaMap = useMediaStore().meetings.get(props.date)
   if (mediaMap && (!item.isLocal || (item.recurring && item.congSpecific))) {
     for (const [, media] of mediaMap) {

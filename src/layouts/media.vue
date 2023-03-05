@@ -13,3 +13,11 @@ useHead({
   },
 })
 </script>
+<style lang="scss">
+html,
+body {
+  -webkit-app-region: drag;
+  background: black;
+  user-select: auto;
+}
+</style>

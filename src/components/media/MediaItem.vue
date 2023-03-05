@@ -333,7 +333,7 @@ const newProgress = ref(0)
 watch(newProgress, () => {
   if (paused.value) scrubVideo()
 })
-const scrubVideo = () => useIpcRenderer().send('videoScrub', newProgress.value)
+const scrubVideo = () => useIpcRenderer().send('scrubVideo', newProgress.value)
 
 // Set custom start/end times for video
 const start = ref<string | null>(null)

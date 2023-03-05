@@ -5,7 +5,7 @@
     v-model="tree"
     :items="contents"
     item-key="filename"
-    item-text="basename"
+    item-title="basename"
     open-on-click
   >
     <template #prepend="{ item, open }">

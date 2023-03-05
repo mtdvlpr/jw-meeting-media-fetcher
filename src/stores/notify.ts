@@ -48,5 +48,8 @@ export const useNotifyStore = defineStore('notify', {
         this.notifications.splice(this.notifications.indexOf(match), 1)
       }
     },
+    dismissByMessages(msgs: string[]) {
+      msgs.forEach((msg) => this.dismissByMessage(msg))
+    },
   },
 })

@@ -13,9 +13,9 @@
       v-model="app.theme"
       field="select"
       :items="[
-        { text: $t('light'), value: 'light' },
-        { text: $t('dark'), value: 'dark' },
-        { text: $t('system'), value: 'system' },
+        { title: $t('light'), value: 'light' },
+        { title: $t('dark'), value: 'dark' },
+        { title: $t('system'), value: 'system' },
       ]"
       :label="$t('themePreference')"
       :locked="isLocked('app.theme')"
@@ -34,7 +34,7 @@
       field="autocomplete"
       :label="$t('localAppLang')"
       :items="$i18n.locales"
-      item-text="name"
+      item-title="name"
       item-value="code"
       required
       auto-select-first
@@ -92,7 +92,7 @@
       field="select"
       :label="$t('outputFolderDateFormat')"
       :items="formats"
-      item-text="label"
+      item-title="label"
       item-value="value"
       :locked="isLocked('app.outputFolderDateFormat')"
     />

@@ -7,7 +7,7 @@
       field="autocomplete"
       :label="$t('mediaLang')"
       :items="langs"
-      item-text="name"
+      item-title="name"
       item-value="langcode"
       :loading="loading"
       :locked="$isLocked('media.lang')"
@@ -20,7 +20,7 @@
       field="autocomplete"
       :label="$t('mediaLangFallback')"
       :items="fallbackLangs"
-      item-text="name"
+      item-title="name"
       item-value="langcode"
       :loading="loading"
       :locked="$isLocked('media.langFallback')"
@@ -52,7 +52,7 @@
       field="autocomplete"
       :label="$t('subsLang')"
       :items="subLangs"
-      item-text="name"
+      item-title="name"
       item-value="langcode"
       :loading="loading"
       :locked="$isLocked('media.langSubs')"
@@ -91,7 +91,7 @@
         v-model="media.preferredOutput"
         field="select"
         item-value="id"
-        :items="[{ id: 'window', text: $t('window') }, ...screens]"
+        :items="[{ id: 'window', title: $t('window') }, ...screens]"
         :locked="$isLocked('media.preferredOutput')"
         :label="$t('preferredOutput')"
       />
@@ -241,9 +241,8 @@
   </v-form>
 </template>
 <script setup lang="ts">
-import { pathToFileURL } from 'url'
 // eslint-disable-next-line import/named
-import { existsSync, readFileSync } from 'fs-extra'
+import { readFileSync } from 'fs-extra'
 import { extname, join } from 'upath'
 import { ipcRenderer } from 'electron'
 import {
@@ -287,10 +286,7 @@ const mediaForm = ref<VFormRef | null>()
 const valid = ref(true)
 watch(valid, (val) => emit('valid', val))
 onMounted(async () => {
-  const promises = [
-    loadFont(WT_CLEARTEXT_FONT, 'Wt-ClearText-Bold.*', 'Wt-ClearText-Bold'),
-    loadFont(JW_ICONS_FONT, 'jw-icons*', 'JW-Icons'),
-  ]
+  const promises = [loadFont('yeartext'), loadFont('icon')]
 
   jwLangs.value = await getJWLangs()
   if (
@@ -353,21 +349,6 @@ watch(
     if (mediaForm.value) mediaForm.value.validate()
   }
 )
-const loadFont = async (font: string, search: string, name: string) => {
-  let fontFile = localFontPath(font)
-  if (!existsSync(fontFile)) {
-    fontFile = findOne(join(await wtFontPath(), search))
-  }
-  if (fontFile && existsSync(fontFile)) {
-    const font = new FontFace(name, `url(${pathToFileURL(fontFile).href})`)
-    try {
-      const loadedFont = await font.load()
-      document.fonts.add(loadedFont)
-    } catch (e: unknown) {
-      log.error(e)
-    }
-  }
-}
 
 const playMinutesBeforeMeeting = computed(() => {
   return $i18n

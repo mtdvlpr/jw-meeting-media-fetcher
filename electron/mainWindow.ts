@@ -5,6 +5,7 @@ import BrowserWinHandler from './BrowserWinHandler'
 import { fadeWindow, getMediaWin } from './mediaWindow'
 import { getScreenInfo } from './utils'
 import { getWebsiteController } from './websiteController'
+import { Shortcut } from '~~/types'
 
 let win: BrowserWindow
 let winHandler: BrowserWinHandler
@@ -132,35 +133,32 @@ function registerListeners() {
     win?.webContents.send('displaysChanged')
   })
 
-  ipcMain.handle(
-    'registerShortcut',
-    (_e, { shortcut, fn }: { shortcut: string; fn: string }) => {
-      const functions: { [key: string]: () => void } = {
-        toggleMediaWindow: () => {
-          fadeWindow()
-        },
-        openPresentMode: () => {
-          win?.webContents.send('openPresentMode')
-        },
-        toggleMusicShuffle: () => {
-          win?.webContents.send('toggleMusicShuffle')
-        },
-        setObsScene: () => {
-          win?.webContents.send('setObsScene', +shortcut.split('+')[1])
-        },
-        previousMediaItem: () => {
-          win?.webContents.send('play', 'previous')
-        },
-        nextMediaItem: () => {
-          win?.webContents.send('play', 'next')
-        },
-      }
-      if (globalShortcut.isRegistered(shortcut)) {
-        globalShortcut.unregister(shortcut)
-      }
-      return globalShortcut.register(shortcut, functions[fn])
+  ipcMain.handle('registerShortcut', (_e, { key, fn }: Shortcut) => {
+    const functions: { [key: string]: () => void } = {
+      toggleMediaWindow: () => {
+        fadeWindow()
+      },
+      openPresentMode: () => {
+        win?.webContents.send('openPresentMode')
+      },
+      toggleMusicShuffle: () => {
+        win?.webContents.send('toggleMusicShuffle')
+      },
+      setObsScene: () => {
+        win?.webContents.send('setObsScene', +key.split('+')[1])
+      },
+      previousMediaItem: () => {
+        win?.webContents.send('play', 'previous')
+      },
+      nextMediaItem: () => {
+        win?.webContents.send('play', 'next')
+      },
     }
-  )
+    if (globalShortcut.isRegistered(key)) {
+      globalShortcut.unregister(key)
+    }
+    return globalShortcut.register(key, functions[fn])
+  })
   ipcMain.on('unregisterShortcut', (_e, shortcut: string) => {
     if (globalShortcut.isRegistered(shortcut)) {
       globalShortcut.unregister(shortcut)

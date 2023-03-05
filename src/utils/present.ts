@@ -1,24 +1,27 @@
 import { pathToFileURL } from 'url'
 import { ipcRenderer } from 'electron'
 import { join, basename } from 'upath'
-import { MediaPrefs, ScreenInfo, MediaWinOptions } from '~~/types'
+import {
+  MediaPrefs,
+  ScreenInfo,
+  MediaWinOptions,
+  Shortcut,
+  ShortcutAction,
+} from '~~/types'
 
-export async function setShortcut(
-  shortcut: string,
-  fn: string,
-  domain = 'mediaWindow'
-) {
+export async function setShortcut({ key, fn, scope }: Shortcut) {
+  if (!scope) scope = 'mediaWin'
   let res = false
   const store = usePresentStore()
   const shortcuts = store.shortcuts
   try {
-    const match = shortcuts.find(({ name }) => name === shortcut)
+    const match = shortcuts.find((s) => s.key === key)
     if (match) {
-      res = match.domain === domain && match.fn === fn
-    } else if (shortcut && fn && domain) {
-      store.addShortcut({ name: shortcut, domain, fn })
+      res = match.scope === scope && match.fn === fn
+    } else if (key && fn && scope) {
+      store.addShortcut({ key, scope, fn })
       res = await ipcRenderer.invoke('registerShortcut', {
-        shortcut,
+        key,
         fn,
       })
     }
@@ -26,19 +29,19 @@ export async function setShortcut(
     log.error(e)
   } finally {
     if (!res) {
-      notify('infoShortcutSetFail', { identifier: shortcut })
+      notify('infoShortcutSetFail', { identifier: key })
     }
   }
 }
 
-export function changeShortcut(shortcut: string | null, fn: string) {
-  if (!shortcut) return
-  if (isShortcutValid(shortcut) && isShortcutAvailable(shortcut, fn)) {
+export function changeShortcut(key: string | null, fn: ShortcutAction) {
+  if (!key) return
+  if (isShortcutValid(key) && isShortcutAvailable(key, fn)) {
     unsetShortcut(fn)
-    setShortcut(shortcut, fn)
+    setShortcut({ key, fn })
   }
 }
-export function getShortcutRules(fn: string) {
+export function getShortcutRules(fn: ShortcutAction) {
   const { $i18n } = useNuxtApp()
   return [
     (v: string) => isShortcutValid(v) || $i18n.t('fieldShortcutInvalid'),
@@ -46,36 +49,36 @@ export function getShortcutRules(fn: string) {
   ]
 }
 
-function isShortcutAvailable(shortcut: string, func: string) {
+function isShortcutAvailable(key: string, fn: ShortcutAction) {
   const { ppForward, ppBackward, mediaWinShortcut, presentShortcut } =
     getPrefs<MediaPrefs>('media')
 
   // Alt+[number] is reserved for OBS scenes
-  if (/Alt\+\d+/.test(shortcut)) return false
+  if (/Alt\+\d+/.test(key)) return false
 
-  const shortcuts = [
-    { name: ppForward, fn: 'nextMediaItem' },
-    { name: ppBackward, fn: 'previousMediaItem' },
-    { name: mediaWinShortcut, fn: 'toggleMediaWindow' },
-    { name: presentShortcut, fn: 'openPresentMode' },
+  const shortcuts: Shortcut[] = [
+    { key: ppForward!, fn: 'nextMediaItem' },
+    { key: ppBackward!, fn: 'previousMediaItem' },
+    { key: mediaWinShortcut!, fn: 'toggleMediaWindow' },
+    { key: presentShortcut!, fn: 'openPresentMode' },
     {
-      name: getPrefs<string>('meeting.shuffleShortcut'),
+      key: getPrefs<string>('meeting.shuffleShortcut'),
       fn: 'toggleMusicShuffle',
     },
   ]
 
-  return !shortcuts.find(({ name, fn }) => name === shortcut && fn !== func)
+  return !shortcuts.find((s) => s.key === key && s.fn !== fn)
 }
 
-function isShortcutValid(shortcut: string) {
-  if (!shortcut) return false
+function isShortcutValid(key: string) {
+  if (!key) return false
 
   const modifiers =
     /^(Command|Cmd|Control|Ctrl|CommandOrControl|CmdOrCtrl|Alt|Option|AltGr|Shift|Super)/
   const keyCodes =
     /^([0-9A-Z)!@#%^&*(:+<_>?~{|}";=,\-./`[\\\]']|F1*[1-9]|F10|F2[0-4]|Plus|Space|Tab|Backspace|Delete|Insert|Return|Enter|Up|Down|Left|Right|Home|End|PageUp|PageDown|Escape|Esc|VolumeUp|VolumeDown|VolumeMute|MediaNextTrack|MediaPreviousTrack|MediaStop|MediaPlayPause|PrintScreen)/
 
-  const parts = shortcut.split('+')
+  const parts = key.split('+')
   let keyFound = false
 
   return parts.every((val, index) => {
@@ -93,21 +96,21 @@ function isShortcutValid(shortcut: string) {
   })
 }
 
-export function unsetShortcut(func: string) {
+export function unsetShortcut(fn: ShortcutAction) {
   const store = usePresentStore()
   const shortcuts = store.shortcuts
 
-  const match = shortcuts.find(({ fn }) => fn === func)
+  const match = shortcuts.find((s) => fn === s.fn)
 
   if (!match) return
 
   try {
-    ipcRenderer.send('unregisterShortcut', match.name)
+    ipcRenderer.send('unregisterShortcut', match.key)
   } catch (e) {
     log.error(e)
   }
 
-  store.setShortcuts(shortcuts.filter(({ name }) => name !== match.name))
+  store.setShortcuts(shortcuts.filter(({ key }) => key !== match.key))
 }
 
 export function unsetShortcuts(filter = 'all') {
@@ -116,10 +119,10 @@ export function unsetShortcuts(filter = 'all') {
   const keepers: typeof shortcuts = []
 
   for (let i = shortcuts.length - 1; i >= 0; i--) {
-    const { name, domain } = shortcuts[i]
-    if (filter === 'all' || domain === filter) {
+    const { key, scope } = shortcuts[i]
+    if (filter === 'all' || scope === filter) {
       try {
-        ipcRenderer.send('unregisterShortcut', name)
+        ipcRenderer.send('unregisterShortcut', key)
       } catch (e) {
         log.error(e)
       }
@@ -132,8 +135,14 @@ export function unsetShortcuts(filter = 'all') {
 
 export async function showMediaWindow() {
   ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
-  setShortcut(getPrefs<string>('media.presentShortcut'), 'openPresentMode')
-  setShortcut(getPrefs<string>('media.mediaWinShortcut'), 'toggleMediaWindow')
+  setShortcut({
+    key: getPrefs<string>('media.presentShortcut'),
+    fn: 'openPresentMode',
+  })
+  setShortcut({
+    key: getPrefs<string>('media.mediaWinShortcut'),
+    fn: 'toggleMediaWindow',
+  })
 }
 
 export function closeMediaWindow() {
@@ -196,7 +205,7 @@ export async function refreshBackgroundImgPreview(force = false) {
       store.setBackground(URL.createObjectURL(file))
       type = 'custom'
     }
-    ipcRenderer.send('startMediaDisplay', getAllPrefs())
+    ipcRenderer.send('startMediaDisplay')
     return type
   } catch (e) {
     log.error(e)
@@ -222,7 +231,7 @@ export async function getMediaWindowDestination() {
         return {
           id: screen.id,
           class: 'display',
-          text: `${$i18n.t('screen')} ${screen.humanFriendlyNumber} ${
+          title: `${$i18n.t('screen')} ${screen.humanFriendlyNumber} ${
             screen.size?.width && screen.size?.height
               ? ` (${screen.size.width}x${screen.size.height}) (ID: ${screen.id})`
               : ''

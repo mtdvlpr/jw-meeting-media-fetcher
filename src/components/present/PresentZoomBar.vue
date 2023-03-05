@@ -83,7 +83,7 @@
             v-model:search-input="participantSearch"
             field="autocomplete"
             color="white"
-            item-text="displayName"
+            item-title="displayName"
             item-value="userId"
             :loading="allParticipants.length == 0"
             :label="$t('spotlightParticipants')"

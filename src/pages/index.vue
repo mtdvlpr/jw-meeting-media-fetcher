@@ -112,7 +112,7 @@ onMounted(async () => {
 })
 
 // Dates
-const now = $dayjs().hour(0).minute(0).second(0).millisecond(0)
+const now = getNow()
 const currentWeek = useNumberQuery('week', $dayjs().isoWeek())
 const {
   baseDate,

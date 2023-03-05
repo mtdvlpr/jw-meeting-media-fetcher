@@ -8,7 +8,7 @@
     :title="title"
     @click="toggleScreen"
   >
-    <v-layers class="fa-lg" fixed-width>
+    <font-awesome-layers class="fa-lg" fixed-width>
       <v-icon
         :icon="icons[0]"
         :class="mediaVisible ? 'black--text' : 'white--text'"

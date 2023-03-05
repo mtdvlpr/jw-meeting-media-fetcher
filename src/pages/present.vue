@@ -1,0 +1,193 @@
+<template>
+  <v-container
+    fluid
+    class="present-page align-start align-content-space-between pa-0 fill-height"
+  >
+    <confirm-dialog
+      v-model="dialog"
+      content="obsZoomSceneActivate"
+      @cancel="dialog = false"
+      @confirm="
+        dialog = false
+        zoomPart = true
+      "
+    >
+      <form-input
+        v-if="!!zoomClient"
+        v-model="participant"
+        field="autocomplete"
+        :loading="participants.length === 0"
+        :label="$t('unmuteParticipant')"
+        :items="participants"
+        item-title="displayName"
+        item-value="userId"
+        return-object
+      />
+    </confirm-dialog>
+    <div id="zoomMeeting" />
+    <media-controls v-if="date" />
+    <present-select v-else :first-choice="firstChoice" />
+    <v-row>
+      <present-footer
+        :window-width="width"
+        :participant="participant"
+        @zoom-part="toggleZoomPart()"
+        @clear-participant="participant = null"
+      />
+    </v-row>
+  </v-container>
+</template>
+<script setup lang="ts">
+import { useIpcRendererOn } from '@vueuse/electron'
+import { Participant } from '@zoomus/websdk/embedded'
+import { ZoomPrefs } from '~~/types'
+
+const date = computed(() => useRoute().query.date as string)
+definePageMeta({
+  title: date ?? 'Present',
+  titleTemplate: date ? 'Present %s - M³' : '%s - Meeting Media Manager',
+})
+
+// General state
+const firstChoice = ref(true)
+watch(date, (val) => {
+  if (val) {
+    firstChoice.value = false
+  }
+})
+const { $i18n } = useNuxtApp()
+const { height, width } = useWindowSize()
+provide(windowHeightKey, height)
+const mediaActive = ref(false)
+provide(mediaActiveKey, mediaActive)
+const videoActive = ref(false)
+provide(videoActiveKey, videoActive)
+useIpcRendererOn('showingMedia', (_e, val: boolean[]) => {
+  mediaActive.value = val[0]
+  videoActive.value = val[1]
+})
+
+onMounted(() => {
+  initZoomIntegration()
+  if (getPrefs<boolean>('media.enablePp')) {
+    const ppForward = getPrefs<string>('media.ppForward')
+    const ppBackward = getPrefs<string>('media.ppBackward')
+    if (ppForward && ppBackward) {
+      useShortcuts(
+        [
+          { key: ppForward, fn: 'nextMediaItem' },
+          { key: ppBackward, fn: 'previousMediaItem' },
+        ],
+        'present'
+      )
+    } else {
+      warn('errorPpEnable')
+    }
+  }
+  if (zoomClient.value) {
+    setTimeout(() => {
+      if (window.sockets && window.sockets.length > 0) {
+        log.debug('Found socket')
+        zoomStore.setWebsocket(zoomSocket())
+      }
+    }, MS_IN_SEC)
+  }
+})
+
+// OBS
+const dialog = ref(false)
+const zoomPart = ref(false)
+provide(zoomPartKey, zoomPart)
+const toggleZoomPart = () => {
+  if (zoomPart.value) {
+    zoomPart.value = false
+  } else {
+    dialog.value = true
+  }
+}
+
+// Zoom integration
+const zoomStore = useZoomStore()
+const {
+  client: zoomClient,
+  coHost,
+  started: zoomStarted,
+  participants: allParticipants,
+} = storeToRefs(zoomStore)
+whenever(coHost, () => useNotifyStore().dismissByMessage('remindNeedCoHost'))
+const participant = ref<Participant | null>(null)
+const participants = computed(() =>
+  allParticipants.value.filter(
+    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name')
+  )
+)
+onBeforeUnmount(() => {
+  if (zoomClient.value) {
+    stopMeeting(zoomSocket())
+    zoomClient.value.leaveMeeting().then(() => {
+      zoomStore.clear()
+    })
+    useNotifyStore().dismissByMessages([
+      'remindNeedCoHost',
+      'errorNotCoHost',
+      'errorNoSocket',
+    ])
+  }
+})
+const initZoomIntegration = async () => {
+  const { enable, name, id, password } = getPrefs<ZoomPrefs>('app.zoom')
+  if (!enable || !name || !id || !password) return
+
+  listenToZoomSocket()
+  const { default: zoomSDK } = await import('@zoomus/websdk/embedded')
+  const client = zoomSDK.createClient()
+  zoomStore.setClient(client)
+  try {
+    await client
+      .init({
+        zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
+        language: $i18n.localeProperties.iso,
+      })
+      .catch(() => {
+        log.debug('Caught init promise error')
+      })
+  } catch (e: unknown) {
+    log.debug('Caught init error')
+  }
+
+  if (getPrefs<boolean>('app.zoom.autoStartMeeting')) {
+    executeBeforeMeeting(
+      'startZoom',
+      getPrefs<number>('app.zoom.autoStartTime'),
+      () => {
+        if (!zoomStarted.value) startMeeting(zoomSocket())
+      }
+    )
+  }
+}
+const listenToZoomSocket = () => {
+  const originalSend = WebSocket.prototype.send
+  window.sockets = []
+  WebSocket.prototype.send = function (...args) {
+    log.debug('send:', args)
+    if (
+      this.url.includes('zoom') &&
+      this.url.includes('dn2') &&
+      !window.sockets.includes(this)
+    ) {
+      window.sockets.push(this)
+      log.info('sockets', window.sockets)
+    }
+    return originalSend.call(this, ...args)
+  }
+}
+</script>
+<style lang="scss" scoped>
+.present-page {
+  #zoomMeeting {
+    width: 0;
+    height: 0;
+    z-index: 999;
+  }
+}
+</style>

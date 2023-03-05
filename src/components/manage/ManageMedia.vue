@@ -106,14 +106,14 @@ import { ipcRenderer } from 'electron'
 // eslint-disable-next-line import/named
 import { readFileSync, statSync } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
-import { LocalFile, VideoFile } from '~~/types'
+import { LocalFile, MeetingFile, VideoFile } from '~~/types'
 
 const emit = defineEmits(['refresh', 'cancel'])
 const props = defineProps<{
   loading?: boolean
   dialog?: boolean
   uploadMedia?: Boolean
-  media: (VideoFile | LocalFile)[]
+  media: (MeetingFile | LocalFile)[]
 }>()
 
 // File prefix

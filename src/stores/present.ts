@@ -1,13 +1,9 @@
+import { Shortcut } from '~~/types'
+
 interface Screen {
   id: number
   class: string
-  text: string
-}
-
-interface Shortcut {
-  name: string
-  domain: string
-  fn: string
+  title: string
 }
 
 interface PresentStore {

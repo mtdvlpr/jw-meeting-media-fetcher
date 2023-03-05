@@ -246,9 +246,13 @@ export async function getScenes(current = false): Promise<string | string[]> {
       .entries()) {
       const MAX_SHORTCUT = 9
       if (i < MAX_SHORTCUT) {
-        await setShortcut(`ALT+${i + 1}`, 'setObsScene', 'obs')
+        await setShortcut({
+          key: `ALT+${i + 1}`,
+          fn: 'setObsScene',
+          scope: 'obs',
+        })
       } else if (i === MAX_SHORTCUT) {
-        await setShortcut('ALT+0', 'setObsScene', 'obs')
+        await setShortcut({ key: 'ALT+0', fn: 'setObsScene', scope: 'obs' })
       }
     }
 

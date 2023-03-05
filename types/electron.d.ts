@@ -1,3 +1,4 @@
+import { ShortcutAction } from './electron.d'
 import { Display, Point } from 'electron'
 
 export interface Screen extends Display {
@@ -14,4 +15,19 @@ export interface ScreenInfo {
 export interface MediaWinOptions {
   destination: number | null
   type: 'window' | 'fullscreen'
+}
+
+export type ShortcutAction =
+  | 'toggleMediaWindow'
+  | 'openPresentMode'
+  | 'toggleMusicShuffle'
+  | 'setObsScene'
+  | 'previousMediaItem'
+  | 'nextMediaItem'
+export type ShortcutScope = 'music' | 'present' | 'obs' | 'mediaWin'
+
+export interface Shortcut {
+  key: string
+  fn: ShortcutAction
+  scope?: ShortcutScope
 }

@@ -14,7 +14,6 @@ import {
   getWebsiteController,
   getWebsiteControllerWinHandler,
 } from './websiteController'
-import { PrefStore } from 'types'
 
 let mediaWin: BrowserWindow | null
 let mediaWinHandler: BrowserWinHandler | null
@@ -91,14 +90,14 @@ export function initMediaWinListeners() {
     }
   )
 
-  ipcMain.removeAllListeners('videoScrub')
-  ipcMain.on('videoScrub', (_e, timeAsPercent: number) => {
-    mediaWin?.webContents.send('videoScrub', timeAsPercent)
+  ipcMain.removeAllListeners('scrubVideo')
+  ipcMain.on('scrubVideo', (_e, timeAsPercent: number) => {
+    mediaWin?.webContents.send('scrubVideo', timeAsPercent)
   })
 
   ipcMain.removeAllListeners('startMediaDisplay')
-  ipcMain.on('startMediaDisplay', (_e, prefs: PrefStore) => {
-    mediaWin?.webContents.send('startMediaDisplay', prefs)
+  ipcMain.on('startMediaDisplay', () => {
+    mediaWin?.webContents.send('startMediaDisplay')
   })
 
   ipcMain.removeAllListeners('zoom')
