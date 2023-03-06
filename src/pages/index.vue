@@ -84,7 +84,7 @@ const { $dayjs, $localePath } = useNuxtApp()
 const { isDev } = useRuntimeConfig().public
 const { online } = useOnline()
 
-const congParam = useRouteQuery<string>('cong', '-1')
+const congParam = useRouteQuery<string>('cong', '')
 watch(congParam, (val) => {
   if (val) window.location.reload()
 })

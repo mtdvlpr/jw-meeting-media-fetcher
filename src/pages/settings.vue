@@ -3,6 +3,7 @@
     <v-col cols="12" style="margin-bottom: 86px">
       <v-tabs
         v-model="tab"
+        color="primary"
         bg-color="black"
         grow
         style="position: sticky; top: 0; z-index: 2"
