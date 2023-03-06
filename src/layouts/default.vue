@@ -29,7 +29,6 @@ const mediaStore = useMediaStore()
 const { $sentry, $dayjs, $i18n, $switchLocalePath, $localePath } = useNuxtApp()
 
 // Active Congregation
-const router = useRouter()
 const cong = useRouteQuery<string>('cong', '')
 watch(
   cong,
@@ -65,6 +64,7 @@ const initPrefs = async (name: string, isNew = false) => {
   }
 
   let path = useRoute().path
+  log.debug(path)
 
   // If current cong does not equal new cong, set new cong
   if ('prefs-' + cong.value !== name) {
@@ -76,12 +76,16 @@ const initPrefs = async (name: string, isNew = false) => {
       path = $localePath('/settings', lang)
     }
     log.debug('Set correct lang and/or open settings for new cong', name)
-    await router.push({
-      path,
-      query: {
-        cong: name.replace('prefs-', ''),
-      },
-    })
+    try {
+      useRouter().replace({
+        path,
+        query: {
+          cong: name.replace('prefs-', ''),
+        },
+      })
+    } catch (e: unknown) {
+      log.error(e)
+    }
   }
   // If congs lang is different from current lang, set new lang
   else if (lang && lang !== $i18n.locale.value) {
@@ -92,7 +96,7 @@ const initPrefs = async (name: string, isNew = false) => {
       path = $localePath('/settings', lang)
     }
 
-    await router.replace(path)
+    useRouter().replace(path)
   }
 
   const locales = $i18n.locales.value as LocaleObject[]
@@ -228,7 +232,7 @@ const initPrefs = async (name: string, isNew = false) => {
     if (server && user && password && dir) {
       const error = await connect(server, user, password, dir)
       if (error === 'success') {
-        await forcePrefs()
+        forcePrefs()
       } else {
         warn('errorWebdavLs', { identifier: dir })
       }
@@ -239,11 +243,11 @@ const initPrefs = async (name: string, isNew = false) => {
   useObsStore().clear()
   const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')
   if (enable && port && password) {
-    await getScenes()
+    getScenes()
   }
 
   // Regular Cleanup
-  await cleanup()
+  cleanup()
 }
 
 // Congregation Select
@@ -334,7 +338,7 @@ useIpcRendererOn('openPresentMode', () => {
     useRoute().path !== $localePath('/present')
   ) {
     log.debug('Trigger present mode via shortcut')
-    router.push({
+    useRouter().push({
       path: $localePath('/present'),
       query: useRoute().query,
     })

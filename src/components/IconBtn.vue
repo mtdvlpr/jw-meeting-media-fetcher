@@ -3,7 +3,6 @@
   <v-btn
     :id="variant"
     ref="btn"
-    v-model="$attrs.value"
     v-click-outside="(clickedOnce = false)"
     :aria-label="variant"
     :title="title"

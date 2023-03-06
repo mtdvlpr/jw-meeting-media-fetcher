@@ -108,6 +108,7 @@ watch(valid, (val) => emit('valid', val))
 const loading = ref(false)
 const { online } = useOnline()
 
+const { client, prefs: cong } = usePrefs<CongPrefs>('cong', emit)
 const complete = computed(() => {
   return !!(
     cong.value.server &&
@@ -122,8 +123,6 @@ watch(complete, (val) => {
     store.clear()
   }
 })
-
-const { client, prefs: cong } = usePrefs<CongPrefs>('cong', emit)
 
 onMounted(async () => {
   if (congForm.value) congForm.value.validate()

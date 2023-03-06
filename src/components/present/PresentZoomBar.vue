@@ -68,7 +68,7 @@
         <v-btn
           icon
           aria-label="Mute Zoom participants"
-          @click="$muteParticipants()"
+          @click="muteParticipants(zoomSocket())"
         >
           <v-tooltip activator="parent" location="bottom">
             {{ $t('zoomMuteParticipants') }}

@@ -1,8 +1,5 @@
 <template>
-  <v-footer
-    style="position: fixed; bottom: 0; width: 100%"
-    class="justify-space-between"
-  >
+  <v-footer class="settings-footer justify-space-between">
     <v-col cols="12" align-self="end" class="d-flex">
       <v-col class="d-flex pa-0 align-center" align-self="center">
         <v-btn
@@ -116,6 +113,15 @@ const goBack = () => {
   useRouter().back()
 }
 
+onMounted(async () => {
+  calcCache()
+  let congs = await getCongPrefs()
+  congs = congs.filter(
+    (c) => c.path !== join(appPath(), `prefs-${cong.value}.json`)
+  )
+  cancel.value = congs.length > 0
+})
+
 // Cache
 watch(
   () => props.refresh,
@@ -208,3 +214,11 @@ const removeCache = async () => {
   }
 }
 </script>
+<style lang="scss" scoped>
+.settings-footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  z-index: 1;
+}
+</style>

@@ -48,7 +48,7 @@ const value = useVModel(props, 'modelValue', emit)
       v-model="$attrs.value"
       full-width
       :locale="locale"
-      :first-day-of-week="$getFirstDayOfWeek($dayjs.locale())"
+      :first-day-of-week="getFirstDayOfWeek($dayjs.locale())"
       :allowed-dates="allowedDates"
       :min="min ? min : undefined"
       @change="

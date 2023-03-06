@@ -194,7 +194,7 @@ const listenToZoomSocket = () => {
   #zoomMeeting {
     width: 0;
     height: 0;
-    z-index: 999;
+    z-index: 1;
   }
 }
 </style>

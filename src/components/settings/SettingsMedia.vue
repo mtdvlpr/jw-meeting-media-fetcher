@@ -10,7 +10,7 @@
       item-title="name"
       item-value="langcode"
       :loading="loading"
-      :locked="$isLocked('media.lang')"
+      :locked="isLocked('media.lang')"
       auto-select-first
       required
     />
@@ -23,7 +23,7 @@
       item-title="name"
       item-value="langcode"
       :loading="loading"
-      :locked="$isLocked('media.langFallback')"
+      :locked="isLocked('media.langFallback')"
       auto-select-first
       clearable
     />
@@ -32,7 +32,7 @@
       v-model="media.maxRes"
       field="btn-group"
       :group-label="$t('maxRes')"
-      :locked="$isLocked('media.maxRes')"
+      :locked="isLocked('media.maxRes')"
       :group-items="resolutions"
       mandatory
       required
@@ -42,7 +42,7 @@
       id="media.enableSubtitles"
       v-model="media.enableSubtitles"
       field="switch"
-      :locked="$isLocked('media.enableSubtitles')"
+      :locked="isLocked('media.enableSubtitles')"
       :label="$t('enableSubtitles')"
     />
     <form-input
@@ -55,7 +55,7 @@
       item-title="name"
       item-value="langcode"
       :loading="loading"
-      :locked="$isLocked('media.langSubs')"
+      :locked="isLocked('media.langSubs')"
       auto-select-first
       required
     />
@@ -65,7 +65,7 @@
       v-model="media.enableMp4Conversion"
       field="switch"
       explanation="convertDownloadedExplain"
-      :locked="$isLocked('media.enableMp4Conversion')"
+      :locked="isLocked('media.enableMp4Conversion')"
       :label="$t('convertDownloaded')"
     />
     <form-input
@@ -73,7 +73,7 @@
       id="media.keepOriginalsAfterConversion"
       v-model="media.keepOriginalsAfterConversion"
       field="switch"
-      :locked="$isLocked('media.keepOriginalsAfterConversion')"
+      :locked="isLocked('media.keepOriginalsAfterConversion')"
       :label="$t('keepOriginalsAfterConversion')"
     />
     <v-divider class="mb-6" />
@@ -81,7 +81,7 @@
       id="media.enableMediaDisplayButton"
       v-model="media.enableMediaDisplayButton"
       field="switch"
-      :locked="$isLocked('media.enableMediaDisplayButton')"
+      :locked="isLocked('media.enableMediaDisplayButton')"
       :label="$t('enableMediaDisplayButton')"
     />
     <template v-if="media.enableMediaDisplayButton">
@@ -92,7 +92,7 @@
         field="select"
         item-value="id"
         :items="[{ id: 'window', title: $t('window') }, ...screens]"
-        :locked="$isLocked('media.preferredOutput')"
+        :locked="isLocked('media.preferredOutput')"
         :label="$t('preferredOutput')"
       />
       <v-row v-if="bg" class="mb-4">
@@ -143,7 +143,7 @@
       <form-input
         id="media.mediaWinShortcut"
         v-model="media.mediaWinShortcut"
-        :locked="$isLocked('media.mediaWinShortcut')"
+        :locked="isLocked('media.mediaWinShortcut')"
         placeholder="e.g. Alt+Z"
         :label="$t('mediaWinShortcut')"
         required
@@ -152,7 +152,7 @@
       <form-input
         id="media.presentShortcut"
         v-model="media.presentShortcut"
-        :locked="$isLocked('media.presentShortcut')"
+        :locked="isLocked('media.presentShortcut')"
         placeholder="e.g. Alt+D"
         :label="$t('presentShortcut')"
         required
@@ -162,7 +162,7 @@
         id="media.hideMediaLogo"
         v-model="media.hideMediaLogo"
         field="switch"
-        :locked="$isLocked('media.hideMediaLogo')"
+        :locked="isLocked('media.hideMediaLogo')"
         :label="$t('hideMediaLogo')"
       />
       <form-input
@@ -170,14 +170,14 @@
         v-model="media.hideWinAfterMedia"
         field="switch"
         explanation="hideWinAfterMediaExplain"
-        :locked="$isLocked('media.hideWinAfterMedia')"
+        :locked="isLocked('media.hideWinAfterMedia')"
         :label="$t('hideWinAfterMedia')"
       />
       <form-input
         id="media.autoPlayFirst"
         v-model="media.autoPlayFirst"
         field="switch"
-        :locked="$isLocked('media.autoPlayFirst')"
+        :locked="isLocked('media.autoPlayFirst')"
       >
         <template #label>
           <span v-html="$t('autoPlayFirst')" />
@@ -192,21 +192,21 @@
         :max="15"
         custom-input
         :group-label="playMinutesBeforeMeeting"
-        :locked="$isLocked('media.autoPlayFirstTime')"
+        :locked="isLocked('media.autoPlayFirstTime')"
         hide-details="auto"
       />
       <form-input
         id="media.enablePp"
         v-model="media.enablePp"
         field="switch"
-        :locked="$isLocked('media.enablePp')"
+        :locked="isLocked('media.enablePp')"
         :label="$t('enablePp')"
       />
       <template v-if="media.enablePp">
         <form-input
           id="media.ppForward"
           v-model="media.ppForward"
-          :locked="$isLocked('media.ppForward')"
+          :locked="isLocked('media.ppForward')"
           placeholder="e.g. PageDown / Alt+F / Alt+N"
           :label="$t('ppForward')"
           required
@@ -216,7 +216,7 @@
           id="media.ppBackward"
           v-model="media.ppBackward"
           placeholder="e.g. PageUp / Alt+B / Alt+P"
-          :locked="$isLocked('media.ppBackward')"
+          :locked="isLocked('media.ppBackward')"
           :label="$t('ppBackward')"
           required
           :rules="getShortcutRules('previousMediaItem')"
@@ -231,7 +231,7 @@
         :key="option"
         v-model="media[option]"
         field="switch"
-        :locked="$isLocked(`media.${option}`)"
+        :locked="isLocked(`media.${option}`)"
       >
         <template #label>
           <span v-html="$t(option)" />
@@ -285,9 +285,7 @@ const jwLangs = ref<ShortJWLang[]>([])
 const mediaForm = ref<VFormRef | null>()
 const valid = ref(true)
 watch(valid, (val) => emit('valid', val))
-onMounted(async () => {
-  const promises = [loadFont('yeartext'), loadFont('icon')]
-
+const getLangs = async () => {
   jwLangs.value = await getJWLangs()
   if (
     media.value.lang &&
@@ -297,10 +295,14 @@ onMounted(async () => {
   }
 
   loading.value = false
+}
+onMounted(() => {
+  loadFont('yeartext')
+  loadFont('icon')
+  getLangs()
+
   if (mediaForm.value) mediaForm.value.validate()
   if (valid.value) emit('valid', true)
-
-  await Promise.allSettled(promises)
 })
 
 // Presentation Mode

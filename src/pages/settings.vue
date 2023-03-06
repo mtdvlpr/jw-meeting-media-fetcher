@@ -1,11 +1,16 @@
 <template>
   <v-row justify="center" class="fill-height mb-0">
     <v-col cols="12" class="text-center" style="margin-bottom: 72px">
-      <v-tabs v-model="tab" grow style="position: sticky; top: 0; z-index: 99">
+      <v-tabs
+        v-model="tab"
+        bg-color="black"
+        grow
+        style="position: sticky; top: 0; z-index: 1"
+      >
         <v-tab>{{ $t('all') }}</v-tab>
         <v-tab
           v-for="h in headers"
-          :key="h.component"
+          :key="h.key"
           :class="{ 'error--text': !mounting && !h.valid }"
         >
           {{ getInitials(h.name) }}
@@ -13,29 +18,50 @@
       </v-tabs>
       <!--<v-skeleton-loader v-if="mounting" type="list-item@4" />-->
       <v-expansion-panels
-        v-show="!mounting"
         v-model="panel"
         multiple
         accordion
         :readonly="tab !== 0"
       >
-        <v-expansion-panel
-          v-for="(header, i) in headers"
-          v-show="tab === 0 || tab === i + 1"
-          :key="header.component"
-          :title="header.name"
-        >
-          <template #text>
-            <component
-              :is="header.component"
+        <v-expansion-panel :title="$t('optionsApp')" value="app">
+          <v-expansion-panel-text>
+            App
+            <!--<settings-app
               :prefs="prefs"
+              @valid="setValid('app', $event)"
+              @refresh="refreshPrefs('app', $event)"
+            />-->
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel :title="$t('optionsCongSync')" value="cong">
+          <v-expansion-panel-text>
+            <settings-cong
+              :prefs="prefs"
+              @valid="setValid('cong', $event)"
+              @refresh="refreshPrefs('cong', $event)"
+            />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel :title="$t('optionsMedia')" value="media">
+          <v-expansion-panel-text>
+            Media
+            <!--<settings-media
+              :prefs="prefs"
+              @valid="setValid('media', $event)"
+              @refresh="refreshPrefs('media', $event)"
+            />-->
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+        <v-expansion-panel :title="$t('optionsMeetings')" value="meeting">
+          <v-expansion-panel-text>
+            <settings-meeting
               :cache="cache"
-              class="pt-4"
-              @valid="setValid(header.component, $event)"
-              @refresh="refreshPrefs(header.key, $event)"
+              :prefs="prefs"
+              @valid="setValid('meeting', $event)"
+              @refresh="refreshPrefs('meeting', $event)"
               @cache="calcCache()"
             />
-          </template>
+          </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
     </v-col>
@@ -61,55 +87,36 @@ const calcCache = () => (refresh.value = !refresh.value)
 
 // Headers
 const { $i18n } = useNuxtApp()
-const panel = ref([0, 1, 2, 3])
-const headers = ref<
-  { key: keyof PrefStore; name: string; component: string; valid: boolean }[]
->([
+const panel = ref(['app', 'cong', 'media', 'meeting'])
+const headers = ref<{ key: keyof PrefStore; name: string; valid: boolean }[]>([
   {
     key: 'app',
     name: $i18n.t('optionsApp'),
-    component: 'settings-app',
     valid: false,
   },
   {
     key: 'cong',
     name: $i18n.t('optionsCongSync'),
-    component: 'settings-cong',
     valid: false,
   },
   {
     key: 'media',
     name: $i18n.t('optionsMedia'),
-    component: 'settings-media',
     valid: false,
   },
   {
     key: 'meeting',
     name: $i18n.t('optionsMeetings'),
-    component: 'settings-meetings',
     valid: false,
   },
 ])
 
 const mounting = ref(true)
-const mounted = ref(false)
-watch(
-  headers,
-  (val) => {
-    val.forEach((h, i) => {
-      const match = panel.value.indexOf(i)
-      if (!h.valid && match === -1) {
-        panel.value.push(i)
-      } else if (!mounted.value && h.valid && match > -1) {
-        if (tab.value === 0) {
-          panel.value.splice(match, 1)
-        }
-      }
-    })
-    mounted.value ||= valid.value
-  },
-  { deep: true }
-)
+onMounted(() => {
+  setTimeout(() => {
+    mounting.value = false
+  }, 0.5 * MS_IN_SEC)
+})
 
 // Prefs
 const prefs = ref({ ...PREFS })
@@ -132,18 +139,18 @@ watch(valid, (val) => {
   }
 })
 
-const setValid = (component: string, valid: boolean) => {
-  const header = headers.value.find((h) => h.component === component)
-  if (header) header.valid = valid
+const setValid = (key: string, valid: boolean) => {
+  const match = headers.value.find((h) => h.key === key)
+  if (match) match.valid = valid
 }
 
 // Header tabs
 const tab = ref(0)
 watch(tab, (val) => {
-  if (val === 0) panel.value = []
-  else if (val > 0) {
-    if (!panel.value.includes(val - 1)) {
-      panel.value.push(val - 1)
+  panel.value = []
+  if (val > 0) {
+    if (!panel.value.includes(headers.value[val - 1].key)) {
+      panel.value.push(headers.value[val - 1].key)
     }
   }
 })
