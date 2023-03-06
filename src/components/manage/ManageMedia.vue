@@ -286,7 +286,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
     perf.bps = perf.bits / perf.s
     perf.MBps = perf.bps / BYTES_IN_MB
     perf.dir = 'up'
-    log.debug(perf)
+    log.debug('perf', perf)
   }
   increaseProgress()
 }

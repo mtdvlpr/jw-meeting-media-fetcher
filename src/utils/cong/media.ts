@@ -266,7 +266,7 @@ async function syncCongMediaItem(
           perf.bps = perf.bits / perf.s
           perf.MBps = perf.bps / BYTES_IN_MB
           perf.dir = 'down'
-          log.debug(perf)
+          log.debug('perf', perf)
 
           write(
             join(mediaPath(), item.folder, item.safeName),

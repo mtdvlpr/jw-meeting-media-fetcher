@@ -60,7 +60,7 @@ async function connectOBS<
         })
 
         obs.on('Exiting', () => {
-          log.info('Existing OBS...')
+          log.info('Exiting OBS...')
         })
 
         obs.on('error', async (e) => {
