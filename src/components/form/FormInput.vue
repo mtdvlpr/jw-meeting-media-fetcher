@@ -6,6 +6,7 @@
     v-model="value"
     :type="field === 'password' && passwordVisible ? 'text' : field"
     :disabled="!!$attrs.disabled || locked"
+    :class="{ 'mb-2': required }"
     v-bind="$attrs"
     color="primary"
     variant="outlined"
@@ -16,7 +17,7 @@
     <template v-if="field === 'password'" #append-inner>
       <v-icon
         :icon="passIcon"
-        size="lg"
+        size="small"
         @click="passwordVisible = !passwordVisible"
       />
     </template>
@@ -31,7 +32,7 @@
           <v-icon
             v-bind="attrs"
             icon="fa-circle-question"
-            size="lg"
+            size="small"
             style="margin-top: 2px"
           />
         </template>
@@ -44,7 +45,7 @@
           <v-icon
             v-bind="attrs"
             icon="fa-circle-question"
-            size="lg"
+            size="small"
             style="margin-top: 2px"
           />
         </template>
@@ -62,6 +63,7 @@
     v-model="value"
     color="primary"
     :disabled="!!$attrs.disabled || locked"
+    :class="{ 'mb-2': required }"
     v-bind="$attrs"
     :rules="rules"
     density="compact"
@@ -82,7 +84,7 @@
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
-            size="lg"
+            size="small"
             icon="fa-circle-question"
             style="margin-top: 2px"
           />
@@ -100,7 +102,7 @@
     color="primary"
     density="compact"
     :readonly="!!$attrs.disabled || locked"
-    :class="{ 'v-input--is-disabled': locked }"
+    :class="{ 'v-input--is-disabled': locked, 'mb-2': required }"
     v-bind="$attrs"
     :rules="rules"
   >
@@ -118,7 +120,7 @@
           <v-icon
             v-bind="attrs"
             icon="fa-circle-question"
-            size="lg"
+            size="small"
             style="margin-top: 2px"
           />
         </template>
@@ -131,6 +133,7 @@
     :id="safeId"
     ref="field"
     v-model="value"
+    :class="{ 'mb-2': required }"
     :disabled="!!$attrs.disabled || locked"
     v-bind="$attrs"
     variant="outlined"
@@ -151,7 +154,7 @@
     <template v-else-if="explanation" #append-inner>
       <v-tooltip location="top">
         <template #activator="{ props: attrs }">
-          <v-icon v-bind="attrs" size="lg" icon="fa-circle-question" />
+          <v-icon v-bind="attrs" size="small" icon="fa-circle-question" />
         </template>
         <span>{{ $t(explanation) }}</span>
       </v-tooltip>
@@ -182,7 +185,7 @@
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
-            size="lg"
+            size="small"
             icon="fa-circle-question"
             style="margin-top: 3px"
           />
@@ -218,7 +221,7 @@
             v-bind="attrs"
             icon="fa-circle-question"
             style="margin-top: 3px"
-            size="lg"
+            size="small"
           />
         </template>
         <span>{{ $t(explanation) }}</span>
@@ -240,6 +243,7 @@
         :id="safeId"
         ref="field"
         v-model="value"
+        density="comfortable"
         variant="outlined"
         :color="required && value === null ? 'error' : 'primary'"
         v-bind="$attrs"
@@ -251,11 +255,10 @@
           :key="key"
           :value="item.value"
           :disabled="!!$attrs.disabled || locked"
-          :style="`height: ${height}`"
         >
           {{ item.title }}
         </v-btn>
-        <v-btn v-if="locked" icon disabled :style="`height: ${height}`">
+        <v-btn v-if="locked" icon disabled>
           <v-icon icon="fa-lock" />
         </v-btn>
       </v-btn-toggle>
@@ -281,6 +284,7 @@
         :disabled="!!$attrs.disabled || locked"
         v-bind="$attrs"
         variant="outlined"
+        color="primary"
         density="compact"
         :max="max ? max : '100'"
         class="align-center"
@@ -300,7 +304,7 @@
             <template #activator="{ props: attrs }">
               <v-icon
                 v-bind="attrs"
-                size="lg"
+                size="small"
                 icon="fa-circle-question"
                 style="margin-top: 2px"
               />
@@ -355,7 +359,6 @@ const props = withDefaults(
     groupLabel?: string
     customInput?: boolean
     groupItems?: { title: string; value: any }[]
-    height?: string
     required?: boolean
     labelSuffix?: string
     locked?: boolean
@@ -370,7 +373,6 @@ const props = withDefaults(
     labelSuffix: '',
     explanation: '',
     field: 'text',
-    height: '48px',
   }
 )
 
@@ -384,7 +386,7 @@ const hasSlot = (name = 'default') => !!useSlots()[name]
 const rules = computed(() => {
   const rules = (useAttrs().rules as any[]) ?? []
   if (props.required) {
-    rules.push((v: unknown) => {
+    rules.unshift((v: unknown) => {
       if (typeof v === 'string') {
         return !!v.trim() || $i18n.t('fieldRequired')
       }

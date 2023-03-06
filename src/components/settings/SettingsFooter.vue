@@ -30,7 +30,7 @@
           <v-tooltip activator="parent" location="top">
             {{ $t('cleanCache') }}
           </v-tooltip>
-          <v-icon icon="fa-trash" pull="left" />
+          <v-icon icon="fa-trash" start />
           {{ `${cache}MB` }}
         </v-btn>
         <v-btn
@@ -48,7 +48,7 @@
           >
             {{ $t('clickAgain') }}
           </v-tooltip>
-          <v-icon icon="fa-trash" pull="left" />
+          <v-icon icon="fa-trash" start />
           {{ `${cache}MB` }}
         </v-btn>
       </v-col>
@@ -218,6 +218,7 @@ const removeCache = async () => {
 .settings-footer {
   position: fixed;
   bottom: 0;
+  left: 0;
   width: 100%;
   z-index: 1;
 }

@@ -6,7 +6,7 @@
           <v-btn icon @click="emit('zoomPart')">
             <v-icon
               :icon="zoomPart ? 'fa-podcast' : 'fa-house-user'"
-              size="xl"
+              size="medium"
               v-bind="tProps"
               :class="{ 'success--text': zoomPart }"
             />
@@ -19,7 +19,7 @@
       <v-tooltip location="top">
         <template #activator="{ props: tProps }">
           <v-btn icon :loading="obsLoading" @click="initOBS()">
-            <v-icon icon="fa-rotate-right" size="xl" v-bind="tProps" />
+            <v-icon icon="fa-rotate-right" size="medium" v-bind="tProps" />
           </v-btn>
         </template>
         <span>{{ $t('obsRefresh') }}</span>
@@ -67,7 +67,7 @@
         aria-label="Go to home"
         :disabled="mediaActive"
       >
-        <v-icon icon="fa-home" class="text-black" size="xl" />
+        <v-icon icon="fa-home" class="text-black" size="medium" />
       </v-btn>
     </v-col>
   </v-footer>

@@ -2,7 +2,7 @@
   <v-row align="center" class="mb-4" style="width: 100%">
     <v-col cols="1" class="text-center">
       <v-icon
-        size="2x"
+        size="x-large"
         :icon="meetingDay || client ? 'fa-cloud' : 'fa-folder-open'"
         :class="{
           'secondary--text': !isDark,

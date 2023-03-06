@@ -46,7 +46,7 @@
         <loading-icon v-if="loading || saving" />
         <template v-else>
           <v-overlay :model-value="isOverDropZone">
-            <v-icon icon="fa-download" size="3x" bounce />
+            <v-icon icon="fa-download" size="x-large" bounce />
           </v-overlay>
           <manage-media-list
             :date="date"
@@ -84,7 +84,7 @@
             :loading="loading || saving"
             @click="saveFiles()"
           >
-            <v-icon icon="fa-save" size="lg" />
+            <v-icon icon="fa-save" size="small" />
           </v-btn>
           <v-btn
             v-else-if="dialog"
@@ -92,7 +92,7 @@
             min-width="32px"
             @click="cancel()"
           >
-            <v-icon icon="fa-xmark" size="lg" class="text-white" />
+            <v-icon icon="fa-xmark" size="small" class="text-white" />
           </v-btn>
           <icon-btn v-else variant="home" :disabled="loading || saving" />
         </v-col>

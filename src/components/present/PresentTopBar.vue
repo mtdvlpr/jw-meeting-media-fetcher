@@ -2,7 +2,7 @@
   <v-app-bar style="height: 64px; width: 100%">
     <v-col class="text-left" cols="4">
       <v-btn icon aria-label="More actions">
-        <v-icon icon="fa-ellipsis-vertical" size="lg" />
+        <v-icon icon="fa-ellipsis-vertical" size="small" />
         <v-menu location="bottom" activator="parent">
           <v-list>
             <v-list-item
@@ -26,8 +26,8 @@
       </v-btn>
 
       <v-btn icon aria-label="Add song" @click="emit('song')">
-        <v-icon icon="fa-music" pull="left" size="lg" />
-        <v-icon icon="fa-plus" pull="right" size="lg" />
+        <v-icon icon="fa-music" start size="small" />
+        <v-icon icon="fa-plus" end size="small" />
         <v-tooltip activator="parent" location="bottom">
           {{ $t('lastMinuteSong') }}
         </v-tooltip>
@@ -39,7 +39,7 @@
         :color="ccEnable ? 'primary' : undefined"
         @click="emit('cc')"
       >
-        <v-icon :icon="`${ccIcon} faClosedCaptioning`" size="lg" />
+        <v-icon :icon="`${ccIcon} faClosedCaptioning`" size="small" />
         <v-tooltip activator="parent" location="bottom">
           {{ $t('toggleSubtitles') }}
         </v-tooltip>
@@ -66,7 +66,7 @@
           :disabled="!mediaActive && currentIndex < 1"
           @click="emit('previous')"
         >
-          <v-icon icon="fa-backward" size="lg" />
+          <v-icon icon="fa-backward" size="small" />
           <v-tooltip activator="parent" location="bottom">
             {{ getPrefs('media.ppBackward') }}
           </v-tooltip>
@@ -82,7 +82,7 @@
           <v-tooltip activator="parent" location="bottom">
             {{ getPrefs('media.ppForward') }}
           </v-tooltip>
-          <v-icon icon="fa-forward" size="lg" />
+          <v-icon icon="fa-forward" size="small" />
         </v-btn>
       </template>
       <v-btn
@@ -95,7 +95,7 @@
         <v-tooltip activator="parent" location="bottom">
           {{ $t('sortSave') }}
         </v-tooltip>
-        <v-icon icon="fa-arrow-down-up-lock" size="lg" />
+        <v-icon icon="fa-arrow-down-up-lock" size="small" />
       </v-btn>
       <v-btn
         v-else
@@ -108,7 +108,7 @@
         <v-tooltip activator="parent" location="bottom">
           {{ $t('sortMedia') }}
         </v-tooltip>
-        <v-icon icon="fa-arrow-down-up-across-line" size="lg" />
+        <v-icon icon="fa-arrow-down-up-across-line" size="small" />
       </v-btn>
     </v-col>
   </v-app-bar>

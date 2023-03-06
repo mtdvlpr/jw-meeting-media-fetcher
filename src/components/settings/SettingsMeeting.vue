@@ -68,8 +68,8 @@
             )
           }}
         </v-tooltip>
-        <v-icon icon="fa-music" size="lg" pull="left" />
-        <v-icon icon="fa-download" size="lg" pull="right" />
+        <v-icon icon="fa-music" size="small" start />
+        <v-icon icon="fa-download" size="small" end />
       </v-btn>
     </v-col>
     <template v-if="meeting.enableMusicButton">
@@ -118,6 +118,7 @@
             :min="5"
             :max="60"
             :step="5"
+            color="primary"
             :locked="isLocked('meeting.musicFadeOutTime')"
             hide-details="auto"
           />
@@ -127,6 +128,7 @@
             id="meeting.musicFadeOutType"
             v-model="meeting.musicFadeOutType"
             color="primary"
+            variant="outlined"
             mandatory
             :locked="isLocked('meeting.musicFadeOutType')"
           >

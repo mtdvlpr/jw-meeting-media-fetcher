@@ -8,7 +8,9 @@
 <script setup lang="ts">
 useHead({
   htmlAttrs: {
-    lang: useNuxtApp().$i18n.localeProperties.iso ?? useNuxtApp().$i18n.locale,
+    lang:
+      useNuxtApp().$i18n.localeProperties.value.iso ??
+      useNuxtApp().$i18n.locale.value,
   },
   title: appShortName,
   titleTemplate: (titleChunk) => {

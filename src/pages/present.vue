@@ -153,7 +153,7 @@ const initZoomIntegration = async () => {
     await client
       .init({
         zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
-        language: $i18n.localeProperties.iso,
+        language: $i18n.localeProperties.value.iso,
       })
       .catch(() => {
         log.debug('Caught init promise error')

@@ -33,7 +33,7 @@
       v-model="app.localAppLang"
       field="autocomplete"
       :label="$t('localAppLang')"
-      :items="$i18n.locales"
+      :items="locales"
       item-title="name"
       item-value="code"
       required
@@ -282,7 +282,7 @@
           hide-details="auto"
         />
         <v-btn class="ml-2" color="primary" @click="addAutoRename()">
-          <v-icon icon="fa-add" size="lg" />
+          <v-icon icon="fa-add" size="small" />
         </v-btn>
       </v-col>
       <v-col>
@@ -343,9 +343,17 @@ const { $dayjs, $i18n, $sentry, $switchLocalePath } = useNuxtApp()
 const valid = ref(true)
 watch(valid, (val) => emit('valid', val))
 const appForm = ref<VFormRef | null>()
+const locales = ref<{ name: string; code: string }[]>([])
 onMounted(async () => {
+  locales.value = $i18n.locales.value.map((l) => {
+    const locale = l as LocaleObject
+    return {
+      name: locale.name!,
+      code: locale.code,
+    }
+  })
   oldName.value = app.value.congregationName
-  app.value.localAppLang = $i18n.locale
+  app.value.localAppLang = $i18n.locale.value
   if (obsComplete.value) {
     await getScenes()
   }
@@ -390,7 +398,7 @@ watch(
   () => app.value.localAppLang,
   (val, oldVal) => {
     if (!val) return
-    const locales = $i18n.locales as LocaleObject[]
+    const locales = $i18n.locales.value as LocaleObject[]
     const locale = locales.find((l) => l.code === val)!
     const oldLocale = locales.find((l) => l.code === oldVal)
     $dayjs.locale(locale?.dayjs ?? val)
@@ -398,13 +406,12 @@ watch(
       useMediaStore().clear()
       renamePubs(oldLocale, locale)
     }
-    if (val !== $i18n.locale) {
+    if (val !== $i18n.locale.value) {
       log.debug('Change localAppLang')
       useRouter().replace($switchLocalePath(val))
     }
   }
 )
-
 const dateFormats = [
   'DD-MM-YYYY',
   'YYYY-MM-DD',
@@ -429,7 +436,7 @@ watch(
     useMediaStore().updateDateFormat({
       oldFormat: oldVal,
       newFormat: val,
-      locale: $i18n.localeProperties.dayjs ?? $i18n.locale,
+      locale: $i18n.localeProperties.value.dayjs ?? $i18n.locale.value,
     })
   }
 )

@@ -9,12 +9,12 @@
     @click="toggleScreen"
   >
     <font-awesome-layers class="fa-lg" fixed-width>
-      <v-icon
+      <font-awesome-icon
         :icon="icons[0]"
         :class="mediaVisible ? 'black--text' : 'white--text'"
         fixed-width
       />
-      <v-icon
+      <font-awesome-icon
         :icon="icons[mediaVisible ? 1 : 2]"
         :class="mediaVisible ? 'error--text' : 'white--text'"
         fixed-width

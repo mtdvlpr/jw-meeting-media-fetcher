@@ -17,7 +17,7 @@
         <v-icon
           icon="fa-square-minus"
           :class="`text-${clickedOnce ? 'error' : 'warning'}`"
-          size="xs"
+          size="x-small"
           @click.stop="atClick(item)"
         >
           <v-tooltip v-if="clickedOnce" activator="parent" location="left">
@@ -30,7 +30,7 @@
     <template #append-item>
       <v-list-item id="add-cong-option" @click="addCong()">
         <v-list-item-action>
-          <v-icon icon="fa-square-plus" class="text-success" size="xs" />
+          <v-icon icon="fa-square-plus" class="text-success" size="x-small" />
         </v-list-item-action>
       </v-list-item>
     </template>

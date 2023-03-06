@@ -48,8 +48,8 @@ export default defineNuxtConfig({
     vueI18n: {
       fallbackLocale: 'en',
     },
-    detectBrowserLanguage: false,
     locales: LOCALES,
+    detectBrowserLanguage: false,
   },
   hooks: {
     'vite:extendConfig': (config, { isClient }) => {

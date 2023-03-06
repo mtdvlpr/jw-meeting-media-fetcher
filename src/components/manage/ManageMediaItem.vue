@@ -15,12 +15,12 @@
       class="my-0"
     >
       <v-btn v-if="item.color === 'warning'" icon @click="atClick(item)">
-        <v-icon icon="fa-square-minus" class="text-warning" size="xs" />
+        <v-icon icon="fa-square-minus" class="text-warning" size="x-small" />
       </v-btn>
       <v-tooltip v-else location="right" :model-value="true">
         <template #activator="data">
           <v-btn icon @click="atClick(item)">
-            <v-icon icon="fa-square-minus" class="text-error" size="xs" />
+            <v-icon icon="fa-square-minus" class="text-error" size="x-small" />
           </v-btn>
         </template>
         <span>{{ $t('clickAgain') }}</span>
@@ -31,10 +31,10 @@
         <v-icon
           v-if="item.isLocal === undefined"
           icon="fa-square-plus"
-          size="xs"
+          size="x-small"
         />
-        <v-icon v-else-if="item.hidden" icon="fa-square" size="xs" />
-        <v-icon v-else icon="fa-square-check" size="xs" />
+        <v-icon v-else-if="item.hidden" icon="fa-square" size="x-small" />
+        <v-icon v-else icon="fa-square-check" size="x-small" />
       </v-btn>
     </v-list-item-action>
     <v-hover v-slot="{ isHovering }">

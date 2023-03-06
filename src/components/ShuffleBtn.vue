@@ -14,7 +14,7 @@
           <v-icon
             v-for="(icon, i) in icons"
             :key="i"
-            size="lg"
+            size="small"
             :start="i == 0"
             :end="i == 1"
             :icon="icon"
@@ -60,7 +60,7 @@
     <v-icon
       v-for="(icon, i) in icons"
       :key="i"
-      size="lg"
+      size="small"
       :start="i == 0"
       :end="i == 1"
       :icon="icon"

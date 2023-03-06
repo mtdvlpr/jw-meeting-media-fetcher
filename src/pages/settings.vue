@@ -1,11 +1,11 @@
 <template>
-  <v-row justify="center" class="fill-height mb-0">
-    <v-col cols="12" style="margin-bottom: 72px">
+  <v-row no-gutters justify="center" class="fill-height settings">
+    <v-col cols="12" style="margin-bottom: 86px">
       <v-tabs
         v-model="tab"
         bg-color="black"
         grow
-        style="position: sticky; top: 0; z-index: 1"
+        style="position: sticky; top: 0; z-index: 2"
       >
         <v-tab>{{ $t('all') }}</v-tab>
         <v-tab
@@ -147,6 +147,7 @@ const tab = ref(0)
 watch(tab, (val) => {
   panel.value = []
   if (val > 0) {
+    window.scrollTo(0, 0)
     if (!panel.value.includes(headers.value[val - 1].key)) {
       panel.value.push(headers.value[val - 1].key)
     }
@@ -159,3 +160,8 @@ const getInitials = (word: string) => {
     .join('')
 }
 </script>
+<style lang="scss" scoped>
+.settings {
+  width: 100%;
+}
+</style>

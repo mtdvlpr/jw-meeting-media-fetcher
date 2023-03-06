@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-main>
-      <v-container class="fill-height" fluid>
+      <v-container class="fill-height pa-0" fluid>
         <slot v-if="cong" />
         <cong-select v-else @selected="initPrefs($event)" />
       </v-container>

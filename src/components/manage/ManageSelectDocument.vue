@@ -36,7 +36,7 @@
             color="primary"
             @click="finish()"
           >
-            <v-icon icon="fa-save" size="lg" />
+            <v-icon icon="fa-save" size="small" />
           </v-btn>
         </v-col>
       </v-card-actions>

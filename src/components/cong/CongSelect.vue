@@ -3,7 +3,7 @@
   <v-container fluid class="align-start fill-height">
     <v-row justify="start" align="start">
       <v-col cols="12" class="text-center">
-        <v-icon icon="fa-building-user" size="32" />
+        <v-icon icon="fa-building-user" size="x-large" />
       </v-col>
       <v-col cols="12">
         <v-divider />

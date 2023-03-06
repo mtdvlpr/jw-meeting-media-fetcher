@@ -53,7 +53,7 @@
       <v-tooltip v-if="clickedOnce" location="right" :model-value="true">
         {{ $t('clickAgain') }}
       </v-tooltip>
-      <v-icon icon="fa-film" pull="left" />
+      <v-icon icon="fa-film" start />
       {{
         (playing || isClipped) && !isShortVideo
           ? `${progress[0] ?? limits.start}/${limits.end}`

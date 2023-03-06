@@ -211,7 +211,7 @@ const title = computed(() => {
                   'song'
                 )} ${filenameArray[3].replace(/'/g, '&#39;')}'>
               <span class='song v-btn pa-1'>
-              <v-icon :icon='fa-music' size='sm' pull='left'/>
+              <v-icon icon='fa-music' size='x-small' end />
               ${filenameArray[3]}
               </span></div>`
               : ''
@@ -222,7 +222,7 @@ const title = computed(() => {
                   'paragraph'
                 )} ${filenameArray[5].replace(/'/g, '&#39;')}'>
               <span class='paragraph v-btn pa-1'>
-              <v-icon :icon='fa-paragraph' size='sm' pull='left'/>
+              <v-icon icon='fa-paragraph' size='x-small' end />
               ${filenameArray[5]}
               </span></div>`
               : ''

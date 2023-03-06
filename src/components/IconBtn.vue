@@ -25,7 +25,8 @@
       v-for="(icon, i) in style.icons"
       v-bind="getIconProps(icon)"
       :key="i"
-      :pull="style.icons.length > 1 ? (i == 0 ? 'left' : 'right') : null"
+      :end="style.icons.length > 1 && i == 0"
+      :start="style.icons.length > 1 && i == 1"
       :icon="getIcon(icon)"
       :style="getIconStyle(icon)"
     />

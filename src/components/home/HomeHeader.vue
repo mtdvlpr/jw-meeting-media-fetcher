@@ -4,7 +4,7 @@
     <v-col cols="2" sm="4" md="6" class="text-center">
       <v-icon
         :icon="statusIcon"
-        size="3x"
+        size="x-large"
         :flip="loading"
         :class="{
           'primary--text': loading,
