@@ -245,13 +245,7 @@
 import { readFileSync } from 'fs-extra'
 import { extname, join } from 'upath'
 import { ipcRenderer } from 'electron'
-import {
-  MediaPrefs,
-  PrefStore,
-  RESOLUTIONS,
-  ShortJWLang,
-  VFormRef,
-} from '~~/types'
+import { MediaPrefs, PrefStore, ShortJWLang, VFormRef } from '~~/types'
 
 const emit = defineEmits<{
   (e: 'valid', val: boolean): void
@@ -264,6 +258,7 @@ const props = defineProps<{
 
 const { $i18n } = useNuxtApp()
 const { client, prefs: media } = usePrefs<MediaPrefs>('media', emit)
+const RESOLUTIONS = ['240p', '360p', '480p', '720p']
 const resolutions = RESOLUTIONS.map((r) => {
   return {
     title: r,

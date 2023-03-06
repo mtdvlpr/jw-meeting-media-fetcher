@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center" class="fill-height mb-0">
-    <v-col cols="12" class="text-center" style="margin-bottom: 72px">
+    <v-col cols="12" style="margin-bottom: 72px">
       <v-tabs
         v-model="tab"
         bg-color="black"
@@ -25,8 +25,7 @@
       >
         <v-expansion-panel :title="$t('optionsApp')" value="app">
           <v-expansion-panel-text>
-            App
-            <app-settings
+            <settings-app
               :prefs="prefs"
               @valid="setValid('app', $event)"
               @refresh="refreshPrefs('app', $event)"
@@ -44,12 +43,11 @@
         </v-expansion-panel>
         <v-expansion-panel :title="$t('optionsMedia')" value="media">
           <v-expansion-panel-text>
-            Media
-            <!--<settings-media
+            <settings-media
               :prefs="prefs"
               @valid="setValid('media', $event)"
               @refresh="refreshPrefs('media', $event)"
-            />-->
+            />
           </v-expansion-panel-text>
         </v-expansion-panel>
         <v-expansion-panel :title="$t('optionsMeetings')" value="meeting">

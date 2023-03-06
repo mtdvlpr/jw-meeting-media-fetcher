@@ -92,8 +92,6 @@
       field="select"
       :label="$t('outputFolderDateFormat')"
       :items="formats"
-      item-title="label"
-      item-value="value"
       :locked="isLocked('app.outputFolderDateFormat')"
     />
     <v-divider class="mb-6" />
@@ -331,7 +329,7 @@ import { extname, join } from 'upath'
 import { LocaleObject } from 'vue-i18n-routing'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
-import { AppPrefs, VFormRef, dateFormats, PrefStore } from '~~/types'
+import { AppPrefs, VFormRef, PrefStore } from '~~/types'
 
 const emit = defineEmits<{
   (e: 'valid', val: boolean): void
@@ -407,12 +405,19 @@ watch(
   }
 )
 
+const dateFormats = [
+  'DD-MM-YYYY',
+  'YYYY-MM-DD',
+  'DD-MM-YYYY - dddd',
+  'YYYY-MM-DD - dddd',
+]
 const formats = dateFormats.map((f) => {
   return {
-    label: $dayjs().format(f),
+    title: $dayjs().format(f),
     value: f,
   }
 })
+
 watch(
   () => app.value.outputFolderDateFormat,
   (val, oldVal) => {
