@@ -26,11 +26,11 @@
         <v-expansion-panel :title="$t('optionsApp')" value="app">
           <v-expansion-panel-text>
             App
-            <!--<settings-app
+            <app-settings
               :prefs="prefs"
               @valid="setValid('app', $event)"
               @refresh="refreshPrefs('app', $event)"
-            />-->
+            />
           </v-expansion-panel-text>
         </v-expansion-panel>
         <v-expansion-panel :title="$t('optionsCongSync')" value="cong">

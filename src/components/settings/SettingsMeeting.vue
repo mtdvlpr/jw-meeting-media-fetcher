@@ -4,7 +4,7 @@
       id="meeting.specialCong"
       v-model="meeting.specialCong"
       field="switch"
-      :locked="$isLocked('meeting.specialCong')"
+      :locked="isLocked('meeting.specialCong')"
       :label="$t('specialCong')"
     />
     <template v-if="!meeting.specialCong">
@@ -16,7 +16,7 @@
         field="btn-group"
         :group-label="$t(`${m.day.slice(0, 2)}MeetingDay`)"
         :group-items="localeDays"
-        :locked="$isLocked(`meeting.${m.day}`)"
+        :locked="isLocked(`meeting.${m.day}`)"
         height="56px"
         :mandatory="meeting[m.day] !== null"
         required
@@ -26,7 +26,7 @@
           v-model="meeting[m.time]"
           label=""
           required
-          :locked="$isLocked(`meeting.${m.time}`)"
+          :locked="isLocked(`meeting.${m.time}`)"
         />
       </form-input>
       <form-date-picker
@@ -34,7 +34,7 @@
         v-model="meeting.coWeek"
         :label="$t('coWeek')"
         :min="$dayjs().startOf('week').format('YYYY-MM-DD')"
-        :locked="$isLocked('meeting.coWeek')"
+        :locked="isLocked('meeting.coWeek')"
         :allowed-dates="isTuesday"
         explanation="coWeekExplain"
         :format="prefs.app.outputFolderDateFormat"
@@ -46,7 +46,7 @@
         id="meeting.enableMusicButton"
         v-model="meeting.enableMusicButton"
         field="switch"
-        :locked="$isLocked('meeting.enableMusicButton')"
+        :locked="isLocked('meeting.enableMusicButton')"
         :label="$t('enableMusicButton')"
         class="mr-4"
       />
@@ -76,7 +76,7 @@
       <form-input
         id="meeting.shuffleShortcut"
         v-model="meeting.shuffleShortcut"
-        :locked="$isLocked('meeting.shuffleShortcut')"
+        :locked="isLocked('meeting.shuffleShortcut')"
         placeholder="e.g. Alt+K"
         :label="$t('shuffleShortcut')"
         required
@@ -86,7 +86,7 @@
         id="meeting.musicVolume"
         v-model="meeting.musicVolume"
         field="slider"
-        :locked="$isLocked('meeting.musicVolume')"
+        :locked="isLocked('meeting.musicVolume')"
         :group-label="$t('musicVolume')"
         label-suffix="%"
         :min="1"
@@ -96,14 +96,14 @@
         id="meeting.autoStartMusic"
         v-model="meeting.autoStartMusic"
         field="switch"
-        :locked="$isLocked('meeting.autoStartMusic')"
+        :locked="isLocked('meeting.autoStartMusic')"
         :label="$t('autoStartMusic')"
       />
       <form-input
         id="meeting.enableMusicFadeOut"
         v-model="meeting.enableMusicFadeOut"
         field="switch"
-        :locked="$isLocked('meeting.enableMusicFadeOut')"
+        :locked="isLocked('meeting.enableMusicFadeOut')"
         :label="$t('musicFadeOutType')"
       />
       <v-row
@@ -118,7 +118,7 @@
             :min="5"
             :max="60"
             :step="5"
-            :locked="$isLocked('meeting.musicFadeOutTime')"
+            :locked="isLocked('meeting.musicFadeOutTime')"
             hide-details="auto"
           />
         </v-col>
@@ -128,17 +128,17 @@
             v-model="meeting.musicFadeOutType"
             color="primary"
             mandatory
-            :locked="$isLocked('meeting.musicFadeOutType')"
+            :locked="isLocked('meeting.musicFadeOutType')"
           >
             <v-btn
               value="smart"
-              :disabled="$isLocked('meeting.musicFadeOutType')"
+              :disabled="isLocked('meeting.musicFadeOutType')"
             >
               {{ musicFadeOutSmart }}
             </v-btn>
             <v-btn
               value="timer"
-              :disabled="$isLocked('meeting.musicFadeOutType')"
+              :disabled="isLocked('meeting.musicFadeOutType')"
             >
               {{ musicFadeOutTimer }}
             </v-btn>
