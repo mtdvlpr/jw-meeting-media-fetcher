@@ -183,12 +183,9 @@
         id="media.autoPlayFirst"
         v-model="media.autoPlayFirst"
         field="switch"
+        :label="$t('autoPlayFirst')"
         :locked="isLocked('media.autoPlayFirst')"
-      >
-        <template #label>
-          <span v-html="$t('autoPlayFirst')" />
-        </template>
-      </form-input>
+      />
       <form-input
         v-if="media.autoPlayFirst"
         id="media.autoPlayFirstTime"
@@ -262,7 +259,6 @@ const props = defineProps<{
   prefs: PrefStore
 }>()
 
-const { $i18n } = useNuxtApp()
 const { client, prefs: media } = usePrefs<MediaPrefs>('media', emit)
 const RESOLUTIONS = ['240p', '360p', '480p', '720p']
 const resolutions = RESOLUTIONS.map((r) => {
@@ -353,16 +349,12 @@ watch(
   }
 )
 
-const playMinutesBeforeMeeting = computed(() => {
-  return $i18n
-    .t('minutesBeforeMeeting')
-    .replace(
-      '<span>XX</span>',
-      (
-        media.value.autoPlayFirstTime ?? PREFS.media.autoPlayFirstTime!
-      ).toString()
-    )
-})
+const playMinutesBeforeMeeting = useComputedLabel<MediaPrefs>(
+  'minutesBeforeMeeting',
+  media,
+  'autoPlayFirstTime',
+  PREFS.media.autoPlayFirstTime!
+)
 
 // Languages
 const langs = computed(() => {

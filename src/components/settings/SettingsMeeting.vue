@@ -169,7 +169,7 @@ const emit = defineEmits<{
   (e: 'refresh', prefs: MeetingPrefs): void
 }>()
 
-const { $dayjs, $i18n } = useNuxtApp()
+const { $dayjs } = useNuxtApp()
 const { online } = useOnline(true)
 const meetingForm = ref<VFormRef | null>()
 const { prefs: meeting } = usePrefs<MeetingPrefs>('meeting', emit)
@@ -249,26 +249,19 @@ watch(cached, (val) => {
 
 // Background music
 const isSignLanguage = () => useMediaStore().mediaLang?.isSignLanguage
-const musicFadeOutSmart = computed(() => {
-  return $i18n
-    .t('musicFadeOutSmart')
-    .replace(
-      '<spanXX</span>',
-      (
-        meeting.value.musicFadeOutTime ?? PREFS.meeting.musicFadeOutTime!
-      ).toString()
-    )
-})
-const musicFadeOutTimer = computed(() => {
-  return $i18n
-    .t('musicFadeOutTimer')
-    .replace(
-      '<spanXX</span>',
-      (
-        meeting.value.musicFadeOutTime ?? PREFS.meeting.musicFadeOutTime!
-      ).toString()
-    )
-})
+const musicFadeOutSmart = useComputedLabel<MeetingPrefs>(
+  'musicFadeOutSmart',
+  meeting,
+  'musicFadeOutTime',
+  PREFS.meeting.musicFadeOutTime!
+)
+
+const musicFadeOutTimer = useComputedLabel<MeetingPrefs>(
+  'musicFadeOutTimer',
+  meeting,
+  'musicFadeOutTime',
+  PREFS.meeting.musicFadeOutTime!
+)
 
 const processed = ref(0)
 const { currentProgress, totalProgress, setProgress } = useProgress()

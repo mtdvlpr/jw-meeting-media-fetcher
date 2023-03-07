@@ -250,7 +250,6 @@ const hideMedia = async () => {
 
 // Yeartext
 const setYearText = (prefs: PrefStore) => {
-  console.log('set yeartext', yeartext.value)
   if (!yeartext.value) return
 
   try {
@@ -292,13 +291,11 @@ const loadIconFont = async () => {
 const loadYeartextString = async (prefs: PrefStore) => {
   if (!yeartext.value) return
   const preferredPath = await ytPath(prefs.media.lang ?? undefined)
-  console.log('preferredPath', preferredPath)
   const fallbackPath = await ytPath(prefs.media.langFallback ?? undefined)
   let yeartextString: string | null = null
 
   if (preferredPath && existsSync(preferredPath)) {
     yeartextString = readFileSync(preferredPath, 'utf8')
-    console.log('string', yeartextString)
   } else if (fallbackPath && existsSync(fallbackPath)) {
     yeartextString = readFileSync(fallbackPath, 'utf8')
   }

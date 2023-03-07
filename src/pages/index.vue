@@ -49,8 +49,8 @@
           item-title="label"
           item-value="iso"
           :disabled="loading"
-          :label="$t('meeting')"
           variant="solo"
+          density="compact"
           dense
           hide-details="auto"
           class="justify-center"

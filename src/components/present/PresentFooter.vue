@@ -62,7 +62,10 @@
       <toggle-screen-btn class="mx-2" />
       <v-btn
         id="present-to-home"
-        :to="$localePath('/?cong=') + cong"
+        :to="{
+          path: $localePath('/'),
+          query: { cong },
+        }"
         color="warning"
         aria-label="Go to home"
         :disabled="mediaActive"

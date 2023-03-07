@@ -237,32 +237,23 @@
         id="app.zoom.spotlight"
         v-model="app.zoom.spotlight"
         field="switch"
+        :label="$t('zoomSpotlight')"
         :locked="isLocked('app.zoom.spotlight')"
-      >
-        <template #label>
-          <span v-html="$t('zoomSpotlight')" />
-        </template>
-      </form-input>
+      />
       <form-input
         id="app.zoom.hideComponent"
         v-model="app.zoom.hideComponent"
         field="switch"
+        :label="$t('zoomHideComponent')"
         :locked="isLocked('app.zoom.hideComponent')"
-      >
-        <template #label>
-          <span v-html="$t('zoomHideComponent')" />
-        </template>
-      </form-input>
+      />
       <form-input
         id="app.zoom.autoStartMeeting"
         v-model="app.zoom.autoStartMeeting"
         field="switch"
+        :label="$t('zoomAutoStartMeeting')"
         :locked="isLocked('app.zoom.autoStartMeeting')"
-      >
-        <template #label>
-          <span v-html="$t('zoomAutoStartMeeting')" />
-        </template>
-      </form-input>
+      />
       <form-input
         v-if="app.zoom.autoStartMeeting"
         id="app.zoom.autoStartTime"
@@ -298,16 +289,6 @@
       </v-col>
     </template>
     <v-divider class="mb-6" />
-    <form-input
-      id="app.betaUpdates"
-      v-model="app.betaUpdates"
-      field="switch"
-      :locked="isLocked('app.betaUpdates')"
-    >
-      <template #label>
-        <span v-html="$t('betaUpdates')" />
-      </template>
-    </form-input>
     <form-input
       v-for="option in disableOptions"
       :id="`app.${option}`"
@@ -367,6 +348,7 @@ const { client, prefs: app } = usePrefs<AppPrefs>('app', emit)
 
 const isLinux = platform() === 'linux'
 const disableOptions: (keyof AppPrefs)[] = [
+  'betaUpdates',
   'disableAutoUpdate',
   'disableHardwareAcceleration',
 ]
@@ -473,14 +455,13 @@ watch(
 )
 
 // Zoom options
-const autoStartMeeting = computed(() => {
-  return $i18n
-    .t('minutesBeforeMeeting')
-    .replace(
-      '<span>XX</span>',
-      (app.value.zoom.autoStartTime ?? PREFS.app.zoom.autoStartTime!).toString()
-    )
-})
+const autoStartMeeting = useComputedLabel<AppPrefs>(
+  'minutesBeforeMeeting',
+  app,
+  'zoom',
+  PREFS.app.zoom.autoStartTime!,
+  'autoStartTime'
+)
 const newAutoRename = ref('')
 const addAutoRename = () => {
   if (!newAutoRename.value) return

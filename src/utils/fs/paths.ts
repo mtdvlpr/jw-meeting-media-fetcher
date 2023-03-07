@@ -149,7 +149,6 @@ export async function ytPath(lang?: string) {
     getPrefs<string>('app.customCachePath') ||
     appPath() ||
     ((await ipcRenderer.invoke('userData')) as Promise<string>)
-  console.log('cachePath', cachePath)
   return joinSafe(
     cachePath,
     'Publications',

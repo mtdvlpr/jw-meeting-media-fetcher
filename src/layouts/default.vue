@@ -33,7 +33,6 @@ const cong = useRouteQuery<string>('cong', '')
 watch(
   cong,
   (val, oldVal) => {
-    log.debug('cong changed', val, oldVal)
     if (oldVal && val) {
       initPrefs('prefs-' + val)
     }
@@ -64,7 +63,6 @@ const initPrefs = async (name: string, isNew = false) => {
   }
 
   let path = useRoute().path
-  log.debug(path)
 
   // If current cong does not equal new cong, set new cong
   if ('prefs-' + cong.value !== name) {
