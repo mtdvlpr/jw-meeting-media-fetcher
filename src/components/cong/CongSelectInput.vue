@@ -1,36 +1,27 @@
 <template>
   <v-select
     id="cong-select"
-    v-model="cong"
+    :model-value="cong"
     :items="congs"
     item-title="name"
     item-value="path"
     :loading="loading"
     :disabled="!!$attrs.disabled"
-    :label="$t('congregationName')"
-    dense
+    density="compact"
     variant="solo"
     @update:model-value="changeCong($event)"
   >
-    <template #item="{ item }">
-      <v-list-item-action v-if="congs.length > 1" class="me-0">
-        <v-icon
-          icon="fa-square-minus"
-          :class="`text-${clickedOnce ? 'error' : 'warning'}`"
-          size="x-small"
-          @click.stop="atClick(item)"
-        >
-          <v-tooltip v-if="clickedOnce" activator="parent" location="left">
-            {{ $t('clickAgain') }}
-          </v-tooltip>
-        </v-icon>
-      </v-list-item-action>
-      <v-list-item-title>{{ item.name }}</v-list-item-title>
+    <template #prepend-item>
+      <v-list-item id="remove-cong-option" @click="removeCong()">
+        <v-list-item-action>
+          <v-icon icon="fa-square-minus" color="error" size="x-small" />
+        </v-list-item-action>
+      </v-list-item>
     </template>
     <template #append-item>
       <v-list-item id="add-cong-option" @click="addCong()">
         <v-list-item-action>
-          <v-icon icon="fa-square-plus" class="text-success" size="x-small" />
+          <v-icon icon="fa-square-plus" color="success" size="x-small" />
         </v-list-item-action>
       </v-list-item>
     </template>
@@ -46,11 +37,14 @@ interface Cong {
 const loading = ref(true)
 const cong = ref('')
 const congs = ref<Cong[]>([])
-onMounted(async () => {
+const loadCongs = async () => {
   loading.value = true
   congs.value = await getCongPrefs()
   cong.value = storePath()!
   loading.value = false
+}
+onMounted(() => {
+  loadCongs()
 })
 
 // Add congregation
@@ -72,31 +66,23 @@ const addCong = () => {
 
 // Switch congregation
 const changeCong = (path: string) => {
-  log.debug('Switched cong via select')
+  notify('Switched cong via select')
   useRouter().push({
     query: {
       cong: basename(path, '.json').replace('prefs-', ''),
     },
   })
+  cong.value = path
 }
 
 // Remove congregation
-const { atClick, clickedOnce } = useClickTwice<Cong>((item) => {
-  if (!item) return
-  rm(item.path)
-  if (congs.value.length > 1 && item.path === cong.value) {
+const removeCong = () => {
+  rm(cong.value)
+  if (congs.value.length > 1) {
     // Switch to the first other congregation found
-    log.debug('Switch to existing cong')
-    useRouter().push({
-      query: {
-        cong: basename(
-          congs.value.find((c) => c.path !== item.path)!.path,
-          '.json'
-        ).replace('prefs-', ''),
-      },
-    })
+    changeCong(congs.value.find((c) => c.path !== cong.value)!.path)
   } else {
-    window.location.reload()
+    addCong()
   }
-})
+}
 </script>

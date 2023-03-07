@@ -325,7 +325,7 @@ const valid = ref(true)
 watch(valid, (val) => emit('valid', val))
 const appForm = ref<VFormRef | null>()
 const locales = ref<{ name: string; code: string }[]>([])
-onMounted(async () => {
+onMounted(() => {
   locales.value = $i18n.locales.value.map((l) => {
     const locale = l as LocaleObject
     return {
@@ -336,9 +336,12 @@ onMounted(async () => {
   oldName.value = app.value.congregationName
   app.value.localAppLang = $i18n.locale.value
   if (obsComplete.value) {
-    await getScenes()
-  }
-  if (appForm.value) {
+    getScenes().then(() => {
+      if (appForm.value) {
+        appForm.value.validate()
+      }
+    })
+  } else if (appForm.value) {
     appForm.value.validate()
   }
 })

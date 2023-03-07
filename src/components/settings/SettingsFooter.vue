@@ -107,13 +107,17 @@ const goBack = () => {
   useRouter().back()
 }
 
-onMounted(async () => {
-  calcCache()
+const setCancel = async () => {
   let congs = await getCongPrefs()
   congs = congs.filter(
     (c) => c.path !== join(appPath(), `prefs-${cong.value}.json`)
   )
   cancel.value = congs.length > 0
+}
+
+onMounted(() => {
+  calcCache()
+  setCancel()
 })
 
 // Cache

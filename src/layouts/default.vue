@@ -39,16 +39,18 @@ watch(
   },
   { immediate: true }
 )
-
-onMounted(async () => {
-  log.debug('sentry', useRuntimeConfig().public.sentryEnabled)
+const initMediaWinState = async () => {
   const mediaWinOpen = await ipcRenderer.invoke('mediaWinOpen')
   presentStore.setMediaScreenInit(mediaWinOpen)
   if (mediaWinOpen) {
     const mediaWinVisible = await ipcRenderer.invoke('mediaWinVisible')
     presentStore.setMediaScreenVisible(mediaWinVisible)
   }
+}
 
+onMounted(() => {
+  log.debug('sentry', useRuntimeConfig().public.sentryEnabled)
+  initMediaWinState()
   statStore.setOnline(navigator.onLine)
 })
 

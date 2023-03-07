@@ -245,6 +245,7 @@
         v-model="value"
         density="comfortable"
         variant="outlined"
+        :border="required && value === null ? 'error' : undefined"
         :color="required && value === null ? 'error' : 'primary'"
         v-bind="$attrs"
         :class="{ 'btn-group-error': required && value === null }"
@@ -437,6 +438,7 @@ const updateSlider = (val: string) => {
   margin-top: 0px !important;
 }
 .btn-group-error {
-  border: solid 1px;
+  --v-border-opacity: 1 !important;
+  border-width: 1px;
 }
 </style>

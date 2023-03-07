@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="center" class="fill-height">
+  <v-row justify="center" class="fill-height pa-4">
     <action-preview
       v-if="action"
       :text="text(action)"
@@ -41,7 +41,7 @@
       </v-btn>
     </v-col>
     <v-col cols="12" align-self="end" class="d-flex pa-0">
-      <v-col class="text-center">
+      <v-col class="text-center pb-0">
         <v-select
           id="week-select"
           v-model="currentWeek"
@@ -58,7 +58,7 @@
           @update:model-value="resetColors()"
         />
       </v-col>
-      <v-col class="d-flex justify-end">
+      <v-col class="d-flex justify-end pb-0">
         <div class="mr-2">
           <shuffle-btn v-if="getPrefs('meeting.enableMusicButton')" />
         </div>
@@ -74,7 +74,6 @@
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
-import { useRouteQuery } from '@vueuse/router'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { basename, join } from 'upath'
@@ -84,15 +83,10 @@ const { $dayjs, $localePath } = useNuxtApp()
 const { isDev } = useRuntimeConfig().public
 const { online } = useOnline()
 
-const congParam = useRouteQuery<string>('cong', '')
-watch(congParam, (val) => {
-  if (val) window.location.reload()
-})
-
 const statStore = useStatStore()
 const { initialLoad } = storeToRefs(statStore)
-onMounted(async () => {
-  const promise = getJWLangs()
+onMounted(() => {
+  getJWLangs()
   useNotifyStore().dismissByMessage('cantCloseMediaWindowOpen')
 
   // Open settings when invalid
@@ -108,7 +102,6 @@ onMounted(async () => {
   loading.value = false
   if (initialLoad) autoStartMusic()
   statStore.setInitialLoad(false)
-  await promise
 })
 
 // Dates

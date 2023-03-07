@@ -34,7 +34,7 @@
       :start="style.icons.length > 1 && i == 0"
       :end="style.icons.length > 1 && i == 1"
       :icon="getIcon(icon)"
-      :style="getIconStyle(icon)"
+      :color="getIconColor(icon)"
     />
   </v-btn>
 </template>
@@ -59,7 +59,11 @@ const props = withDefaults(
 
 // Emit click event
 const emit = defineEmits(['click'])
-const { atClick, clickedOnce } = useClickTwice(() => {
+const atClick = () => {
+  if (props.clickTwice) atFirstClick()
+  else emit('click')
+}
+const { atClick: atFirstClick, clickedOnce } = useClickTwice(() => {
   emit('click')
 })
 
@@ -99,30 +103,15 @@ const title = computed(() => {
   return undefined
 })
 
-// Icon style
-const iconStyle = computed(() => {
-  if (clickedOnce) {
-    return {
-      color: 'white !important',
-    }
-  }
-  if (props.iconColor) {
-    return {
-      color: props.iconColor,
-    }
-  }
-  return undefined
-})
-const getIconStyle = (
+// Icon color
+const getIconColor = (
   icon?: string | { text: string; props?: Record<string, any> }
 ) => {
-  if (iconStyle) return iconStyle
+  if (clickedOnce.value) return 'white'
+  if (props.iconColor) return props.iconColor
   if (typeof icon !== 'string' && icon?.props?.color) {
-    return {
-      color: icon.props.color,
-    }
+    return icon.props.color
   }
-  return {}
 }
 
 // Icon props
@@ -149,7 +138,7 @@ const styles: Styles = {
       'min-width': '32px',
       color: 'btn',
     },
-    icons: [{ text: 'fa-home', props: { class: 'white--text' } }],
+    icons: [{ text: 'fa-home', props: { color: 'white' } }],
   },
   cancel: {
     props: {
@@ -159,7 +148,7 @@ const styles: Styles = {
     icons: [
       {
         text: 'fa-circle-arrow-left',
-        props: { class: 'white--text', size: 'lg' },
+        props: { color: 'white', size: 'medium' },
       },
     ],
   },
@@ -174,18 +163,18 @@ const styles: Styles = {
       'min-width': '32px',
       color: 'btn',
     },
-    icons: [{ text: 'fa-user-cog', props: { class: 'white--text' } }],
+    icons: [{ text: 'fa-user-cog', props: { color: 'white' } }],
   },
   play: {
     props: { color: 'primary' },
-    icons: [{ text: 'fa-play', props: { size: 'lg' } }],
+    icons: [{ text: 'fa-play', props: { size: 'medium' } }],
   },
   stop: {
     props: { color: 'warning' },
     icons: [
       {
         text: 'fa-stop',
-        props: { size: 'xl', class: 'black--text' },
+        props: { size: 'x-large', color: 'black' },
       },
     ],
   },

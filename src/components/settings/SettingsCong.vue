@@ -124,13 +124,14 @@ watch(complete, (val) => {
   }
 })
 
-onMounted(async () => {
+onMounted(() => {
   if (congForm.value) congForm.value.validate()
   if (complete.value && online.value) {
-    await submit()
-    if (client.value) {
-      updateContentsTree()
-    }
+    submit().then(() => {
+      if (client.value) {
+        updateContentsTree()
+      }
+    })
   }
 })
 

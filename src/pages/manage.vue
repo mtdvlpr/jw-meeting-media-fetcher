@@ -35,7 +35,7 @@ onBeforeUnmount(() => {
     notify('dontForgetToGetMedia')
   }
 })
-onMounted(async () => {
+const loadMedia = async () => {
   if (online.value) {
     await getMeetingData()
   } else {
@@ -43,6 +43,9 @@ onMounted(async () => {
   }
   getExistingMedia()
   loading.value = false
+}
+onMounted(() => {
+  loadMedia()
 })
 
 const { $dayjs } = useNuxtApp()

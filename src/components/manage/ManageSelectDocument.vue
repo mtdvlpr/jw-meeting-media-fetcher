@@ -63,14 +63,15 @@ const emit = defineEmits<{
 const loading = ref(true)
 
 // Select first if only one, warn if none
-onMounted(async () => {
-  await getDocuments()
-  if (items.value.length === 0) {
-    warn('warnNoDocumentsFound')
-    emit('empty')
-  } else if (items.value.length === 1) {
-    selectDoc(items.value[0].DocumentId)
-  }
+onMounted(() => {
+  getDocuments().then(() => {
+    if (items.value.length === 0) {
+      warn('warnNoDocumentsFound')
+      emit('empty')
+    } else if (items.value.length === 1) {
+      selectDoc(items.value[0].DocumentId)
+    }
+  })
 })
 
 // Fetch available documents from jwpub file

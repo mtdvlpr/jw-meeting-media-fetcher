@@ -9,7 +9,8 @@
         <v-divider />
       </v-col>
       <v-col cols="12">
-        <v-list>
+        <loading-icon v-if="loading" />
+        <v-list v-else>
           <v-list-item
             v-for="cong in congs"
             :key="cong.filename"
@@ -31,12 +32,12 @@ interface Cong {
   filename: string
 }
 
+const loading = ref(true)
 const congs = ref<Cong[]>([])
 const emit = defineEmits<{
   (e: 'selected', filename: string): void
 }>()
-
-onMounted(async () => {
+const loadCongs = async () => {
   congs.value = (await getCongPrefs()).map((c) => {
     return {
       name: c.name,
@@ -44,6 +45,12 @@ onMounted(async () => {
       filename: basename(c.path, '.json'),
     }
   })
+  if (congs.value.length > 1) {
+    loading.value = false
+  }
   log.debug('congs', congs.value)
+}
+onMounted(() => {
+  loadCongs()
 })
 </script>

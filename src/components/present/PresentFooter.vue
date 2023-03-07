@@ -91,18 +91,18 @@ const cong = useRouteQuery('cong', '')
 const { $localePath } = useNuxtApp()
 
 const obsStore = useObsStore()
-onMounted(async () => {
+onMounted(() => {
   if (obsEnabled.value) {
-    await initOBS()
-  }
-
-  if (obsStore.connected) {
-    const cameraScene = getPrefs<string>('app.obs.cameraScene')
-    if (cameraScene) {
-      await setScene(cameraScene)
-    } else {
-      warn('errorObsCameraScene')
-    }
+    initOBS().then(() => {
+      if (obsStore.connected) {
+        const cameraScene = getPrefs<string>('app.obs.cameraScene')
+        if (cameraScene) {
+          setScene(cameraScene)
+        } else {
+          warn('errorObsCameraScene')
+        }
+      }
+    })
   }
 })
 
