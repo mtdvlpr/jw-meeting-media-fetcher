@@ -1,34 +1,35 @@
 <!-- eslint-disable vue/no-unused-vars -->
 <template>
-  <v-tooltip v-if="clickedOnce" location="top" :model-value="true">
-    <template #activator="data">
-      <v-btn
-        id="shuffle"
-        v-click-outside="(clickedOnce = false)"
-        aria-label="shuffle"
-        :color="musicFadeOut ? 'error' : 'warning'"
-        @click="atClick"
-      >
-        <v-icon v-if="musicFadeOut" start icon="fa-stop" />
-        <template v-else>
-          <v-icon
-            v-for="(icon, i) in icons"
-            :key="i"
-            size="small"
-            :start="i == 0"
-            :end="i == 1"
-            :icon="icon"
-            :style="{
-              color: isDark ? 'white !important' : 'black !important',
-            }"
-          />
-        </template>
-
-        {{ timeRemaining }}
-      </v-btn>
+  <v-btn
+    v-if="clickedOnce"
+    id="shuffle"
+    v-click-outside="(clickedOnce = false)"
+    aria-label="shuffle"
+    :color="musicFadeOut ? 'error' : 'warning'"
+    @click="atClick"
+  >
+    <v-tooltip
+      activator="parent"
+      model-value
+      location="top"
+      @update:model-value="() => {}"
+    >
+      {{ $t('clickAgain') }}
+    </v-tooltip>
+    <v-icon v-if="musicFadeOut" start icon="fa-stop" />
+    <template v-else>
+      <v-icon
+        v-for="(icon, i) in icons"
+        :key="i"
+        size="small"
+        :start="i == 0"
+        :end="i == 1"
+        :icon="icon"
+        color="on-bg"
+      />
     </template>
-    <span>{{ $t('clickAgain') }}</span>
-  </v-tooltip>
+    {{ timeRemaining }}
+  </v-btn>
   <v-btn
     v-else-if="musicFadeOut || loading"
     id="shuffle"
@@ -45,7 +46,7 @@
       :icon="icon"
       :start="i == 0"
       :end="i == 1"
-      :style="{ color: isDark ? 'white' : 'black' }"
+      color="on-bg"
     />
     {{ timeRemaining }}
   </v-btn>

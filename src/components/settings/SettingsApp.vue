@@ -378,11 +378,11 @@ const automationOptions: (keyof AppPrefs | 'div')[] = [
   'div',
 ]
 
+const { setTheme } = useTheme()
 watch(
   () => app.value.theme,
   async (val) => {
     ipcRenderer.send('setTheme', val)
-    const { setTheme } = useTheme()
     setTheme(val === 'system' ? await ipcRenderer.invoke('theme') : val)
   }
 )

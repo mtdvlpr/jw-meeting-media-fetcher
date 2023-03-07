@@ -140,24 +140,30 @@
           </v-btn>
         </v-col>
       </v-row>
-      <form-input
-        id="media.mediaWinShortcut"
-        v-model="media.mediaWinShortcut"
-        :locked="isLocked('media.mediaWinShortcut')"
-        placeholder="e.g. Alt+Z"
-        :label="$t('mediaWinShortcut')"
-        required
-        :rules="getShortcutRules('toggleMediaWindow')"
-      />
-      <form-input
-        id="media.presentShortcut"
-        v-model="media.presentShortcut"
-        :locked="isLocked('media.presentShortcut')"
-        placeholder="e.g. Alt+D"
-        :label="$t('presentShortcut')"
-        required
-        :rules="getShortcutRules('openPresentMode')"
-      />
+      <v-row>
+        <v-col>
+          <form-input
+            id="media.mediaWinShortcut"
+            v-model="media.mediaWinShortcut"
+            :locked="isLocked('media.mediaWinShortcut')"
+            placeholder="e.g. Alt+Z"
+            :label="$t('mediaWinShortcut')"
+            required
+            :rules="getShortcutRules('toggleMediaWindow')"
+          />
+        </v-col>
+        <v-col>
+          <form-input
+            id="media.presentShortcut"
+            v-model="media.presentShortcut"
+            :locked="isLocked('media.presentShortcut')"
+            placeholder="e.g. Alt+D"
+            :label="$t('presentShortcut')"
+            required
+            :rules="getShortcutRules('openPresentMode')"
+          />
+        </v-col>
+      </v-row>
       <form-input
         id="media.hideMediaLogo"
         v-model="media.hideMediaLogo"

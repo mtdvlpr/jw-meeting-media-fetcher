@@ -1,6 +1,6 @@
-import { ipcRenderer } from 'electron'
 // eslint-disable-next-line import/named
 import { existsSync, readFileSync, statSync } from 'fs-extra'
+import { WT_CLEARTEXT_FONT, JW_ICONS_FONT } from '#imports'
 
 export async function getYearText(
   force = false,
@@ -12,29 +12,26 @@ export async function getYearText(
   const fallbackLang = getPrefs<string>('media.langFallback')
   const wtlocale = lang ?? getPrefs<string>('media.lang')
   if (!wtlocale) return null
-  const path = ytPath(lang)
+  const path = await ytPath(lang)
 
   if (force || !existsSync(path)) {
     log.debug('Fetching yeartext', wtlocale)
     try {
-      const result = await ipcRenderer.invoke('getFromJWOrg', {
-        url: 'https://wol.jw.org/wol/finder',
-        params: {
-          docid: `110{new Date().getFullYear()}800`,
-          wtlocale,
-          format: 'json',
-          snip: 'yes',
-        },
-      })
+      const result = await $fetch<{ content: string; message: string }>(
+        'https://wol.jw.org/wol/finder',
+        {
+          params: {
+            docid: `110${new Date().getFullYear()}800`,
+            wtlocale,
+            format: 'json',
+            snip: 'yes',
+          },
+        }
+      )
+
       if (result.content) {
         yeartext = <string>JSON.parse(JSON.stringify(result.content))
         write(path, yeartext)
-      } else if (result.message === 'Request failed with status code 404') {
-        if (fallbackLang && wtlocale !== fallbackLang) {
-          return await getYearText(force, fallbackLang)
-        } else {
-          warn('errorYeartextNotFound', { identifier: wtlocale })
-        }
       } else {
         log.error(result)
       }
@@ -75,7 +72,7 @@ async function getWtFonts(force = false) {
 }
 
 async function getWtFont(font: string, force = false) {
-  const fontPath = localFontPath(font)
+  const fontPath = await localFontPath(font)
   let size = -1
 
   if (!force) {

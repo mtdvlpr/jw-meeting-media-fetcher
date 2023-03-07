@@ -56,7 +56,7 @@
       <v-icon icon="fa-film" start />
       {{
         (playing || isClipped) && !isShortVideo
-          ? `${progress[0] ?? limits.start}/${limits.end}`
+          ? `${progress[0] || limits.start}/${limits.end}`
           : `${duration}`
       }}
     </v-btn>

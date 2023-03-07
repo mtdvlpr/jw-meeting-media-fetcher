@@ -4,7 +4,7 @@
       <v-tabs
         v-model="tab"
         color="primary"
-        bg-color="black"
+        bg-color="bg"
         grow
         style="position: sticky; top: 0; z-index: 2"
       >
@@ -18,7 +18,9 @@
         </v-tab>
       </v-tabs>
       <!--<v-skeleton-loader v-if="mounting" type="list-item@4" />-->
+      <loading-icon v-if="mounting" />
       <v-expansion-panels
+        v-show="!mounting"
         v-model="panel"
         multiple
         accordion
@@ -109,6 +111,24 @@ const headers = ref<{ key: keyof PrefStore; name: string; valid: boolean }[]>([
     valid: false,
   },
 ])
+const mounted = ref(false)
+watch(
+  headers,
+  (val) => {
+    val.forEach((h) => {
+      const match = panel.value.indexOf(h.key)
+      if (!h.valid && match === -1) {
+        panel.value.push(h.key)
+      } else if (!mounted.value && h.valid && match > -1) {
+        if (tab.value === 0) {
+          panel.value.splice(match, 1)
+        }
+      }
+    })
+    mounted.value ||= valid.value
+  },
+  { deep: true }
+)
 
 const mounting = ref(true)
 onMounted(() => {

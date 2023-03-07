@@ -18,7 +18,13 @@
     <template v-for="(_, name) in $slots" #[name]>
       <slot :name="name" />
     </template>
-    <v-tooltip v-if="clickedOnce" activator="parent" :location="tooltip">
+    <v-tooltip
+      v-if="clickedOnce"
+      activator="parent"
+      model-value
+      :location="tooltip"
+      @update:model-value="() => {}"
+    >
       {{ $t('clickAgain') }}
     </v-tooltip>
     <v-icon

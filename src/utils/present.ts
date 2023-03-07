@@ -184,6 +184,7 @@ export async function refreshBackgroundImgPreview(force = false) {
     // If no custom background, set yeartext as background
     if (backgrounds.length === 0) {
       const yeartext = await getYearText(force)
+      console.log('yt', yeartext)
       const root = document.createElement('div')
       root.innerHTML = yeartext ?? ''
       let yeartextString = ''
@@ -206,7 +207,7 @@ export async function refreshBackgroundImgPreview(force = false) {
       store.setBackground(URL.createObjectURL(file))
       type = 'custom'
     }
-    ipcRenderer.send('startMediaDisplay')
+    ipcRenderer.send('startMediaDisplay', getAllPrefs())
     return type
   } catch (e) {
     log.error(e)

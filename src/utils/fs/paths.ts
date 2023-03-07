@@ -7,7 +7,8 @@ import { basename, dirname, join, joinSafe } from 'upath'
 import { MeetingFile, ShortJWLang } from '~~/types'
 
 export function appPath() {
-  return dirname(storePath() ?? '')
+  const store = storePath()
+  return store ? dirname(store) : undefined
 }
 
 export function pubPath(file?: MeetingFile) {
@@ -108,9 +109,11 @@ export function mediaPath(file?: MeetingFile): string | undefined {
   return joinSafe(mediaPath, file.folder!, file.destFilename ?? file.safeName)
 }
 
-export function localFontPath(font: string) {
+export async function localFontPath(font: string) {
   return join(
-    getPrefs<string>('app.customCachePath') || appPath(),
+    getPrefs<string>('app.customCachePath') ||
+      appPath() ||
+      ((await ipcRenderer.invoke('userData')) as Promise<string>),
     'Fonts',
     basename(font)
   )
@@ -136,14 +139,19 @@ export async function wtFontPath() {
   )
 }
 
-export function ytPath(lang?: string) {
+export async function ytPath(lang?: string) {
   const ytLang =
     lang ||
     getPrefs<string>('media.lang') ||
     getPrefs<string>('media.langFallback') ||
     'E'
+  const cachePath =
+    getPrefs<string>('app.customCachePath') ||
+    appPath() ||
+    ((await ipcRenderer.invoke('userData')) as Promise<string>)
+  console.log('cachePath', cachePath)
   return joinSafe(
-    getPrefs<string>('app.customCachePath') || appPath(),
+    cachePath,
     'Publications',
     ytLang,
     `yeartext-${ytLang}-${new Date().getFullYear().toString()}`

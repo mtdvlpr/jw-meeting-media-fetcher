@@ -14,6 +14,7 @@ import {
   getWebsiteController,
   getWebsiteControllerWinHandler,
 } from './websiteController'
+import { PrefStore } from '~~/types'
 
 let mediaWin: BrowserWindow | null
 let mediaWinHandler: BrowserWinHandler | null
@@ -96,8 +97,8 @@ export function initMediaWinListeners() {
   })
 
   ipcMain.removeAllListeners('startMediaDisplay')
-  ipcMain.on('startMediaDisplay', () => {
-    mediaWin?.webContents.send('startMediaDisplay')
+  ipcMain.on('startMediaDisplay', (_e, prefs: PrefStore) => {
+    mediaWin?.webContents.send('startMediaDisplay', prefs)
   })
 
   ipcMain.removeAllListeners('zoom')

@@ -21,26 +21,22 @@
           <v-icon icon="fa-bug" />
         </v-btn>
         <v-btn
-          v-if="cacheColor === 'warning'"
           :color="cacheColor"
           :loading="loading"
           class="text-black"
           @click="removeCache()"
         >
-          <v-tooltip activator="parent" location="top">
+          <v-icon icon="fa-trash" size="small" start />
+          {{ `${cache}MB` }}
+          <v-tooltip
+            v-if="cacheColor === 'warning'"
+            activator="parent"
+            location="top"
+          >
             {{ $t('cleanCache') }}
           </v-tooltip>
-          <v-icon icon="fa-trash" start />
-          {{ `${cache}MB` }}
-        </v-btn>
-        <v-btn
-          v-else
-          :color="cacheColor"
-          :loading="loading"
-          class="text-black"
-          @click="removeCache()"
-        >
           <v-tooltip
+            v-else
             activator="parent"
             model-value
             location="top"
@@ -48,8 +44,6 @@
           >
             {{ $t('clickAgain') }}
           </v-tooltip>
-          <v-icon icon="fa-trash" start />
-          {{ `${cache}MB` }}
         </v-btn>
       </v-col>
       <v-col align-self="end" class="text-right pa-0">

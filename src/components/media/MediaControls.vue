@@ -1,7 +1,7 @@
 <template>
   <v-row>
     <v-dialog :model-value="manageMedia" fullscreen persistent>
-      <v-sheet :color="isDark ? '#121212' : '#ffffff'" class="fill-height">
+      <v-sheet color="bg" class="fill-height">
         <v-container class="fill-height" fluid>
           <manage-media
             :media="localMedia"
@@ -53,7 +53,6 @@ import { LocalFile } from '~~/types'
 
 const loading = ref(true)
 const addSong = ref(false)
-const { isDark } = useTheme()
 
 // Current meeting date
 const date = useRouteQuery<string>('date', '')
@@ -125,7 +124,7 @@ watch(mediaActive, (val) => {
   const scene = useObsStore().currentScene
   const zoomScene = getPrefs<string>('app.obs.zoomScene')
   if (!val && scene) {
-    setScene(zoomPart.value ? zoomScene ?? scene : scene)
+    setScene(zoomPart.value ? zoomScene || scene : scene)
   }
 
   // Toggle media window

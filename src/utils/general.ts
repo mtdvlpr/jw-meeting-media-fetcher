@@ -12,7 +12,7 @@ export const parseRes = (res?: string) => {
 }
 
 export async function loadFont(font: 'yeartext' | 'icon') {
-  let fontFile = localFontPath(
+  let fontFile = await localFontPath(
     font === 'icon' ? JW_ICONS_FONT : WT_CLEARTEXT_FONT
   )
   if (!existsSync(fontFile)) {

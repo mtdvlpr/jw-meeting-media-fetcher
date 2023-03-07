@@ -268,7 +268,7 @@ export async function getScenes(current = false): Promise<string | string[]> {
         warn('errorObs')
         await resetOBS()
       } else {
-        log.debug(`getScenes({current})`)
+        log.debug(`getScenes(${current})`)
         error('errorObs', e)
       }
     }
@@ -307,7 +307,7 @@ export async function setScene(scene: string): Promise<void> {
       ) {
         warn('errorObsScene', { identifier: scene })
       } else {
-        log.debug(`setScene({scene})`)
+        log.debug(`setScene(${scene})`)
         error('errorObs', e)
       }
     }

@@ -3864,6 +3864,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"click-outside-vue3@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "click-outside-vue3@npm:4.0.1"
+  checksum: bc2cf3336f1343619f60c2e2d5a8cc7cc64ec5d912f42f9f3666c7655c08d77b9a8916a6b98ac505deeb2c11a40ffd58ce91308762e31989e546654b689d0b1e
+  languageName: node
+  linkType: hard
+
 "clipboardy@npm:^3.0.0":
   version: 3.0.0
   resolution: "clipboardy@npm:3.0.0"
@@ -7971,6 +7978,7 @@ __metadata:
     "@vueuse/nuxt": ^9.13.0
     "@vueuse/router": ^9.13.0
     "@zoomus/websdk": ^2.10.1
+    click-outside-vue3: ^4.0.1
     dayjs: ^1.11.7
     dotenv: ^16.0.3
     electron: 23.1.2

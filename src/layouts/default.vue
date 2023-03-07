@@ -307,7 +307,7 @@ watch(prefersDark, (val) => {
 
 // Global listeners
 useIpcRendererOn('readyToListen', () => {
-  ipcRenderer.send('startMediaDisplay')
+  ipcRenderer.send('startMediaDisplay', getAllPrefs())
 })
 useIpcRendererOn('toggleMusicShuffle', () => {
   shuffleMusic(!!mediaStore.musicFadeOut)
@@ -347,7 +347,7 @@ useIpcRendererOn('openPresentMode', () => {
 
 useIpcRendererOn('mediaWindoShown', () => {
   presentStore.setMediaScreenInit(true)
-  ipcRenderer.send('startMediaDisplay')
+  ipcRenderer.send('startMediaDisplay', getAllPrefs())
 })
 useIpcRendererOn('mediaWindowVisibilityChanged', (_e, status: string) => {
   presentStore.setMediaScreenVisible(status === 'shown')

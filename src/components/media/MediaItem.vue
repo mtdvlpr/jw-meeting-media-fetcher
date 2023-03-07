@@ -191,7 +191,7 @@ const videoStarted = ref(false)
 const videoActive = inject(videoActiveKey, ref(false))
 const title = computed(() => {
   const filenameArray = (
-    props.streamingFile?.safeName ?? basename(props.src)
+    props.streamingFile?.safeName || basename(props.src)
   ).split(
     new RegExp(
       `^((?:\\d{1,2}-?){0,3})[ -]*(${translate(

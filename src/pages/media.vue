@@ -40,11 +40,10 @@ onMounted(() => {
 })
 
 // Media
-useIpcRendererOn('startMediaDisplay', async () => {
+useIpcRendererOn('startMediaDisplay', async (_e, prefs: PrefStore) => {
   if (yeartext.value) yeartext.value.innerHTML = ''
   const main = document.querySelector('main')
   if (main) main.style.background = 'black'
-  const prefs = getAllPrefs()
   log.debug('startMediaDisplay', prefs)
   withSubtitles.value = prefs.media.enableSubtitles && !!prefs.media.langSubs
 
@@ -250,12 +249,9 @@ const hideMedia = async () => {
 }
 
 // Yeartext
-const setYearText = async (prefs: PrefStore) => {
+const setYearText = (prefs: PrefStore) => {
+  console.log('set yeartext', yeartext.value)
   if (!yeartext.value) return
-  let cachePath = prefs.app.customCachePath
-  if (!cachePath) {
-    cachePath = (await ipcRenderer.invoke('userData')) as string
-  }
 
   try {
     loadYeartextString(prefs)
@@ -293,14 +289,16 @@ const loadIconFont = async () => {
   }
 }
 
-const loadYeartextString = (prefs: PrefStore) => {
+const loadYeartextString = async (prefs: PrefStore) => {
   if (!yeartext.value) return
-  const preferredPath = ytPath(prefs.media.lang ?? undefined)
-  const fallbackPath = ytPath(prefs.media.langFallback ?? undefined)
+  const preferredPath = await ytPath(prefs.media.lang ?? undefined)
+  console.log('preferredPath', preferredPath)
+  const fallbackPath = await ytPath(prefs.media.langFallback ?? undefined)
   let yeartextString: string | null = null
 
   if (preferredPath && existsSync(preferredPath)) {
     yeartextString = readFileSync(preferredPath, 'utf8')
+    console.log('string', yeartextString)
   } else if (fallbackPath && existsSync(fallbackPath)) {
     yeartextString = readFileSync(fallbackPath, 'utf8')
   }

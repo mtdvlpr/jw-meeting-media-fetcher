@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron'
 // eslint-disable-next-line import/named
 import { existsSync, readFileSync } from 'fs-extra'
 import { join } from 'upath'
@@ -13,9 +12,10 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
 
   if (forceReload || !existsSync(langPath) || !recentlyUpdated) {
     try {
-      const result = (await ipcRenderer.invoke('getFromJWOrg', {
-        url: 'https://www.jw.org/en/languages',
-      })) as { languages: JWLang[] }
+      const result = await $fetch<{ languages: JWLang[] }>(
+        'https://www.jw.org/en/languages',
+        {}
+      )
 
       if (result.languages) {
         const langs: ShortJWLang[] = result.languages
@@ -155,12 +155,8 @@ export async function getPubAvailability(
     )
 
     const result = await Promise.allSettled([
-      ipcRenderer.invoke('getFromJWOrg', {
-        url: mwbAvailabilityEndpoint,
-      }) as Promise<Filter>,
-      ipcRenderer.invoke('getFromJWOrg', {
-        url: wAvailabilityEndpoint,
-      }) as Promise<Filter>,
+      $fetch<Filter>(mwbAvailabilityEndpoint),
+      $fetch<Filter>(wAvailabilityEndpoint),
     ])
 
     const mwbResult = result[0]
