@@ -108,6 +108,8 @@ watch(mediaActive, (val) => {
     item.deactivate = false
   })
 
+  const mediaVisible = usePresentStore().mediaScreenVisible
+
   // Toggle Zoom spotlight
   const zoomStore = useZoomStore()
   const hostID = zoomStore.hostID
@@ -117,6 +119,9 @@ watch(mediaActive, (val) => {
     zoomStore.spotlights.forEach((person) => {
       toggleSplotlight(zoomSocket(), true, person)
     })
+    if (!val && mediaVisible) {
+      useIpcRenderer().send('toggleMediaWindowFocus')
+    }
   }
 
   // Toggle OBS scene
@@ -130,7 +135,7 @@ watch(mediaActive, (val) => {
   if (
     !val &&
     (zoomPart.value || getPrefs<boolean>('media.hideWinAfterMedia')) &&
-    usePresentStore().mediaScreenVisible
+    mediaVisible
   ) {
     useIpcRenderer().send('toggleMediaWindowFocus')
   }

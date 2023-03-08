@@ -43,7 +43,13 @@ export function muteParticipants(socket: WebSocket) {
 
   const openParticipants = store.client
     .getAttendeeslist()
-    .filter((p) => !p.isHost && !p.isCoHost && !p.muted)
+    .filter(
+      (p) =>
+        !p.isHost &&
+        !p.isCoHost &&
+        !p.muted &&
+        !store.spotlights.includes(p.userId)
+    )
   openParticipants.forEach((p) => {
     toggleMic(socket, true, p.userId)
     lowerHand(socket, p.userId)

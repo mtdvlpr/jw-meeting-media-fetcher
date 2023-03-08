@@ -121,15 +121,15 @@
         <v-progress-linear
           v-else
           :model-value="progress"
-          style="position: absolute; bottom: 0"
           aria-label="Video progress"
           color="primary"
+          class="video-progress"
           :bg-opacity="0"
         />
         <v-progress-linear
           v-if="clippedStart > 0"
           :model-value="clippedStart"
-          style="position: absolute; bottom: 0"
+          class="video-progress"
           aria-label="Video clipped start"
           color="rgb(231, 76, 60)"
           :bg-opacity="0"
@@ -137,7 +137,7 @@
         <v-progress-linear
           v-if="clippedEnd > 0"
           :model-value="clippedEnd"
-          style="position: absolute; bottom: 0"
+          class="video-progress"
           aria-label="Video clipped end"
           color="rgb(231, 76, 60)"
           reverse
@@ -557,6 +557,12 @@ const zoom = (e: WheelEvent) => {
 
   .v-progress-linear:not([aria-valuenow='0']) div {
     transition: width 0.5s linear;
+  }
+
+  .video-progress {
+    position: absolute;
+    bottom: 0;
+    top: unset !important;
   }
 
   .video-scrubber {

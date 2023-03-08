@@ -27,11 +27,10 @@
           @deactivated="deactivateSong"
         />
       </v-list>
-      <v-divider class="mx-4" />
     </template>
     <template v-if="isMwDay">
-      <v-divider class="mx-4 mt-4 treasures" />
-      <v-list-item-title class="mx-4 my-2 treasures--text text-overline">
+      <v-divider class="mx-4 mt-4 text-treasures" />
+      <v-list-item-title class="mx-4 my-2 text-treasures text-overline">
         {{ mwbHeadings.treasures }}
       </v-list-item-title>
       <v-list class="ma-4">
@@ -57,8 +56,8 @@
         </draggable>
       </v-list>
       <template v-if="applyItems.length > 0">
-        <v-divider class="mx-4 apply" />
-        <v-list-item-title class="mx-4 my-2 apply--text text-overline">
+        <v-divider class="mx-4 text-apply" />
+        <v-list-item-title class="mx-4 my-2 text-apply text-overline">
           {{ mwbHeadings.apply }}
         </v-list-item-title>
         <v-list class="ma-4">
@@ -84,8 +83,8 @@
           </draggable>
         </v-list>
       </template>
-      <v-divider class="mx-4 living" />
-      <v-list-item-title class="mx-4 my-2 living--text text-overline">
+      <v-divider class="mx-4 text-living" />
+      <v-list-item-title class="mx-4 my-2 text-living text-overline">
         {{ mwbHeadings.living }}
       </v-list-item-title>
       <v-list class="ma-4">
@@ -285,6 +284,7 @@ watch(
   () => props.items,
   (val) => {
     setItems(val)
+    console.log(treasureItems.value)
   }
 )
 const setItems = (val: MediaItem[]) => {
