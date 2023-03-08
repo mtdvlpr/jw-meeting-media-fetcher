@@ -1,7 +1,7 @@
 <template>
   <v-list
     v-if="mediaList.length > 0"
-    dense
+    density="compact"
     :style="`overflow-y: auto;max-height: ${listHeight}px`"
   >
     <v-dialog
@@ -26,13 +26,14 @@
     </v-dialog>
     <manage-media-item
       v-for="item in mediaList"
-      :key="item.safeName"
+      :key="item.safeName + (item.color ? item.color : '')"
       :date="date"
       :prefix="prefix"
       :item="item"
-      @edit="editItem($event)"
-      @remove="removeItem($event)"
-      @refresh="emit('refresh')"
+      @at-click="atClick(item)"
+      @edit="editItem(item)"
+      @remove="removeItem(item)"
+      @refresh="atRefresh(item)"
     />
   </v-list>
   <p v-else>{{ $t('noMedia') }}</p>
@@ -152,6 +153,19 @@ const saveNewName = async () => {
   emit('refresh')
 }
 
+const atClick = (item: MeetingFile | LocalFile) => {
+  if (item.isLocal !== undefined) {
+    item.loading = true
+  } else if (item.isLocal === undefined) {
+    item.ignored = !item.ignored
+  }
+}
+
+const atRefresh = (item: MeetingFile | LocalFile) => {
+  item.loading = false
+  emit('refresh')
+}
+
 // Select file for renaming
 const editItem = (item: MeetingFile | LocalFile) => {
   edit.value = {
@@ -164,46 +178,31 @@ const editItem = (item: MeetingFile | LocalFile) => {
 
 // Remove file
 const removeItem = async (item: MeetingFile | LocalFile) => {
-  if (item.color === 'error') {
-    mediaList.value.splice(mediaList.value.indexOf(item), 1)
-    rm(join(mediaPath(), props.date, item.safeName))
+  item.loading = true
+  mediaList.value.splice(mediaList.value.indexOf(item), 1)
+  rm(join(mediaPath(), props.date, item.safeName))
 
-    if (props.date === 'Recurring') {
-      rm(findAll(join(mediaPath(), '*', item.safeName)))
-    }
-
-    // Remove item in cong server
-    if (item.congSpecific && item.url && online.value && client.value) {
-      try {
-        await client.value.deleteFile(item.url)
-      } catch (e: any) {
-        if (e.message.includes(LOCKED.toString())) {
-          warn('errorWebdavLocked', {
-            identifier: item.url,
-          })
-        } else if (e.status !== NOT_FOUND) {
-          error('errorWebdavRm', e, item.url)
-        }
-      }
-      await updateContent()
-    }
-    item.loading = false
-    emit('refresh')
-  } else {
-    // Make user click twice to remove
-    const newItem = Object.assign(item, { color: 'error' })
-    mediaList.value.splice(mediaList.value.indexOf(item), 1, newItem)
-    setTimeout(() => {
-      const i = mediaList.value.indexOf(newItem)
-      if (i > -1) {
-        mediaList.value.splice(
-          i,
-          1,
-          Object.assign(newItem, { color: 'warning' })
-        )
-      }
-    }, 3 * MS_IN_SEC)
+  if (props.date === 'Recurring') {
+    rm(findAll(join(mediaPath(), '*', item.safeName)))
   }
+
+  // Remove item in cong server
+  if (item.congSpecific && item.url && online.value && client.value) {
+    try {
+      await client.value.deleteFile(item.url)
+    } catch (e: any) {
+      if (e.message.includes(LOCKED.toString())) {
+        warn('errorWebdavLocked', {
+          identifier: item.url,
+        })
+      } else if (e.status !== NOT_FOUND) {
+        error('errorWebdavRm', e, item.url)
+      }
+    }
+    await updateContent()
+  }
+  item.loading = false
+  emit('refresh')
 }
 
 // Available list height

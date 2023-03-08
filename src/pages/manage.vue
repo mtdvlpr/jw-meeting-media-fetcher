@@ -118,7 +118,7 @@ const getExistingMedia = () => {
               localMedia.push({
                 safeName: filename,
                 isLocal: true,
-                filepath: join(mPath, date, filename),
+                filepath: join(mPath, date.value, filename),
               })
             }
           })

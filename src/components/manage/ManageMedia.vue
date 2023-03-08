@@ -1,5 +1,5 @@
 <template>
-  <v-container class="fill-height" fluid>
+  <v-container class="fill-height manage-media" fluid>
     <manage-select-video
       :active="type === 'jworg' && !jwFile"
       @cancel="type = 'custom'"
@@ -66,7 +66,7 @@
         :total="totalProgress"
         style="bottom: 72px"
       />
-      <v-footer style="position: fixed" height="72px">
+      <v-footer class="manage-footer">
         <v-col class="text-left">
           <icon-btn
             v-if="jwFile || files.length > 0"
@@ -92,7 +92,7 @@
             min-width="32px"
             @click="cancel()"
           >
-            <v-icon icon="fa-xmark" size="small" class="text-white" />
+            <v-icon icon="fa-x-mark" size="small" class="text-white" />
           </v-btn>
           <icon-btn v-else variant="home" :disabled="loading || saving" />
         </v-col>
@@ -381,3 +381,14 @@ const goHome = () => {
   })
 }
 </script>
+<style lang="scss" scoped>
+.manage-media {
+  .manage-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 72px;
+  }
+}
+</style>

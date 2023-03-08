@@ -1,42 +1,55 @@
 <!-- eslint-disable vue/no-unused-vars -->
 <template>
   <v-list-item
-    :key="item.safeName"
     dense
     class="manage-media-item"
     style="position: static"
     :disabled="item.loading"
   >
-    <v-list-item-action v-if="item.loading" class="my-0">
-      <v-progress-circular indeterminate size="16" width="2" />
-    </v-list-item-action>
-    <v-list-item-action
-      v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
-      class="my-0"
-    >
-      <v-btn v-if="item.color === 'warning'" icon @click="atClick(item)">
-        <v-icon icon="fa-square-minus" class="text-warning" size="x-small" />
-      </v-btn>
-      <v-tooltip v-else location="right" :model-value="true">
-        <template #activator="data">
-          <v-btn icon @click="atClick(item)">
-            <v-icon icon="fa-square-minus" class="text-error" size="x-small" />
-          </v-btn>
-        </template>
-        <span>{{ $t('clickAgain') }}</span>
-      </v-tooltip>
-    </v-list-item-action>
-    <v-list-item-action v-else class="my-0">
-      <v-btn icon @click="atClick(item)">
-        <v-icon
-          v-if="item.isLocal === undefined"
-          icon="fa-square-plus"
+    <template #prepend>
+      <v-list-item-action v-if="item.loading" class="my-0">
+        <v-progress-circular indeterminate size="16" width="2" />
+      </v-list-item-action>
+      <v-list-item-action
+        v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
+        class="my-0"
+      >
+        <v-tooltip
+          v-if="clickedOnce"
+          model-value
+          @update:model-value="() => {}"
+        >
+          <template #activator="{ props: attrs }">
+            <v-btn
+              icon="fa-square-minus"
+              variant="text"
+              size="x-small"
+              color="error"
+              v-bind="attrs"
+              @click="atClick()"
+            />
+          </template>
+          {{ $t('clickAgain') }}
+        </v-tooltip>
+        <v-btn
+          v-else
+          icon="fa-square-minus"
+          variant="text"
           size="x-small"
+          color="warning"
+          @click="atClick(item)"
         />
-        <v-icon v-else-if="item.hidden" icon="fa-square" size="x-small" />
-        <v-icon v-else icon="fa-square-check" size="x-small" />
-      </v-btn>
-    </v-list-item-action>
+      </v-list-item-action>
+      <v-list-item-action v-else class="my-0">
+        <v-btn
+          :icon="
+            'fa-square' +
+            (item.isLocal === undefined ? '-plus' : item.hidden ? '' : '-check')
+          "
+          @click="atClick(item)"
+        />
+      </v-list-item-action>
+    </template>
     <v-hover v-slot="{ isHovering }">
       <v-img
         v-if="isHovering && getPreview(item)"
@@ -62,30 +75,37 @@
         {{ item.safeName }}
       </v-list-item-title>
     </v-hover>
-    <v-list-item-action class="my-0">
-      <v-icon v-if="item.recurring" icon="fa-sync-alt" class="text-info" />
-      <v-btn
-        v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
-        icon
-        aria-label="rename file"
-        @click="emit('edit', item)"
-      >
-        <v-icon icon="fa-pen" size="sm" />
-      </v-btn>
-    </v-list-item-action>
-    <v-list-item-action>
-      <v-icon :icon="typeIcon(item.safeName)" size="sm" fixed-width />
-    </v-list-item-action>
-    <v-list-item-action class="ms-2">
-      <v-icon
-        v-if="item.congSpecific"
-        icon="fa-cloud"
-        class="text-info"
-        size="sm"
-      />
-      <v-icon v-else-if="item.isLocal" icon="fa-folder-open" size="sm" />
-      <v-icon v-else icon="fa-globe-americas" class="text-primary" size="sm" />
-    </v-list-item-action>
+    <template #append>
+      <v-list-item-action class="my-0">
+        <v-icon v-if="item.recurring" icon="fa-sync-alt" color="info" />
+        <v-btn
+          v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
+          icon="fa-pen"
+          size="x-small"
+          variant="text"
+          aria-label="rename file"
+          @click="emit('edit')"
+        />
+      </v-list-item-action>
+      <v-list-item-action>
+        <v-icon :icon="typeIcon(item.safeName)" size="x-small" />
+      </v-list-item-action>
+      <v-list-item-action class="ms-2">
+        <v-icon
+          v-if="item.congSpecific"
+          icon="fa-cloud"
+          color="info"
+          size="x-small"
+        />
+        <v-icon v-else-if="item.isLocal" icon="fa-folder-open" size="x-small" />
+        <v-icon
+          v-else
+          icon="fa-globe-americas"
+          color="primary"
+          size="x-small"
+        />
+      </v-list-item-action>
+    </template>
   </v-list-item>
 </template>
 <script setup lang="ts">
@@ -95,8 +115,9 @@ import { LocalFile, MeetingFile } from '~~/types'
 
 const emit = defineEmits<{
   (e: 'refresh'): void
-  (e: 'edit', item: MeetingFile | LocalFile): void
-  (e: 'remove', item: MeetingFile | LocalFile): void
+  (e: 'atClick'): void
+  (e: 'edit'): void
+  (e: 'remove'): void
 }>()
 const props = defineProps<{
   date: string
@@ -146,18 +167,18 @@ const getPreview = (item: MeetingFile | LocalFile) => {
 }
 
 // When clicking on a file
-const atClick = (item: MeetingFile | LocalFile) => {
-  if (item.loading) return
-  if (!item.recurring && (item.isLocal || item.congSpecific)) {
-    item.loading = item.color === 'error'
-    emit('remove', item)
-  } else if (item.isLocal !== undefined) {
-    item.loading = true
-    toggleVisibility(item)
-  } else if (item.isLocal === undefined) {
-    item.ignored = !item.ignored
+const { atClick, clickedOnce } = useClickTwice(() => {
+  if (props.item.loading) return
+  emit('atClick')
+  if (
+    !props.item.recurring &&
+    (props.item.isLocal || props.item.congSpecific)
+  ) {
+    emit('remove')
+  } else if (props.item.isLocal !== undefined) {
+    toggleVisibility(props.item)
   }
-}
+})
 
 // Toggle visibility
 const toggleVisibility = async (item: MeetingFile | LocalFile) => {
@@ -201,7 +222,6 @@ const toggleVisibility = async (item: MeetingFile | LocalFile) => {
         await updateContent()
       }
       match.hidden = !match.hidden
-      item.loading = false
       emit('refresh')
       return
     }

@@ -7,7 +7,7 @@
             :media="localMedia"
             :loading="loading"
             dialog
-            @cancel="manageMedia = false"
+            @cancel="() => (manageMedia = false)"
             @refresh="getMedia()"
           />
         </v-container>
