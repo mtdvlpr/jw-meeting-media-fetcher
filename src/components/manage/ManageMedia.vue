@@ -20,7 +20,12 @@
     <v-row class="fill-height" align-content="start">
       <manage-header />
       <manage-select-type v-model="type" :disabled="loading || saving" />
-      <v-row v-if="type" align="center" class="mb-0">
+      <v-row
+        v-if="type && type !== 'jworg'"
+        no-gutters
+        align="center"
+        class="mt-4"
+      >
         <v-col cols="1" class="text-center" align-self="center">
           <v-icon icon="fa-file-export" />
         </v-col>
@@ -31,7 +36,7 @@
             :disabled="loading || saving"
           />
           <manage-select-file
-            v-else-if="type !== 'jworg'"
+            v-else
             :type="type"
             :path="fileString"
             :loading="loading || saving"
@@ -54,7 +59,7 @@
             :new-files="files"
             :prefix="prefix"
             :media="media"
-            :show-input="type !== 'jworg'"
+            :show-input="!!type && type !== 'jworg'"
             :show-prefix="!!jwFile || files.length > 0"
             @refresh="emit('refresh')"
           />
@@ -73,7 +78,7 @@
             variant="cancel"
             :disabled="loading || saving"
             click-twice
-            @click="dialog ? cancel() : goHome()"
+            @click="cancel()"
           />
         </v-col>
         <v-col class="text-center">
@@ -123,7 +128,7 @@ const prefix = ref('')
 // Type of media to add
 const type = ref('custom')
 watch(type, (val) => {
-  reset()
+  reset(false)
   selectDoc.value = val === 'jwpub'
 })
 
@@ -320,11 +325,11 @@ const uploadFile = async (path: string) => {
 }
 
 // Reset values
-const reset = () => {
+const reset = (resetType = true) => {
   jwFile.value = null
   files.value = []
   fileString.value = ''
-  type.value = 'custom'
+  if (resetType) type.value = 'custom'
   selectDoc.value = false
   processedFiles.value = 0
   totalFiles.value = 0
@@ -367,19 +372,6 @@ const onDrop = (dropped: File[] | null) => {
 }
 const dropzone = ref<HTMLElement>()
 const { isOverDropZone } = useDropZone(dropzone, onDrop)
-
-// Go home
-const goHome = () => {
-  log.debug('Go back home')
-  const { $localePath } = useNuxtApp()
-  useRouter().push({
-    path: $localePath('/'),
-    query: {
-      ...useRoute().query,
-      date: undefined,
-    },
-  })
-}
 </script>
 <style lang="scss" scoped>
 .manage-media {

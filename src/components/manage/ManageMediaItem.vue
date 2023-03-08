@@ -42,6 +42,7 @@
       </v-list-item-action>
       <v-list-item-action v-else class="my-0">
         <v-btn
+          size="x-small"
           :icon="
             'fa-square' +
             (item.isLocal === undefined ? '-plus' : item.hidden ? '' : '-check')

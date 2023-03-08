@@ -1,10 +1,10 @@
 <template>
-  <v-row align="center" class="my-n4" style="width: 100%">
+  <v-row align="center" class="mt-0" style="width: 100%">
     <v-col cols="1" class="text-center" align-self="center">
-      <v-icon icon="faArrowDown19" />
+      <v-icon icon="fa-arrow-down-1-9" />
     </v-col>
-    <v-col cols="11" class="d-flex">
-      <form-input v-model="value" />
+    <v-col cols="11" class="d-flex" align-self="center">
+      <form-input v-model="value" hide-details="auto" />
     </v-col>
   </v-row>
 </template>
@@ -19,7 +19,7 @@ const value = useVModel(props, 'modelValue', emit)
 <!--<template>
   <v-row align="center" class="my-n4" style="width: 100%">
     <v-col cols="1" class="text-center" align-self="center">
-      <v-icon icon="faArrowDown19" />
+      <v-icon icon="fa-arrow-down-1-9" />
     </v-col>
     <v-col cols="11" class="d-flex">
       <v-col cols="4">

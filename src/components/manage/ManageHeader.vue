@@ -1,5 +1,5 @@
 <template>
-  <v-row align="center" class="mb-4" style="width: 100%">
+  <v-row no-gutters align="center" class="mb-4" style="width: 100%">
     <v-col cols="1" class="text-center">
       <v-icon
         size="x-large"

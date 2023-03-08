@@ -1,5 +1,5 @@
 <template>
-  <v-row align="center" style="width: 100%">
+  <v-row no-gutters align="center" style="width: 100%">
     <v-col cols="1" class="text-center" align-self="center">
       <v-icon icon="fa-photo-film" />
     </v-col>
@@ -8,7 +8,7 @@
         v-model="value"
         color="primary"
         style="width: 100%"
-        :mandatory="!!$attrs.value"
+        :mandatory="!!value"
       >
         <v-btn
           v-for="t in types"
@@ -27,7 +27,7 @@
 <script setup lang="ts">
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
-  modelValue: string
+  modelValue: any
   disabled?: boolean
 }>()
 

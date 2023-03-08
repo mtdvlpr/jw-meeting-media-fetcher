@@ -3,7 +3,7 @@
   <v-btn
     :id="variant"
     ref="btn"
-    v-click-outside="(clickedOnce = false)"
+    v-click-outside="() => (clickedOnce = false)"
     :aria-label="variant"
     :title="title"
     :color="clickedOnce ? 'error' : style.props.color"
@@ -60,8 +60,11 @@ const props = withDefaults(
 // Emit click event
 const emit = defineEmits(['click'])
 const atClick = () => {
-  if (props.clickTwice) atFirstClick()
-  else emit('click')
+  if (props.clickTwice) {
+    atFirstClick()
+  } else {
+    emit('click')
+  }
 }
 const { atClick: atFirstClick, clickedOnce } = useClickTwice(() => {
   emit('click')

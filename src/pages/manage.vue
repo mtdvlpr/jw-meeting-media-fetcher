@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="fill-height">
     <Head>
       <Title>
         {{ date ? `Manage ${date}` : 'Manage Media' }}

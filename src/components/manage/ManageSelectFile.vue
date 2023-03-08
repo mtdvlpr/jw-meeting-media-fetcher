@@ -1,5 +1,5 @@
 <template>
-  <v-row align="center">
+  <v-row no-gutters align="center">
     <v-col cols="auto" class="pr-0 text-left">
       <v-btn
         :id="`btn-browse-${type}`"

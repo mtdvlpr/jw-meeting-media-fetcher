@@ -3,7 +3,6 @@ export function useClickTwice<T = any>(atClickedTwice: (object?: T) => void) {
   const clickedOnce = ref(false)
 
   const atClick = (object?: T) => {
-    console.log('atclick')
     if (clickedOnce.value) {
       atClickedTwice(object)
       clickedOnce.value = false
