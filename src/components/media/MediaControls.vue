@@ -1,5 +1,5 @@
 <template>
-  <v-row class="media-controls">
+  <v-row no-gutters class="media-controls">
     <v-dialog :model-value="manageMedia" fullscreen persistent>
       <v-sheet color="bg" class="fill-height">
         <v-container class="fill-height" fluid>
@@ -24,7 +24,7 @@
       @previous="previous()"
       @next="next()"
       @sortable="sortable = !sortable"
-      @prefix="togglePrefix()"
+      @show-prefix="togglePrefix()"
       @refresh="getMedia()"
       @manage-media="manageMedia = true"
     />
@@ -35,7 +35,6 @@
       :items="items"
       :media-active="mediaActive"
       :zoom-part="zoomPart"
-      :show-prefix="showPrefix"
       :sortable="sortable"
       :cc-enable="ccEnable"
       :add-song="addSong"
@@ -233,6 +232,6 @@ const resetDeactivate = (index: number) => {
 </script>
 <style lang="scss" scoped>
 .media-controls {
-  width: 100%;
+  max-width: 100%;
 }
 </style>

@@ -1,25 +1,31 @@
 <template>
   <v-app-bar class="present-top-bar">
     <v-col class="text-left" cols="3">
-      <v-btn icon size="x-small" aria-label="More actions" class="mr-2">
-        <v-icon icon="fa-ellipsis-vertical" size="x-small" />
-        <v-menu location="bottom" activator="parent">
-          <v-list>
-            <v-list-item
-              v-for="(action, i) in actions"
-              :key="i"
-              :disabled="action.disabled ? mediaActive : false"
-              @click="action.action()"
-            >
-              <template #prepend>
-                <v-icon :icon="action.icon" size="x-small" />
-              </template>
-              <v-list-item-title>{{ action.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-btn>
-
+      <v-menu location="bottom">
+        <template #activator="{ props }">
+          <v-btn
+            icon="fa-ellipsis-vertical"
+            variant="text"
+            size="small"
+            v-bind="props"
+            aria-label="More actions"
+            class="mr-2"
+          />
+        </template>
+        <v-list>
+          <v-list-item
+            v-for="(action, i) in actions"
+            :key="i"
+            :disabled="action.disabled ? mediaActive : false"
+            @click="action.action()"
+          >
+            <template #prepend>
+              <v-icon :icon="action.icon" size="x-small" />
+            </template>
+            <v-list-item-title>{{ action.title }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-btn icon aria-label="Add song" @click="emit('song')">
         <v-icon icon="fa-music" start size="small" />
         <v-icon icon="fa-plus" end size="small" />
@@ -40,9 +46,10 @@
         </v-tooltip>
       </v-btn>
     </v-col>
+
     <v-col cols="6" class="text-center d-flex justify-center">
       <v-btn
-        if="btn-toggle-meeting-date"
+        id="btn-toggle-meeting-date"
         class="px-3"
         color="secondary"
         :disabled="mediaActive"
@@ -52,6 +59,7 @@
         {{ date }}
       </v-btn>
     </v-col>
+
     <v-col class="text-right" cols="3">
       <template v-if="getPrefs('media.enablePp')">
         <v-btn
@@ -224,5 +232,12 @@ const actions = [
 .present-top-bar {
   width: 100%;
   height: 64px;
+}
+</style>
+<style lang="scss">
+.present-top-bar {
+  .fa-ellipsis-vertical {
+    max-height: 20px;
+  }
 }
 </style>

@@ -3,10 +3,10 @@
   <v-btn
     v-if="clickedOnce"
     id="shuffle"
-    v-click-outside="(clickedOnce = false)"
+    v-click-outside="() => (clickedOnce = false)"
     aria-label="shuffle"
     :color="musicFadeOut ? 'error' : 'warning'"
-    @click="atClick"
+    @click="atClick()"
   >
     <v-tooltip
       activator="parent"
@@ -16,61 +16,44 @@
     >
       {{ $t('clickAgain') }}
     </v-tooltip>
-    <v-icon v-if="musicFadeOut" start icon="fa-stop" />
+    <v-icon v-if="musicFadeOut" start icon="fa-stop" size="small" />
     <template v-else>
       <v-icon
         v-for="(icon, i) in icons"
         :key="i"
-        size="small"
         :start="i == 0"
         :end="i == 1"
         :icon="icon"
         color="onbg"
       />
     </template>
-    {{ timeRemaining }}
-  </v-btn>
-  <v-btn
-    v-else-if="musicFadeOut || loading"
-    id="shuffle"
-    aria-label="shuffle"
-    color="warning"
-    :title="getPrefs('meeting.shuffleShortcut')"
-    :loading="loading"
-    :style="{ color: isDark ? 'white' : 'black' }"
-    @click="atClick"
-  >
-    <v-icon
-      v-for="(icon, i) in icons"
-      :key="i"
-      :icon="icon"
-      :start="i == 0"
-      :end="i == 1"
-      color="onbg"
-    />
-    {{ timeRemaining }}
+    <template v-if="musicFadeOut">{{ timeRemaining }}</template>
   </v-btn>
   <v-btn
     v-else
     id="shuffle"
     aria-label="shuffle"
+    :color="musicFadeOut || loading ? 'warning' : 'info'"
     :title="getPrefs('meeting.shuffleShortcut')"
-    color="info"
-    @click.stop="atClick()"
+    :loading="loading"
+    @click="atClick()"
   >
-    <v-icon
-      v-for="(icon, i) in icons"
-      :key="i"
-      size="small"
-      :start="i == 0"
-      :end="i == 1"
-      :icon="icon"
-    />
+    <v-icon v-if="musicFadeOut" start icon="fa-stop" size="small" />
+    <template v-else>
+      <v-icon
+        v-for="(icon, i) in icons"
+        :key="i"
+        :icon="icon"
+        :start="i == 0"
+        :end="i == 1"
+        color="onbg"
+      />
+    </template>
+    <template v-if="musicFadeOut">{{ timeRemaining }}</template>
   </v-btn>
 </template>
 <script setup lang="ts">
 const icons = ['fa-music', 'fa-shuffle']
-const { isDark } = useTheme()
 const store = useMediaStore()
 const { musicFadeOut } = storeToRefs(store)
 const loading = ref(false)
@@ -88,9 +71,9 @@ watch(musicFadeOut, (val) => {
     timeRemaining = formatted
   }
 })
-
-const { atClick, clickedOnce } = useClickTwice(() => {
+const { atClick, clickedOnce } = useClickTwice(async () => {
   loading.value = true
-  shuffleMusic(!!musicFadeOut.value)
+  await shuffleMusic(!!musicFadeOut.value)
+  setTimeout(() => (loading.value = false), MS_IN_SEC)
 })
 </script>

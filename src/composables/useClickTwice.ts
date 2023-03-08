@@ -3,6 +3,7 @@ export function useClickTwice<T = any>(atClickedTwice: (object?: T) => void) {
   const clickedOnce = ref(false)
 
   const atClick = (object?: T) => {
+    console.log('atclick')
     if (clickedOnce.value) {
       atClickedTwice(object)
       clickedOnce.value = false
@@ -10,7 +11,7 @@ export function useClickTwice<T = any>(atClickedTwice: (object?: T) => void) {
       clickedOnce.value = true
       setTimeout(() => {
         clickedOnce.value = false
-      }, MS_IN_SEC)
+      }, 3 * MS_IN_SEC)
     }
   }
 

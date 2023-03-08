@@ -431,6 +431,7 @@ const getMarkers = () => {
 // Show prefix
 const showPrefix = inject(showPrefixKey, ref(false))
 watch(showPrefix, (val) => {
+  console.log('show prefix')
   const prefix = document.querySelector<HTMLSpanElement>(
     `#${id.value} .sort-prefix`
   )

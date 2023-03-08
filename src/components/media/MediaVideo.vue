@@ -346,6 +346,9 @@ const { clickedOnce, atClick } = useClickTwice(() => {
 </script>
 <style lang="scss" scoped>
 .video-item {
+  width: 142px;
+  height: 80px;
+
   .time-btn {
     position: absolute;
     bottom: -6px;
