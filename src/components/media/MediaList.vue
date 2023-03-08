@@ -314,7 +314,7 @@ const deactivateSong = () => {
 const windowHeight = inject(windowHeightKey, ref(0))
 const listHeight = computed(() => {
   const TOP_BAR = 64
-  const FOOTER = 72
+  const FOOTER = 76
   const ZOOM_BAR = 56
   let otherElements = TOP_BAR + FOOTER
   if (zoomIntegration.value) otherElements += ZOOM_BAR

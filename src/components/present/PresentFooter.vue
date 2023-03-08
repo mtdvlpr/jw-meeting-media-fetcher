@@ -227,5 +227,6 @@ const combinedScenesLength = computed(() => {
   bottom: 0;
   left: 0;
   width: 100%;
+  height: 76px;
 }
 </style>

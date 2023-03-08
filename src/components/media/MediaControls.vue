@@ -152,7 +152,7 @@ const getMedia = () => {
   loading.value = true
 
   items.value = findAll(join(mPath, date.value, '*'))
-    .filter((f) => isImage(f) || isVideo(f) || !isAudio(f))
+    .filter((f) => isImage(f) || isVideo(f) || isAudio(f))
     .sort((a, b) => a.localeCompare(b))
     .map((path) => {
       const cleanName = sanitize(basename(path), true)

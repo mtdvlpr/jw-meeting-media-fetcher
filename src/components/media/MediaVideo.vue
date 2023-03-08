@@ -72,13 +72,13 @@
       absolute
       :rounded="0"
       variant="flat"
-      :style="`left: 123px; ${ccTop ? 'top' : 'bottom'}: 4px`"
+      :style="`left: -36px; top: ${ccTop ? 0 : 65}px`"
       @click="ccTop = !ccTop"
     >
       <v-tooltip activator="parent" location="right">
         {{ $t('toggleSubtitlePosition') }}
       </v-tooltip>
-      <v-icon :icon="`${ccIcon} faClosedCaptioning`" />
+      <v-icon :icon="`${ccIcon}fa-closed-captioning`" />
     </v-btn>
   </div>
 </template>
@@ -230,7 +230,7 @@ watch(
     if (props.playing) toggleSubtitles(val, ccTop.value)
   }
 )
-const ccIcon = computed(() => (ccEnable.value ? 'fa' : 'far'))
+const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
 const toggleSubtitles = (enabled: boolean, top = false) => {
   ipcRenderer.send('toggleSubtitles', enabled, top)
 }

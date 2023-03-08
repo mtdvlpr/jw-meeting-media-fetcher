@@ -1,6 +1,6 @@
 <template>
-  <v-app-bar style="height: 64px; width: 100%">
-    <v-col class="text-left" cols="4">
+  <v-app-bar class="present-top-bar">
+    <v-col class="text-left" cols="3">
       <v-btn icon size="x-small" aria-label="More actions" class="mr-2">
         <v-icon icon="fa-ellipsis-vertical" size="x-small" />
         <v-menu location="bottom" activator="parent">
@@ -34,13 +34,13 @@
         :color="ccEnable ? 'primary' : undefined"
         @click="emit('cc')"
       >
-        <v-icon :icon="`${ccIcon} faClosedCaptioning`" size="small" />
+        <v-icon :icon="`${ccIcon}fa-closed-captioning`" size="small" />
         <v-tooltip activator="parent" location="bottom">
           {{ $t('toggleSubtitles') }}
         </v-tooltip>
       </v-btn>
     </v-col>
-    <v-col class="text-center d-flex justify-center">
+    <v-col cols="6" class="text-center d-flex justify-center">
       <v-btn
         if="btn-toggle-meeting-date"
         class="px-3"
@@ -52,7 +52,7 @@
         {{ date }}
       </v-btn>
     </v-col>
-    <v-col class="text-right pr-8" cols="4">
+    <v-col class="text-right" cols="3">
       <template v-if="getPrefs('media.enablePp')">
         <v-btn
           id="btn-pp-previous"
@@ -70,7 +70,6 @@
           id="btn-pp-next"
           icon
           aria-label="Next"
-          class="mr-2"
           :disabled="!mediaActive && currentIndex == mediaCount - 1"
           @click="emit('next')"
         >
@@ -138,10 +137,14 @@ const date = useRouteQuery<string>('date', '')
 // Subtitles
 const ccAvailable = ref(false)
 const ccEnable = inject(ccEnableKey, ref(false))
-const ccIcon = computed(() => (ccEnable.value ? 'fa' : 'far'))
+const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
 const setCcAvailable = () => {
   ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
 }
+
+onMounted(() => {
+  setCcAvailable()
+})
 
 // Refresh media
 const refresh = () => {
@@ -217,3 +220,9 @@ const actions = [
   },
 ]
 </script>
+<style lang="scss" scoped>
+.present-top-bar {
+  width: 100%;
+  height: 64px;
+}
+</style>
