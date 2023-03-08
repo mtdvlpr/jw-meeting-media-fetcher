@@ -209,8 +209,8 @@ const startMediaSync = async (dryrun = false) => {
   try {
     if (!dryrun) {
       rm(
-        findAll(join(mediaPath, '*'), {
-          ignore: [join(mediaPath, 'Recurring')],
+        findAll(join(mPath, '*'), {
+          ignore: [join(mPath, 'Recurring')],
           onlyDirectories: true,
         }).filter((dir: string) => {
           const date = $dayjs(

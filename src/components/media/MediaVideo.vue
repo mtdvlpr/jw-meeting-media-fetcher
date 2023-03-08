@@ -1,5 +1,5 @@
 <template>
-  <div :id="id">
+  <div :id="id" class="d-flex video-item">
     <div :id="id + '-container'" class="align-center d-flex" />
     <!--<v-overlay
       absolute
@@ -43,14 +43,20 @@
     </v-overlay>-->
     <v-btn
       size="x-small"
-      absolute
       location="left"
+      :rounded="0"
       variant="flat"
-      style="bottom: 4px"
+      class="time-btn"
       :class="{ 'pulse-danger': isClipped }"
       @click="atClick()"
     >
-      <v-tooltip v-if="clickedOnce" location="right" :model-value="true">
+      <v-tooltip
+        v-if="clickedOnce"
+        activator="parent"
+        location="right"
+        :model-value="true"
+        @update:model-value="() => {}"
+      >
         {{ $t('clickAgain') }}
       </v-tooltip>
       <v-icon icon="fa-film" start />
@@ -64,6 +70,7 @@
       v-if="ccAvailable"
       size="x-small"
       absolute
+      :rounded="0"
       variant="flat"
       :style="`left: 123px; ${ccTop ? 'top' : 'bottom'}: 4px`"
       @click="ccTop = !ccTop"
@@ -109,10 +116,10 @@ const isShortVideo = computed(() => duration.value === '00:00')
 const id = computed(() => strip('video-' + basename(props.src)))
 const poster = computed(() => (isVideo(props.src) ? VIDEO_ICON : AUDIO_ICON))
 const url = computed(() => {
-  return (props.stream ? props.src : pathToFileURL(props.src).href) +
-    thumbnail.value
-    ? ''
-    : '#t=5'
+  return (
+    (props.stream ? props.src : pathToFileURL(props.src).href) +
+    (thumbnail.value ? '' : '#t=5')
+  )
 })
 const thumbnail = computed(() => {
   const meetingMedia = meetings.value.get(date.value)
@@ -337,3 +344,13 @@ const { clickedOnce, atClick } = useClickTwice(() => {
   changeTime.value = true
 })
 </script>
+<style lang="scss" scoped>
+.video-item {
+  .time-btn {
+    position: absolute;
+    bottom: -6px;
+    top: unset !important;
+    left: 16px !important;
+  }
+}
+</style>

@@ -179,13 +179,13 @@ const saveFiles = async () => {
     totalFiles.value = fileArray.length
 
     if (client.value && online.value && props.uploadMedia) {
-      const mediaPath = join(getPrefs<string>('cong.dir'), 'Media')
-      const datePath = join(mediaPath, date)
+      const mPath = join(getPrefs<string>('cong.dir'), 'Media')
+      const datePath = join(mPath, date)
 
       try {
-        await createCongDir(mediaPath)
+        await createCongDir(mPath)
       } catch (e: unknown) {
-        error('errorWebdavPut', e, mediaPath)
+        error('errorWebdavPut', e, mPath)
       }
 
       try {

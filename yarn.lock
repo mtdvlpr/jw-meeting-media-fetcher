@@ -8018,7 +8018,6 @@ __metadata:
     vite-plugin-vuetify: ^1.0.2
     vue: ^3.2.47
     vue-tsc: ^1.2.0
-    vue3-runtime-template: ^1.0.2
     vuedraggable: next
     vuetify: ^3.1.7
     webdav: ^4.11.2
@@ -12024,16 +12023,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue3-runtime-template@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "vue3-runtime-template@npm:1.0.2"
-  dependencies:
-    vue: ^3.0.0
-  checksum: 7aa04fef7d763834039cfccc1e92960ecb0936e91e44eb0378f06e34f243999895bde3e0af53c6eeda87125629a02f6b0bbf7fa57620ab5a72e1537d3ea0281a
-  languageName: node
-  linkType: hard
-
-"vue@npm:^3.0.0, vue@npm:^3.2.47":
+"vue@npm:^3.2.47":
   version: 3.2.47
   resolution: "vue@npm:3.2.47"
   dependencies:

@@ -25,7 +25,7 @@
         :start="i == 0"
         :end="i == 1"
         :icon="icon"
-        color="on-bg"
+        color="onbg"
       />
     </template>
     {{ timeRemaining }}
@@ -46,7 +46,7 @@
       :icon="icon"
       :start="i == 0"
       :end="i == 1"
-      color="on-bg"
+      color="onbg"
     />
     {{ timeRemaining }}
   </v-btn>

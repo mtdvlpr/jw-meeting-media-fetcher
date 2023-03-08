@@ -1,8 +1,8 @@
 <template>
   <v-app-bar style="height: 64px; width: 100%">
     <v-col class="text-left" cols="4">
-      <v-btn icon aria-label="More actions">
-        <v-icon icon="fa-ellipsis-vertical" size="small" />
+      <v-btn icon size="x-small" aria-label="More actions" class="mr-2">
+        <v-icon icon="fa-ellipsis-vertical" size="x-small" />
         <v-menu location="bottom" activator="parent">
           <v-list>
             <v-list-item
@@ -11,14 +11,9 @@
               :disabled="action.disabled ? mediaActive : false"
               @click="action.action()"
             >
-              <v-list-item-icon>
-                <v-icon
-                  v-for="(icon, j) in action.icons"
-                  :key="j"
-                  :icon="icon"
-                  size="sm"
-                />
-              </v-list-item-icon>
+              <template #prepend>
+                <v-icon :icon="action.icon" size="x-small" />
+              </template>
               <v-list-item-title>{{ action.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
@@ -195,28 +190,28 @@ const openWebsite = () => {
 const actions = [
   {
     title: $i18n.t('manageMedia'),
-    icons: ['fa-folder-plus'],
+    icon: 'fa-folder-plus',
     action: () => emit('manageMedia'),
   },
   {
     title: $i18n.t('refresh'),
-    icons: ['fa-rotate-right'],
+    icon: 'fa-rotate-right',
     action: refresh,
     disabled: true,
   },
   {
     title: $i18n.t('openFolder'),
-    icons: ['fa-folder-open'],
+    icon: 'fa-folder-open',
     action: openFolder,
   },
   {
     title: $i18n.t('showPrefix'),
-    icons: ['fa-list-ol'],
+    icon: 'fa-list-ol',
     action: () => emit('showPrefix'),
   },
   {
     title: $i18n.t('openJWorg') + ' [BETA]',
-    icons: ['fa-globe'],
+    icon: 'fa-globe',
     action: openWebsite,
     disabled: true,
   },

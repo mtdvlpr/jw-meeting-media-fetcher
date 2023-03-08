@@ -1,78 +1,107 @@
 <template>
-  <div>
+  <div class="media-item">
     <v-list-item
       :id="id"
       link
-      lines="three"
       :class="{
         'media-played': played,
         'current-media-item': current,
       }"
     >
-      <div v-if="isImage(src)" class="lightBg">
-        <img
-          :id="id + '-preview'"
-          :src="url"
-          style="
-            width: 142px;
-            height: 80px;
-            aspect-ratio: 16 / 9;
-            object-fit: contain;
-            vertical-align: middle;
-          "
-          @click="atClick"
-          @wheel.prevent="zoom"
-        />
-      </div>
-
-      <media-video
-        v-else
-        :src="!!streamingFile && streamDownloaded ? localStreamPath : src"
-        :playing="active"
-        :stream="!!streamingFile && !streamDownloaded"
-        :temp-clipped="tempClipped"
-        @clipped="setTime($event)"
-        @reset-clipped="tempClipped = null"
-        @progress="progress = $event"
-      />
-      <v-list-item-subtitle class="mx-3 media-title">
-        <v-runtime-template :template="title"></v-runtime-template>
-      </v-list-item-subtitle>
-      <v-list-item-action class="align-self-center d-flex flex-row">
-        <template v-if="active">
-          <pause-btn
-            v-if="isLongVideo || (scene && !zoomPart)"
-            :toggled="paused"
-            :is-video="isLongVideo"
-            :disabled="isLongVideo && !videoStarted"
-            tooltip="top"
-            @click="togglePaused()"
+      <template #prepend>
+        <div v-if="isImage(src)" class="img-container">
+          <img
+            :id="id + '-preview'"
+            class="img-preview"
+            :src="url"
+            @click="atClick"
+            @wheel.prevent="zoom"
           />
-          <div class="ml-2">
-            <icon-btn
-              variant="stop"
-              tooltip="top"
-              :click-twice="isLongVideo"
-              @click="stop()"
-            />
-          </div>
-        </template>
-        <icon-btn
+        </div>
+
+        <media-video
           v-else
-          class="ml-2"
-          variant="play"
-          :disabled="videoActive"
-          @click="play()"
+          :src="!!streamingFile && streamDownloaded ? localStreamPath : src"
+          :playing="active"
+          :stream="!!streamingFile && !streamDownloaded"
+          :temp-clipped="tempClipped"
+          @clipped="setTime($event)"
+          @reset-clipped="tempClipped = null"
+          @progress="progress = $event"
         />
-        <v-btn
-          v-if="sortable"
-          color="info"
-          class="sort-btn ml-2"
-          aria-label="Sort items"
-        >
-          <v-icon icon="fa-sort" />
-        </v-btn>
-      </v-list-item-action>
+      </template>
+
+      <v-list-item-subtitle class="mx-3 media-title">
+        <div class="d-flex align-center">
+          <span class="sort-prefix text-nowrap" style="display: none">
+            {{ titleParts[1] }}
+          </span>
+          <v-chip
+            v-if="titleParts[3]"
+            prepend-icon="fa-music"
+            color="song"
+            class="mr-3"
+            :title="`${translate('song')} ${cleanTitle(titleParts[3])}`"
+          >
+            {{ titleParts[3] }}
+          </v-chip>
+          <v-chip
+            v-if="titleParts[5]"
+            prepend-icon="fa-paragraph"
+            color="paragraph"
+            class="mr-3"
+            :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
+          >
+            {{ titleParts[3] }}
+          </v-chip>
+          <div
+            class="clamp-lines text-onbg"
+            :title="cleanTitle(titleParts[6] + titleParts[7])"
+          >
+            {{ titleParts[6] }}
+            <span class="text-grey">
+              {{ titleParts[7] }}
+            </span>
+          </div>
+        </div>
+      </v-list-item-subtitle>
+      <template #append>
+        <v-list-item-action class="align-self-center d-flex flex-row" end>
+          <template v-if="active">
+            <pause-btn
+              v-if="isLongVideo || (scene && !zoomPart)"
+              :toggled="paused"
+              :is-video="isLongVideo"
+              :disabled="isLongVideo && !videoStarted"
+              tooltip="top"
+              @click="togglePaused()"
+            />
+            <div class="ml-2">
+              <icon-btn
+                variant="stop"
+                tooltip="top"
+                :click-twice="isLongVideo"
+                @click="stop()"
+              />
+            </div>
+          </template>
+          <icon-btn
+            v-else
+            class="ml-2"
+            variant="play"
+            :disabled="videoActive"
+            @click="play()"
+          />
+          <v-btn
+            v-if="sortable"
+            color="info"
+            class="sort-btn ml-2"
+            aria-label="Sort items"
+          >
+            <v-icon icon="fa-sort" />
+          </v-btn>
+        </v-list-item-action>
+      </template>
       <template v-if="!isImage(src)">
         <v-slider
           v-if="active && paused"
@@ -133,7 +162,6 @@
 </template>
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
-import VRuntimeTemplate from 'vue3-runtime-template'
 import { basename, changeExt, join } from 'upath'
 import { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRenderer } from '@vueuse/electron'
@@ -189,10 +217,11 @@ const active = ref(false)
 const played = ref(false)
 const videoStarted = ref(false)
 const videoActive = inject(videoActiveKey, ref(false))
-const title = computed(() => {
-  const filenameArray = (
-    props.streamingFile?.safeName || basename(props.src)
-  ).split(
+const cleanTitle = (title: string) => {
+  return title.replace(/'/g, '&#39;')
+}
+const titleParts = computed(() => {
+  return (props.streamingFile?.safeName || basename(props.src)).split(
     new RegExp(
       `^((?:\\d{1,2}-?){0,3})[ -]*(${translate(
         'song'
@@ -201,38 +230,6 @@ const title = computed(() => {
       )} (\\d+)[ -]*){0,1}(.*)(\\.[0-9a-z]+$)`
     )
   )
-  return `<div class="d-flex align-center">
-          <span class='sort-prefix text-nowrap' style='display: none;'>${
-            filenameArray[1]
-          }</span>
-          ${
-            filenameArray[3]
-              ? `<div class='mr-3' style='flex: 0 0 62px;' title='${translate(
-                  'song'
-                )} ${filenameArray[3].replace(/'/g, '&#39;')}'>
-              <span class='song v-btn pa-1'>
-              <v-icon icon='fa-music' size='x-small' end />
-              ${filenameArray[3]}
-              </span></div>`
-              : ''
-          }
-          ${
-            filenameArray[5]
-              ? `<div class='mr-3' style='flex: 0 0 62px;' title='${translate(
-                  'paragraph'
-                )} ${filenameArray[5].replace(/'/g, '&#39;')}'>
-              <span class='paragraph v-btn pa-1'>
-              <v-icon icon='fa-paragraph' size='x-small' end />
-              ${filenameArray[5]}
-              </span></div>`
-              : ''
-          }
-          <div class='clamp-lines' title='${(
-            filenameArray[6] + filenameArray[7]
-          ).replace(/'/g, '&#39;')}'>${
-    filenameArray[6]
-  }<span class="grey--text">${filenameArray[7]}</span></div>
-        </div>`
 })
 
 // Download streaming song
@@ -387,7 +384,7 @@ watch(
 // Get sign language video markers
 const markers = ref<Marker[]>([])
 const getMarkers = () => {
-  if (isImage(props.src) || existsSync(changeExt(props.src, '.json'))) return
+  if (isImage(props.src) || !existsSync(changeExt(props.src, '.json'))) return
   const { $dayjs } = useNuxtApp()
   const markerArray = JSON.parse(
     readFileSync(changeExt(props.src, '.json'), 'utf8')
@@ -521,99 +518,65 @@ const zoom = (e: WheelEvent) => {
   zoomPreview(e.deltaY)
 }
 </script>
-<style lang="scss">
-.media-title {
-  font-size: 1rem !important;
-}
+<style lang="scss" scoped>
+.media-item {
+  .v-list-item {
+    border-left: 8px solid transparent;
+    &:hover {
+      cursor: default;
+    }
+    transition: border-left 0.5s;
 
-.lightBg {
-  background: lightgray;
-}
-
-.v-list-item {
-  border-left: 8px solid transparent;
-  &:hover {
-    cursor: default;
-  }
-  transition: border-left 0.5s;
-}
-
-.media-played {
-  border-left: 8px solid rgba(55, 90, 127, 0.75) !important;
-}
-
-.current-media-item {
-  border-left: 8px solid orange !important;
-}
-
-.v-progress-linear:not([aria-valuenow='0']) div {
-  transition: width 0.5s linear;
-}
-
-.video-scrubber {
-  position: absolute;
-  bottom: 0;
-  margin-bottom: -14px;
-
-  .v-slider {
-    margin: 0;
-
-    .v-slider__track-container {
-      height: 4px !important;
+    .v-list-item__append {
+      align-self: center !important;
     }
   }
-}
 
-.song,
-.paragraph {
-  border: 1px solid transparent;
-}
+  .img-container {
+    background: lightgray;
 
-.clamp-lines {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-}
+    .img-preview {
+      width: 142px;
+      height: 80px;
+      aspect-ratio: 16 / 9;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+  }
 
-.theme--light {
   .media-title {
-    color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 1rem !important;
+  }
+  .media-played {
+    border-left: 8px solid rgba(55, 90, 127, 0.75) !important;
   }
 
-  .song,
-  .paragraph {
-    letter-spacing: 0px;
-    width: 60px;
+  .current-media-item {
+    border-left: 8px solid orange !important;
   }
 
-  .song {
-    color: #055160;
-    background-color: #cff4fc;
-    border-color: #b6effb;
+  .v-progress-linear:not([aria-valuenow='0']) div {
+    transition: width 0.5s linear;
   }
 
-  .paragraph {
-    color: #41464b;
-    background-color: #e2e3e5;
-    border-color: #d3d6d8;
-  }
-}
+  .video-scrubber {
+    position: absolute;
+    bottom: 0;
+    margin-bottom: -14px;
 
-.theme--dark {
-  .media-title {
-    color: #ffffff !important;
-  }
+    .v-slider {
+      margin: 0;
 
-  .song {
-    color: #5dbecd;
-    background-color: #0c515c;
-    border-color: #0e616e;
+      .v-slider__track-container {
+        height: 4px !important;
+      }
+    }
   }
 
-  .paragraph {
-    color: #c1c1c1;
-    background-color: #313131;
-    border-color: #3b3b3b;
+  .clamp-lines {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
   }
 }
 </style>

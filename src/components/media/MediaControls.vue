@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row class="media-controls">
     <v-dialog :model-value="manageMedia" fullscreen persistent>
       <v-sheet color="bg" class="fill-height">
         <v-container class="fill-height" fluid>
@@ -231,3 +231,8 @@ const resetDeactivate = (index: number) => {
   items.value[index].deactivate = false
 }
 </script>
+<style lang="scss" scoped>
+.media-controls {
+  width: 100%;
+}
+</style>

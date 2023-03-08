@@ -61,18 +61,18 @@ export function pubPath(file?: MeetingFile) {
 
   if (file) log.debug('Pub lang', mediaFolder)
 
-  const pubPath = joinSafe(
+  const pPath = joinSafe(
     getPrefs<string>('app.customCachePath') || appPath(),
     'Publications',
     mediaFolder
   )
   try {
-    ensureDirSync(pubPath)
+    ensureDirSync(pPath)
   } catch (e) {
-    warn('errorSetVars', { identifier: pubPath }, e)
+    warn('errorSetVars', { identifier: pPath }, e)
   }
 
-  if (!file) return pubPath
+  if (!file) return pPath
 
   // Get path for specific file
   const pubFolder = (
@@ -88,7 +88,7 @@ export function pubPath(file?: MeetingFile) {
     0
   ).toString()
   const trackFolder = (file.track || file.queryInfo?.Track || 0).toString()
-  return joinSafe(pubPath, pubFolder, issueFolder, trackFolder)
+  return joinSafe(pPath, pubFolder, issueFolder, trackFolder)
 }
 
 export function mediaPath(file?: MeetingFile): string | undefined {
@@ -96,17 +96,17 @@ export function mediaPath(file?: MeetingFile): string | undefined {
   const outputPath = getPrefs<string>('app.localOutputPath')
   if (!outputPath || !mediaLang) return undefined
 
-  const mediaPath = joinSafe(outputPath, mediaLang)
+  const mPath = joinSafe(outputPath, mediaLang)
 
   try {
-    ensureDirSync(mediaPath)
+    ensureDirSync(mPath)
   } catch (e) {
-    warn('errorSetVars', { identifier: mediaPath }, e)
+    warn('errorSetVars', { identifier: mPath }, e)
   }
 
-  if (!file) return mediaPath
+  if (!file) return mPath
 
-  return joinSafe(mediaPath, file.folder!, file.destFilename ?? file.safeName)
+  return joinSafe(mPath, file.folder!, file.destFilename ?? file.safeName)
 }
 
 export async function localFontPath(font: string) {

@@ -174,7 +174,7 @@ const styles: Styles = {
     icons: [
       {
         text: 'fa-stop',
-        props: { size: 'x-large', color: 'black' },
+        props: { size: 'large', color: 'black' },
       },
     ],
   },

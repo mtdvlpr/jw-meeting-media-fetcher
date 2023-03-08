@@ -1,3 +1,4 @@
+import { MS_IN_SEC } from './../constants/general'
 export function useClickTwice<T = any>(atClickedTwice: (object?: T) => void) {
   const clickedOnce = ref(false)
 
@@ -9,7 +10,7 @@ export function useClickTwice<T = any>(atClickedTwice: (object?: T) => void) {
       clickedOnce.value = true
       setTimeout(() => {
         clickedOnce.value = false
-      }, 500)
+      }, MS_IN_SEC)
     }
   }
 

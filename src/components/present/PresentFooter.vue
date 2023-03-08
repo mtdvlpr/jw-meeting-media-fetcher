@@ -1,5 +1,5 @@
 <template>
-  <v-footer style="width: 100%; height: 72px" class="justify-end">
+  <v-footer class="justify-end present-footer">
     <v-col v-if="scene && zoomScene" cols="auto">
       <v-tooltip location="top">
         <template #activator="{ props: tProps }">
@@ -70,7 +70,7 @@
         aria-label="Go to home"
         :disabled="mediaActive"
       >
-        <v-icon icon="fa-home" class="text-black" size="medium" />
+        <v-icon icon="fa-home" class="text-black" size="large" />
       </v-btn>
     </v-col>
   </v-footer>
@@ -221,3 +221,11 @@ const combinedScenesLength = computed(() => {
   )
 })
 </script>
+<style lang="scss" scoped>
+.present-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+</style>

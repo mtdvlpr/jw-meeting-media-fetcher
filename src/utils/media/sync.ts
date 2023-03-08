@@ -6,7 +6,7 @@ import { MeetingFile, SmallMediaFile, VideoFile, DateFormat } from '~~/types'
 
 export function syncLocalRecurringMedia(baseDate: Dayjs) {
   const path = mediaPath()
-  if (!mediaPath) return
+  if (!path) return
 
   const meetings = useMediaStore().meetings
 
@@ -321,8 +321,8 @@ async function syncMediaItem(
         promise: downloadIfRequired(newItem, setProgress),
       })
       await store.progress.get(newItem.url)
-    } else if (mediaPath && item.filepath && item.folder && item.safeName) {
-      const dest = join(mediaPath, item.folder, item.safeName)
+    } else if (path && item.filepath && item.folder && item.safeName) {
+      const dest = join(path, item.folder, item.safeName)
       if (!existsSync(dest) || statSync(dest).size !== item.filesize) {
         copy(item.filepath, dest)
       }

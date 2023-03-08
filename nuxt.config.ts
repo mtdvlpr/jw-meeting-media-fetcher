@@ -51,14 +51,6 @@ export default defineNuxtConfig({
     locales: LOCALES,
     detectBrowserLanguage: false,
   },
-  hooks: {
-    'vite:extendConfig': (config, { isClient }) => {
-      if (isClient) {
-        // @ts-ignore
-        config.resolve.alias.vue = 'vue/dist/vue.esm-bundler'
-      }
-    },
-  },
   vite: {
     build: {
       target: 'chrome110',

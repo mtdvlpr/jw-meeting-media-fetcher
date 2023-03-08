@@ -65,14 +65,14 @@ const addCong = () => {
 }
 
 // Switch congregation
-const changeCong = (path: string) => {
+const changeCong = async (path: string) => {
   notify('Switched cong via select')
-  useRouter().push({
+  await useRouter().push({
     query: {
       cong: basename(path, '.json').replace('prefs-', ''),
     },
   })
-  cong.value = path
+  window.location.reload()
 }
 
 // Remove congregation
@@ -82,7 +82,12 @@ const removeCong = () => {
     // Switch to the first other congregation found
     changeCong(congs.value.find((c) => c.path !== cong.value)!.path)
   } else {
-    addCong()
+    useRouter().push({
+      query: {
+        cong: undefined,
+      },
+    })
+    window.location.reload()
   }
 }
 </script>

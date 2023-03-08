@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="start" align="start">
+  <v-row justify="start" align="start" class="present-select pa-4">
     <v-col cols="12" class="text-center">
       <h2>{{ $t('meeting') }}</h2>
     </v-col>
@@ -94,3 +94,8 @@ const listHeight = computed(() => {
   return `max-height: ${windowHeight.value - OTHER_ELEMENTS}px`
 })
 </script>
+<style lang="scss" scoped>
+.present-select {
+  width: 100%;
+}
+</style>
