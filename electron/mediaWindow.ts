@@ -16,6 +16,8 @@ import {
 } from './websiteController'
 import { PrefStore } from '~~/types'
 
+const isDev = process.env.NODE_ENV === 'development'
+
 let mediaWin: BrowserWindow | null
 let mediaWinHandler: BrowserWinHandler | null
 let authorizedCloseMediaWin = false
@@ -160,7 +162,7 @@ async function initMediaWindow(mediaWinOptions: {
 
     mediaWin
       .on('close', (e) => {
-        if (authorizedCloseMediaWin) {
+        if (authorizedCloseMediaWin || isDev) {
           mediaWin = null
           mediaWinHandler = null
         } else {

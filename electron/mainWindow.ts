@@ -7,6 +7,8 @@ import { getScreenInfo } from './utils'
 import { getWebsiteController } from './websiteController'
 import { Shortcut } from '~~/types'
 
+const isDev = process.env.NODE_ENV === 'development'
+
 let win: BrowserWindow
 let winHandler: BrowserWinHandler
 let closeAttempts = 0
@@ -36,11 +38,11 @@ function onMove() {
 
 function onClose(e: Event) {
   const MS_IN_SEC = 1000
-  if (getWebsiteController()) {
+  if (getWebsiteController() && !isDev) {
     e.preventDefault()
     return
   }
-  if (!allowClose && closeAttempts < 2) {
+  if (!isDev && !allowClose && closeAttempts < 2) {
     e.preventDefault()
     win?.webContents.send('notifyUser', [
       'cantCloseMediaWindowOpen',
