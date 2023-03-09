@@ -45,12 +45,17 @@
       <code v-if="m.identifier">{{ m.identifier }}</code>
       <v-divider v-if="m.action" class="mt-2" />
       <template v-if="m.action" #actions>
-        <v-btn size="small" color="primary" @click="executeAction(m.action)">
+        <v-btn
+          size="small"
+          color="primary"
+          variant="elevated"
+          @click="executeAction(m.action)"
+        >
           {{ $t(m.action!.label) }}
         </v-btn>
       </template>
       <template v-else-if="m.message === 'updateDownloaded'" #actions>
-        <v-btn size="small" color="primary" @click="install">
+        <v-btn size="small" color="primary" variant="elevated" @click="install">
           {{ $t('installNow') }}
         </v-btn>
       </template>
@@ -101,7 +106,7 @@ const executeAction = (action?: NotifyAction) => {
 
 const combinedHeight = (index: number) => {
   const MARGIN_BETWEEN_MESSAGES = 8
-  let height = 0
+  let height = 8
   for (let i = 0; i < index; i++) {
     height += getHeight(i) // The height of each message
     height += MARGIN_BETWEEN_MESSAGES // The margin between messages
@@ -121,17 +126,19 @@ const getHeight = (index: number) => {
   }
 }
 </script>
-<style scoped lang="scss">
-.notifications {
-  .message-content {
-    width: 100%;
-    padding: 4px 6px !important;
+<style lang="scss">
+.message-content {
+  width: 100%;
+  padding: 4px 6px !important;
 
-    code {
-      font-size: 0.875em;
-      color: #d63384;
-      word-wrap: break-word;
-    }
+  .v-snackbar__content {
+    width: 100%;
+  }
+
+  code {
+    font-size: 0.875em;
+    color: #d63384;
+    word-wrap: break-word;
   }
 }
 </style>

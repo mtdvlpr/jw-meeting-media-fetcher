@@ -253,7 +253,7 @@ if (controller.value) {
   })
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .pointer {
   height: 24px;
   width: 24px;
