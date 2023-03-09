@@ -2,7 +2,7 @@ import { pathToFileURL } from 'url'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { join } from 'upath'
-import { JW_ICONS_FONT } from './../constants/general'
+import { JW_ICONS_FONT } from '~/constants/general'
 
 const intervals: { [key: string]: NodeJS.Timer } = {}
 

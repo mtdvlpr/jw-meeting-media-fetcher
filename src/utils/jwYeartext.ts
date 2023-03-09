@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/named
 import { existsSync, readFileSync, statSync } from 'fs-extra'
-import { WT_CLEARTEXT_FONT, JW_ICONS_FONT } from '#imports'
+import { WT_CLEARTEXT_FONT, JW_ICONS_FONT } from '~/constants/general'
 
 export async function getYearText(
   force = false,

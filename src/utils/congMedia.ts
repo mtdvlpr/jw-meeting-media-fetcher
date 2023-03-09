@@ -3,8 +3,7 @@ import { Dayjs } from 'dayjs'
 import { statSync } from 'fs-extra'
 import { join, extname, basename } from 'upath'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
-import { CongFile } from './../../../types/cong.d'
-import { MeetingFile, DateFormat } from '~~/types'
+import { MeetingFile, DateFormat, CongFile } from '~~/types'
 
 export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
   const statStore = useStatStore()
