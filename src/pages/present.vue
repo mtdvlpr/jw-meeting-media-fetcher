@@ -66,6 +66,7 @@ useIpcRendererOn('showingMedia', (_e, val: boolean[]) => {
 })
 
 onMounted(() => {
+  console.log('mounted')
   useIpcRenderer().send('allowQuit', false)
   initZoomIntegration()
   if (getPrefs<boolean>('media.enablePp')) {
@@ -126,6 +127,7 @@ const participants = computed(() =>
 )
 onBeforeUnmount(() => {
   useIpcRenderer().send('allowQuit', true)
+  console.log('about to unmount')
   if (zoomClient.value) {
     stopMeeting(zoomSocket())
     zoomClient.value.leaveMeeting().then(() => {

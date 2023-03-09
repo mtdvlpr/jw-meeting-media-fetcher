@@ -36,7 +36,11 @@ function onMove() {
 
 function onClose(e: Event) {
   const MS_IN_SEC = 1000
-  if ((!allowClose || getWebsiteController()) && closeAttempts < 2) {
+  if (getWebsiteController()) {
+    e.preventDefault()
+    return
+  }
+  if (!allowClose && closeAttempts < 2) {
     e.preventDefault()
     win?.webContents.send('notifyUser', [
       'cantCloseMediaWindowOpen',
@@ -47,7 +51,6 @@ function onClose(e: Event) {
       closeAttempts--
     }, 10 * MS_IN_SEC)
   } else {
-    getWebsiteController()?.destroy()
     getMediaWin()?.destroy()
   }
 }
@@ -88,11 +91,6 @@ export function getMainWindow() {
 
 export function getMainWinHandler() {
   return winHandler
-}
-
-export function resetCloseAttempts() {
-  closeAttempts = 0
-  allowClose = false
 }
 
 export async function initMainWindow() {

@@ -7,7 +7,7 @@ import {
 } from 'electron'
 import { AR_HEIGHT, AR_WIDTH } from './main'
 import BrowserWinHandler from './BrowserWinHandler'
-import { getMainWindow, resetCloseAttempts } from './mainWindow'
+import { getMainWindow } from './mainWindow'
 import { getMediaWin, getMediaWinHandler } from './mediaWindow'
 
 let websiteController: BrowserWindow | null = null
@@ -127,7 +127,8 @@ async function openWebsite(url: string) {
       const MIN_WIDTH = 195
       const MIN_HEIGHT = 110
       mediaWin?.setMinimumSize(MIN_WIDTH, MIN_HEIGHT)
-      resetCloseAttempts()
+      websiteController = null
+      websiteControllerWinHandler = null
     })
 
   websiteController.webContents.send('mediaSize', mediaWin?.getContentSize())

@@ -160,7 +160,12 @@ async function initMediaWindow(mediaWinOptions: {
 
     mediaWin
       .on('close', (e) => {
-        if (!authorizedCloseMediaWin) e.preventDefault()
+        if (authorizedCloseMediaWin) {
+          mediaWin = null
+          mediaWinHandler = null
+        } else {
+          e.preventDefault()
+        }
       })
       .on('will-resize', () => {
         // Not working on Linux
