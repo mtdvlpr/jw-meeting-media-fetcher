@@ -1,13 +1,13 @@
 <template>
   <v-row no-gutters class="media-controls">
-    <v-dialog :model-value="manageMedia" fullscreen persistent>
+    <v-dialog :model-value="managingMedia" fullscreen persistent>
       <v-sheet color="bg" class="fill-height">
-        <v-container class="fill-height" fluid>
+        <v-container class="fill-height pa-0" fluid>
           <manage-media
             :media="localMedia"
             :loading="loading"
             dialog
-            @cancel="manageMedia = false"
+            @cancel="managingMedia = false"
             @refresh="getMedia()"
           />
         </v-container>
@@ -26,7 +26,7 @@
       @sortable="sortable = !sortable"
       @show-prefix="togglePrefix()"
       @refresh="getMedia()"
-      @manage-media="manageMedia = true"
+      @manage-media="managingMedia = true"
     />
     <present-zoom-bar v-if="zoomIntegration" />
     <loading-icon v-if="loading" />
@@ -65,7 +65,7 @@ const ccEnable = ref(true)
 provide(ccEnableKey, ccEnable)
 
 // Manage media dialog
-const manageMedia = ref(false)
+const managingMedia = ref(false)
 const localMedia = computed((): LocalFile[] =>
   items.value.map((item) => {
     return {

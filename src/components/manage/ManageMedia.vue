@@ -97,7 +97,7 @@
             min-width="32px"
             @click="cancel()"
           >
-            <v-icon icon="fa-x-mark" size="small" class="text-white" />
+            <v-icon icon="fa-xmark" size="small" class="text-white" />
           </v-btn>
           <icon-btn v-else variant="home" :disabled="loading || saving" />
         </v-col>
