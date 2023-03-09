@@ -284,7 +284,6 @@ watch(
   () => props.items,
   (val) => {
     setItems(val)
-    console.log(treasureItems.value)
   }
 )
 const setItems = (val: MediaItem[]) => {

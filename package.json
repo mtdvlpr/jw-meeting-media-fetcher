@@ -2,12 +2,6 @@
   "name": "meeting-media-manager",
   "version": "23.2.3-beta.14",
   "description": "Meeting Media Manager",
-  "keywords": [
-    "M³",
-    "jw",
-    "m3",
-    "meeting media manager"
-  ],
   "homepage": "https://sircharlo.github.io/meeting-media-manager/",
   "bugs": "https://github.com/sircharlo/meeting-media-manager/issues",
   "license": "AGPL-3.0-or-later",

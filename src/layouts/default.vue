@@ -322,7 +322,6 @@ useIpcRendererOn('log', (_e, msg) => {
   log.debug('[main]', msg)
 })
 useIpcRendererOn('notifyUser', (_e, msg: any[]) => {
-  console.log('notifyUser', msg)
   if (msg[0]) {
     notify(msg[0], msg[1], msg[3])
   } else {
