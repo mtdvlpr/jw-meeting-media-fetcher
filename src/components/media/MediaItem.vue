@@ -38,20 +38,24 @@
           </span>
           <v-chip
             v-if="titleParts[3]"
-            prepend-icon="fa-music"
             color="song"
             class="mr-3"
             :title="`${translate('song')} ${cleanTitle(titleParts[3])}`"
           >
+            <template #prepend>
+              <v-icon icon="fa-music" />
+            </template>
             {{ titleParts[3] }}
           </v-chip>
           <v-chip
             v-if="titleParts[5]"
-            prepend-icon="fa-paragraph"
             color="paragraph"
             class="mr-3"
             :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
           >
+            <template #prepend>
+              <v-icon icon="fa-paragraph" />
+            </template>
             {{ titleParts[3] }}
           </v-chip>
           <div
@@ -71,7 +75,7 @@
             <pause-btn
               v-if="isLongVideo || (scene && !zoomPart)"
               :toggled="paused"
-              :is-video="isLongVideo"
+              :video="isLongVideo"
               :disabled="isLongVideo && !videoStarted"
               tooltip="top"
               @click="togglePaused()"
@@ -201,6 +205,7 @@ watch(mediaActive, (val) => {
     current.value = false
   } else if (!val) {
     active.value = false
+    progress.value = 0
   }
 })
 
@@ -275,8 +280,8 @@ const play = (marker?: Marker) => {
   useIpcRenderer().send('showMedia', {
     src: streamLocal ? localStreamPath.value : props.src,
     stream,
-    start: marker ? marker.customStartTime : start,
-    end: marker ? marker.customEndTime : end,
+    start: marker ? marker.customStartTime : start.value,
+    end: marker ? marker.customEndTime : end.value,
   })
 }
 
@@ -520,18 +525,6 @@ const zoom = (e: WheelEvent) => {
 </script>
 <style lang="scss" scoped>
 .media-item {
-  .v-list-item {
-    border-left: 8px solid transparent;
-    &:hover {
-      cursor: default;
-    }
-    transition: border-left 0.5s;
-
-    .v-list-item__append {
-      align-self: center !important;
-    }
-  }
-
   .img-container {
     background: lightgray;
 
@@ -544,21 +537,29 @@ const zoom = (e: WheelEvent) => {
     }
   }
 
-  .media-title {
-    font-size: 1rem !important;
-  }
-  .media-played {
-    border-left: 8px solid rgba(55, 90, 127, 0.75) !important;
-  }
+  .v-list-item {
+    border-left: 8px solid transparent;
+    transition: border-left 0.5s;
+    &:hover {
+      cursor: default;
+    }
 
-  .current-media-item {
-    border-left: 8px solid orange !important;
-  }
+    &.media-played {
+      border-left: 8px solid rgba(55, 90, 127, 0.75) !important;
+    }
+    &.current-media-item {
+      border-left: 8px solid orange !important;
+    }
 
-  .v-progress-linear:not([aria-valuenow='0']) div {
-    transition: width 0.5s linear;
+    .media-title {
+      font-size: 1rem !important;
+      .clamp-lines {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+      }
+    }
   }
-
   .video-progress {
     position: absolute;
     bottom: 0;
@@ -568,21 +569,18 @@ const zoom = (e: WheelEvent) => {
   .video-scrubber {
     position: absolute;
     bottom: 0;
+    margin: 0;
     margin-bottom: -14px;
-
-    .v-slider {
-      margin: 0;
-
-      .v-slider__track-container {
-        height: 4px !important;
-      }
-    }
   }
-
-  .clamp-lines {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
+}
+</style>
+<style lang="scss">
+.media-item {
+  .v-progress-linear:not([aria-valuenow='0']) div {
+    transition: width 0.5s linear;
+  }
+  .v-slider-track {
+    height: 4px !important;
   }
 }
 </style>

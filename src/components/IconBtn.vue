@@ -6,8 +6,8 @@
     v-click-outside="() => (clickedOnce = false)"
     :aria-label="variant"
     :title="title"
-    :color="clickedOnce ? 'error' : style.props.color"
     v-bind="{ ...style.props, ...$attrs }"
+    :color="clickedOnce ? 'error' : style.props.color"
     :class="{
       ...style.props.class,
       'pulse-danger': variant === 'settings' && !updateSuccess,

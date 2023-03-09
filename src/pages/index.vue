@@ -35,6 +35,7 @@
         color="warning"
         :disabled="!online"
         :loading="loading"
+        class="ml-2"
         @click="testApp()"
       >
         Test App

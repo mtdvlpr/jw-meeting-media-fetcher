@@ -230,7 +230,7 @@
   </v-switch>
   <v-row v-else-if="field == 'btn-group'" class="mb-4" justify="space-between">
     <v-col align-self="center" class="text-left">
-      <v-tooltip v-if="locked" activator="" location="top">
+      <v-tooltip v-if="locked" location="top">
         <template #activator="{ props: attrs }">
           <span v-bind="attrs">{{ groupLabel }}</span>
         </template>

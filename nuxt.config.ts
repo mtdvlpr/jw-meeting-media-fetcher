@@ -47,6 +47,7 @@ export default defineNuxtConfig({
     defaultLocale: 'en',
     vueI18n: {
       fallbackLocale: 'en',
+      warnHtmlMessage: false,
     },
     locales: LOCALES,
     detectBrowserLanguage: false,

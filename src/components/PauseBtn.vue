@@ -12,7 +12,7 @@
     </v-tooltip>
     <v-icon
       :icon="video ? pauseIcon : pauseImageIcon"
-      size="x-large"
+      size="large"
       class="text-black"
     />
   </v-btn>

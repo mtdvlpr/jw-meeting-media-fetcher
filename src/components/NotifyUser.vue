@@ -5,9 +5,9 @@
       v-for="(m, i) in notifications"
       :id="`msg-${m.timestamp}-${m.message}-${m.identifier}`"
       :key="`${m.timestamp}-${m.message}-${m.identifier}`"
-      location="top"
+      location="top right"
       rounded
-      :color="color"
+      color="bg"
       vertical
       :model-value="true"
       min-width="350px"
@@ -22,41 +22,35 @@
         <v-col cols="auto" class="d-flex align-center">
           <v-icon
             :icon="icon(m.type)"
-            :class="iconColor(m.type) + '--text mr-1'"
+            :color="iconColor(m.type)"
+            class="mr-1"
           />
           {{ $t(m.type) }}
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="auto" class="pa-2">
           <v-btn
             v-if="m.persistent || m.dismiss"
-            icon
-            :color="closeColor"
+            icon="fa-xmark"
+            variant="text"
+            size="x-small"
+            rounded="circle"
+            color="onbg"
             class="align-right"
             @click="store.dismiss(i)"
-          >
-            <v-icon icon="fa-xmark" />
-          </v-btn>
+          />
         </v-col>
       </v-row>
-      <v-divider />
+      <v-divider class="mt-2" />
       <p class="pa-2" v-html="$t(m.message)" />
       <code v-if="m.identifier">{{ m.identifier }}</code>
       <v-divider v-if="m.action" class="mt-2" />
-      <template v-if="m.action" #action="{ attrs }">
-        <v-btn
-          v-bind="attrs"
-          size="small"
-          color="primary"
-          @click="executeAction(m.action)"
-        >
+      <template v-if="m.action" #actions>
+        <v-btn size="small" color="primary" @click="executeAction(m.action)">
           {{ $t(m.action!.label) }}
         </v-btn>
       </template>
-      <template
-        v-else-if="m.message === 'updateDownloaded'"
-        #action="{ attrs }"
-      >
-        <v-btn v-bind="attrs" size="small" color="primary" @click="install">
+      <template v-else-if="m.message === 'updateDownloaded'" #actions>
+        <v-btn size="small" color="primary" @click="install">
           {{ $t('installNow') }}
         </v-btn>
       </template>
@@ -69,10 +63,6 @@ import { NotifyAction } from '~~/types'
 
 const store = useNotifyStore()
 const { notifications } = storeToRefs(store)
-
-const { isDark } = useTheme()
-const color = computed(() => (isDark.value ? '#121212' : '#fff'))
-const closeColor = computed(() => (isDark.value ? 'white' : 'black'))
 
 const install = () => {
   ipcRenderer.send('installNow')

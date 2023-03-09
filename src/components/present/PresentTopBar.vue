@@ -27,8 +27,8 @@
         </v-list>
       </v-menu>
       <v-btn icon aria-label="Add song" @click="emit('song')">
-        <v-icon icon="fa-music" start size="small" />
-        <v-icon icon="fa-plus" end size="small" />
+        <v-icon icon="fa-music" size="small" />
+        <v-icon icon="fa-plus" size="small" />
         <v-tooltip activator="parent" location="bottom">
           {{ $t('lastMinuteSong') }}
         </v-tooltip>
@@ -233,6 +233,7 @@ const actions = [
 .present-top-bar {
   width: 100%;
   height: 64px;
+  z-index: 2 !important;
 }
 </style>
 <style lang="scss">
