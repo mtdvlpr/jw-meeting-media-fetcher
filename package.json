@@ -27,6 +27,7 @@
     "analyze": "nuxi analyze",
     "prepare": "nuxi prepare",
     "build": "nuxi generate && electron-builder",
+    "build-dev": "yarn build --c electron-builder-dev.json5",
     "lint:js": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
     "lint:prettier": "prettier --check .",
     "lint": "yarn lint:js && yarn lint:prettier",

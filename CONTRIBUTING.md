@@ -32,6 +32,8 @@ corepack enable
 yarn set version stable
 ```
 
+If you have installed the `Vetur` VS Code extension, disable it for this workspace. Next, make sure the `Volar` VS Code extension is installed, and enable `Take Over Mode`. [See this article](https://vuejs.org/guide/typescript/overview.html#volar-takeover-mode) for more information.
+
 Once you have done that, you are ready to contribute! Fork this repository, clone it, and when you have something to contribute, you can create a Pull Request on GitHub.
 
 ### Build Setup
