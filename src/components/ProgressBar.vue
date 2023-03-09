@@ -4,7 +4,8 @@
     stream
     striped
     :height="8"
-    style="position: fixed; bottom: 0"
+    color="primary"
+    class="progress-bar"
     :buffer-value="current"
     :model-value="total"
   />
@@ -15,3 +16,10 @@ defineProps<{
   total: number
 }>()
 </script>
+<style lang="scss" scoped>
+.progress-bar {
+  position: fixed;
+  bottom: 0;
+  top: unset !important;
+}
+</style>

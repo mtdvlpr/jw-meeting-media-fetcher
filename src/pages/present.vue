@@ -3,11 +3,6 @@
     fluid
     class="present-page align-start align-content-space-between pa-0 fill-height"
   >
-    <Head>
-      <Title>
-        {{ date ? `Present ${date}` : 'Presentation Mode' }}
-      </Title>
-    </Head>
     <confirm-dialog
       v-model="dialog"
       content="obsZoomSceneActivate"
@@ -45,8 +40,10 @@ import { Participant } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
 
 const date = computed(() => useRoute().query.date as string)
-definePageMeta({
-  titleTemplate: '%s - M³',
+useHead({
+  title: computed(() =>
+    date.value ? `Present ${date.value}` : 'Presentation Mode'
+  ),
 })
 
 // General state

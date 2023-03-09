@@ -79,7 +79,7 @@
 <script setup lang="ts">
 import { PrefStore } from '~~/types'
 
-definePageMeta({ title: 'Settings' })
+useHead({ title: 'Settings' })
 
 // Control cache
 const cache = ref(0)

@@ -73,12 +73,14 @@
   </v-row>
 </template>
 <script setup lang="ts">
+import { fileURLToPath, pathToFileURL } from 'url'
 import { useIpcRenderer } from '@vueuse/electron'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { basename, join } from 'upath'
+import { AppPrefs, MediaPrefs, MeetingPrefs } from '~~/types'
 
-definePageMeta({ title: 'Home' })
+useHead({ title: 'Home' })
 const { $dayjs, $localePath } = useNuxtApp()
 const { isDev } = useRuntimeConfig().public
 const { online } = useOnline()
@@ -222,7 +224,9 @@ const startMediaSync = async (dryrun = false) => {
       )
     }
 
-    if (!getPrefs<boolean>('meeting.specialCong')) {
+    const { specialCong } = getPrefs<MeetingPrefs>('meeting')
+
+    if (!specialCong) {
       statStore.startPerf({ func: 'getJwOrgMedia', start: performance.now() })
       await Promise.allSettled([getMidweekMedia(), getWeekendMedia()])
       statStore.stopPerf({ func: 'getJwOrgMedia', stop: performance.now() })
@@ -248,6 +252,44 @@ const startMediaSync = async (dryrun = false) => {
         syncJWorgMedia(dryrun),
       ])
     }
+
+    await convertUnusableFiles(mPath, setProgress)
+
+    const { enableMp4Conversion, enableVlcPlaylistCreation } =
+      getPrefs<MediaPrefs>('media')
+
+    if (enableMp4Conversion) {
+      statStore.startPerf({ func: 'convertMP4', start: performance.now() })
+      mp4Color.value = 'warning'
+      try {
+        await convertToMP4(baseDate.value, now, setProgress)
+        mp4Color.value = 'success'
+      } catch (e: unknown) {
+        log.error(e)
+        mp4Color.value = 'error'
+      }
+      statStore.stopPerf({ func: 'convertMP4', stop: performance.now() })
+    }
+
+    if (enableVlcPlaylistCreation) convertToVLC()
+
+    const { autoOpenFolderWhenDone, autoQuitWhenDone } =
+      getPrefs<AppPrefs>('app')
+
+    if (autoOpenFolderWhenDone) {
+      try {
+        useIpcRenderer().send(
+          'openPath',
+          fileURLToPath(pathToFileURL(mPath).href)
+        )
+      } catch (e: unknown) {
+        warn('errorSetVars', { identifier: mPath }, e)
+      }
+    }
+
+    statStore.stopPerf({ func: 'total', stop: performance.now() })
+    statStore.printStats()
+    if (autoQuitWhenDone) action.value = 'quitApp'
   } catch (e) {
     error('errorUnknown', e)
   } finally {

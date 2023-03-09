@@ -6,12 +6,7 @@
   </v-app>
 </template>
 <script setup lang="ts">
-useHead({
-  title: 'Media Window',
-  titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} - ${appShortName}` : appLongName
-  },
-})
+useHead({ title: 'Media Window' })
 </script>
 <style lang="scss">
 html,

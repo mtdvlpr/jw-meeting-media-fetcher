@@ -79,5 +79,32 @@ export const useStatStore = defineStore('stats', {
     clearDownloads() {
       this.downloads = useCloneDeep(defaultState.downloads)
     },
+    printStats() {
+      for (const [func, perf] of [...this.performance.entries()].sort(
+        (a, b) => a[1].stop - b[1].stop
+      )) {
+        log.info(
+          `%c[perf] [${func}] ${(perf.stop - perf.start).toFixed(1)}ms`,
+          'background-color: #e2e3e5; color: #41464b;'
+        )
+      }
+
+      for (const [origin, sources] of Object.entries(this.downloads)) {
+        for (const [source, files] of Object.entries(sources)) {
+          if ((files as MeetingFile[]).length > 0) {
+            log.info(
+              `%c[perf] [${origin} Fetch] from ${source}: ${(
+                (files as MeetingFile[])
+                  .map((file) => file.filesize as number)
+                  .reduce((a, b) => a + b, 0) /
+                BYTES_IN_KIBIBYTE /
+                BYTES_IN_KIBIBYTE
+              ).toFixed(1)}MB`,
+              'background-color: #fbe9e7; color: #000;'
+            )
+          }
+        }
+      }
+    },
   },
 })

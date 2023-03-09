@@ -4,11 +4,6 @@
       mediaWidth && ratioX !== 0 ? `max-height: ${mediaHeight * ratioY}px` : ''
     }`"
   >
-    <Head>
-      <Title>
-        {{ controller ? 'Website Controller' : 'Media Window' }}
-      </Title>
-    </Head>
     <span v-if="!controller" class="pointer" />
     <iframe
       id="website"
@@ -31,8 +26,11 @@ import { useRouteQuery } from '@vueuse/router'
 const url = useRouteQuery<string>('url', '')
 const controller = useRouteQuery<string>('controller', '')
 
-definePageMeta({
-  layout: 'media',
+definePageMeta({ layout: 'media' })
+useHead({
+  title: computed(() =>
+    controller.value ? 'Website Controller' : 'Media Window'
+  ),
 })
 
 onMounted(() => {

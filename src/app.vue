@@ -12,9 +12,9 @@ useHead({
       useNuxtApp().$i18n.localeProperties.value.iso ??
       useNuxtApp().$i18n.locale.value,
   },
-  title: appShortName,
+  title: appLongName,
   titleTemplate: (titleChunk) => {
-    return titleChunk ? `${titleChunk} - ${appLongName}` : appLongName
+    return titleChunk ? `${titleChunk} - ${appShortName}` : appLongName
   },
 })
 </script>

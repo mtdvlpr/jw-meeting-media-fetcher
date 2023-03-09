@@ -1,10 +1,5 @@
 <template>
   <div class="fill-height">
-    <Head>
-      <Title>
-        {{ date ? `Manage ${date}` : 'Manage Media' }}
-      </Title>
-    </Head>
     <manage-media
       :media="media"
       :loading="loading"
@@ -20,8 +15,8 @@ import { extname, join } from 'upath'
 import { DateFormat, LocalFile, MeetingFile } from '~~/types'
 
 const date = computed(() => useRoute().query.date as string)
-definePageMeta({
-  titleTemplate: '%s - M³',
+useHead({
+  title: computed(() => (date.value ? `Manage ${date.value}` : 'Manage Media')),
 })
 
 const { height } = useWindowSize()
