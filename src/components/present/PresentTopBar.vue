@@ -51,6 +51,7 @@
       <v-btn
         id="btn-toggle-meeting-date"
         class="px-3"
+        variant="outlined"
         color="secondary"
         :disabled="mediaActive"
         size="large"
