@@ -214,7 +214,6 @@ const scrollToItem = (index: number) => {
   }
 }
 const previous = () => {
-  console.log('previous', currentIndex.value)
   if (mediaActive.value && currentIndex.value >= 0) {
     items.value[currentIndex.value].stop = true
   } else if (currentIndex.value > 0) {
@@ -224,12 +223,10 @@ const previous = () => {
   }
 }
 const next = () => {
-  console.log('next', currentIndex.value)
   if (mediaActive.value && currentIndex.value >= 0) {
     items.value[currentIndex.value].stop = true
   } else if (currentIndex.value < items.value.length - 1) {
     currentIndex.value++
-    console.log(items.value[currentIndex.value])
     items.value[currentIndex.value].play = true
     scrollToItem(currentIndex.value)
   }
