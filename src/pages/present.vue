@@ -66,20 +66,18 @@ useIpcRendererOn('showingMedia', (_e, val: boolean[]) => {
 })
 
 onMounted(() => {
-  console.log('mounted')
   useIpcRenderer().send('allowQuit', false)
   initZoomIntegration()
   if (getPrefs<boolean>('media.enablePp')) {
     const ppForward = getPrefs<string>('media.ppForward')
     const ppBackward = getPrefs<string>('media.ppBackward')
     if (ppForward && ppBackward) {
-      useShortcuts(
-        [
-          { key: ppForward, fn: 'nextMediaItem' },
-          { key: ppBackward, fn: 'previousMediaItem' },
-        ],
-        'present'
-      )
+      setShortcut({ key: ppForward, fn: 'nextMediaItem', scope: 'present' })
+      setShortcut({
+        key: ppBackward,
+        fn: 'previousMediaItem',
+        scope: 'present',
+      })
     } else {
       warn('errorPpEnable')
     }
@@ -126,8 +124,8 @@ const participants = computed(() =>
   )
 )
 onBeforeUnmount(() => {
+  unsetShortcuts('present')
   useIpcRenderer().send('allowQuit', true)
-  console.log('about to unmount')
   if (zoomClient.value) {
     stopMeeting(zoomSocket())
     zoomClient.value.leaveMeeting().then(() => {

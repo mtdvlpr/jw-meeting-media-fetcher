@@ -295,7 +295,7 @@ const setItems = (val: MediaItem[]) => {
     firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
   )
   livingItems.value = val.slice(secondMwbSong.value)
-  if (firstApplyItem.value !== -1) {
+  if (firstApplyItem.value === -1) {
     applyItems.value = []
   } else {
     applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
