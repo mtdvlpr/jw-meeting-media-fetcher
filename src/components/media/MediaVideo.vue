@@ -69,10 +69,10 @@
     <v-btn
       v-if="ccAvailable"
       size="x-small"
-      absolute
       :rounded="0"
       variant="flat"
-      :style="`left: -36px; top: ${ccTop ? 0 : 65}px`"
+      class="cc-btn"
+      :style="ccTop ? 'top: 4px' : 'bottom: 1px'"
       @click="ccTop = !ccTop"
     >
       <v-tooltip activator="parent" location="right">
@@ -354,6 +354,11 @@ const { clickedOnce, atClick } = useClickTwice(() => {
     bottom: -6px;
     top: unset !important;
     left: 16px !important;
+  }
+
+  .cc-btn {
+    position: absolute;
+    left: 122px !important;
   }
 }
 </style>

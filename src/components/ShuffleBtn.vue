@@ -58,19 +58,23 @@ const store = useMediaStore()
 const { musicFadeOut } = storeToRefs(store)
 const loading = ref(false)
 let timeRemaining = ref('')
-watch(musicFadeOut, (val) => {
-  if (!val) return
-  if (typeof val === 'string') {
-    timeRemaining.value = val
-  } else {
-    const { formatted } = useTimeRemaining(val, async () => {
-      loading.value = true
-      await shuffleMusic(true)
-      loading.value = false
-    })
-    timeRemaining = formatted
-  }
-})
+watch(
+  musicFadeOut,
+  (val) => {
+    if (!val) return
+    if (typeof val === 'string') {
+      timeRemaining.value = val
+    } else {
+      const { formatted } = useTimeRemaining(val, async () => {
+        loading.value = true
+        await shuffleMusic(true)
+        loading.value = false
+      })
+      timeRemaining = formatted
+    }
+  },
+  { immediate: true }
+)
 const { atClick, clickedOnce } = useClickTwice(async () => {
   loading.value = true
   await shuffleMusic(!!musicFadeOut.value)
