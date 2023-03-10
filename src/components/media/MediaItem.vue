@@ -389,10 +389,10 @@ watch(
 // Get sign language video markers
 const markers = ref<Marker[]>([])
 const getMarkers = () => {
-  if (isImage(props.src) || !existsSync(changeExt(props.src, '.json'))) return
+  if (isImage(props.src) || !existsSync(changeExt(props.src, 'json'))) return
   const { $dayjs } = useNuxtApp()
   const markerArray = JSON.parse(
-    readFileSync(changeExt(props.src, '.json'), 'utf8')
+    readFileSync(changeExt(props.src, 'json'), 'utf8')
   ) as Marker[]
 
   // For each marker, calculate the custom start and end time

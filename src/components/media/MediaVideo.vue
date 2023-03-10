@@ -232,12 +232,12 @@ watch(
 )
 const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
 const toggleSubtitles = (enabled: boolean, top = false) => {
-  ipcRenderer.send('toggleSubtitles', enabled, top)
+  ipcRenderer.send('toggleSubtitles', { enabled, top })
 }
 const setCCAvailable = () => {
   ccAvailable.value =
     getPrefs<boolean>('media.enableSubtitles') &&
-    existsSync(changeExt(props.src, '.vtt'))
+    existsSync(changeExt(props.src, 'vtt'))
 }
 
 // Custom start/end times

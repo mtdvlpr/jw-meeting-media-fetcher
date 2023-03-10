@@ -154,11 +154,11 @@ export async function downloadIfRequired(
           write(filePath, downloadedFile)
           if (subtitle) {
             write(
-              changeExt(filePath, '.vtt'),
+              changeExt(filePath, 'vtt'),
               Buffer.from(new Uint8Array(await subtitle))
             )
           } else {
-            rm(changeExt(filePath, '.vtt'))
+            rm(changeExt(filePath, 'vtt'))
           }
         }
       }
@@ -180,11 +180,11 @@ export async function downloadIfRequired(
         copy(file.cacheFile, filePath)
         if (subtitle) {
           write(
-            changeExt(filePath, '.vtt'),
+            changeExt(filePath, 'vtt'),
             Buffer.from(new Uint8Array(await subtitle))
           )
         } else {
-          rm(changeExt(filePath, '.vtt'))
+          rm(changeExt(filePath, 'vtt'))
         }
       }
     }

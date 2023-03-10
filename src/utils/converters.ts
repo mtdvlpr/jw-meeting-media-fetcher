@@ -339,7 +339,7 @@ function createVideo(
   file: string,
   setProgress: (loaded: number, total: number, global?: boolean) => void
 ): Promise<void> {
-  const output = changeExt(file, '.mp4')
+  const output = changeExt(file, 'mp4')
   return new Promise<void>((resolve) => {
     try {
       // If mp3, just add audio to empty video
