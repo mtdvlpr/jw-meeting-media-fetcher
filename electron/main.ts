@@ -1,6 +1,7 @@
 /* eslint-disable import/named */
 import { platform } from 'os'
-import { join, normalize } from 'upath'
+import { join, normalize } from 'path'
+import { existsSync } from 'fs'
 import {
   app,
   BrowserWindow,
@@ -12,8 +13,6 @@ import {
   RelaunchOptions,
   session,
 } from 'electron'
-import axios from 'axios'
-import { existsSync } from 'fs-extra'
 import { init } from '@sentry/electron'
 import { initRenderer } from 'electron-store'
 import installExtension from 'electron-devtools-installer'
@@ -42,11 +41,6 @@ if (isDev) {
   )
 }
 
-process.env.ROOT = join(__dirname, '..')
-process.env.DIST = join(process.env.ROOT, 'dist-electron')
-process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
-  ? join(process.env.ROOT, 'src/public')
-  : join(process.env.ROOT, '.output/public')
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'true'
 
 // Allow listeners to work in iFrames
@@ -167,20 +161,6 @@ if (gotTheLock) {
   ipcMain.handle('openDialog', async (_e, options: OpenDialogOptions) => {
     const result = await dialog.showOpenDialog(options)
     return result
-  })
-
-  ipcMain.handle('getFromJWOrg', async (_e, opt) => {
-    const options = {
-      adapter: require('axios/lib/adapters/http'),
-      ...opt,
-    }
-    options.url = undefined
-    try {
-      const result: any = await axios.get(opt.url, options)
-      return result.data
-    } catch (e) {
-      return e
-    }
   })
 
   ipcMain.on('setTheme', (_e, val: 'system' | 'light' | 'dark') => {

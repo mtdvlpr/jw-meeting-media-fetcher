@@ -1,15 +1,21 @@
 import { EventEmitter } from 'events'
 import { platform } from 'os'
+import { format } from 'url'
+import { join } from 'path'
 import {
   BrowserWindow,
   app,
   shell,
   BrowserWindowConstructorOptions,
 } from 'electron'
-import { join } from 'upath'
 import { appLongName } from './main'
-const DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 const isDev = process.env.NODE_ENV === 'development'
+
+process.env.ROOT = join(__dirname, '..')
+process.env.DIST = join(process.env.ROOT, 'dist-electron')
+process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
+  ? join(process.env.ROOT, 'src/public')
+  : join(process.env.ROOT, '.output/public')
 
 export default class BrowserWinHandler {
   _eventEmitter: EventEmitter
@@ -91,16 +97,16 @@ export default class BrowserWinHandler {
       this.browserWindow.webContents.send(channel, ...args)
   }
 
-  async loadPage(pagePath: string) {
+  loadPage(pagePath: string) {
     if (!this.browserWindow)
       return Promise.reject(
         new Error("The page could not be loaded before win 'created' event")
       )
-    const serverUrl = isDev
-      ? DEV_SERVER_URL
-      : join(process.env.VITE_PUBLIC!, 'index.html')
+    const serverUrl = process.env.VITE_DEV_SERVER_URL
+      ? process.env.VITE_DEV_SERVER_URL
+      : 'file://' + join(process.env.VITE_PUBLIC!, 'index.html')
     const fullPath = serverUrl + '#' + pagePath
-    await this.browserWindow.loadURL(fullPath)
+    this.browserWindow.loadURL(serverUrl)
   }
 
   created(): Promise<BrowserWindow> {

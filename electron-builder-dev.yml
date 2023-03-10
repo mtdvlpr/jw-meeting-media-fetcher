@@ -1,0 +1,39 @@
+appId: sircharlo.meeting-media-manager
+productName: Meeting Media Manager
+artifactName: meeting-media-manager-${version}.${ext}
+buildDependenciesFromSource: true
+generateUpdatesFilesForAllChannels: true
+directories:
+  output: build
+files:
+  - filter:
+      - .output/**/*
+      - dist-electron
+extraResources:
+  - from: build/icons/media
+    to: icons
+mac:
+  icon: build/icons/main/icon.icns
+  target:
+    target: dmg
+    arch:
+      - universal
+  publish:
+    - github
+dmg:
+  writeUpdateInfo: false
+linux:
+  icon: build/icons/main
+  target: AppImage
+  category: Utility
+  publish:
+    - github
+win:
+  icon: build/icons/main/icon.ico
+  target:
+    - target: nsis
+  publish:
+    - github
+nsis:
+  oneClick: false
+  differentialPackage: false

@@ -14,6 +14,7 @@ const sentryInit =
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   srcDir: 'src/',
+  ssr: false,
   telemetry: false,
   imports: {
     dirs: ['stores', 'constants'],

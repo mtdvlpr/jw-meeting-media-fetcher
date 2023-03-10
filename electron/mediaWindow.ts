@@ -1,11 +1,11 @@
 import { platform } from 'os'
+import { join } from 'path'
 import {
   BrowserWindow,
   BrowserWindowConstructorOptions,
   ipcMain,
   Point,
 } from 'electron'
-import { join } from 'upath'
 import { AR_HEIGHT, AR_WIDTH } from './main'
 import BrowserWinHandler from './BrowserWinHandler'
 import { getMainWindow, getMainWinHandler } from './mainWindow'
