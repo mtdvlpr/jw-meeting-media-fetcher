@@ -274,7 +274,7 @@
     </v-col>
   </v-row>
   <v-row v-else-if="field == 'slider'" class="mb-4" justify="space-between">
-    <v-col align-self="center" class="text-left">
+    <v-col cols="auto" align-self="center" class="text-left">
       {{ groupLabel }}
     </v-col>
     <v-col align-self="center" class="text-right">
@@ -293,14 +293,14 @@
         :label="customInput ? undefined : value + labelSuffix"
         hide-details="auto"
       >
-        <template v-if="locked" #append-inner>
+        <template v-if="locked" #append>
           <v-icon icon="fa-lock" style="margin-top: 2px">
             <v-tooltip activator="parent" location="top">
               {{ $t('settingLocked') }}
             </v-tooltip>
           </v-icon>
         </template>
-        <template v-else-if="explanation" #append-inner>
+        <template v-else-if="explanation" #append>
           <v-tooltip location="top">
             <template #activator="{ props: attrs }">
               <v-icon
@@ -313,13 +313,13 @@
             <span>{{ $t(explanation) }}</span>
           </v-tooltip>
         </template>
-        <template v-else-if="customInput" #append-inner>
+        <template v-else-if="customInput" #append>
           <v-text-field
             :model-value="formattedSlider"
             class="mt-0 pt-0"
             hide-details="auto"
             single-line
-            style="width: 65px"
+            style="width: 75px"
             density="compact"
             variant="outlined"
             :rules="[
@@ -422,7 +422,7 @@ const formattedSlider = computed(() => {
 })
 const formattedToNumber = (val: string) => {
   const [minutes, seconds] = val.split(':')
-  return parseInt(minutes) + parseInt(seconds) / SEC_IN_MIN
+  return parseFloat((+minutes + +seconds / SEC_IN_MIN).toFixed(2))
 }
 const updateSlider = (val: string) => {
   if (/^[0-1][0-9]:[0-9][0-9]$/.test(val)) {

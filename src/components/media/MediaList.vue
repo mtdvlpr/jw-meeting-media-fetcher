@@ -170,7 +170,7 @@
         </draggable>
       </v-list>
     </template>
-    <v-list v-else lines="three" class="ma-4">
+    <v-list v-else class="ma-4">
       <draggable
         v-model="mediaItems"
         item-key="id"

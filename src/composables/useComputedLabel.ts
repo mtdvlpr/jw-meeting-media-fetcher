@@ -19,14 +19,11 @@ export default function <
 ) {
   const { $i18n } = useNuxtApp()
   const computedLabel = computed(() => {
-    return $i18n.t(label).replace(
-      '<span>XX</span>',
-      (subKey
-        ? // @ts-ignore
-          ref.value[key][subKey] ?? fallback
-        : ref.value[key] ?? fallback
-      ).toString()
-    )
+    const value = subKey
+      ? // @ts-ignore
+        ref.value[key][subKey] ?? fallback
+      : ref.value[key] ?? fallback
+    return $i18n.t(label).replace('<span>XX</span>', value.toString())
   })
 
   return computedLabel
