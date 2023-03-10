@@ -562,14 +562,9 @@ const setLocalOutputPath = async () => {
     app.value.localOutputPath = result.filePaths[0]
   }
 }
-const mounted = ref(false)
 watch(
   () => app.value.customCachePath,
   (val, oldVal) => {
-    if (!mounted.value) {
-      mounted.value = true
-      return
-    }
     const defaultPath = (folder: string) => join(appPath(), folder)
     if (val && !oldVal) {
       move(defaultPath('Publications'), join(val, 'Publications'))

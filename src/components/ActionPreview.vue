@@ -1,14 +1,16 @@
 <!-- A preview overlay of an automatic action that is about to happen (e.g. auto fetch media or auto quit app) -->
 <template>
   <v-dialog :model-value="true" fullscreen>
-    <v-container class="d-flex flex-column align-center">
-      <h1 class="mb-6 text-center">{{ $t(text) }}</h1>
-      <v-badge :content="timer">
-        <v-btn color="error" @click="emit('abort')">
-          <v-icon :icon="icon" />
-        </v-btn>
-      </v-badge>
-    </v-container>
+    <v-sheet>
+      <v-container class="d-flex flex-column justify-center fill-height">
+        <h1 class="mb-6 text-center">{{ $t(text) }}</h1>
+        <v-badge :content="timer">
+          <v-btn color="error" @click="emit('abort')">
+            <v-icon :icon="icon" />
+          </v-btn>
+        </v-badge>
+      </v-container>
+    </v-sheet>
   </v-dialog>
 </template>
 <script setup lang="ts">

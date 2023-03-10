@@ -103,7 +103,10 @@ onMounted(() => {
   }
   setMeetingColors()
   loading.value = false
-  if (initialLoad) autoStartMusic()
+  if (initialLoad.value) autoStartMusic()
+  if (initialLoad.value && getPrefs<boolean>('app.autoStartSync')) {
+    action.value = 'startMediaSync'
+  }
   statStore.setInitialLoad(false)
 })
 

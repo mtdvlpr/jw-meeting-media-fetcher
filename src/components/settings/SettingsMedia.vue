@@ -294,9 +294,12 @@ const getLangs = async () => {
   loading.value = false
 }
 onMounted(() => {
-  loadFont('yeartext')
-  loadFont('icon')
   getLangs()
+  if (media.value.enableMediaDisplayButton) {
+    loadFont('yeartext')
+    loadFont('icon')
+    loadBg()
+  }
 
   if (mediaForm.value) mediaForm.value.validate()
   if (valid.value) emit('valid', true)
@@ -306,7 +309,7 @@ onMounted(() => {
 const { background, screens, mediaScreenInit } = storeToRefs(usePresentStore())
 watch(
   () => media.value.enableMediaDisplayButton,
-  async (val) => {
+  (val) => {
     if (val !== mediaScreenInit.value) {
       toggleMediaWindow(val ? 'open' : 'close')
     } else {
@@ -320,7 +323,7 @@ watch(
       ) {
         media.value.preferredOutput = screens.value[0].id
       }
-      bg.value = await refreshBackgroundImgPreview()
+      loadBg()
     }
   }
 )
@@ -423,6 +426,10 @@ const bgFilename = () => {
   return `custom-background-image-${props.prefs.app.congregationName}`
 }
 
+const loadBg = async () => {
+  bg.value = await refreshBackgroundImgPreview()
+}
+
 const refreshBg = () => {
   refreshBackgroundImgPreview()
 }
@@ -453,7 +460,7 @@ const uploadBg = async () => {
       )
     }
 
-    bg.value = await refreshBackgroundImgPreview()
+    loadBg()
   } else {
     warn('notAnImage')
   }
@@ -483,7 +490,7 @@ const removeBg = async () => {
   }
 
   // Refresh the media screen background
-  bg.value = await refreshBackgroundImgPreview()
+  loadBg()
 }
 </script>
 <style lang="scss" scoped>
