@@ -1,6 +1,5 @@
 import { EventEmitter } from 'events'
 import { platform } from 'os'
-import { format } from 'url'
 import { join } from 'path'
 import {
   BrowserWindow,
@@ -106,7 +105,7 @@ export default class BrowserWinHandler {
       ? process.env.VITE_DEV_SERVER_URL
       : 'file://' + join(process.env.VITE_PUBLIC!, 'index.html')
     const fullPath = serverUrl + '#' + pagePath
-    this.browserWindow.loadURL(serverUrl)
+    this.browserWindow.loadURL(fullPath)
   }
 
   created(): Promise<BrowserWindow> {
