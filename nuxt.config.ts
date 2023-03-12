@@ -24,6 +24,9 @@ export default defineNuxtConfig({
       hashMode: true,
     },
   },
+  build: {
+    transpile: ['@vuepic/vue-datepicker'],
+  },
   modules: [
     'nuxt-electron',
     'nuxt-lodash',

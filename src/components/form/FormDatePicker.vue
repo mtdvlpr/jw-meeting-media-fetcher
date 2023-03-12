@@ -1,13 +1,55 @@
 <template>
-  <form-input v-model="value" />
+  <VueDatePicker
+    v-model="value"
+    :locale="locale"
+    :min-date="min"
+    :format="
+      format.replace('dddd', 'eeee').replace('DD', 'dd').replace('YYYY', 'yyyy')
+    "
+    :dark="isDark"
+    :disabled="locked"
+    :required="required"
+    :clearable="!required"
+    :select-text="$t('confirm')"
+    :cancel-text="$t('cancel')"
+    :disabled-dates="disabledDates"
+    :week-start="$getWeekStart()"
+    :enable-time-picker="false"
+    prevent-min-max-navigation
+  />
 </template>
 <script setup lang="ts">
 const emit = defineEmits(['update:modelValue'])
-const props = defineProps<{
-  modelValue: string | null
-}>()
+const props = withDefaults(
+  defineProps<{
+    modelValue: string | null
+    label: string
+    locked?: boolean
+    min?: string | null
+    format?: string
+    allowedDates?: (date: Date) => boolean
+    required?: boolean
+  }>(),
+  {
+    min: null,
+    format: 'YYYY-MM-DD',
+    allowedDates: () => true,
+  }
+)
 
-const value = useVModel(props, 'modelValue', emit)
+const { isDark } = useTheme()
+const { $i18n, $dayjs, $getWeekStart } = useNuxtApp()
+const locale = computed(() => $i18n.localeProperties.value.iso ?? 'en-US')
+const disabledDates = (date: Date) => !props.allowedDates(date)
+const value = ref(props.modelValue)
+watch(
+  () => props.modelValue,
+  (val) => (value.value = val)
+)
+watch(value, (val) => {
+  if (!val) emit('update:modelValue', null)
+  emit('update:modelValue', $dayjs(val).format('YYYY-MM-DD'))
+})
 </script>
 <!--
 <template>

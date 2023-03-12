@@ -1,13 +1,46 @@
 <template>
-  <form-input v-model="value" />
+  <VueDatePicker
+    v-model="value"
+    :dark="isDark"
+    :disabled="locked"
+    :required="required"
+    :clearable="!required"
+    :select-text="$t('confirm')"
+    :cancel-text="$t('cancel')"
+    time-picker
+    minutes-increment="5"
+  />
 </template>
 <script setup lang="ts">
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
   modelValue: any
+  locked?: boolean
+  required?: boolean
 }>()
 
-const value = useVModel(props, 'modelValue', emit)
+const { isDark } = useTheme()
+const stringToTime = (str: string | null) => {
+  if (!str) return null
+  const [hours, minutes] = str.split(':')
+  return { hours: +hours, minutes: +minutes, seconds: 0 }
+}
+const timeToString = (
+  time: {
+    hours: number
+    minutes: number
+    seconds: number
+  } | null
+) => {
+  if (!time) return null
+  return `${time.hours.toString().padStart(2, '0')}:${time.minutes
+    .toString()
+    .padStart(2, '0')}`
+}
+const value = ref(stringToTime(props.modelValue))
+watch(value, (val) => {
+  emit('update:modelValue', timeToString(val))
+})
 </script>
 <!--
 <template>

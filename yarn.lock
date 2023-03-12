@@ -2785,6 +2785,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@vuepic/vue-datepicker@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "@vuepic/vue-datepicker@npm:4.2.0"
+  dependencies:
+    date-fns: ^2.29.3
+    date-fns-tz: ^1.3.7
+  peerDependencies:
+    vue: ">=3.2.0"
+  checksum: 3111a2418d6fd0c2236907e430c9e176bc5dae5614b780f58d991957883133c3f1b8ce29ac376bcf8f03fd1fc3fa9b41b18d01b80b9da105dfeb798338cf8c5a
+  languageName: node
+  linkType: hard
+
 "@vuetify/loader-shared@npm:^1.7.1":
   version: 1.7.1
   resolution: "@vuetify/loader-shared@npm:1.7.1"
@@ -4340,6 +4352,22 @@ __metadata:
   version: 4.0.1
   resolution: "data-uri-to-buffer@npm:4.0.1"
   checksum: 0d0790b67ffec5302f204c2ccca4494f70b4e2d940fea3d36b09f0bb2b8539c2e86690429eb1f1dc4bcc9e4df0644193073e63d9ee48ac9fce79ec1506e4aa4c
+  languageName: node
+  linkType: hard
+
+"date-fns-tz@npm:^1.3.7":
+  version: 1.3.8
+  resolution: "date-fns-tz@npm:1.3.8"
+  peerDependencies:
+    date-fns: ">=2.0.0"
+  checksum: dbf17cb88de7c7b71a9f86b815ac62ebdbf725c030e78d2421309456b5001a85284a5b6763f4af0ba660183f12e876c165e725a0723f642edb7846407db03133
+  languageName: node
+  linkType: hard
+
+"date-fns@npm:^2.29.3":
+  version: 2.29.3
+  resolution: "date-fns@npm:2.29.3"
+  checksum: e01cf5b62af04e05dfff921bb9c9933310ed0e1ae9a81eb8653452e64dc841acf7f6e01e1a5ae5644d0337e9a7f936175fd2cb6819dc122fdd9c5e86c56be484
   languageName: node
   linkType: hard
 
@@ -7693,6 +7721,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.eq@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "lodash.eq@npm:4.0.0"
+  checksum: c46d45b8da669151cdf4fcb996056c8847c1c32723fa3c60ef87433ee41b01b8e1ee615c4c433b6f27391fa9c1793ad6d892dd30bac4c9c3508be3fa5f3d5def
+  languageName: node
+  linkType: hard
+
 "lodash.escaperegexp@npm:^4.1.2":
   version: 4.1.2
   resolution: "lodash.escaperegexp@npm:4.1.2"
@@ -7718,6 +7753,13 @@ __metadata:
   version: 4.5.0
   resolution: "lodash.isequal@npm:4.5.0"
   checksum: da27515dc5230eb1140ba65ff8de3613649620e8656b19a6270afe4866b7bd461d9ba2ac8a48dcc57f7adac4ee80e1de9f965d89d4d81a0ad52bb3eec2609644
+  languageName: node
+  linkType: hard
+
+"lodash.isnil@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "lodash.isnil@npm:4.0.0"
+  checksum: ebf8df69879badd6ad99c4f64c54c470248df5cf92b208ca730861b1d8ac058da7b632ac811d18b0929d93cbac8d8fc866e781ee816b0142c56952e85edc682f
   languageName: node
   linkType: hard
 
@@ -7768,6 +7810,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"lodash.tointeger@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "lodash.tointeger@npm:4.0.4"
+  checksum: c08b71b0693c1529c6143f37c1bf215a803c6994946f4a165755d56304e5117bc185f1ab5099a92a799935d3720c27cc9c3e8042633c75cf7644ebad29e302a0
+  languageName: node
+  linkType: hard
+
 "lodash.union@npm:^4.6.0":
   version: 4.6.0
   resolution: "lodash.union@npm:4.6.0"
@@ -7779,6 +7828,13 @@ __metadata:
   version: 4.5.0
   resolution: "lodash.uniq@npm:4.5.0"
   checksum: a4779b57a8d0f3c441af13d9afe7ecff22dd1b8ce1129849f71d9bbc8e8ee4e46dfb4b7c28f7ad3d67481edd6e51126e4e2a6ee276e25906d10f7140187c392d
+  languageName: node
+  linkType: hard
+
+"lodash.uniqueid@npm:^4.0.1":
+  version: 4.0.1
+  resolution: "lodash.uniqueid@npm:4.0.1"
+  checksum: f8a66b34c2a8df74aeab22a018c9247c96346dc449506278e6f651030166b74959a4f8e6fae60d392a4c00a40758677547b6e969e4cb6893d8fcd1cb0d2b4ba1
   languageName: node
   linkType: hard
 
@@ -7966,6 +8022,7 @@ __metadata:
     "@types/fs-extra": ^11.0.1
     "@types/sql.js": ^1.4.4
     "@typescript-eslint/parser": ^5.54.1
+    "@vuepic/vue-datepicker": ^4.2.0
     "@vueuse/core": ^9.13.0
     "@vueuse/electron": ^9.13.0
     "@vueuse/nuxt": ^9.13.0
@@ -8011,6 +8068,7 @@ __metadata:
     vite-plugin-vuetify: ^1.0.2
     vue: ^3.2.47
     vue-tsc: ^1.2.0
+    vue3-treeview: ^0.4.1
     vuedraggable: next
     vuetify: ^3.1.8
     webdav: ^4.11.2
@@ -12016,7 +12074,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:^3.2.47":
+"vue3-treeview@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "vue3-treeview@npm:0.4.1"
+  dependencies:
+    lodash.eq: ^4.0.0
+    lodash.isnil: ^4.0.0
+    lodash.tointeger: ^4.0.4
+    lodash.uniqueid: ^4.0.1
+    vue: ^3.1.2
+  checksum: b5d56065685208a171ca6cb15ef223ff02a145de81d4d2f4515eb38bb3d86ab6006c8257b09a1335d8003825d4f594b4356cf9848489c5fad36c377f29e22e0b
+  languageName: node
+  linkType: hard
+
+"vue@npm:^3.1.2, vue@npm:^3.2.47":
   version: 3.2.47
   resolution: "vue@npm:3.2.47"
   dependencies:

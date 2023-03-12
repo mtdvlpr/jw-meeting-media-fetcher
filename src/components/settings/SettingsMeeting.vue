@@ -173,7 +173,7 @@ const { $dayjs } = useNuxtApp()
 const { online } = useOnline(true)
 const meetingForm = ref<VFormRef | null>()
 const { prefs: meeting } = usePrefs<MeetingPrefs>('meeting', emit)
-const isTuesday = (date: string) => $dayjs(date, 'YYYY-MM-DD').day() === 2
+const isTuesday = (date: Date) => $dayjs(date).day() === 2
 const meetingKeys: { day: keyof MeetingPrefs; time: keyof MeetingPrefs }[] = [
   { day: 'mwDay', time: 'mwStartTime' },
   { day: 'weDay', time: 'weStartTime' },

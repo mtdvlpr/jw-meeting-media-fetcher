@@ -269,6 +269,7 @@
       cols="2"
       class="d-flex justify-end"
       align-self="center"
+      style="min-width: 112px"
     >
       <slot />
     </v-col>

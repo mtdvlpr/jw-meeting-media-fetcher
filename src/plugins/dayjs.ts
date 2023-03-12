@@ -67,8 +67,9 @@ export default defineNuxtPlugin(() => {
   return {
     provide: {
       dayjs,
-      getWeekStart: (lang: string) =>
-        startOfWeek.find((l) => l.lang === lang)?.start ?? 1,
+      getWeekStart: (lang?: string) =>
+        startOfWeek.find((l) => l.lang === (lang ?? dayjs.locale()))?.start ??
+        1,
     },
   }
 })
