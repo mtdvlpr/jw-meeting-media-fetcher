@@ -1,6 +1,5 @@
 import vuetify from 'vite-plugin-vuetify'
 import alias from '@rollup/plugin-alias'
-import renderer from 'vite-plugin-electron-renderer'
 import { repository, version, devDependencies } from './package.json'
 import { LOCALES } from './src/constants/lang'
 
@@ -45,6 +44,14 @@ export default defineNuxtConfig({
       })
     },
   ],
+  electron: {
+    renderer: {
+      nodeIntegration: true,
+      optimizeDeps: {
+        include: ['fs-extra', 'obs-websocket-js', 'upath'],
+      },
+    },
+  },
   i18n: {
     lazy: true,
     langDir: '/locales/',
@@ -72,14 +79,6 @@ export default defineNuxtConfig({
         ],
       },
     },
-    plugins: [
-      renderer({
-        nodeIntegration: true,
-        optimizeDeps: {
-          include: ['fs-extra', 'obs-websocket-js', 'upath'],
-        },
-      }),
-    ],
   },
   runtimeConfig: {
     public: {
