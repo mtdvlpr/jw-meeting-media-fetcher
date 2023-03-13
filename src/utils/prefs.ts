@@ -94,6 +94,10 @@ const schema: Schema<PrefStore> = {
             type: ['string', 'null'],
             default: PREFS.app.obs.mediaScene,
           },
+          imageScene: {
+            type: ['string', 'null'],
+            default: PREFS.app.obs.imageScene,
+          },
           cameraScene: {
             type: ['string', 'null'],
             default: PREFS.app.obs.cameraScene,
@@ -105,6 +109,52 @@ const schema: Schema<PrefStore> = {
           useV4: {
             type: 'boolean',
             default: PREFS.app.obs.useV4,
+          },
+        },
+      },
+      zoom: {
+        type: 'object',
+        properties: {
+          enable: {
+            type: 'boolean',
+            default: PREFS.app.zoom.enable,
+          },
+          name: {
+            type: ['string', 'null'],
+            default: PREFS.app.zoom.name,
+          },
+          id: {
+            type: ['string', 'null'],
+            default: PREFS.app.zoom.id,
+          },
+          password: {
+            type: ['string', 'null'],
+            default: PREFS.app.obs.password,
+          },
+          spotlight: {
+            type: 'boolean',
+            default: PREFS.app.zoom.spotlight,
+          },
+          hideComponent: {
+            type: 'boolean',
+            default: PREFS.app.zoom.hideComponent,
+          },
+          autoRename: {
+            type: 'array',
+            default: PREFS.app.zoom.autoRename,
+            items: {
+              type: 'string',
+            },
+          },
+          autoStartMeeting: {
+            type: 'boolean',
+            default: PREFS.app.zoom.autoStartMeeting,
+          },
+          autoStartTime: {
+            type: 'number',
+            minimum: 1,
+            maximum: 10,
+            default: PREFS.app.zoom.autoStartTime,
           },
         },
       },

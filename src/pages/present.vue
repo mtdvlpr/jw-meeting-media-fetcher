@@ -5,7 +5,7 @@
   >
     <confirm-dialog
       v-model="dialog"
-      content="obsZoomSceneActivate"
+      description="obsZoomSceneActivate"
       @cancel="dialog = false"
       @confirm="confirmZoomPart()"
     >

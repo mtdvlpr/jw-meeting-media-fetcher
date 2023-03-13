@@ -6,9 +6,11 @@
       </v-card-title>
 
       <v-card-text>
-        {{ $t(content) }}
+        {{ $t(description) }}
       </v-card-text>
-
+      <v-card-text>
+        <slot />
+      </v-card-text>
       <v-card-actions>
         <v-spacer />
 
@@ -25,7 +27,7 @@
 </template>
 <script setup lang="ts">
 const props = defineProps<{
-  content: string
+  description: string
   modelValue: boolean
 }>()
 const emit = defineEmits(['confirm', 'cancel', 'update:modelValue'])
