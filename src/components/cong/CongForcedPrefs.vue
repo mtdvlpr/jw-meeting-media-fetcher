@@ -1,15 +1,13 @@
 <template>
-  <v-card class="d-flex flex-column">
+  <v-card>
     <v-card-title class="justify-center">
       {{ $t('settingsLocked') }}
     </v-card-title>
-    <v-col cols="12">
-      <v-divider />
-    </v-col>
-    <v-card-text>
+    <v-divider />
+    <v-card-text style="flex: 0 0 auto">
       {{ $t('settingsLockedWhoAreYou') }}
     </v-card-text>
-    <v-card-text>
+    <v-card-text style="flex: 0 0 auto">
       {{ $t('settingsLockedExplain') }}
     </v-card-text>
     <loading-icon v-if="loading" />
@@ -25,14 +23,15 @@
         <v-switch
           v-model="item.forced"
           hide-details="auto"
+          color="primary"
           class="my-0 py-0"
           @update:model-value="change = true"
         >
           <template #label>
             <span>
-              <v-tooltip activator="parent" location="top">{{
-                $t(item.description)
-              }}</v-tooltip>
+              <v-tooltip activator="parent" location="top">
+                {{ $t(item.description) }}
+              </v-tooltip>
               <v-chip color="info">{{ item.key }}</v-chip>
             </span>
             <v-chip>
@@ -42,8 +41,8 @@
         </v-switch>
       </v-col>
     </v-row>
-    <v-footer position="fixed" style="justify-content: right">
-      <v-btn color="primary" @click="updatePrefs()">
+    <v-footer class="footer" style="justify-content: right">
+      <v-btn color="primary" :loading="loading" @click="updatePrefs()">
         <v-icon icon="fa-check" size="medium" />
       </v-btn>
     </v-footer>
@@ -138,6 +137,9 @@ const forcable = ref([
 ])
 
 const loading = ref(true)
+onMounted(() => {
+  loading.value = false
+})
 const change = ref(false)
 const emit = defineEmits(['done'])
 const updatePrefs = async () => {
@@ -187,3 +189,11 @@ const updatePrefs = async () => {
   }
 }
 </script>
+<style lang="scss" scoped>
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+</style>
