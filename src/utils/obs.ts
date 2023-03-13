@@ -33,7 +33,9 @@ async function connectOBS<
               newScene['scene-name'] &&
               newScene['scene-name'] !==
                 getPrefs<string>('app.obs.mediaScene') &&
-              newScene['scene-name'] !== getPrefs<string>('app.obs.zoomScene')
+              newScene['scene-name'] !==
+                getPrefs<string>('app.obs.zoomScene') &&
+              newScene['scene-name'] !== getPrefs<string>('app.obs.imageScene')
             ) {
               store.setCurrentScene(newScene['scene-name'])
             }

@@ -132,7 +132,8 @@ const scenes = computed(() => {
       (s) =>
         !!s &&
         s !== getPrefs<string>('app.obs.mediaScene') &&
-        s !== getPrefs<string>('app.obs.zoomScene')
+        s !== getPrefs<string>('app.obs.zoomScene') &&
+        s !== getPrefs<string>('app.obs.imageScene')
     )
     .map((s, i) => {
       let shortcut = `Alt+${i + 1}`

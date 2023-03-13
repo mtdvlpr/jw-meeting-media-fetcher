@@ -307,7 +307,10 @@ const togglePaused = () => {
 
 const enableMediaScene = () => {
   const mediaScene = getPrefs<string>('app.obs.mediaScene')
-  if (mediaScene) {
+  const imageScene = getPrefs<string>('app.obs.imageScene')
+  if (imageScene && isImage(props.src)) {
+    setScene(imageScene)
+  } else if (mediaScene) {
     setScene(mediaScene)
   } else {
     warn('errorObsMediaScene')

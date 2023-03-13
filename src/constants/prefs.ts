@@ -106,6 +106,7 @@ export const FORCABLE = [
   'app.obs.mediaScene',
   'app.obs.password',
   'app.obs.port',
+  'app.obs.zoomScene',
   'app.outputFolderDateFormat',
   'app.zoom.autoRename',
   'app.zoom.autoStartMeeting',

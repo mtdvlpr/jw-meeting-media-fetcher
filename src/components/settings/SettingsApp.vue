@@ -188,6 +188,16 @@
         required
       />
       <form-input
+        id="app.obs.imageScene"
+        v-model="app.obs.imageScene"
+        field="select"
+        :items="imageScenes"
+        :label="$t('obsImageScene')"
+        :disabled="cameraScenes.length === 0"
+        :locked="$isLocked('app.obs.imageScene')"
+        clearable
+      />
+      <form-input
         id="app.obs.zoomScene"
         v-model="app.obs.zoomScene"
         field="select"
@@ -499,17 +509,41 @@ watch(
 const scenes = computed(() => useObsStore().scenes)
 const cameraScenes = computed(() => {
   return scenes.value.filter(
-    (s) => s !== app.value.obs.mediaScene && s !== app.value.obs.zoomScene
+    (s) =>
+      s !== app.value.obs.mediaScene &&
+      s !== app.value.obs.zoomScene &&
+      s !== app.value.obs.imageScene
   )
 })
 const mediaScenes = computed(() => {
   return scenes.value.filter(
-    (s) => s !== app.value.obs.cameraScene && s !== app.value.obs.zoomScene
+    (s) =>
+      s !== app.value.obs.cameraScene &&
+      s !== app.value.obs.zoomScene &&
+      s !== app.value.obs.imageScene
   )
+})
+const imageScenes = computed(() => {
+  const sceneList = scenes.value.filter(
+    (s) =>
+      s !== app.value.obs.cameraScene &&
+      s !== app.value.obs.zoomScene &&
+      s !== app.value.obs.mediaScene
+  )
+  if (
+    app.value.obs.imageScene &&
+    !scenes.value.includes(app.value.obs.imageScene)
+  ) {
+    sceneList.push(app.value.obs.imageScene)
+  }
+  return sceneList
 })
 const zoomScenes = computed(() => {
   const sceneList = scenes.value.filter(
-    (s) => s !== app.value.obs.cameraScene && s !== app.value.obs.mediaScene
+    (s) =>
+      s !== app.value.obs.cameraScene &&
+      s !== app.value.obs.mediaScene &&
+      s !== app.value.obs.imageScene
   )
   if (
     app.value.obs.zoomScene &&

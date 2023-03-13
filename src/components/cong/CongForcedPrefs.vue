@@ -72,7 +72,7 @@ const getDescription = (key: string) => {
 
   // OBS
   if (key === 'app.obs.enable') return 'enableObs'
-  const obsKeys = ['cameraScene', 'mediaScene']
+  const obsKeys = ['cameraScene', 'mediaScene', 'imageScene', 'zoomScene']
   if (obsKeys.includes(lastKey)) {
     return `obs${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
   }
