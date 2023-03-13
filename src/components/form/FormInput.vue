@@ -22,9 +22,17 @@
       />
     </template>
     <template v-else-if="locked" #append-inner>
-      <v-icon icon="fa-lock" style="margin-top: 2px">
-        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
-      </v-icon>
+      <v-tooltip activator="parent" location="top">
+        {{ $t('settingLocked') }}
+        <template #activator="{ props: attrs }">
+          <v-icon
+            icon="fa-lock"
+            size="small"
+            v-bind="attrs"
+            style="margin-top: 2px; pointer-events: auto"
+          />
+        </template>
+      </v-tooltip>
     </template>
     <template v-else-if="explanation && appendOuter" #append>
       <v-tooltip location="top">
@@ -46,7 +54,7 @@
             v-bind="attrs"
             icon="fa-circle-question"
             size="small"
-            style="margin-top: 2px"
+            style="margin-top: 2px; pointer-events: auto"
           />
         </template>
         <span>{{ $t(explanation) }}</span>
@@ -74,10 +82,18 @@
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
     </template>
-    <template v-if="locked" #append-inner>
-      <v-icon icon="fa-lock" style="margin-top: 2px">
-        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
-      </v-icon>
+    <template v-if="locked" #append>
+      <v-tooltip activator="parent" location="top">
+        {{ $t('settingLocked') }}
+        <template #activator="{ props: attrs }">
+          <v-icon
+            icon="fa-lock"
+            size="small"
+            v-bind="attrs"
+            style="margin-top: 2px; pointer-events: auto"
+          />
+        </template>
+      </v-tooltip>
     </template>
     <template v-else-if="explanation" #append>
       <v-tooltip location="top">
@@ -101,18 +117,26 @@
     variant="outlined"
     color="primary"
     density="compact"
-    :readonly="!!$attrs.disabled || locked"
-    :class="{ 'v-input--is-disabled': locked, 'mb-2': required }"
+    :disabled="!!$attrs.disabled || locked"
+    :class="{ 'mb-2': required }"
     v-bind="$attrs"
     :rules="rules"
   >
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
     </template>
-    <template v-if="locked" #append-inner>
-      <v-icon icon="fa-lock" style="margin-top: 2px">
-        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
-      </v-icon>
+    <template v-if="locked" #append>
+      <v-tooltip activator="parent" location="top">
+        {{ $t('settingLocked') }}
+        <template #activator="{ props: attrs }">
+          <v-icon
+            icon="fa-lock"
+            size="small"
+            v-bind="attrs"
+            style="margin-top: 2px; pointer-events: auto"
+          />
+        </template>
+      </v-tooltip>
     </template>
     <template v-else-if="explanation" #append>
       <v-tooltip location="top">
@@ -128,72 +152,6 @@
       </v-tooltip>
     </template>
   </v-select>
-  <v-textarea
-    v-else-if="field == 'textarea'"
-    :id="safeId"
-    ref="field"
-    v-model="value"
-    :class="{ 'mb-2': required }"
-    :disabled="!!$attrs.disabled || locked"
-    v-bind="$attrs"
-    variant="outlined"
-    color="primary"
-    density="compact"
-    :rules="rules"
-    :counter="max"
-    rows="4"
-  >
-    <template v-for="(_, name) in $slots" #[name]="slotData">
-      <slot :name="name" v-bind="slotData" />
-    </template>
-    <template v-if="locked" #append-inner>
-      <v-icon icon="fa-lock">
-        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
-      </v-icon>
-    </template>
-    <template v-else-if="explanation" #append-inner>
-      <v-tooltip location="top">
-        <template #activator="{ props: attrs }">
-          <v-icon v-bind="attrs" size="small" icon="fa-circle-question" />
-        </template>
-        <span>{{ $t(explanation) }}</span>
-      </v-tooltip>
-    </template>
-  </v-textarea>
-  <v-checkbox
-    v-else-if="field == 'checkbox'"
-    :id="safeId"
-    ref="field"
-    v-model="value"
-    density="compact"
-    color="primary"
-    variant="outlined"
-    :readonly="!!$attrs.disabled || locked"
-    :class="{ 'v-input--is-disabled': locked }"
-    v-bind="$attrs"
-  >
-    <template v-for="(_, name) in $slots" #[name]="slotData">
-      <slot :name="name" v-bind="slotData" />
-    </template>
-    <template v-if="locked" #append-inner>
-      <v-icon icon="fa-lock" style="margin-top: 3px">
-        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
-      </v-icon>
-    </template>
-    <template v-else-if="explanation" #append-inner>
-      <v-tooltip location="top">
-        <template #activator="{ props: attrs }">
-          <v-icon
-            v-bind="attrs"
-            size="small"
-            icon="fa-circle-question"
-            style="margin-top: 3px"
-          />
-        </template>
-        <span>{{ $t(explanation) }}</span>
-      </v-tooltip>
-    </template>
-  </v-checkbox>
   <v-switch
     v-else-if="field == 'switch'"
     :id="safeId"
@@ -202,19 +160,26 @@
     density="compact"
     variant="outlined"
     color="primary"
-    :readonly="!!$attrs.disabled || locked"
-    :class="{ 'v-input--is-disabled': locked }"
+    :disabled="!!$attrs.disabled || locked"
     v-bind="$attrs"
   >
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
     </template>
-    <template v-if="locked" #append-inner>
-      <v-icon icon="fa-lock" style="margin-top: 3px">
-        <v-tooltip location="top">{{ $t('settingLocked') }}</v-tooltip>
-      </v-icon>
+    <template v-if="locked" #append>
+      <v-tooltip activator="parent" location="top">
+        {{ $t('settingLocked') }}
+        <template #activator="{ props: attrs }">
+          <v-icon
+            icon="fa-lock"
+            size="small"
+            v-bind="attrs"
+            style="margin-top: 3px; pointer-events: auto"
+          />
+        </template>
+      </v-tooltip>
     </template>
-    <template v-else-if="explanation" #append-inner>
+    <template v-else-if="explanation" #append>
       <v-tooltip location="top">
         <template #activator="{ props: attrs }">
           <v-icon
@@ -259,9 +224,7 @@
         >
           {{ item.title }}
         </v-btn>
-        <v-btn v-if="locked" icon disabled>
-          <v-icon icon="fa-lock" />
-        </v-btn>
+        <v-btn v-if="locked" icon="fa-lock" size="small" disabled />
       </v-btn-toggle>
     </v-col>
     <v-col
@@ -269,7 +232,7 @@
       cols="2"
       class="d-flex justify-end"
       align-self="center"
-      style="min-width: 112px"
+      style="min-width: 112px; max-width: 112px"
     >
       <slot />
     </v-col>
@@ -295,11 +258,17 @@
         hide-details="auto"
       >
         <template v-if="locked" #append>
-          <v-icon icon="fa-lock" style="margin-top: 2px">
-            <v-tooltip activator="parent" location="top">
-              {{ $t('settingLocked') }}
-            </v-tooltip>
-          </v-icon>
+          <v-tooltip activator="parent" location="top">
+            {{ $t('settingLocked') }}
+            <template #activator="{ props: attrs }">
+              <v-icon
+                icon="fa-lock"
+                size="small"
+                v-bind="attrs"
+                style="margin-top: 2px; pointer-events: auto"
+              />
+            </template>
+          </v-tooltip>
         </template>
         <template v-else-if="explanation" #append>
           <v-tooltip location="top">
@@ -346,12 +315,10 @@ type Field =
   | 'slider'
   | 'text'
   | 'password'
-  | 'checkbox'
   | 'switch'
   | 'number'
   | 'select'
   | 'autocomplete'
-  | 'textarea'
 const props = withDefaults(
   defineProps<{
     id?: string

@@ -52,20 +52,29 @@
 <script setup lang="ts">
 import { join } from 'upath'
 
+const flattenObject = (ob: any) => {
+  const toReturn = {} as { [key: string]: any }
+
+  for (const i in ob) {
+    if (ob[i] === undefined) continue
+
+    if (typeof ob[i] === 'object' && ob[i] !== null) {
+      const flatObject = flattenObject(ob[i])
+      for (const x in flatObject) {
+        if (flatObject[x] === undefined) continue
+
+        toReturn[i + '.' + x] = flatObject[x]
+      }
+    } else {
+      toReturn[i] = ob[i]
+    }
+  }
+  return toReturn
+}
+
 const store = useCongStore()
 const { prefs } = storeToRefs(store)
 const forced = computed(() => flattenObject(prefs.value))
-
-const forcable = ref([
-  ...FORCABLE.map((key) => {
-    return {
-      key,
-      value: getPrefs(key),
-      forced: forced.value && forced.value[key] !== undefined,
-      description: getDescription(key),
-    }
-  }),
-])
 
 const getDescription = (key: string) => {
   const lastKey = key.split('.').pop()!
@@ -117,6 +126,17 @@ const getDescription = (key: string) => {
   }
 }
 
+const forcable = ref([
+  ...FORCABLE.map((key) => {
+    return {
+      key,
+      value: getPrefs(key),
+      forced: forced.value && forced.value[key] !== undefined,
+      description: getDescription(key),
+    }
+  }),
+])
+
 const loading = ref(true)
 const change = ref(false)
 const emit = defineEmits(['done'])
@@ -165,25 +185,5 @@ const updatePrefs = async () => {
     loading.value = false
     emit('done')
   }
-}
-
-const flattenObject = (ob: any) => {
-  const toReturn = {} as { [key: string]: any }
-
-  for (const i in ob) {
-    if (ob[i] === undefined) continue
-
-    if (typeof ob[i] === 'object' && ob[i] !== null) {
-      const flatObject = flattenObject(ob[i])
-      for (const x in flatObject) {
-        if (flatObject[x] === undefined) continue
-
-        toReturn[i + '.' + x] = flatObject[x]
-      }
-    } else {
-      toReturn[i] = ob[i]
-    }
-  }
-  return toReturn
 }
 </script>

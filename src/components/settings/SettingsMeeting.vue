@@ -48,7 +48,8 @@
         field="switch"
         :locked="isLocked('meeting.enableMusicButton')"
         :label="$t('enableMusicButton')"
-        class="mr-4"
+        hide-details="auto"
+        class="mr-4 mb-2"
       />
       <v-btn
         v-if="meeting.enableMusicButton"
