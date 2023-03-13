@@ -33,7 +33,7 @@
             icon="fa-xmark"
             variant="text"
             size="x-small"
-            rounded="circle"
+            rounded
             color="onbg"
             class="align-right"
             @click="store.dismiss(i)"

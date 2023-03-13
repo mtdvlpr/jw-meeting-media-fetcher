@@ -8,6 +8,7 @@
             variant="text"
             size="small"
             v-bind="props"
+            rounded
             aria-label="More actions"
             class="mr-2"
           />

@@ -78,7 +78,7 @@
       <v-btn v-if="cong.dir !== '/'" class="mb-2" @click="moveDirUp()">
         {{ $t('webdavFolderUp') }}
       </v-btn>
-      <!--<cong-dir-list :contents="contentsTree" @open="openDir($event)" />-->
+      <cong-dir-list :contents="contentsTree" @open="openDir($event)" />
       <v-col cols="12" class="d-flex px-0">
         <v-col class="text-left pl-0" align-self="center">
           {{ $t('settingsLocked') }}
@@ -168,13 +168,14 @@ const submit = async () => {
     loading.value = false
   }
 }
-/*
+
+const { contentsTree } = storeToRefs(store)
 const openDir = async (dir: string) => {
   cong.value.dir = dir
   await updateContent()
   updateContentsTree()
 }
-*/
+
 const setHost = (host: Host) => {
   cong.value.server = host.server
   cong.value.port = host.port

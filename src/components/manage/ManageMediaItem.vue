@@ -23,6 +23,7 @@
             <v-btn
               icon="fa-square-minus"
               variant="text"
+              rounded
               size="x-small"
               color="error"
               v-bind="attrs"
@@ -35,6 +36,7 @@
           v-else
           icon="fa-square-minus"
           variant="text"
+          rounded
           size="x-small"
           color="warning"
           @click="atClick(item)"
@@ -84,6 +86,7 @@
           icon="fa-pen"
           size="x-small"
           variant="text"
+          rounded
           aria-label="rename file"
           @click="emit('edit')"
         />
