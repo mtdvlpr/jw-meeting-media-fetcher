@@ -1,5 +1,5 @@
 <template>
-  <TreeView :config="config" :nodes="tree" class="text-on-bg">
+  <TreeView :config="config" :nodes="tree">
     <template #after-input="{ node }">
       <div v-if="node.dir" class="d-flex justify-end" style="width: 100%">
         <v-btn
@@ -19,6 +19,7 @@ interface TreeObj {
   [key: string]: {
     text: string
     dir: boolean
+    state: { [key: string]: boolean }
     children: string[]
   }
 }
@@ -55,6 +56,7 @@ const setTree = () => {
 const addToTree = (treeObj: TreeObj, file: CongFile) => {
   treeObj[file.filename] = {
     text: file.basename,
+    state: {},
     dir: file.type === 'directory',
     children: file.children?.map((f) => f.filename) ?? [],
   }
@@ -72,7 +74,7 @@ const addToTree = (treeObj: TreeObj, file: CongFile) => {
   }
   .icon-wrapper {
     path {
-      fill: rgb(var(--v-theme-on-bg)) !important;
+      fill: rgb(var(--v-theme-regular)) !important;
     }
   }
 
