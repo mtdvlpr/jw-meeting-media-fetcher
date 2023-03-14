@@ -34,7 +34,7 @@
               </v-tooltip>
               <v-icon
                 icon="fa-square-check"
-                :class="`${validStart && validEnd ? 'success' : 'error'}--text`"
+                :class="`text-${validStart && validEnd ? 'success' : 'error'}`"
               />
             </v-btn>
           </form-timestamp>

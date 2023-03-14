@@ -1,7 +1,5 @@
 import { createVuetify } from 'vuetify'
 import { aliases, fa } from 'vuetify/iconsets/fa-svg'
-// @ts-ignore
-import colors from 'vuetify/lib/util/colors'
 import 'vuetify/styles' // pre-build css styles
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -27,10 +25,9 @@ export default defineNuxtPlugin((nuxtApp) => {
             accent: '#f8f9fa',
             error: '#dc3545',
             info: '#0dcaf0',
-            success: colors.green.base,
+            success: '#4caf50',
             warning: '#ffc107',
-            // btn: '#212529',
-            btn: colors.grey.darken3,
+            btn: '#424242',
             treasures: '#626262',
             apply: '#9d5d07',
             living: '#942926',
@@ -48,7 +45,7 @@ export default defineNuxtPlugin((nuxtApp) => {
             accent: '#9e9e9e',
             error: '#e74c3c',
             info: '#17a2b8',
-            success: colors.green.accent3,
+            success: '#00e676',
             warning: '#f39c12',
             btn: '#3b3b3b',
             treasures: '#a7a7a7',

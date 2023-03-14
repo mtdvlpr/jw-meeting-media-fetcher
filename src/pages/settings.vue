@@ -12,7 +12,7 @@
         <v-tab
           v-for="h in headers"
           :key="h.key"
-          :class="{ 'error--text': !mounting && !h.valid }"
+          :class="{ 'text-error': !mounting && !h.valid }"
         >
           {{ getInitials(h.name) }}
         </v-tab>

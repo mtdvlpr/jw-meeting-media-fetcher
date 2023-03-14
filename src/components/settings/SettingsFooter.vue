@@ -20,13 +20,8 @@
           </v-tooltip>
           <v-icon icon="fa-bug" />
         </v-btn>
-        <v-btn
-          :color="cacheColor"
-          :loading="loading"
-          class="text-black"
-          @click="removeCache()"
-        >
-          <v-icon icon="fa-trash" size="small" start />
+        <v-btn :color="cacheColor" :loading="loading" @click="removeCache()">
+          <v-icon icon="fa-trash" size="small" color="black" start />
           {{ `${cache}MB` }}
           <v-tooltip
             v-if="cacheColor === 'warning'"

@@ -1,5 +1,5 @@
 <template>
-  <TreeView :config="config" :nodes="tree">
+  <TreeView :config="config" :nodes="tree" class="cong-treeview">
     <template #after-input="{ node }">
       <div v-if="node.dir" class="d-flex justify-end" style="width: 100%">
         <v-btn
@@ -67,8 +67,8 @@ const addToTree = (treeObj: TreeObj, file: CongFile) => {
   }
 }
 </script>
-<style lang="scss">
-.node-wrapper {
+<style lang="scss" scoped>
+.cong-treeview :deep(.node-wrapper) {
   .input-wrapper {
     color: inherit !important;
   }

@@ -118,7 +118,7 @@
       </v-list>
     </template>
     <template v-else-if="isWeDay">
-      <v-list-item-title class="mx-4 my-4 treasures--text text-overline">
+      <v-list-item-title class="mx-4 my-4 text-treasures text-overline">
         {{ $t('publicTalk') }}
       </v-list-item-title>
       <v-list class="ma-4">
@@ -144,7 +144,7 @@
         </draggable>
       </v-list>
       <v-divider class="mx-4 living" />
-      <v-list-item-title class="mx-4 my-2 living--text text-overline">
+      <v-list-item-title class="mx-4 my-2 text-living text-overline">
         {{ wtTitle }}
       </v-list-item-title>
       <v-list class="ma-4">

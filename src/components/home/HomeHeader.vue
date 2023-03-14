@@ -5,12 +5,8 @@
       <v-icon
         :icon="statusIcon"
         size="x-large"
+        :color="loading ? 'primary' : isDark ? 'accent' : 'secondary'"
         :flip="loading"
-        :class="{
-          'primary--text': loading,
-          'secondary--text': !loading && !isDark,
-          'accent--text': !loading && isDark,
-        }"
       />
     </v-col>
     <v-col cols="5" sm="4" md="3">

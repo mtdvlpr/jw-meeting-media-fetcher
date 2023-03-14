@@ -13,7 +13,7 @@
     <v-icon
       :icon="video ? pauseIcon : pauseImageIcon"
       size="medium"
-      class="text-black"
+      color="black"
     />
   </v-btn>
 </template>

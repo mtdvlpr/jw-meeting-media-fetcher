@@ -3,11 +3,8 @@
     <v-col cols="1" class="text-center">
       <v-icon
         size="x-large"
+        :color="isDark ? 'accent' : 'secondary'"
         :icon="meetingDay || client ? 'fa-cloud' : 'fa-folder-open'"
-        :class="{
-          'secondary--text': !isDark,
-          'accent--text': isDark,
-        }"
       />
     </v-col>
     <v-col cols="11" class="text-center">

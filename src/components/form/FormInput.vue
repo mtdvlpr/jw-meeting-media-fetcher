@@ -401,12 +401,3 @@ const updateSlider = (val: string) => {
   }
 }
 </script>
-<style lang="css">
-.v-text-field--filled .v-text-field__prefix {
-  margin-top: 0px !important;
-}
-.btn-group-error {
-  --v-border-opacity: 1 !important;
-  border-width: 1px;
-}
-</style>
