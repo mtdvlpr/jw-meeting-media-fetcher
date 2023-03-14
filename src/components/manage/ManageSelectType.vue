@@ -48,7 +48,7 @@ const types = [
   },
   {
     label: $i18n.t('syncJwOrgMedia'),
-    value: 'jworg',
+    value: 'jwOrg',
   },
 ]
 </script>

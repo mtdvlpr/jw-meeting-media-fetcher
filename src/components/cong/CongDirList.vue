@@ -1,5 +1,5 @@
 <template>
-  <TreeView :config="config" :nodes="tree" class="text-onbg">
+  <TreeView :config="config" :nodes="tree" class="text-on-bg">
     <template #after-input="{ node }">
       <div v-if="node.dir" class="d-flex justify-end" style="width: 100%">
         <v-btn
@@ -72,7 +72,7 @@ const addToTree = (treeObj: TreeObj, file: CongFile) => {
   }
   .icon-wrapper {
     path {
-      fill: rgb(var(--v-theme-onbg)) !important;
+      fill: rgb(var(--v-theme-on-bg)) !important;
     }
   }
 

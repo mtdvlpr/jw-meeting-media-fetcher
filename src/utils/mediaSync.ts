@@ -163,7 +163,7 @@ export async function downloadIfRequired(
         }
       }
       statStore.setDownloads({
-        origin: 'jworg',
+        origin: 'jwOrg',
         source: 'live',
         file,
       })
@@ -195,7 +195,7 @@ export async function downloadIfRequired(
       await extractAllTo(file.cacheFile, file.cacheDir)
     }
     statStore.setDownloads({
-      origin: 'jworg',
+      origin: 'jwOrg',
       source: 'cache',
       file,
     })

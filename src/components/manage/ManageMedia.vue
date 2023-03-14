@@ -1,7 +1,7 @@
 <template>
   <v-container class="fill-height manage-media" fluid>
     <manage-select-video
-      :active="type === 'jworg' && !jwFile"
+      :active="type === 'jwOrg' && !jwFile"
       @cancel="type = 'custom'"
       @select="selectVideo"
     />
@@ -21,7 +21,7 @@
       <manage-header />
       <manage-select-type v-model="type" :disabled="loading || saving" />
       <v-row
-        v-if="type && type !== 'jworg'"
+        v-if="type && type !== 'jwOrg'"
         no-gutters
         align="center"
         class="mt-4"
@@ -59,7 +59,7 @@
             :new-files="files"
             :prefix="prefix"
             :media="media"
-            :show-input="!!type && type !== 'jworg'"
+            :show-input="!!type && type !== 'jwOrg'"
             :show-prefix="!!jwFile || files.length > 0"
             @refresh="emit('refresh')"
           />

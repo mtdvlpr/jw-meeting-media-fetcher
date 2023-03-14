@@ -59,7 +59,7 @@
             {{ titleParts[3] }}
           </v-chip>
           <div
-            class="clamp-lines text-onbg"
+            class="clamp-lines text-on-bg"
             :title="cleanTitle(titleParts[6] + titleParts[7])"
           >
             {{ titleParts[6] }}

@@ -34,7 +34,7 @@
             variant="text"
             size="x-small"
             rounded
-            color="onbg"
+            color="on bg"
             class="align-right"
             @click="store.dismiss(i)"
           />

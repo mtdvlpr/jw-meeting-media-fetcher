@@ -11,7 +11,7 @@ interface Origin {
 }
 
 interface Stats {
-  jworg: Origin
+  jwOrg: Origin
   cong: Origin
 }
 
@@ -30,7 +30,7 @@ const defaultState: StatStore = {
   performance: new Map(), // A map of performance data about how fast a file was downloaded
   downloads: {
     // How much data was fetched from the internet and how much was already in the cache
-    jworg: {
+    jwOrg: {
       cache: [],
       live: [],
     },
@@ -97,8 +97,8 @@ export const useStatStore = defineStore('stats', {
                 (files as MeetingFile[])
                   .map((file) => file.filesize as number)
                   .reduce((a, b) => a + b, 0) /
-                BYTES_IN_KIBIBYTE /
-                BYTES_IN_KIBIBYTE
+                BYTES_IN_KIBI_BYTE /
+                BYTES_IN_KIBI_BYTE
               ).toFixed(1)}MB`,
               'background-color: #fbe9e7; color: #000;'
             )

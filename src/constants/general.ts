@@ -30,7 +30,7 @@ export const FULL_HD = [FULL_HD_WIDTH, FULL_HD_HEIGHT]
 
 // Bits & Bytes
 export const BITS_IN_BYTE = 8
-export const BYTES_IN_KIBIBYTE = 1024
+export const BYTES_IN_KIBI_BYTE = 1024
 export const BYTES_IN_MB = 1000000
 export const MAX_BYTES_IN_FILENAME = 200
 

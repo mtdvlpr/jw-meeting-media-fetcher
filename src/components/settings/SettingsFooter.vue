@@ -153,8 +153,8 @@ const calcCache = () => {
         })
           .map((f) => f.stats?.size ?? 0)
           .reduce((a, b) => a + b, 0) /
-        BYTES_IN_KIBIBYTE /
-        BYTES_IN_KIBIBYTE
+        BYTES_IN_KIBI_BYTE /
+        BYTES_IN_KIBI_BYTE
       ).toFixed(1)
     )
   )

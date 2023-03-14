@@ -24,7 +24,7 @@
         :start="i == 0"
         :end="i == 1"
         :icon="icon"
-        color="onbg"
+        color="on bg"
       />
     </template>
     <template v-if="musicFadeOut">{{ timeRemaining }}</template>
@@ -46,7 +46,7 @@
         :icon="icon"
         :start="i == 0"
         :end="i == 1"
-        color="onbg"
+        color="on bg"
       />
     </template>
     <template v-if="musicFadeOut">{{ timeRemaining }}</template>

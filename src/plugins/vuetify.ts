@@ -19,7 +19,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           dark: false,
           colors: {
             bg: '#fff',
-            onbg: '#000',
+            'on-bg': '#000',
             primary: '#0d6efd',
             song: '#055160',
             paragraph: '#41464b',
@@ -40,7 +40,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           dark: true,
           colors: {
             bg: '#121212',
-            onbg: '#fff',
+            'on-bg': '#fff',
             primary: '#375a7f',
             song: '#5dbecd',
             paragraph: '#c1c1c1',
