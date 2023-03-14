@@ -14,7 +14,14 @@ const sentryInit =
 export default defineNuxtConfig({
   srcDir: 'src/',
   ssr: false,
+  sourcemap: true,
   telemetry: false,
+  app: {
+    buildAssetsDir: '/',
+  },
+  build: {
+    transpile: ['@vuepic/vue-datepicker'],
+  },
   imports: {
     dirs: ['stores', 'constants'],
   },
@@ -22,9 +29,6 @@ export default defineNuxtConfig({
     options: {
       hashMode: true,
     },
-  },
-  build: {
-    transpile: ['@vuepic/vue-datepicker'],
   },
   modules: [
     'nuxt-electron',
@@ -66,6 +70,7 @@ export default defineNuxtConfig({
   vite: {
     build: {
       target: 'chrome110',
+      sourcemap: true,
       rollupOptions: {
         plugins: [
           alias({
