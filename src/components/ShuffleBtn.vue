@@ -1,4 +1,3 @@
-<!-- eslint-disable vue/no-unused-vars -->
 <template>
   <v-btn
     v-if="clickedOnce"
