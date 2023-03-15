@@ -31,10 +31,20 @@ export default defineNuxtConfig({
     },
   },
   modules: [
-    'nuxt-electron',
     'nuxt-lodash',
     '@vueuse/nuxt',
     '@nuxtjs/i18n',
+    [
+      'nuxt-electron',
+      {
+        renderer: {
+          nodeIntegration: true,
+          optimizeDeps: {
+            include: ['fs-extra', 'obs-websocket-js', 'upath'],
+          },
+        },
+      },
+    ],
     [
       '@pinia/nuxt',
       {
@@ -48,14 +58,6 @@ export default defineNuxtConfig({
       })
     },
   ],
-  electron: {
-    renderer: {
-      nodeIntegration: true,
-      optimizeDeps: {
-        include: ['fs-extra', 'obs-websocket-js', 'upath'],
-      },
-    },
-  },
   i18n: {
     lazy: true,
     langDir: '/locales/',
