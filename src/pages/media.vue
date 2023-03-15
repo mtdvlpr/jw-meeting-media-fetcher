@@ -98,11 +98,16 @@ useIpcRendererOn('showMedia', (_e, media: Media | null) => {
 })
 
 const transitionToMedia = async (media: Media | null) => {
-  if (panzoom.value) panzoom.value.reset()
   zoomEnabled.value = !!media && isImage(media.src)
   resizingDone()
   if (blackOverlay.value) blackOverlay.value.style.opacity = '1'
   await new Promise((resolve) => setTimeout(resolve, 4 * 100))
+
+  if (panzoom.value) {
+    panzoom.value.reset({ animate: false })
+    scale.value = 1
+  }
+
   if (media) {
     loadMedia(media)
   } else if (mediaDisplay.value) {
