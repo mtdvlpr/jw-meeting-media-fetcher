@@ -1,5 +1,4 @@
 import vuetify from 'vite-plugin-vuetify'
-import alias from '@rollup/plugin-alias'
 import { repository, version, devDependencies } from './package.json'
 import { LOCALES } from './src/constants/lang'
 
@@ -16,6 +15,7 @@ export default defineNuxtConfig({
   ssr: false,
   sourcemap: true,
   telemetry: false,
+  typescript: { shim: false, typeCheck: true },
   app: {
     buildAssetsDir: '/',
   },
@@ -73,18 +73,6 @@ export default defineNuxtConfig({
     build: {
       target: 'chrome110',
       sourcemap: true,
-      rollupOptions: {
-        plugins: [
-          alias({
-            entries: [
-              {
-                find: './lib-cov/fluent-ffmpeg',
-                replacement: './lib/fluent-ffmpeg',
-              },
-            ],
-          }),
-        ],
-      },
     },
   },
   runtimeConfig: {
@@ -105,5 +93,4 @@ export default defineNuxtConfig({
       zoomSignatureEndpoint: process.env.ZOOM_SIGNATURE_ENDPOINT,
     },
   },
-  typescript: { shim: false, typeCheck: true },
 })

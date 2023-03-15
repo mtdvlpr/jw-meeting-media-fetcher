@@ -57,7 +57,6 @@
     "@nuxtjs/i18n": "next",
     "@panzoom/panzoom": "^4.5.1",
     "@pinia/nuxt": "^0.4.7",
-    "@rollup/plugin-alias": "^4.0.3",
     "@sentry/tracing": "^7.43.0",
     "@sentry/vue": "^7.43.0",
     "@types/fluent-ffmpeg": "^2.1.21",
