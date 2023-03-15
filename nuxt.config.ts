@@ -62,17 +62,17 @@ export default defineNuxtConfig({
     lazy: true,
     langDir: '/locales/',
     defaultLocale: 'en',
+    locales: LOCALES,
+    detectBrowserLanguage: false,
     vueI18n: {
       fallbackLocale: 'en',
       warnHtmlMessage: false,
     },
-    locales: LOCALES,
-    detectBrowserLanguage: false,
   },
   vite: {
     build: {
-      target: 'chrome110',
       sourcemap: true,
+      target: 'chrome110',
     },
   },
   runtimeConfig: {
