@@ -329,9 +329,9 @@ watch(
 )
 watch(
   () => media.value.preferredOutput,
-  () => {
+  async () => {
     if (media.value.enableMediaDisplayButton) {
-      ipcRenderer.send('showMediaWindow', getMediaWindowDestination())
+      ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
     }
   }
 )
