@@ -194,7 +194,7 @@
         :items="imageScenes"
         :label="$t('obsImageScene')"
         :disabled="cameraScenes.length === 0"
-        :locked="$isLocked('app.obs.imageScene')"
+        :locked="isLocked('app.obs.imageScene')"
         clearable
       />
       <form-input

@@ -15,7 +15,6 @@ import {
 } from 'electron'
 import { init } from '@sentry/electron'
 import { initRenderer } from 'electron-store'
-import installExtension from 'electron-devtools-installer'
 import BrowserWinHandler from './BrowserWinHandler'
 import { initAutoUpdater } from './autoUpdater'
 import { initMainWindow } from './mainWindow'
@@ -84,7 +83,6 @@ async function boot() {
   initMediaWinListeners()
 
   if (process.env.VITE_DEV_SERVER_URL) {
-    installExtension('nhdogjmejiglipccpnnnanhbledajbpd')
     win.webContents.openDevTools({ mode: 'detach' })
   }
 
