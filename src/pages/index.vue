@@ -82,7 +82,7 @@ import { basename, join } from 'upath'
 import { AppPrefs, MediaPrefs, MeetingPrefs } from '~~/types'
 
 useHead({ title: 'Home' })
-const { $dayjs, $localePath } = useNuxtApp()
+const { $dayjs } = useNuxtApp()
 const { isDev } = useRuntimeConfig().public
 const { online } = useOnline()
 
@@ -96,7 +96,7 @@ onMounted(() => {
   if (!mediaPath()) {
     log.debug('Open settings to fill in mediaLang/localOutputFolder')
     useRouter().push({
-      path: $localePath('/settings'),
+      path: useLocalePath()('/settings'),
       query: useRoute().query,
     })
     return

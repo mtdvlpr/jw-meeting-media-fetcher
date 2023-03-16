@@ -39,13 +39,11 @@ const props = defineProps<{
   dayColors: { [key: number]: string }
 }>()
 
-const { $localePath } = useNuxtApp()
-
 // Open manage page for specific day
 const openDate = (date: string) => {
   log.debug('Manage specific day')
   useRouter().push({
-    path: $localePath('/manage'),
+    path: useLocalePath()('/manage'),
     query: { ...useRoute().query, date },
   })
 }

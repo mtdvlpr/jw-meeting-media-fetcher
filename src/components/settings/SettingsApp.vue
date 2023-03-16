@@ -331,7 +331,7 @@ const props = defineProps<{
   prefs: PrefStore
 }>()
 
-const { $dayjs, $i18n, $sentry, $switchLocalePath } = useNuxtApp()
+const { $dayjs, $i18n, $sentry } = useNuxtApp()
 const valid = ref(true)
 watch(valid, (val) => emit('valid', val))
 const appForm = ref<VFormRef | null>()
@@ -404,7 +404,7 @@ watch(
     }
     if (val !== $i18n.locale.value) {
       log.debug('Change localAppLang')
-      useRouter().replace($switchLocalePath(val))
+      useRouter().replace(useSwitchLocalePath()(val))
     }
   }
 )

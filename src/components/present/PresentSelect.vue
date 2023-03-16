@@ -34,7 +34,7 @@ const props = defineProps<{
   firstChoice?: boolean
 }>()
 
-const { $dayjs, $localePath } = useNuxtApp()
+const { $dayjs } = useNuxtApp()
 const today = computed(() => {
   return $dayjs().format(getPrefs<DateFormat>('app.outputFolderDateFormat'))
 })
@@ -70,7 +70,7 @@ const getDates = () => {
   const mPath = mediaPath()
   if (!mPath) {
     useRouter().push({
-      path: $localePath('/settings'),
+      path: useLocalePath()('/settings'),
       query: useRoute().query,
     })
     return

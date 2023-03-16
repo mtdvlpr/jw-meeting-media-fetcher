@@ -81,13 +81,14 @@ const getIcon = (
 }
 
 // Icon link
-const { $localePath, $dayjs } = useNuxtApp()
+const localePath = useLocalePath()
+const { $dayjs } = useNuxtApp()
 const cong = useRouteQuery('cong', '')
 const weekNr = useNumberQuery('week', $dayjs().isoWeek())
 const link = computed(() => {
   if (style.value.to) {
     return {
-      path: $localePath(style.value.to),
+      path: localePath(style.value.to),
       query: {
         cong: cong.value,
         week: weekNr.value,

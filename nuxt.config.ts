@@ -60,11 +60,12 @@ export default defineNuxtConfig({
   ],
   i18n: {
     lazy: true,
-    langDir: '/locales/',
+    langDir: 'locales',
     defaultLocale: 'en',
     locales: LOCALES,
     detectBrowserLanguage: false,
     vueI18n: {
+      legacy: false,
       fallbackLocale: 'en',
       warnHtmlMessage: false,
     },

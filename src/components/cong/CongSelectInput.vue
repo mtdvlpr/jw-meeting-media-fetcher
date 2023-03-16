@@ -59,7 +59,7 @@ const addCong = () => {
   switchCong(join(appPath(), 'prefs-' + id + '.json'))
   log.debug('Create new cong via select')
   useRouter().push({
-    path: useNuxtApp().$localePath('/settings'),
+    path: useLocalePath()('/settings'),
     query: { cong: id, new: 'true' },
   })
 }

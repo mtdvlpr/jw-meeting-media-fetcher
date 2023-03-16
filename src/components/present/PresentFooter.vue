@@ -63,7 +63,7 @@
       <v-btn
         id="present-to-home"
         :to="{
-          path: $localePath('/'),
+          path: localePath('/'),
           query: { cong },
         }"
         color="warning"
@@ -88,7 +88,7 @@ const props = defineProps<{
 }>()
 
 const cong = useRouteQuery('cong', '')
-const { $localePath } = useNuxtApp()
+const localePath = useLocalePath()
 
 const obsStore = useObsStore()
 onMounted(() => {

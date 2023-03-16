@@ -27,7 +27,7 @@ const notifyStore = useNotifyStore()
 const presentStore = usePresentStore()
 const mediaStore = useMediaStore()
 
-const { $sentry, $dayjs, $i18n, $switchLocalePath, $localePath } = useNuxtApp()
+const { $sentry, $dayjs, $i18n } = useNuxtApp()
 
 // Active Congregation
 const cong = useRouteQuery<string>('cong', '')
@@ -60,7 +60,7 @@ const initPrefs = async (name: string, isNew = false) => {
   let newCong = false
   let lang = getPrefs<string>('app.localAppLang')
   if (!lang) {
-    lang = $i18n.getBrowserLocale() ?? $i18n.fallbackLocale.value.toString()
+    lang = useBrowserLocale() ?? $i18n.fallbackLocale.value.toString()
     setPrefs('app.localAppLang', lang)
     log.debug(`Setting app lang to ${lang}`)
   }
@@ -71,10 +71,10 @@ const initPrefs = async (name: string, isNew = false) => {
   if ('prefs-' + cong.value !== name) {
     newCong = true
     if (lang && lang !== $i18n.locale.value) {
-      path = $switchLocalePath(lang)
+      path = useSwitchLocalePath()(lang)
     }
     if (isNew || !mediaPath()) {
-      path = $localePath('/settings', lang)
+      path = useLocalePath()('/settings', lang)
     }
     log.debug('Set correct lang and/or open settings for new cong', name)
     try {
@@ -91,10 +91,10 @@ const initPrefs = async (name: string, isNew = false) => {
   // If congs lang is different from current lang, set new lang
   else if (lang && lang !== $i18n.locale.value) {
     log.debug(`Change lang from ${$i18n.locale.value} to ${lang}`)
-    path = $switchLocalePath(lang)
+    path = useSwitchLocalePath()(lang)
 
     if (!mediaPath()) {
-      path = $localePath('/settings', lang)
+      path = useLocalePath()('/settings', lang)
     }
 
     useRouter().replace(path)
@@ -264,7 +264,7 @@ onBeforeMount(async () => {
 
   if (congs.length === 0) {
     const id = Math.random().toString(36).substring(2, 15)
-    if (useRoute().path === $localePath('/')) {
+    if (useRoute().path === useLocalePath()('/')) {
       initPrefs('prefs-' + id, true)
     } else {
       initPrefs('prefs-' + id)
@@ -334,13 +334,14 @@ useIpcRendererOn('notifyUser', (_e, msg: any[]) => {
 
 // Presentation Mode
 useIpcRendererOn('openPresentMode', () => {
+  const localePath = useLocalePath()
   if (
     getPrefs<boolean>('media.enableMediaDisplayButton') &&
-    useRoute().path !== $localePath('/present')
+    useRoute().path !== localePath('/present')
   ) {
     log.debug('Trigger present mode via shortcut')
     useRouter().push({
-      path: $localePath('/present'),
+      path: localePath('/present'),
       query: useRoute().query,
     })
   }
