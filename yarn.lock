@@ -402,18 +402,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.21.3":
-  version: 7.21.3
-  resolution: "@babel/generator@npm:7.21.3"
-  dependencies:
-    "@babel/types": ^7.21.3
-    "@jridgewell/gen-mapping": ^0.3.2
-    "@jridgewell/trace-mapping": ^0.3.17
-    jsesc: ^2.5.1
-  checksum: be6bb5a32a0273260b91210d4137b7b5da148a2db8dd324654275cb0af865ae59de5e1536e93ac83423b2586415059e1c24cf94293026755cf995757238da749
-  languageName: node
-  linkType: hard
-
 "@babel/helper-annotate-as-pure@npm:^7.18.6":
   version: 7.18.6
   resolution: "@babel/helper-annotate-as-pure@npm:7.18.6"
@@ -3234,16 +3222,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array-buffer-byte-length@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "array-buffer-byte-length@npm:1.0.0"
-  dependencies:
-    call-bind: ^1.0.2
-    is-array-buffer: ^3.0.1
-  checksum: 044e101ce150f4804ad19c51d6c4d4cfa505c5b2577bd179256e4aa3f3f6a0a5e9874c78cd428ee566ac574c8a04d7ce21af9fe52e844abfdccb82b33035a7c3
-  languageName: node
-  linkType: hard
-
 "array-includes@npm:^3.1.6":
   version: 3.1.6
   resolution: "array-includes@npm:3.1.6"
@@ -4823,18 +4801,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron-devtools-installer@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "electron-devtools-installer@npm:3.2.0"
-  dependencies:
-    rimraf: ^3.0.2
-    semver: ^7.2.1
-    tslib: ^2.1.0
-    unzip-crx-3: ^0.2.0
-  checksum: e87d4c9283f84ac610e9ee37d72677f18feed05174e9d5bf0415a56c3daac717e3f34a5a763499aff7fc2e565660d2ad66beb95d960e8176ed148acf1c3a416b
-  languageName: node
-  linkType: hard
-
 "electron-osx-sign@npm:^0.6.0":
   version: 0.6.0
   resolution: "electron-osx-sign@npm:0.6.0"
@@ -4878,9 +4844,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.284":
-  version: 1.4.330
-  resolution: "electron-to-chromium@npm:1.4.330"
-  checksum: aace45fdfc082489f4bd4222f78b495cddbd9cda10100149d42221042053e1ae3c9c651ca39e6c9906939c9e544e6fa6a64058954a6f4075281cd5eecc65b571
+  version: 1.4.331
+  resolution: "electron-to-chromium@npm:1.4.331"
+  checksum: 74a2fbc221de82166238d7f1769673ffb15bad4bc2964520541279bfee9353a78432310e3fab95931efb667ed5caa65b2e87a36f72728cdfd85902631bb22a6e
   languageName: node
   linkType: hard
 
@@ -4911,16 +4877,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:23.1.3":
-  version: 23.1.3
-  resolution: "electron@npm:23.1.3"
+"electron@npm:23.1.4":
+  version: 23.1.4
+  resolution: "electron@npm:23.1.4"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^16.11.26
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 091a7acd2379c8b8e9df76244ca2e0f5f2aa9e4a94da9c08f56fdc4762f27f5fd7f3505a027c00601f64c5beeb27e5c707a2061ff37654ded55e21cedeb0b926
+  checksum: 42e167d5ae4e60b9a2bab191321645cb76b901d3c88dc7ae1551ecad2946aa4ebef9e49c347ca3db76032d84802d878a64a1123111579a270e3b8406c5a18b16
   languageName: node
   linkType: hard
 
@@ -6557,17 +6523,17 @@ __metadata:
   linkType: hard
 
 "h3@npm:^1.5.0, h3@npm:^1.6.0":
-  version: 1.6.0
-  resolution: "h3@npm:1.6.0"
+  version: 1.6.2
+  resolution: "h3@npm:1.6.2"
   dependencies:
     cookie-es: ^0.5.0
     defu: ^6.1.2
     destr: ^1.2.2
-    iron-webcrypto: ^0.5.0
+    iron-webcrypto: ^0.6.0
     radix3: ^1.0.0
     ufo: ^1.1.1
     uncrypto: ^0.1.2
-  checksum: 5b3295198e17c9b0f3f1c40ea853a5a7b19c28edb41d7908aafe9878eb1d976b91aa4b5cd24b04fe0c76e448a2222830e8a86ebc4ed85b6a14891c7d013af2d3
+  checksum: 3a876f414d6790908b4953684cf2237db1a4e1dd17b46fafd38787f0b1b81ce64d9850342ce0d2ff6b40e8601b07429d666c96a6bd119d9de937ccec7f6ce010
   languageName: node
   linkType: hard
 
@@ -6974,10 +6940,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"iron-webcrypto@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "iron-webcrypto@npm:0.5.0"
-  checksum: 8e806c9fdafee83d7d328a60d5bb3c3529840e9de8085cebc93461879cf581a57812a5591b22d90699d9f9808bf8ce709baaeba36a1c8221cafcd4952ca77d8f
+"iron-webcrypto@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "iron-webcrypto@npm:0.6.0"
+  checksum: a0f2d8ed4374c0d3e37562f8030cf5cbe5def64c8ffc4103d64f93d0bf7fdda004849bc425b69cb931c2ad1b933ddeb01faa10c9bb023182d472036377278132
   languageName: node
   linkType: hard
 
@@ -7360,11 +7326,11 @@ __metadata:
   linkType: hard
 
 "jiti@npm:^1.17.1, jiti@npm:^1.17.2":
-  version: 1.17.2
-  resolution: "jiti@npm:1.17.2"
+  version: 1.18.2
+  resolution: "jiti@npm:1.18.2"
   bin:
     jiti: bin/jiti.js
-  checksum: 51941fea3622d1ff80d914ec6ec95ae463ede598a4a2317f1e8ff018823212eba6b9ea1c638c97c18f681870b1c2b9f49fbb13021b7c2415c46c8a3b1910f1e3
+  checksum: 46c41cd82d01c6efdee3fc0ae9b3e86ed37457192d6366f19157d863d64961b07982ab04e9d5879576a1af99cc4d132b0b73b336094f86a5ce9fb1029ec2d29f
   languageName: node
   linkType: hard
 
@@ -7542,7 +7508,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jszip@npm:^3.1.0, jszip@npm:^3.10.1":
+"jszip@npm:^3.10.1":
   version: 3.10.1
   resolution: "jszip@npm:3.10.1"
   dependencies:
@@ -8077,9 +8043,8 @@ __metadata:
     click-outside-vue3: ^4.0.1
     dayjs: ^1.11.7
     dotenv: ^16.0.3
-    electron: 23.1.3
+    electron: 23.1.4
     electron-builder: 23.6.0
-    electron-devtools-installer: ^3.2.0
     electron-store: ^8.1.0
     electron-updater: ^5.3.0
     electron-window-state: ^5.0.3
@@ -8116,7 +8081,7 @@ __metadata:
     vue-tsc: ^1.2.0
     vue3-treeview: ^0.4.1
     vuedraggable: next
-    vuetify: ^3.1.9
+    vuetify: ^3.1.10
     webdav: ^4.11.2
   languageName: unknown
   linkType: soft
@@ -10544,7 +10509,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.0.0, semver@npm:^7.2.1, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.6, semver@npm:^7.3.7, semver@npm:^7.3.8":
+"semver@npm:^7.0.0, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.6, semver@npm:^7.3.7, semver@npm:^7.3.8":
   version: 7.3.8
   resolution: "semver@npm:7.3.8"
   dependencies:
@@ -11694,17 +11659,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unzip-crx-3@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "unzip-crx-3@npm:0.2.0"
-  dependencies:
-    jszip: ^3.1.0
-    mkdirp: ^0.5.1
-    yaku: ^0.16.6
-  checksum: 3988dd19feac161953862835ad7df2c0c155dd9aad6e48c36abc093e810036dd1877d81ad6b7825e788c1d05f4eabf99e2874c9104b95613ead500abb9664b40
-  languageName: node
-  linkType: hard
-
 "upath@npm:^2.0.1":
   version: 2.0.1
   resolution: "upath@npm:2.0.1"
@@ -11814,8 +11768,8 @@ __metadata:
   linkType: hard
 
 "vite-node@npm:^0.29.2":
-  version: 0.29.2
-  resolution: "vite-node@npm:0.29.2"
+  version: 0.29.3
+  resolution: "vite-node@npm:0.29.3"
   dependencies:
     cac: ^6.7.14
     debug: ^4.3.4
@@ -11825,7 +11779,7 @@ __metadata:
     vite: ^3.0.0 || ^4.0.0
   bin:
     vite-node: vite-node.mjs
-  checksum: 0f231e4d61a5c84e981d098cc1ce878300b8d690cb9e24e270e19fb116800dfd3530a1d8d74a8b25859ce6e80981469d6a1b26b6da4c2e5f8a0f7219f37935a6
+  checksum: 8bf0a5377d41276f2343819dca5638cab1fb23e55331d06915c5ea0edcc5d593ed295d4c1d1e874f3d7a6c980c25b1c08d9c83d1cff836681ec5778d39583e0b
   languageName: node
   linkType: hard
 
@@ -12173,9 +12127,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vuetify@npm:^3.1.9":
-  version: 3.1.9
-  resolution: "vuetify@npm:3.1.9"
+"vuetify@npm:^3.1.10":
+  version: 3.1.10
+  resolution: "vuetify@npm:3.1.10"
   peerDependencies:
     vite-plugin-vuetify: ^1.0.0-alpha.12
     vue: ^3.2.0
@@ -12188,7 +12142,7 @@ __metadata:
       optional: true
     webpack-plugin-vuetify:
       optional: true
-  checksum: a5ee53b3ef58c02a9283cb8111c0a9f76220bc04e7a3ab7ba0eea7d54e71d29976c36d49a8d05883595bc31e7fd111a9f9aa9365566cffa57b5e53ecbef1bcdb
+  checksum: 5ce05c5ef86024d637a10814e7883b4dcdfbfe6d649bcec88889b907add9f1a2b66b0f4247fd8f7c368240331f62d96f5d45f8652f573e5454c48e5896a2f955
   languageName: node
   linkType: hard
 
@@ -12428,13 +12382,6 @@ __metadata:
   version: 5.0.8
   resolution: "y18n@npm:5.0.8"
   checksum: 54f0fb95621ee60898a38c572c515659e51cc9d9f787fb109cef6fde4befbe1c4602dc999d30110feee37456ad0f1660fa2edcfde6a9a740f86a290999550d30
-  languageName: node
-  linkType: hard
-
-"yaku@npm:^0.16.6":
-  version: 0.16.7
-  resolution: "yaku@npm:0.16.7"
-  checksum: 000cf744ead4cc72ef7d04faf09a2d18b63efab83cede2ed0f2911a86fd5da8638a4fbae9f359956c1ed9c1179fe012404b1ec104972e4c204f6550ff1a1454b
   languageName: node
   linkType: hard
 
