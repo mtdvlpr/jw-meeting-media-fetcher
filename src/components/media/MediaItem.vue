@@ -15,7 +15,7 @@
             class="img-preview"
             :src="url"
             @click="atClick"
-            @wheel.prevent="zoom"
+            @wheel.prevent="zoomWithWheel"
           />
         </div>
 
@@ -452,78 +452,54 @@ watch(showPrefix, (val) => {
 })
 
 // Zoom and pan image
-const scale = ref(1)
 const panzoom = ref<PanzoomObject | null>(null)
+const getPreviewEl = () =>
+  document.querySelector<HTMLElement>(`#${id.value}-preview`)!
 const initPanzoom = async () => {
   const { default: Panzoom } = await import('@panzoom/panzoom')
-  panzoom.value = Panzoom(
-    document.querySelector<HTMLElement>(`#${id.value}-preview`)!,
-    {
-      animate: true,
-      canvas: true,
-      contain: 'outside',
-      cursor: 'default',
-      panOnlyWhenZoomed: true,
-      setTransform: (
-        el: HTMLElement,
-        { scale, x, y }: { scale: number; x: number; y: number }
-      ) => {
-        pan({
-          x: x / el.clientWidth,
-          y: y / el.clientHeight,
-        })
-        if (panzoom.value) {
-          panzoom.value.setStyle(
-            'transform',
-            `scale(${scale}) translate(${scale === 1 ? 0 : x}px, ${
-              scale === 1 ? 0 : y
-            }px)`
-          )
-        }
-      },
-    }
-  )
+  const previewEl = getPreviewEl()
+  panzoom.value = Panzoom(previewEl, {
+    animate: true,
+    canvas: true,
+    contain: 'outside',
+    cursor: 'default',
+    panOnlyWhenZoomed: true,
+  })
+
+  previewEl.addEventListener('panzoomchange', (e) => {
+    useIpcRenderer().send('pan', {
+      x: e.detail.x / previewEl.clientWidth,
+      y: e.detail.y / previewEl.clientHeight,
+    })
+  })
+
   resetZoom()
 }
 
 // At double click, zoom in or out
 const { atClick } = useClickTwice(() => {
   if (!panzoom.value || !active.value) return
-  let deltaY = 1000
-  if (scale.value < 4) {
-    deltaY = (-1.5 * scale.value + scale.value) * 100
-  }
-  useIpcRenderer().send('zoom', deltaY)
-  zoomPreview(deltaY)
+  const currentScale = panzoom.value.getScale()
+  const newZoom =
+    currentScale >= 4 ? panzoom.value.reset() : panzoom.value.zoomIn()
+  useIpcRenderer().send('zoom', newZoom.scale)
 })
 
-// Zoom image preview
-const zoomPreview = (deltaY: number) => {
-  if (!panzoom.value) return
-  scale.value += (-1 * deltaY) / 100
-  scale.value = Math.min(Math.max(0.125, scale.value), 4)
-  if (scale.value > 1) {
-    panzoom.value.zoom(scale.value)
-  } else {
-    resetZoom()
-  }
+// Zoom with wheel
+const zoomWithWheel = (e: WheelEvent) => {
+  if (!panzoom.value || !active.value) return
+  const newZoom = panzoom.value.zoomWithWheel(e)
+  const previewEl = getPreviewEl()
+  useIpcRenderer().send('zoom', newZoom.scale)
+  useIpcRenderer().send('pan', {
+    x: newZoom.x / previewEl.clientWidth,
+    y: newZoom.y / previewEl.clientHeight,
+  })
 }
 
 // Reset zoom
 const resetZoom = () => {
-  if (!panzoom.value) return
-  scale.value = 1
-  panzoom.value.zoom(1)
-}
-
-const pan = ({ x, y }: { x: number; y: number }) => {
-  useIpcRenderer().send('pan', { x, y })
-}
-
-const zoom = (e: WheelEvent) => {
-  if (!active.value) return
-  useIpcRenderer().send('zoom', e.deltaY)
-  zoomPreview(e.deltaY)
+  panzoom.value?.reset()
 }
 </script>
 <style lang="scss" scoped>

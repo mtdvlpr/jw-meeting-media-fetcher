@@ -103,10 +103,7 @@ const transitionToMedia = async (media: Media | null) => {
   if (blackOverlay.value) blackOverlay.value.style.opacity = '1'
   await new Promise((resolve) => setTimeout(resolve, 4 * 100))
 
-  if (panzoom.value) {
-    panzoom.value.reset({ animate: false })
-    scale.value = 1
-  }
+  panzoom.value?.reset({ animate: false })
 
   if (media) {
     loadMedia(media)
@@ -377,7 +374,6 @@ useIpcRendererOn(
 )
 
 // Zoom and pan feature
-const scale = ref(1)
 const zoomEnabled = ref(false)
 const panzoom = ref<PanzoomObject | null>(null)
 const initPanzoom = async () => {
@@ -386,31 +382,15 @@ const initPanzoom = async () => {
   panzoom.value = Panzoom(mediaDisplay.value, {
     animate: true,
     canvas: true,
-    contain: 'outside',
     cursor: 'default',
-    duration: 2 * MS_IN_SEC,
-    panOnlyWhenZoomed: true,
-    setTransform: (
-      el: HTMLElement,
-      { scale, x, y }: { scale: number; x: number; y: number }
-    ) => {
-      const maxY = (el.clientHeight * scale - window.innerHeight) / 2 / scale
-      const isValidY = y <= maxY && y >= -maxY
-      const validY = isValidY ? y : y > 0 ? maxY : -maxY
-      if (panzoom.value) {
-        panzoom.value.setStyle(
-          'transform',
-          `scale(${scale}) translate(${x}px, ${validY}px)`
-        )
-      }
-    },
+    duration: MS_IN_SEC,
   })
 }
-useIpcRendererOn('zoom', (_e, deltaY) => {
-  zoom(deltaY)
+useIpcRendererOn('zoom', (_e, scale) => {
+  zoom(scale)
 })
 useIpcRendererOn('resetZoom', () => {
-  if (panzoom.value) panzoom.value.reset()
+  panzoom.value?.reset()
 })
 useIpcRendererOn('pan', (_e, { x, y }: { x: number; y: number }) => {
   if (panzoom.value && mediaDisplay.value) {
@@ -421,16 +401,14 @@ useIpcRendererOn('pan', (_e, { x, y }: { x: number; y: number }) => {
   }
 })
 
-const zoom = (deltaY: number) => {
+const zoom = (scale: number) => {
   if (!panzoom.value || !zoomEnabled.value) return
 
-  scale.value += (deltaY * -1) / 100
-
-  // Restrict scale
-  scale.value = Math.min(Math.max(0.125, scale.value), 4)
-  if (scale.value < 1) scale.value = 1
-  panzoom.value.zoom(scale.value)
-  if (scale.value === 1) panzoom.value.reset()
+  if (scale === 1) {
+    panzoom.value.reset()
+  } else {
+    panzoom.value.zoom(Math.max(scale, 1))
+  }
 }
 
 // Resizing

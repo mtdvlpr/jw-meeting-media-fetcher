@@ -104,8 +104,8 @@ export function initMediaWinListeners() {
   })
 
   ipcMain.removeAllListeners('zoom')
-  ipcMain.on('zoom', (_e, deltaY: number) => {
-    mediaWin?.webContents.send('zoom', deltaY)
+  ipcMain.on('zoom', (_e, scale: number) => {
+    mediaWin?.webContents.send('zoom', scale)
   })
 
   ipcMain.removeAllListeners('pan')
