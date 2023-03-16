@@ -31,9 +31,15 @@ export default defineNuxtConfig({
     },
   },
   modules: [
-    'nuxt-lodash',
-    '@vueuse/nuxt',
     '@nuxtjs/i18n',
+    '@vueuse/nuxt',
+    'nuxt-lodash',
+    [
+      '@pinia/nuxt',
+      {
+        autoImports: ['defineStore', 'storeToRefs'],
+      },
+    ],
     [
       'nuxt-electron',
       {
@@ -43,12 +49,6 @@ export default defineNuxtConfig({
             include: ['fs-extra', 'obs-websocket-js', 'upath'],
           },
         },
-      },
-    ],
-    [
-      '@pinia/nuxt',
-      {
-        autoImports: ['defineStore', 'storeToRefs'],
       },
     ],
     /* Treeshaking: https://next.vuetifyjs.com/en/features/treeshaking/ */
