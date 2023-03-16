@@ -592,16 +592,14 @@ export function initStore(name: string) {
     store = new Store<PrefStore>(storeOptions(name))
     removeSync(normalizeSafe(tempStore.path))
 
-    const { $sentry } = useNuxtApp()
-    $sentry.captureException(e)
+    useNuxtApp().$sentry.captureException(e)
   }
 }
 
 export function setPrefs(key: string, value: any) {
   store.set(key, value)
   const prefs = JSON.parse(readFileSync(store.path, 'utf8')) as PrefStore
-  const { $sentry } = useNuxtApp()
-  $sentry.setContext('prefs', {
+  useNuxtApp().$sentry.setContext('prefs', {
     ...prefs,
     obs: prefs.app?.obs,
   })

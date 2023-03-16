@@ -53,7 +53,6 @@ watch(date, (val) => {
     firstChoice.value = false
   }
 })
-const { $i18n } = useNuxtApp()
 const { height, width } = useWindowSize()
 provide(windowHeightKey, height)
 const mediaActive = ref(false)
@@ -150,7 +149,7 @@ const initZoomIntegration = async () => {
     await client
       .init({
         zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
-        language: $i18n.localeProperties.value.iso,
+        language: useNuxtApp().$i18n.localeProperties.value.iso,
       })
       .catch(() => {
         log.debug('Caught init promise error')

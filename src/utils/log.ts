@@ -49,8 +49,7 @@ export const log = {
   error: function (msg: any, ...args: any[]) {
     logger('error', [msg, ...args])
     if (typeof msg !== 'string' && !IGNORED_ERRORS.includes(msg.message)) {
-      const { $sentry } = useNuxtApp()
-      $sentry.captureException(msg)
+      useNuxtApp().$sentry.captureException(msg)
     }
   },
 }

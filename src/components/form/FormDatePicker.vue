@@ -38,7 +38,7 @@ const props = withDefaults(
 )
 
 const { isDark } = useTheme()
-const { $i18n, $dayjs, $getWeekStart } = useNuxtApp()
+const { $i18n, $getWeekStart } = useNuxtApp()
 const locale = computed(() => $i18n.localeProperties.value.iso ?? 'en-US')
 const disabledDates = (date: Date) => !props.allowedDates(date)
 const value = ref(props.modelValue)
@@ -48,7 +48,7 @@ watch(
 )
 watch(value, (val) => {
   if (!val) emit('update:modelValue', null)
-  emit('update:modelValue', $dayjs(val).format('YYYY-MM-DD'))
+  emit('update:modelValue', useNuxtApp().$dayjs(val).format('YYYY-MM-DD'))
 })
 </script>
 <!--

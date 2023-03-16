@@ -331,12 +331,12 @@ const props = defineProps<{
   prefs: PrefStore
 }>()
 
-const { $dayjs, $i18n, $sentry } = useNuxtApp()
 const valid = ref(true)
 watch(valid, (val) => emit('valid', val))
 const appForm = ref<VFormRef | null>()
 const locales = ref<{ name: string; code: string }[]>([])
 onMounted(() => {
+  const { $i18n } = useNuxtApp()
   locales.value = $i18n.locales.value.map((l) => {
     const locale = l as LocaleObject
     return {
@@ -394,6 +394,7 @@ watch(
   () => app.value.localAppLang,
   (val, oldVal) => {
     if (!val) return
+    const { $i18n, $dayjs } = useNuxtApp()
     const locales = $i18n.locales.value as LocaleObject[]
     const locale = locales.find((l) => l.code === val)!
     const oldLocale = locales.find((l) => l.code === oldVal)
@@ -416,7 +417,7 @@ const dateFormats = [
 ]
 const formats = dateFormats.map((f) => {
   return {
-    title: $dayjs().format(f),
+    title: useNuxtApp().$dayjs().format(f),
     value: f,
   }
 })
@@ -429,6 +430,7 @@ watch(
     if (mPath) {
       renameAll(mPath, oldVal, val, 'rename', 'date')
     }
+    const { $i18n } = useNuxtApp()
     useMediaStore().updateDateFormat({
       oldFormat: oldVal,
       newFormat: val,
@@ -628,7 +630,7 @@ watchDebounced(
   () => app.value.congregationName,
   (val) => {
     if (!val) return
-    $sentry.setUser({
+    useNuxtApp().$sentry.setUser({
       username: val,
     })
   },

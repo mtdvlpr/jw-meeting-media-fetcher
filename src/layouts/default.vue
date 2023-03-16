@@ -23,11 +23,6 @@ import { useRouteQuery } from '@vueuse/router'
 import { CongPrefs, ObsPrefs, Theme } from '~~/types'
 
 const statStore = useStatStore()
-const notifyStore = useNotifyStore()
-const presentStore = usePresentStore()
-const mediaStore = useMediaStore()
-
-const { $sentry, $dayjs, $i18n } = useNuxtApp()
 
 // Active Congregation
 const cong = useRouteQuery<string>('cong', '')
@@ -42,6 +37,7 @@ watch(
 )
 const initMediaWinState = async () => {
   const mediaWinOpen = await ipcRenderer.invoke('mediaWinOpen')
+  const presentStore = usePresentStore()
   presentStore.setMediaScreenInit(mediaWinOpen)
   if (mediaWinOpen) {
     const mediaWinVisible = await ipcRenderer.invoke('mediaWinVisible')
@@ -58,6 +54,7 @@ onMounted(() => {
 const initPrefs = async (name: string, isNew = false) => {
   initStore(name)
   let newCong = false
+  const { $i18n, $dayjs, $sentry } = useNuxtApp()
   let lang = getPrefs<string>('app.localAppLang')
   if (!lang) {
     lang = useBrowserLocale() ?? $i18n.fallbackLocale.value.toString()
@@ -140,6 +137,7 @@ const initPrefs = async (name: string, isNew = false) => {
   })
 
   // Open or close the media window depending on prefs
+  const presentStore = usePresentStore()
   if (
     getPrefs<boolean>('media.enableMediaDisplayButton') &&
     !presentStore.mediaScreenInit
@@ -286,7 +284,7 @@ onBeforeMount(async () => {
 const { online } = storeToRefs(statStore)
 watch(online, (val) => {
   if (val) {
-    notifyStore.dismissByMessage('errorOffline')
+    useNotifyStore().dismissByMessage('errorOffline')
   } else {
     warn('errorOffline')
   }
@@ -311,7 +309,7 @@ useIpcRendererOn('readyToListen', () => {
   ipcRenderer.send('startMediaDisplay', getAllPrefs())
 })
 useIpcRendererOn('toggleMusicShuffle', () => {
-  shuffleMusic(!!mediaStore.musicFadeOut)
+  shuffleMusic(!!useMediaStore().musicFadeOut)
 })
 useIpcRendererOn('themeUpdated', (_e, theme: string) => {
   if (getPrefs<Theme>('app.theme') === 'system') {
@@ -348,19 +346,19 @@ useIpcRendererOn('openPresentMode', () => {
 })
 
 useIpcRendererOn('mediaWindoShown', () => {
-  presentStore.setMediaScreenInit(true)
+  usePresentStore().setMediaScreenInit(true)
   ipcRenderer.send('startMediaDisplay', getAllPrefs())
 })
 useIpcRendererOn('mediaWindowVisibilityChanged', (_e, status: string) => {
-  presentStore.setMediaScreenVisible(status === 'shown')
+  usePresentStore().setMediaScreenVisible(status === 'shown')
 })
 useIpcRendererOn('displaysChanged', async () => {
-  if (presentStore.mediaScreenInit) {
+  if (usePresentStore().mediaScreenInit) {
     ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
   }
 })
 useIpcRendererOn('moveMediaWindowToOtherScreen', async () => {
-  if (presentStore.mediaScreenInit) {
+  if (usePresentStore().mediaScreenInit) {
     ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
   }
 })

@@ -231,9 +231,11 @@ const isWeDay = computed(() => meetingDay.value === 'we')
 onMounted(() => {
   setItems(props.items)
   getMwbHeadings()
-  const { $dayjs } = useNuxtApp()
   meetingDay.value = isMeetingDay(
-    $dayjs(date.value, getPrefs<DateFormat>('app.outputFolderDateFormat'))
+    useNuxtApp().$dayjs(
+      date.value,
+      getPrefs<DateFormat>('app.outputFolderDateFormat')
+    )
   )
 })
 
