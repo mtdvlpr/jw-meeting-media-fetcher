@@ -356,7 +356,7 @@ useIpcRendererOn('scrubVideo', (_e, timeAsPercent: number) => {
 const withSubtitles = ref(false)
 useIpcRendererOn(
   'toggleSubtitles',
-  (_e, { enabled, top }: { enabled: boolean; top: boolean }) => {
+  (_e, { enabled, toggle }: { enabled: boolean; toggle: boolean }) => {
     withSubtitles.value = enabled
     const video = document.querySelector('video')
     if (!video) return
@@ -366,9 +366,9 @@ useIpcRendererOn(
       if (cues) {
         for (let i = 0; i < cues.length; i++) {
           const cue = cues[i]
-          if (cue) {
+          if (cue && toggle) {
             // @ts-ignore
-            cue.line = top ? 5 : 100 - 10
+            cue.line = Math.abs(cue.line - 100)
           }
         }
       }

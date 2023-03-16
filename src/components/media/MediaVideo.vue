@@ -72,8 +72,8 @@
       :rounded="0"
       variant="flat"
       class="cc-btn"
-      :style="ccTop ? 'top: 4px' : 'bottom: 1px'"
-      @click="ccTop = !ccTop"
+      :style="ccToggle ? 'top: 4px' : 'bottom: 1px'"
+      @click="ccToggle = !ccToggle"
     >
       <v-tooltip activator="parent" location="right">
         {{ $t('toggleSubtitlePosition') }}
@@ -90,7 +90,7 @@ import { Duration } from 'dayjs/plugin/duration'
 import { existsSync } from 'fs-extra'
 import { ipcRenderer, IpcRendererEvent } from 'electron'
 import { useRouteQuery } from '@vueuse/router'
-import { Time, Times, TimeString, VideoFile } from '~~/types'
+import { Time, Times, TimeString } from '~~/types'
 
 const emit = defineEmits<{
   (e: 'resetClipped'): void
@@ -177,20 +177,8 @@ watch(
     if (val) {
       // Activate subtitles
       if (ccAvailable.value) {
-        let top = false
-        const meetingMap = meetings.value.get(date.value)
-        if (meetingMap) {
-          const values = [...meetingMap.values()]
-          values.forEach((media) => {
-            const file = media.find(
-              (m) => m.safeName === basename(props.src)
-            ) as VideoFile
-            if (file) top = file.subtitled
-          })
-        }
-        ccTop.value = top || ccTop.value
         setTimeout(() => {
-          toggleSubtitles(ccEnable.value, ccTop.value)
+          toggleSubtitles(ccEnable.value, ccToggle.value)
         }, MS_IN_SEC)
       }
       ipcRenderer.on('videoProgress', onProgress)
@@ -220,19 +208,19 @@ const onProgress = (_e: IpcRendererEvent, progressArray: number[]) => {
 // Subtitles
 const ccEnable = inject(ccEnableKey, ref(false))
 const ccAvailable = ref(false)
-const ccTop = ref(false)
-watch(ccTop, (val) => {
-  if (props.playing) toggleSubtitles(ccEnable.value, val)
+const ccToggle = ref(false)
+watch(ccToggle, () => {
+  if (props.playing) toggleSubtitles(ccEnable.value, true)
 })
 watch(
   () => ccEnable.value,
   (val) => {
-    if (props.playing) toggleSubtitles(val, ccTop.value)
+    if (props.playing) toggleSubtitles(val, ccToggle.value)
   }
 )
 const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
-const toggleSubtitles = (enabled: boolean, top = false) => {
-  ipcRenderer.send('toggleSubtitles', { enabled, top })
+const toggleSubtitles = (enabled: boolean, toggle = false) => {
+  ipcRenderer.send('toggleSubtitles', { enabled, toggle })
 }
 const setCCAvailable = () => {
   ccAvailable.value =

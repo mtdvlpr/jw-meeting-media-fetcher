@@ -88,7 +88,7 @@ export function initMediaWinListeners() {
   ipcMain.removeAllListeners('toggleSubtitles')
   ipcMain.on(
     'toggleSubtitles',
-    (_e, payload: { enabled: boolean; top: boolean }) => {
+    (_e, payload: { enabled: boolean; toggle: boolean }) => {
       mediaWin?.webContents.send('toggleSubtitles', payload)
     }
   )
