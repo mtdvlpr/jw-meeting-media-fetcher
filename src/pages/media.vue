@@ -384,6 +384,7 @@ const initPanzoom = async () => {
     canvas: true,
     cursor: 'default',
     duration: MS_IN_SEC,
+    minScale: 1,
   })
 }
 useIpcRendererOn('zoom', (_e, scale) => {

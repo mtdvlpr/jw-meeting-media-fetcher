@@ -463,6 +463,7 @@ const initPanzoom = async () => {
     canvas: true,
     contain: 'outside',
     cursor: 'default',
+    minScale: 1,
     panOnlyWhenZoomed: true,
   })
 
@@ -477,11 +478,14 @@ const initPanzoom = async () => {
 }
 
 // At double click, zoom in or out
-const { atClick } = useClickTwice(() => {
+const { atClick } = useClickTwice<MouseEvent>((e) => {
   if (!panzoom.value || !active.value) return
+  const { maxScale = 4, step = 0.3 } = panzoom.value.getOptions()
   const currentScale = panzoom.value.getScale()
   const newZoom =
-    currentScale >= 4 ? panzoom.value.reset() : panzoom.value.zoomIn()
+    currentScale >= maxScale
+      ? resetZoom()
+      : panzoom.value.zoomToPoint(currentScale * (1 + step), e!)
   useIpcRenderer().send('zoom', newZoom.scale)
 })
 
@@ -499,7 +503,7 @@ const zoomWithWheel = (e: WheelEvent) => {
 
 // Reset zoom
 const resetZoom = () => {
-  panzoom.value?.reset()
+  return panzoom.value?.reset({ silent: true }) ?? { scale: 1, x: 0, y: 0 }
 }
 </script>
 <style lang="scss" scoped>
