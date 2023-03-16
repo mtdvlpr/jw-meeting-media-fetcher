@@ -14,10 +14,3 @@ export declare global {
     panzoomchange: CustomEvent<PanzoomChangeEvent>
   }
 }
-
-export type VFormRef = {
-  id: number | string
-  validate: () => Promise<string[]>
-  reset: () => void
-  resetValidation: () => void
-}

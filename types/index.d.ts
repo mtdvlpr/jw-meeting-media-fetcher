@@ -5,4 +5,10 @@ export * from './github'
 export * from './cong'
 export * from './store'
 export * from './electron'
-export { VFormRef } from './global'
+
+export type VFormRef = {
+  id: number | string
+  validate: () => Promise<string[]>
+  reset: () => void
+  resetValidation: () => void
+}
