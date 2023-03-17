@@ -25,8 +25,8 @@ jobs:
     name: 'Bump version'
     needs: get-commit
     if: |
-          !startsWith(needs.get-commit.outputs.msg, 'chore(release)') &&
-          !startsWith(needs.get-commit.outputs.msg, 'ci: version bump')
+      !startsWith(needs.get-commit.outputs.msg, 'chore(release)') &&
+      !startsWith(needs.get-commit.outputs.msg, 'ci: version bump')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -40,10 +40,10 @@ jobs:
         id: version-bump
         uses: 'phips28/gh-action-bump-version@master'
         with:
-          version-type:  prerelease
+          version-type: prerelease
           preid: 'beta'
           tag-prefix: 'v'
-          skip-tag:  'true'
+          skip-tag: 'true'
           bump-policy: 'last-commit'
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
@@ -53,7 +53,7 @@ jobs:
         run: echo "new version $NEW_VERSION"
     outputs:
       newTag: ${{ steps.version-bump.outputs.newTag }}
-  
+
   draft-release:
     name: 'Draft release'
     runs-on: ubuntu-latest
@@ -74,7 +74,7 @@ jobs:
           generateReleaseNotes: true
     outputs:
       id: ${{ steps.create_release.outputs.id }}
-  
+
   build:
     runs-on: ${{ matrix.os }}
     needs: draft-release
@@ -123,7 +123,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.github_token }}
         run: yarn run build -p always
-  
+
   publish-release:
     name: 'Publish release'
     runs-on: ubuntu-latest

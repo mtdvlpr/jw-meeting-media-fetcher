@@ -38,3 +38,6 @@ src/public/pdf.worker*
 img
 playwright-report
 test-results
+
+# Generated files
+LICENSE.md

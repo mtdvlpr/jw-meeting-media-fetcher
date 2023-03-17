@@ -9,12 +9,14 @@
     "https://json.schemastore.org/github-issue-config.json": "file:///home/manoah/Documents/dev/meeting-media-manager/.github/ISSUE_TEMPLATE/config.yml"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
+  "markdownlint.ignore": ["LICENSE.md"],
   "cSpell.ignoreWords": ["PDF", "transform"],
   "cSpell.ignorePaths": [
+    ".github/workflows/*",
+    ".vscode/*",
     "src/locales/*",
     "!src/locales/en.json",
-    ".vscode/*",
-    ".github/workflows/*"
+    "LICENSE.md"
   ],
   "cSpell.enabled": true,
   "cSpell.words": [

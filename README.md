@@ -50,7 +50,9 @@ In addition, M³ itself has been translated, by many volunteers, into several la
 ![sk translation](https://img.shields.io/badge/dynamic/json?color=blue&label=sk&style=flat&logo=crowdin&query=%24.progress.14.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15262852-559843.json)
 ![sv-SE translation](https://img.shields.io/badge/dynamic/json?color=blue&label=sv-SE&style=flat&logo=crowdin&query=%24.progress.15.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15262852-559843.json)
 ![uk translation](https://img.shields.io/badge/dynamic/json?color=blue&label=uk&style=flat&logo=crowdin&query=%24.progress.16.data.translationProgress&url=https%3A%2F%2Fbadges.awesome-crowdin.com%2Fstats-15262852-559843.json)
-___
+
+---
+
 [![Crowdin](https://badges.crowdin.net/meeting-media-manager/localized.svg)](https://crowdin.com/project/meeting-media-manager)
 
 ## Want to contribute?
@@ -61,9 +63,11 @@ This app is made with love and a bit of spare time.
 Enjoy!
 
 <!-- markdownlint-disable-next-line -->
-*- COS*
 
-___
+_- COS_
+
+---
+
 <img src="https://github.com/sircharlo/meeting-media-manager/raw/docs/assets/img/present/media-list.png" alt="Media Presentation Mode" width="45%" /><img src="https://github.com/sircharlo/meeting-media-manager/raw/docs/assets/img/present/default-bg.png" alt="Media Window" width="55%" />
 
 ![Media Sync in progress](https://github.com/sircharlo/meeting-media-manager/raw/docs/assets/img/main/update-folders.gif?raw=true)
