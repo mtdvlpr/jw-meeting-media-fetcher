@@ -62,8 +62,6 @@ We welcome contributions of all kinds! Check out our [CONTRIBUTING.md](CONTRIBUT
 This app is made with love and a bit of spare time.
 Enjoy!
 
-<!-- markdownlint-disable-next-line -->
-
 _- COS_
 
 ---

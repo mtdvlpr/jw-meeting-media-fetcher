@@ -9,7 +9,6 @@ vendor
 .nuxt
 .output
 build/*
-!build/icons
 dist
 dist-electron
 
@@ -21,11 +20,6 @@ _site
 # Yarn
 .pnp.*
 .yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
 
 # sql.js / pdf.js
 src/public/sql-wasm.wasm
