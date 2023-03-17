@@ -45,8 +45,7 @@
 </template>
 <script setup lang="ts">
 import { ipcRenderer } from 'electron'
-// eslint-disable-next-line import/named
-import { Database } from 'sql.js'
+import { type Database } from 'sql.js'
 import { extname, trimExt } from 'upath'
 import { LocalFile } from '~~/types'
 

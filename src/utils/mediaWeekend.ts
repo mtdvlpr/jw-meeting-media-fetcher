@@ -1,7 +1,7 @@
 /* eslint-disable import/named */
 import { existsSync, statSync } from 'fs-extra'
 import { join } from 'upath'
-import { Database } from 'sql.js'
+import { type Database } from 'sql.js'
 import {
   MultiMediaItem,
   MeetingFile,

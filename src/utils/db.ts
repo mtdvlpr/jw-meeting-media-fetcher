@@ -1,7 +1,7 @@
 /* eslint-disable import/named */
 import { platform } from 'os'
 import { readFileSync } from 'fs-extra'
-import { Database } from 'sql.js'
+import { type Database } from 'sql.js'
 import { join } from 'upath'
 
 export function executeQuery<T extends { [key: string]: any }>(

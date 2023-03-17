@@ -1,6 +1,5 @@
-import { XMLParser } from 'fast-xml-parser'
 import { join, dirname, basename, resolve } from 'upath'
-import { WebDAVClient, FileStat } from 'webdav/web/types'
+import { type WebDAVClient, type FileStat } from 'webdav/web/types'
 import { CongPrefs, DateFormat } from '~~/types'
 
 export async function connect(
@@ -218,6 +217,7 @@ async function getFolderContent(
     },
   })
 
+  const { XMLParser } = await import('fast-xml-parser')
   const parsed = new XMLParser({ removeNSPrefix: true }).parse(result)
   if (Array.isArray(parsed?.multistatus?.response)) {
     const items: FileStat[] = parsed.multistatus.response

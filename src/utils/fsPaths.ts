@@ -1,6 +1,5 @@
 import { platform } from 'os'
 import { ipcRenderer } from 'electron'
-import { sync } from 'fast-glob'
 // eslint-disable-next-line import/named
 import { ensureDirSync, readFileSync } from 'fs-extra'
 import { basename, dirname, join, joinSafe } from 'upath'
@@ -121,6 +120,7 @@ export async function localFontPath(font: string) {
 
 export async function wtFontPath() {
   const appDataPath = await ipcRenderer.invoke('appData')
+  const { sync } = await import('fast-glob')
   const localAppData = sync(joinSafe(appDataPath, '../local'), {
     onlyDirectories: true,
   })

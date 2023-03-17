@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/named
-import { Database } from 'sql.js'
+import { type Database } from 'sql.js'
 import { join } from 'upath'
 import { MultiMediaExtractRef, DateFormat } from '~~/types'
 

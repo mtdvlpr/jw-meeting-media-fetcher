@@ -1,4 +1,4 @@
-import { Dayjs } from 'dayjs'
+import { type Dayjs } from 'dayjs'
 // eslint-disable-next-line import/named
 import { statSync, existsSync, emptyDirSync } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'

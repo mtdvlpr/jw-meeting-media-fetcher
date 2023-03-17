@@ -36,7 +36,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
-import { Participant } from '@zoomus/websdk/embedded'
+import { type Participant } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
 
 const date = computed(() => useRoute().query.date as string)

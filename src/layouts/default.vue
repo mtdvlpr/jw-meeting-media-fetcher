@@ -12,10 +12,9 @@
 <script setup lang="ts">
 import { platform, userInfo } from 'os'
 import { fileURLToPath, pathToFileURL } from 'url'
-import getUsername from 'fullname'
 import { ipcRenderer } from 'electron'
 import { useIpcRendererOn } from '@vueuse/electron'
-import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import { type LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { basename, join } from 'upath'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
@@ -270,6 +269,7 @@ onBeforeMount(async () => {
   } else if (congs.length === 1) {
     initPrefs(basename(congs[0].path, '.json'))
   } else {
+    const { default: getUsername } = await import('fullname')
     const username = (await getUsername()) ?? userInfo().username
     const match = congs.find(
       (c) => c.name?.toLowerCase().trim() === username.toLowerCase().trim()

@@ -1,5 +1,4 @@
-/* eslint-disable camelcase */
-import { event_user_added, event_user_updated } from '@zoomus/websdk/embedded'
+import { type ParticipantPropertiesPayload } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
 
 export const zoomSocket = () => window.sockets[window.sockets.length - 1]
@@ -46,22 +45,21 @@ export async function connectZoom() {
     store.client.on('user-updated', setUserProps)
     store.client.on('user-added', onUserAdded)
     store.setConnected(true)
-    setUserProps({ userId: 0, bCoHost: false })
+    setUserProps()
   } catch (e: unknown) {
     log.debug('caught Zoom error')
   }
 }
 
-const onUserAdded: typeof event_user_added = (payload) => {
+const onUserAdded = (payload: ParticipantPropertiesPayload) => {
   const store = useZoomStore()
   if (store.client) {
-    setUserProps(payload)
+    setUserProps()
   }
 
   log.debug('User added', payload)
 
-  // @ts-ignore
-  const users = payload as (typeof payload)[]
+  const users = payload as unknown as ParticipantPropertiesPayload[]
   users
     .filter((user) => !user.bHold)
     .forEach((user) => {
@@ -83,7 +81,7 @@ const onUserAdded: typeof event_user_added = (payload) => {
     })
 }
 
-const setUserProps: typeof event_user_updated = () => {
+const setUserProps = () => {
   const store = useZoomStore()
   if (!store.client) return
   const userIsHost = store.client.isHost()

@@ -318,7 +318,7 @@
 import { platform } from 'os'
 import { ipcRenderer } from 'electron'
 import { extname, join } from 'upath'
-import { LocaleObject } from 'vue-i18n-routing'
+import { type LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { AppPrefs, VFormRef, PrefStore } from '~~/types'

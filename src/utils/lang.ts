@@ -1,4 +1,4 @@
-import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import { type LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 
 export function translate(word: string, fallback?: string) {
   const mediaLang = getPrefs<string>('media.lang')

@@ -10,10 +10,10 @@ import {
   readFileSync,
   statSync,
 } from 'fs-extra'
-import { sync, Options } from 'fast-glob'
+import { sync, type Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
 import { ipcRenderer } from 'electron'
-import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import { type LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { DateFormat, PrefStore } from '~~/types'
 
 export function findOne(path: string | string[], options?: Options) {

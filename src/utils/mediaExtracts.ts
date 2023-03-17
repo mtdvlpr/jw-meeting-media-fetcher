@@ -1,6 +1,5 @@
-import { Dayjs } from 'dayjs'
-// eslint-disable-next-line import/named
-import { Database } from 'sql.js'
+import { type Dayjs } from 'dayjs'
+import { type Database } from 'sql.js'
 import { MeetingFile, MultiMediaExtract } from '~~/types'
 
 export async function getDocumentExtract(

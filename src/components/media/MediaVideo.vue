@@ -85,7 +85,7 @@
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
 import { basename, changeExt } from 'upath'
-import { Duration } from 'dayjs/plugin/duration'
+import { type Duration } from 'dayjs/plugin/duration'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { ipcRenderer, IpcRendererEvent } from 'electron'

@@ -78,7 +78,7 @@
 <script setup lang="ts">
 import { useIpcRendererOn } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
-import { Participant } from '@zoomus/websdk/embedded'
+import { type Participant } from '@zoomus/websdk/embedded'
 import { ObsPrefs } from '~~/types'
 
 const emit = defineEmits(['zoomPart'])

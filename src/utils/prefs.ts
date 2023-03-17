@@ -1,8 +1,7 @@
 import { ipcRenderer } from 'electron'
-import Store, { Schema } from 'electron-store'
+import Store, { type Schema } from 'electron-store'
 // eslint-disable-next-line import/named
 import { readFileSync, removeSync } from 'fs-extra'
-import { sync } from 'fast-glob'
 import { basename, dirname, join, joinSafe, normalizeSafe } from 'upath'
 import {
   AppPrefs,
@@ -564,6 +563,7 @@ export function migrate2290(key: string, newVal: any) {
 }
 
 export async function getCongPrefs() {
+  const { sync } = await import('fast-glob')
   return sync(join(await ipcRenderer.invoke('userData'), 'prefs-*.json'))
     .map((file) => {
       const prefs = JSON.parse(readFileSync(file, 'utf8')) as PrefStore

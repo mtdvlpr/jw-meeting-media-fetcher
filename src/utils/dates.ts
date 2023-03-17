@@ -1,4 +1,4 @@
-import { Dayjs } from 'dayjs'
+import { type Dayjs } from 'dayjs'
 
 export function getNow() {
   return useNuxtApp().$dayjs().hour(0).minute(0).second(0).millisecond(0)

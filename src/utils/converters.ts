@@ -1,7 +1,7 @@
 /* eslint-disable import/named */
 import { pathToFileURL } from 'url'
 import { platform } from 'os'
-import dayjs, { Dayjs } from 'dayjs'
+import { type Dayjs } from 'dayjs'
 import {
   existsSync,
   statSync,
@@ -11,10 +11,8 @@ import {
   accessSync,
   chmodSync,
 } from 'fs-extra'
-import sizeOf from 'image-size'
-import { XMLBuilder } from 'fast-xml-parser'
 import { join, changeExt, dirname, basename, extname } from 'upath'
-import { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
+import { type PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
 import { Release, DateFormat } from '~~/types'
 
 export async function convertToMP4(
@@ -22,12 +20,13 @@ export async function convertToMP4(
   now: Dayjs,
   setProgress: (loaded: number, total: number, global?: boolean) => void
 ) {
+  const { $dayjs } = useNuxtApp()
   const files = findAll(join(mediaPath(), '*'), {
     onlyDirectories: true,
   })
     .map((path) => basename(path))
     .filter((dir) => {
-      const date = dayjs(
+      const date = $dayjs(
         dir,
         getPrefs<DateFormat>('app.outputFolderDateFormat')
       )
@@ -82,37 +81,42 @@ export async function convertUnusableFiles(
   await Promise.allSettled(promises)
 }
 
-export function convertToVLC() {
-  findAll(join(mediaPath(), '*/'), {
+export async function convertToVLC() {
+  const { $dayjs } = useNuxtApp()
+  const mediaFolders = findAll(join(mediaPath(), '*/'), {
     onlyDirectories: true,
   })
     .map((d) => basename(d))
     .filter((d) =>
-      dayjs(d, getPrefs<DateFormat>('app.outputFolderDateFormat')).isValid()
+      $dayjs(d, getPrefs<DateFormat>('app.outputFolderDateFormat')).isValid()
     )
-    .forEach((date) => {
-      const playlistItems = {
-        '?xml': {
-          '@_version': '1.0',
-          '@_encoding': 'UTF-8',
+
+  if (mediaFolders.length === 0) return
+  const { XMLBuilder } = await import('fast-xml-parser')
+
+  mediaFolders.forEach((date) => {
+    const playlistItems = {
+      '?xml': {
+        '@_version': '1.0',
+        '@_encoding': 'UTF-8',
+      },
+      playlist: {
+        title: date,
+        trackList: {
+          track: findAll(join(mediaPath(), date, '*')).map((k) => ({
+            location: pathToFileURL(k).href,
+          })),
         },
-        playlist: {
-          title: date,
-          trackList: {
-            track: findAll(join(mediaPath(), date, '*')).map((k) => ({
-              location: pathToFileURL(k).href,
-            })),
-          },
-          '@_xmlns': 'http://xspf.org/ns/0/',
-          '@_xmlns:vlc': 'http://www.videolan.org/vlc/playlist/ns/0/',
-          '@_version': '1',
-        },
-      }
-      write(
-        join(mediaPath(), date, `{date}.xspf`),
-        new XMLBuilder({ ignoreAttributes: false }).build(playlistItems)
-      )
-    })
+        '@_xmlns': 'http://xspf.org/ns/0/',
+        '@_xmlns:vlc': 'http://www.videolan.org/vlc/playlist/ns/0/',
+        '@_version': '1',
+      },
+    }
+    write(
+      join(mediaPath(), date, `{date}.xspf`),
+      new XMLBuilder({ ignoreAttributes: false }).build(playlistItems)
+    )
+  })
 }
 
 function convertSvg(mediaFile: string): void {
@@ -370,70 +374,77 @@ function createVideo(
       } else {
         // Set video dimensions to image dimensions
         let convertedDimensions: number[] = []
-        const dimensions = sizeOf(file)
-        if (dimensions.orientation && dimensions.orientation >= 5) {
-          ;[dimensions.width, dimensions.height] = [
-            dimensions.height,
-            dimensions.width,
-          ]
-        }
-
-        if (dimensions.width && dimensions.height) {
-          let max = [undefined, Math.min(FULL_HD[1], dimensions.height)]
-          if (FULL_HD[1] / FULL_HD[0] > dimensions.height / dimensions.width) {
-            max = [Math.min(FULL_HD[0], dimensions.width), undefined]
+        import('image-size').then(({ default: sizeOf }) => {
+          const dimensions = sizeOf(file)
+          if (dimensions.orientation && dimensions.orientation >= 5) {
+            ;[dimensions.width, dimensions.height] = [
+              dimensions.height,
+              dimensions.width,
+            ]
           }
 
-          convertedDimensions = resize(
-            dimensions.width,
-            dimensions.height,
-            max[0],
-            max[1]
-          )
-          const div = document.createElement('div')
-          div.style.display = 'none'
-          const img = document.createElement('img')
-          const canvas = document.createElement('canvas')
-          div.append(img, canvas)
-          document.body.appendChild(div)
+          if (dimensions.width && dimensions.height) {
+            let max = [undefined, Math.min(FULL_HD[1], dimensions.height)]
+            if (
+              FULL_HD[1] / FULL_HD[0] >
+              dimensions.height / dimensions.width
+            ) {
+              max = [Math.min(FULL_HD[0], dimensions.width), undefined]
+            }
 
-          import('h264-mp4-encoder').then(({ createH264MP4Encoder }) => {
-            createH264MP4Encoder().then((encoder) => {
-              img.onload = () => {
-                // Set width and height
-                encoder.quantizationParameter = 10
-                img.width = convertedDimensions[0]
-                img.height = convertedDimensions[1]
-                encoder.width = canvas.width =
-                  img.width % 2 ? img.width - 1 : img.width
-                encoder.height = canvas.height =
-                  img.height % 2 ? img.height - 1 : img.height
-                encoder.initialize()
+            convertedDimensions = resize(
+              dimensions.width,
+              dimensions.height,
+              max[0],
+              max[1]
+            )
+            const div = document.createElement('div')
+            div.style.display = 'none'
+            const img = document.createElement('img')
+            const canvas = document.createElement('canvas')
+            div.append(img, canvas)
+            document.body.appendChild(div)
 
-                // Set canvas
-                const ctx = canvas.getContext('2d')!
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-                encoder.addFrameRgba(
-                  ctx.getImageData(0, 0, canvas.width, canvas.height).data
-                )
+            import('h264-mp4-encoder').then(({ createH264MP4Encoder }) => {
+              createH264MP4Encoder().then((encoder) => {
+                img.onload = () => {
+                  // Set width and height
+                  encoder.quantizationParameter = 10
+                  img.width = convertedDimensions[0]
+                  img.height = convertedDimensions[1]
+                  encoder.width = canvas.width =
+                    img.width % 2 ? img.width - 1 : img.width
+                  encoder.height = canvas.height =
+                    img.height % 2 ? img.height - 1 : img.height
+                  encoder.initialize()
 
-                // Save video
-                encoder.finalize()
-                write(output, encoder.FS.readFile(encoder.outputFilename))
-                encoder.delete()
-                div.remove()
-                if (!getPrefs<boolean>('media.keepOriginalsAfterConversion')) {
-                  rm(file)
+                  // Set canvas
+                  const ctx = canvas.getContext('2d')!
+                  ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                  encoder.addFrameRgba(
+                    ctx.getImageData(0, 0, canvas.width, canvas.height).data
+                  )
+
+                  // Save video
+                  encoder.finalize()
+                  write(output, encoder.FS.readFile(encoder.outputFilename))
+                  encoder.delete()
+                  div.remove()
+                  if (
+                    !getPrefs<boolean>('media.keepOriginalsAfterConversion')
+                  ) {
+                    rm(file)
+                  }
+                  increaseProgress(setProgress)
+                  return resolve()
                 }
-                increaseProgress(setProgress)
-                return resolve()
-              }
-              img.src = pathToFileURL(file).href
+                img.src = pathToFileURL(file).href
+              })
             })
-          })
-        } else {
-          throw new Error('Could not determine dimensions of image.')
-        }
+          } else {
+            throw new Error('Could not determine dimensions of image.')
+          }
+        })
       }
     } catch (e) {
       warn('warnMp4ConversionFailure', { identifier: basename(file) }, e)
