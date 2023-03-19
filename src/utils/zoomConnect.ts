@@ -1,7 +1,10 @@
 import { type ParticipantPropertiesPayload } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
 
-export const zoomSocket = () => window.sockets[window.sockets.length - 1]
+export const zoomSocket = () => {
+  if (!window.sockets || window.sockets.length === 0) return null
+  return window.sockets[window.sockets.length - 1]
+}
 
 export async function connectZoom() {
   const store = useZoomStore()

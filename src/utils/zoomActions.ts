@@ -19,7 +19,7 @@ export async function startMeeting(socket: WebSocket | null) {
   }
 }
 
-export function stopMeeting(socket: WebSocket) {
+export function stopMeeting(socket: WebSocket | null) {
   const store = useZoomStore()
   if (!store.coHost) {
     warn('errorNotCoHost')
@@ -32,7 +32,7 @@ export function stopMeeting(socket: WebSocket) {
   if (store.hostID) toggleVideo(socket, false, store.hostID)
 }
 
-export function muteParticipants(socket: WebSocket) {
+export function muteParticipants(socket: WebSocket | null) {
   const store = useZoomStore()
   if (!store.coHost) {
     warn('errorNotCoHost')

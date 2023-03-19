@@ -23,7 +23,10 @@ export async function getMwMedia(
     `SELECT DocumentId FROM DatedText WHERE FirstDateOffset = ${baseDate.format(
       'YYYYMMDD'
     )}`
-  )[0].DocumentId
+  )[0]?.DocumentId
+
+  // Return without error if no docId found (e.g. memorial week)
+  if (!docId) return
 
   const treasures = executeQuery<{ FeatureTitle: string }>(
     db,

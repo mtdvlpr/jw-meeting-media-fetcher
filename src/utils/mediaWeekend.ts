@@ -50,7 +50,10 @@ export async function getWeMedia(
   const docId = executeQuery<{ DocumentId: number }>(
     db,
     `SELECT Document.DocumentId FROM Document WHERE Document.Class=40 LIMIT 1 OFFSET ${weekNr}`
-  )[0].DocumentId
+  )[0]?.DocumentId
+
+  // Return without error if no docId found (e.g. memorial week)
+  if (!docId) return
 
   const magazine = executeQuery<{ Title: string }>(
     db,
