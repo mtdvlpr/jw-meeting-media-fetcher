@@ -38,8 +38,6 @@
   </v-btn>
 </template>
 <script setup lang="ts">
-import { useRouteQuery } from '@vueuse/router'
-
 type Variant = 'home' | 'cancel' | 'settings' | 'play' | 'stop' | 'present'
 const props = withDefaults(
   defineProps<{
@@ -82,14 +80,12 @@ const getIcon = (
 
 // Icon link
 const localePath = useLocalePath()
-const cong = useRouteQuery('cong', '')
 const weekNr = useNumberQuery('week', useNuxtApp().$dayjs().isoWeek())
 const link = computed(() => {
   if (style.value.to) {
     return {
       path: localePath(style.value.to),
       query: {
-        cong: cong.value,
         week: weekNr.value,
       },
     }

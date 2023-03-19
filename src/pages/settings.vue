@@ -12,15 +12,15 @@
         <v-tab
           v-for="h in headers"
           :key="h.key"
-          :class="{ 'text-error': !mounting && !h.valid }"
+          :class="{ 'text-error': !!mounted && !h.valid }"
         >
           {{ getInitials(h.name) }}
         </v-tab>
       </v-tabs>
-      <!--<v-skeleton-loader v-if="mounting" type="list-item@4" />-->
-      <loading-icon v-if="mounting" />
+      <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
+      <loading-icon v-if="!mounted" />
       <v-expansion-panels
-        v-show="!mounting"
+        v-show="!!mounted"
         v-model="panel"
         multiple
         accordion
@@ -68,7 +68,7 @@
     </v-col>
     <settings-footer
       :prefs="prefs"
-      :mounting="mounting"
+      :mounting="!mounted"
       :valid="valid"
       :cache="cache"
       :refresh="refresh"
@@ -129,13 +129,6 @@ watch(
   },
   { deep: true }
 )
-
-const mounting = ref(true)
-onMounted(() => {
-  setTimeout(() => {
-    mounting.value = false
-  }, 0.5 * MS_IN_SEC)
-})
 
 // Prefs
 const prefs = ref({ ...PREFS })
