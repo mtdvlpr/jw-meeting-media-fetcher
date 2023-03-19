@@ -378,8 +378,8 @@ const { isOverDropZone } = useDropZone(dropzone, onDrop)
   .manage-footer {
     position: fixed;
     bottom: 0;
-    left: 0;
-    width: 100%;
+    right: 0;
+    width: calc(100% - 56px);
     height: 72px;
   }
 }

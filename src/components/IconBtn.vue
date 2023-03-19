@@ -135,7 +135,7 @@ interface Styles {
 
 const styles: Styles = {
   home: {
-    to: '/',
+    to: '/home',
     props: {
       'min-width': '32px',
       color: 'btn',

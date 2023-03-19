@@ -60,24 +60,11 @@
         :disabled="mediaActive"
       />
       <toggle-screen-btn class="mx-2" />
-      <v-btn
-        id="present-to-home"
-        :to="{
-          path: localePath('/'),
-          query: { cong },
-        }"
-        color="warning"
-        aria-label="Go to home"
-        :disabled="mediaActive"
-      >
-        <v-icon icon="fa-home" color="black" size="large" />
-      </v-btn>
     </v-col>
   </v-footer>
 </template>
 <script setup lang="ts">
 import { useIpcRendererOn } from '@vueuse/electron'
-import { useRouteQuery } from '@vueuse/router'
 import { type Participant } from '@zoomus/websdk/embedded'
 import { ObsPrefs } from '~~/types'
 
@@ -86,9 +73,6 @@ const props = defineProps<{
   windowWidth: number
   participant: Participant | null
 }>()
-
-const cong = useRouteQuery('cong', '')
-const localePath = useLocalePath()
 
 const obsStore = useObsStore()
 onMounted(() => {
@@ -226,8 +210,8 @@ const combinedScenesLength = computed(() => {
 .present-footer {
   position: fixed;
   bottom: 0;
-  left: 0;
-  width: 100%;
+  right: 0;
+  width: calc(100% - 56px);
   height: 76px;
 }
 </style>

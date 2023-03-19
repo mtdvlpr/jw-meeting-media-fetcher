@@ -211,8 +211,8 @@ const removeCache = async () => {
 .settings-footer {
   position: fixed;
   bottom: 0;
-  left: 0;
-  width: 100%;
+  right: 0;
+  width: calc(100% - 56px);
   z-index: 1;
 }
 </style>

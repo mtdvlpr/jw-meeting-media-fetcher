@@ -568,6 +568,7 @@ export async function getCongPrefs() {
     .map((file) => {
       const prefs = JSON.parse(readFileSync(file, 'utf8')) as PrefStore
       return {
+        id: basename(file, '.json').replace('prefs-', ''),
         name:
           // @ts-expect-error: 'app.congregationName' is not defined as a key of PrefStore
           prefs?.app?.congregationName ?? (prefs?.congregationName as string),
