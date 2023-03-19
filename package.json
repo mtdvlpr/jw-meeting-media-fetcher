@@ -38,7 +38,7 @@
     "win32"
   ],
   "private": true,
-  "packageManager": "yarn@3.4.1",
+  "packageManager": "yarn@3.5.0",
   "dependencies": {
     "@sentry/electron": "^4.3.0",
     "dotenv": "^16.0.3",
