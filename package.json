@@ -62,7 +62,7 @@
     "@types/fs-extra": "^11.0.1",
     "@types/sql.js": "^1.4.4",
     "@typescript-eslint/parser": "^5.55.0",
-    "@vuepic/vue-datepicker": "^4.2.1",
+    "@vuepic/vue-datepicker": "^4.2.2",
     "@vueuse/core": "^9.13.0",
     "@vueuse/electron": "^9.13.0",
     "@vueuse/nuxt": "^9.13.0",
