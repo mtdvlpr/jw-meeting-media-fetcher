@@ -16,7 +16,7 @@
     "url": "https://github.com/sircharlo/meeting-media-manager.git"
   },
   "scripts": {
-    "prebuild": "./pre-build.sh",
+    "prebuild": "node pre-build.js",
     "dev": "nuxi dev",
     "analyze": "nuxi analyze",
     "prepare": "nuxi prepare",
