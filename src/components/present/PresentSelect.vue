@@ -1,11 +1,5 @@
 <template>
   <v-row justify="start" align="start" class="present-select pa-4">
-    <v-col cols="12" class="text-center">
-      <h2>{{ $t('meeting') }}</h2>
-    </v-col>
-    <v-col cols="12">
-      <v-divider />
-    </v-col>
     <v-col cols="12">
       <v-list
         v-if="dates.length > 0"

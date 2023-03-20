@@ -1,25 +1,22 @@
 <template>
   <v-navigation-drawer v-if="cong" rail expand-on-hover permanent>
     <v-list>
-      <v-list-item title="M³" subtitle="Meeting Media Manager">
+      <v-list-item title="M³">
+        <template #subtitle>
+          <v-btn :to="localeRoute('/')" size="x-small" variant="tonal" :disabled="!!musicFadeOut">
+            {{ cong }}
+          </v-btn>
+        </template>
         <template #prepend>
-          <v-avatar
-            rounded="0"
-            image="https://raw.githubusercontent.com/sircharlo/meeting-media-manager/master/build/icons/icon.png"
-          />
+          <v-avatar rounded="0"
+            image="https://raw.githubusercontent.com/sircharlo/meeting-media-manager/master/build/icons/icon.png" />
         </template>
       </v-list-item>
     </v-list>
     <v-divider />
     <v-list nav>
-      <v-list-item
-        v-for="item in navItems"
-        :key="item.title"
-        :to="item.to"
-        :title="item.title"
-        :disabled="!!item.disabled || navDisabled"
-        :prepend-icon="item.icon"
-      />
+      <v-list-item v-for="item in navItems" :key="item.title" :to="item.to" :title="item.title" :disabled="navDisabled"
+        :prepend-icon="item.icon" />
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -32,28 +29,19 @@ const cong = useRouteQuery<string>('cong', '')
 const localeRoute = useLocaleRoute()
 const navItems = computed(() => [
   {
-    title: 'Congregation select',
-    icon: 'fa-building-user',
-    to: localeRoute('/'),
-    disabled: !!musicFadeOut.value,
-  },
-  {
-    title: 'Home',
-    icon: 'fa-home',
-    to: localeRoute('/home'),
-    disabled: false,
-  },
-  {
-    title: 'Presentation Mode',
+    title: 'Media playback',
     icon: 'fab fa-chromecast',
     to: localeRoute('/present'),
-    disabled: false,
+  },
+  {
+    title: 'Planned media',
+    icon: 'fa-calendar-week',
+    to: localeRoute('/home'),
   },
   {
     title: 'Settings',
-    icon: 'fa-user-cog',
+    icon: 'fa-cog',
     to: localeRoute('/settings'),
-    disabled: false,
   },
 ])
 </script>

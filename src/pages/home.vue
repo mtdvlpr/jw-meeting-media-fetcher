@@ -1,49 +1,70 @@
 <template>
-  <v-container class="fill-height">
-    <action-preview
-      v-if="action"
-      :text="text(action)"
-      :icon="icon(action)"
-      @abort="action = ''"
-      @perform="execute(action)"
-    />
-    <v-row justify="center" class="fill-height pa-4">
-      <home-header :loading="loading" :jw="jwSyncColor" :cong="congSyncColor" />
-      <v-col cols="12">
-        <home-week-tiles
-          :base-date="baseDate"
-          :day-colors="dayColors"
-          :recurring-color="recurringColor"
-        />
-        <home-feature-tiles
-          :jw="jwSyncColor"
-          :cong="congSyncColor"
-          :mp4="mp4Color"
-        />
-      </v-col>
-      <v-col cols="12" class="text-center">
-        <v-btn
-          color="primary"
-          :disabled="!online"
-          :loading="loading"
-          size="large"
-          @click="startMediaSync()"
-        >
-          {{ $t('fetchMedia') }}
-        </v-btn>
-        <v-btn
-          v-if="isDev"
-          color="warning"
-          :disabled="!online"
-          :loading="loading"
-          class="ml-2"
-          @click="testApp()"
-        >
-          Test App
-        </v-btn>
-      </v-col>
-      <v-col cols="12" align-self="end" class="d-flex pa-0">
-        <v-col class="text-center pb-0">
+  <v-toolbar>
+    <!-- <v-icon start icon="fa-calendar-week" /> -->
+    <v-toolbar-title>Planned media</v-toolbar-title>
+    <v-spacer />
+    <template #extension>
+      <v-tabs v-model="currentWeek" grow centered>
+        <v-tab v-for="(w, index) in upcomingWeeks" :key="w.iso" :value="w.iso">
+          {{ w.label }}
+        </v-tab>
+      </v-tabs>
+    </template>
+  </v-toolbar>
+  <action-preview
+    v-if="action"
+    :text="text(action)"
+    :icon="icon(action)"
+    @abort="action = ''"
+    @perform="execute(action)"
+  />
+  <v-row justify="center" class="pa-4">
+    <!-- <home-header :loading="loading" :jw="jwSyncColor" :cong="congSyncColor" /> -->
+    <v-window v-model="currentWeek">
+      <v-window-item
+        v-for="(w, index) in upcomingWeeks"
+        :key="w.iso"
+        :value="w.iso"
+      >
+        <v-col cols="12">
+          <home-week-tiles
+            :base-date="baseDate"
+            :day-colors="dayColors"
+            :recurring-color="recurringColor"
+          />
+          <home-feature-tiles
+            :jw="jwSyncColor"
+            :cong="congSyncColor"
+            :mp4="mp4Color"
+          />
+        </v-col>
+      </v-window-item>
+    </v-window>
+    <v-col cols="12" class="text-center">
+      <v-btn
+        color="primary"
+        :disabled="!online"
+        :loading="loading"
+        size="large"
+        @click="startMediaSync()"
+      >
+        {{ $t('fetchMedia') }}
+      </v-btn>
+      <v-btn
+        v-if="isDev"
+        color="warning"
+        :disabled="!online"
+        :loading="loading"
+        class="ml-2"
+        @click="testApp()"
+      >
+        Test App
+      </v-btn>
+    </v-col>
+    <progress-bar :current="currentProgress" :total="totalProgress" />
+  </v-row>
+  <!-- <v-col cols="12" align-self="end" class="d-flex pa-0"> -->
+  <!-- <v-col class="text-center pb-0">
           <v-select
             id="week-select"
             v-model="currentWeek"
@@ -59,19 +80,16 @@
             style="max-width: 250px"
             @update:model-value="resetColors()"
           />
-        </v-col>
-        <v-col class="d-flex justify-end pb-0">
+        </v-col> -->
+  <!-- <v-col class="d-flex justify-end pb-0">
           <div class="mr-2">
             <shuffle-btn v-if="getPrefs('meeting.enableMusicButton')" />
           </div>
           <template v-if="getPrefs('media.enableMediaDisplayButton')">
             <toggle-screen-btn class="mr-2" />
           </template>
-        </v-col>
-        <progress-bar :current="currentProgress" :total="totalProgress" />
-      </v-col>
-    </v-row>
-  </v-container>
+        </v-col> -->
+  <!-- </v-col> -->
 </template>
 <script setup lang="ts">
 import { fileURLToPath, pathToFileURL } from 'url'
@@ -103,7 +121,9 @@ onMounted(() => {
   }
   setMeetingColors()
   loading.value = false
-  if (initialLoad.value) autoStartMusic()
+  if (initialLoad.value) {
+    autoStartMusic()
+  }
   if (initialLoad.value && getPrefs<boolean>('app.autoStartSync')) {
     action.value = 'startMediaSync'
   }
@@ -127,7 +147,9 @@ const weekLength = computed(() => {
   let days = 0
   for (let i = 0; i < DAYS_IN_WEEK; i++) {
     const day = baseDate.value.add(i, 'days')
-    if (day.isBefore(now)) continue
+    if (day.isBefore(now)) {
+      continue
+    }
     days++
   }
   return days
@@ -136,21 +158,16 @@ const weekLength = computed(() => {
 const upcomingWeeks = computed(() => {
   const weeks: { iso: number; label: string }[] = []
   const dateFormat = getPrefs<string>('app.outputFolderDateFormat')
-  if (!dateFormat) return []
+  if (!dateFormat) {
+    return []
+  }
 
   for (let i = 0; i < 5; i++) {
-    const monday = $dayjs()
-      .add(i, 'weeks')
-      .startOf('week')
-      .format(dateFormat.replace(' - dddd', ''))
-    const sunday = $dayjs()
-      .add(i, 'weeks')
-      .endOf('week')
-      .format(dateFormat.replace(' - dddd', ''))
-    weeks.push({
-      iso: $dayjs().add(i, 'weeks').isoWeek(),
-      label: `${monday} - ${sunday}`,
-    })
+    const week = $dayjs().add(i, 'weeks')
+    const iso = week.isoWeek()
+    const label = week.startOf('week').format(`D${week.startOf('week').month() !== week.endOf('week').month() ? ' MMM' : ''}`) +
+      ` - ${week.endOf('week').format('D MMM')}`
+    weeks.push({ iso, label })
   }
 
   return weeks
@@ -207,7 +224,9 @@ const mediaStore = useMediaStore()
 const { mediaLang, fallbackLang } = storeToRefs(mediaStore)
 const startMediaSync = async (dryrun = false) => {
   const mPath = mediaPath()
-  if (!mPath) return
+  if (!mPath) {
+    return
+  }
   useNotifyStore().dismissByMessage('dontForgetToGetMedia')
   loading.value = true
   statStore.setNavDisabled(true)
@@ -243,7 +262,9 @@ const startMediaSync = async (dryrun = false) => {
       try {
         congSyncColor.value = 'warning'
         getCongMedia(baseDate.value, now)
-        if (dryrun) congSyncColor.value = 'success'
+        if (dryrun) {
+          congSyncColor.value = 'success'
+        }
       } catch (e) {
         error('errorGetCongMedia', e)
         congSyncColor.value = 'error'
@@ -276,7 +297,9 @@ const startMediaSync = async (dryrun = false) => {
       statStore.stopPerf({ func: 'convertMP4', stop: performance.now() })
     }
 
-    if (enableVlcPlaylistCreation) convertToVLC()
+    if (enableVlcPlaylistCreation) {
+      convertToVLC()
+    }
 
     const { autoOpenFolderWhenDone, autoQuitWhenDone } =
       getPrefs<AppPrefs>('app')
@@ -294,7 +317,9 @@ const startMediaSync = async (dryrun = false) => {
 
     statStore.stopPerf({ func: 'total', stop: performance.now() })
     statStore.printStats()
-    if (autoQuitWhenDone) action.value = 'quitApp'
+    if (autoQuitWhenDone) {
+      action.value = 'quitApp'
+    }
   } catch (e) {
     error('errorUnknown', e)
   } finally {
@@ -366,7 +391,9 @@ const getWeekendMedia = async () => {
 }
 
 const syncCongServerMedia = async () => {
-  if (!congSync.value) return
+  if (!congSync.value) {
+    return
+  }
 
   try {
     await syncCongMedia(baseDate.value, setProgress)

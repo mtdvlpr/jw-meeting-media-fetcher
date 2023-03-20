@@ -150,19 +150,19 @@ const styles: Styles = {
       },
     ],
   },
-  present: {
-    to: '/present',
-    props: { color: 'primary' },
-    icons: ['fa-play', 'fa-sliders'],
-  },
-  settings: {
-    to: '/settings',
-    props: {
-      'min-width': '32px',
-      color: 'btn',
-    },
-    icons: [{ text: 'fa-user-cog', props: { color: 'white' } }],
-  },
+  // present: {
+  //   to: '/present',
+  //   props: { color: 'primary' },
+  //   icons: ['fa-play', 'fa-sliders'],
+  // },
+  // settings: {
+  //   to: '/settings',
+  //   props: {
+  //     'min-width': '32px',
+  //     color: 'btn',
+  //   },
+  //   icons: [{ text: 'fa-user-cog', props: { color: 'white' } }],
+  // },
   play: {
     props: { color: 'primary' },
     icons: [{ text: 'fa-play', props: { size: 'medium' } }],
