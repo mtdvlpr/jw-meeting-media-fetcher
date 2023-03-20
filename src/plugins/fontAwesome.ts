@@ -88,10 +88,11 @@ import {
   faXmark,
   faZ,
 } from '@fortawesome/free-solid-svg-icons'
+import { faChromecast } from '@fortawesome/free-brands-svg-icons'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('font-awesome-icon', FontAwesomeIcon)
-  config.autoAddCss = false
+  config.autoAddCss = true
   library.add(
     faAdd,
     faArrowDown19,
@@ -111,6 +112,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faChevronLeft,
     faChevronRight,
     faChevronUp,
+    faChromecast,
     faCircleArrowLeft,
     faCircleCheck,
     faCircleExclamation,

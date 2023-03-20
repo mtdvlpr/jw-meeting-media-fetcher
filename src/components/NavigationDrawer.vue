@@ -40,7 +40,7 @@ const navItems = [
   },
   {
     title: 'Presentation Mode',
-    icon: 'fa-play',
+    icon: 'fab-chromecast',
     to: localeRoute('/present'),
   },
   {
