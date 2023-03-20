@@ -25,7 +25,7 @@ const fluentFfmpegPath = path.join(
   'lib'
 )
 
-// Necessary sql.js file for reading sqlight databases from JWPUB files
+// Necessary sql.js file for reading sqlite databases from JWPUB files
 fs.copySync(sqlWasmPath, path.join(__dirname, 'src', 'public', 'sql-wasm.wasm'))
 
 // Necessary pdfjs worker file for converting PDFs to images
