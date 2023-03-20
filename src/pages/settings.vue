@@ -143,6 +143,7 @@ const refreshPrefs = (key: keyof PrefStore, val: any) => {
 const valid = computed(() => headers.value.every((h) => h.valid))
 watch(valid, (val) => {
   if (val) calcCache()
+  useStatStore().setNavDisabled(!val)
   if (prefs.value.media.enableMediaDisplayButton) {
     const key = prefs.value.media.presentShortcut
     if (val && key) {

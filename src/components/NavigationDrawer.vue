@@ -17,6 +17,7 @@
         :key="item.title"
         :to="item.to"
         :title="item.title"
+        :disabled="!!item.disabled || navDisabled"
         :prepend-icon="item.icon"
       />
     </v-list>
@@ -25,6 +26,8 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 
+const { navDisabled } = storeToRefs(useStatStore())
+const { musicFadeOut } = storeToRefs(useMediaStore())
 const cong = useRouteQuery<string>('cong', '')
 const localeRoute = useLocaleRoute()
 const navItems = [
@@ -32,21 +35,25 @@ const navItems = [
     title: 'Congregation select',
     icon: 'fa-building-user',
     to: localeRoute('/'),
+    disabled: musicFadeOut,
   },
   {
     title: 'Home',
     icon: 'fa-home',
     to: localeRoute('/home'),
+    disabled: false,
   },
   {
     title: 'Presentation Mode',
     icon: 'fa-play',
     to: localeRoute('/present'),
+    disabled: false,
   },
   {
     title: 'Settings',
     icon: 'fa-user-cog',
     to: localeRoute('/settings'),
+    disabled: false,
   },
 ]
 </script>

@@ -17,6 +17,7 @@ interface Stats {
 
 interface StatStore {
   online: boolean
+  navDisabled: boolean
   initialLoad: boolean
   updateSuccess: boolean
   performance: Map<string, Perf>
@@ -25,6 +26,7 @@ interface StatStore {
 
 const defaultState: StatStore = {
   online: false, // Whether the user is connected to the internet
+  navDisabled: false, // Whether navigation is disabled (e.g. when settings are invalid)
   initialLoad: true, // Whether the app is loading for the first time
   updateSuccess: true, // Whether the update was successful
   performance: new Map(), // A map of performance data about how fast a file was downloaded
@@ -46,6 +48,9 @@ export const useStatStore = defineStore('stats', {
   actions: {
     setOnline(online: boolean) {
       this.online = online
+    },
+    setNavDisabled(navDisabled: boolean) {
+      this.navDisabled = navDisabled
     },
     setInitialLoad(initialLoad: boolean) {
       this.initialLoad = initialLoad

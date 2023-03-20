@@ -210,6 +210,7 @@ const startMediaSync = async (dryrun = false) => {
   if (!mPath) return
   useNotifyStore().dismissByMessage('dontForgetToGetMedia')
   loading.value = true
+  statStore.setNavDisabled(true)
   statStore.startPerf({ func: 'total', start: performance.now() })
 
   try {
@@ -298,6 +299,7 @@ const startMediaSync = async (dryrun = false) => {
     error('errorUnknown', e)
   } finally {
     loading.value = false
+    statStore.setNavDisabled(true)
     statStore.clearPerf()
     statStore.clearDownloads()
     mediaStore.clearProgress()
