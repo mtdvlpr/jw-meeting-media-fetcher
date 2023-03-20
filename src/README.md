@@ -1,6 +1,6 @@
 # Renderer Process
 
-For detailed explanation on how things work, check out the [documentation](https://nuxtjs.com).
+For detailed explanation on how things work, check out the [documentation](https://nuxt.com).
 
 ## Special Directories
 

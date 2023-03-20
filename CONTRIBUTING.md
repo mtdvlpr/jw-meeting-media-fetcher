@@ -75,7 +75,7 @@ The development environment uses a different location to store its files ([`app.
 
 This project uses [Electron.js](https://www.electronjs.org/) to create the desktop application. The Electron.js framework is a cross-platform framework for building native applications.
 
-The renderer process is made using [Nuxt.js](https://nuxtjs.com/). The Nuxt framework is a [Vue](https://vuejs.org/) framework for building web applications.
+The renderer process is made using [Nuxt.js](https://nuxt.com/). The Nuxt framework is a [Vue](https://vuejs.org/) framework for building web applications.
 
 The UI components are made using [Vuetify.js](https://vuetifyjs.com/). The Vuetify framework is a Vue UI library for building beautiful material design web applications.
 
