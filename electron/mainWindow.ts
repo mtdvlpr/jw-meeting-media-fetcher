@@ -65,7 +65,7 @@ function createMainWindow(
     y: pos.y,
     height: pos.height,
     width: pos.width,
-    minWidth: 675,
+    minWidth: 790,
     minHeight: 475,
     title: appLongName,
   })

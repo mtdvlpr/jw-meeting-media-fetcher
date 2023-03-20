@@ -232,7 +232,7 @@
       cols="2"
       class="d-flex justify-end"
       align-self="center"
-      style="min-width: 112px; max-width: 112px"
+      style="min-width: 130px; max-width: 130px"
     >
       <slot />
     </v-col>
