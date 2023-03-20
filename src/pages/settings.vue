@@ -112,6 +112,7 @@ const headers = ref<{ key: keyof PrefStore; name: string; valid: boolean }[]>([
   },
 ])
 const mounted = ref(false)
+const headersChanged = ref(0)
 watch(
   headers,
   (val) => {
@@ -125,7 +126,8 @@ watch(
         }
       }
     })
-    mounted.value ||= valid.value
+    headersChanged.value++
+    mounted.value ||= valid.value || headersChanged.value > 4
   },
   { deep: true }
 )
