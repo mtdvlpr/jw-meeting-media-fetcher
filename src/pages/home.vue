@@ -299,7 +299,7 @@ const startMediaSync = async (dryrun = false) => {
     error('errorUnknown', e)
   } finally {
     loading.value = false
-    statStore.setNavDisabled(true)
+    statStore.setNavDisabled(false)
     statStore.clearPerf()
     statStore.clearDownloads()
     mediaStore.clearProgress()
