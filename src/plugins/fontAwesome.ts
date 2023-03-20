@@ -5,6 +5,7 @@ import {
   faClosedCaptioning as farClosedCaptioning,
   faCircle as farCircle,
 } from '@fortawesome/free-regular-svg-icons'
+import { faChromecast as fabChromecast } from '@fortawesome/free-brands-svg-icons'
 import {
   faAdd,
   faArrowDown19,
@@ -88,11 +89,10 @@ import {
   faXmark,
   faZ,
 } from '@fortawesome/free-solid-svg-icons'
-import { faChromecast } from '@fortawesome/free-brands-svg-icons'
 
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.component('font-awesome-icon', FontAwesomeIcon)
-  config.autoAddCss = true
+  config.autoAddCss = false
   library.add(
     faAdd,
     faArrowDown19,
@@ -112,7 +112,6 @@ export default defineNuxtPlugin((nuxtApp) => {
     faChevronLeft,
     faChevronRight,
     faChevronUp,
-    faChromecast,
     faCircleArrowLeft,
     faCircleCheck,
     faCircleExclamation,
@@ -177,6 +176,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faVideoSlash,
     faXmark,
     faZ,
+    fabChromecast,
     farCircle,
     farClosedCaptioning
   )
