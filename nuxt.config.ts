@@ -71,7 +71,7 @@ export default defineNuxtConfig({
     },
   },
   vite: {
-    root: process.cwd(),
+    root: process.cwd(), // fix for: https://github.com/electron-vite/vite-plugin-electron-renderer/issues/32
     build: {
       sourcemap: true,
       target: 'chrome110',
