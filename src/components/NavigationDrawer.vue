@@ -30,12 +30,12 @@ const { navDisabled } = storeToRefs(useStatStore())
 const { musicFadeOut } = storeToRefs(useMediaStore())
 const cong = useRouteQuery<string>('cong', '')
 const localeRoute = useLocaleRoute()
-const navItems = reactive([
+const navItems = computed(() => [
   {
     title: 'Congregation select',
     icon: 'fa-building-user',
     to: localeRoute('/'),
-    disabled: musicFadeOut,
+    disabled: !!musicFadeOut.value,
   },
   {
     title: 'Home',
