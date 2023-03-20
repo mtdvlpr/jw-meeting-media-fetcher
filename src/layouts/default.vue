@@ -97,7 +97,7 @@ useIpcRendererOn('openPresentMode', () => {
   }
 })
 
-useIpcRendererOn('mediaWindoShown', () => {
+useIpcRendererOn('mediaWindowShown', () => {
   usePresentStore().setMediaScreenInit(true)
   ipcRenderer.send('startMediaDisplay', getAllPrefs())
 })
