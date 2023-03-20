@@ -71,6 +71,7 @@ export default defineNuxtConfig({
     },
   },
   vite: {
+    root: process.cwd(),
     build: {
       sourcemap: true,
       target: 'chrome110',
