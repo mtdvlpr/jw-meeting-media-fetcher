@@ -45,7 +45,7 @@ export default defineNuxtConfig({
       {
         renderer: {
           nodeIntegration: true,
-          optimizeDeps: {
+          optimizer: {
             include: ['fs-extra', 'obs-websocket-js', 'upath'],
           },
         },
