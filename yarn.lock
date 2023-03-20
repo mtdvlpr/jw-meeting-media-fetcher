@@ -7625,7 +7625,7 @@ __metadata:
     upath: ^2.0.1
     vite: ^4.2.1
     vite-electron-plugin: ^0.8.2
-    vite-plugin-electron-renderer: ^0.13.0
+    vite-plugin-electron-renderer: ^0.12.1
     vite-plugin-vuetify: ^1.0.2
     vue: ^3.2.47
     vue-tsc: ^1.2.0
@@ -11310,12 +11310,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-electron-renderer@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "vite-plugin-electron-renderer@npm:0.13.0"
+"vite-plugin-electron-renderer@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "vite-plugin-electron-renderer@npm:0.12.1"
   dependencies:
     lib-esm: ~0.3.0
-  checksum: 51c15264abff5a061923df505915472c2991e6ec3aad34ab252575b4d6e7472888c78b123911ece635eb6b7d0a3bf5f46e25060975d15c66955719bb007bbfc4
+  checksum: 0e84b9ea7a0bc2891bb5945f400035c8041a0c2b10e0e2d13f0cd201ff57e0744f4d54fe4831941213a64d3ddab1db45e7933a592f876874202532131d1b7b27
   languageName: node
   linkType: hard
 
