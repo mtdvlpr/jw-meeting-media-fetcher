@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <v-card>
     <v-card-title class="justify-center">
@@ -30,7 +31,7 @@
           <template #label>
             <span>
               <v-tooltip activator="parent" location="top">
-                {{ $t(item.description) }}
+                <span v-html="$t(item.description)" />
               </v-tooltip>
               <v-chip color="info">{{ item.key }}</v-chip>
             </span>
