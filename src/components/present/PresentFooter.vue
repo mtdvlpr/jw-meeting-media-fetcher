@@ -55,10 +55,7 @@
       />
     </v-col>
     <v-col class="text-right" cols="auto">
-      <shuffle-btn
-        v-if="getPrefs('meeting.enableMusicButton')"
-        :disabled="mediaActive"
-      />
+      <shuffle-btn v-if="getPrefs('meeting.enableMusicButton')" />
       <toggle-screen-btn class="mx-2" />
     </v-col>
   </v-footer>

@@ -1,95 +1,63 @@
 <template>
-  <v-toolbar>
-    <!-- <v-icon start icon="fa-calendar-week" /> -->
-    <v-toolbar-title>Planned media</v-toolbar-title>
-    <v-spacer />
-    <template #extension>
-      <v-tabs v-model="currentWeek" grow centered>
-        <v-tab v-for="(w, index) in upcomingWeeks" :key="w.iso" :value="w.iso">
-          {{ w.label }}
-        </v-tab>
-      </v-tabs>
-    </template>
-  </v-toolbar>
-  <action-preview
-    v-if="action"
-    :text="text(action)"
-    :icon="icon(action)"
-    @abort="action = ''"
-    @perform="execute(action)"
-  />
-  <v-row justify="center" class="pa-4">
-    <!-- <home-header :loading="loading" :jw="jwSyncColor" :cong="congSyncColor" /> -->
-    <v-window v-model="currentWeek">
-      <v-window-item
-        v-for="(w, index) in upcomingWeeks"
-        :key="w.iso"
-        :value="w.iso"
-      >
-        <v-col cols="12">
-          <home-week-tiles
-            :base-date="baseDate"
-            :day-colors="dayColors"
-            :recurring-color="recurringColor"
-          />
-          <home-feature-tiles
-            :jw="jwSyncColor"
-            :cong="congSyncColor"
-            :mp4="mp4Color"
-          />
-        </v-col>
-      </v-window-item>
-    </v-window>
-    <v-col cols="12" class="text-center">
-      <v-btn
-        color="primary"
-        :disabled="!online"
-        :loading="loading"
-        size="large"
-        @click="startMediaSync()"
-      >
-        {{ $t('fetchMedia') }}
-      </v-btn>
-      <v-btn
-        v-if="isDev"
-        color="warning"
-        :disabled="!online"
-        :loading="loading"
-        class="ml-2"
-        @click="testApp()"
-      >
-        Test App
-      </v-btn>
-    </v-col>
-    <progress-bar :current="currentProgress" :total="totalProgress" />
-  </v-row>
-  <!-- <v-col cols="12" align-self="end" class="d-flex pa-0"> -->
-  <!-- <v-col class="text-center pb-0">
-          <v-select
-            id="week-select"
-            v-model="currentWeek"
-            :items="upcomingWeeks"
-            item-title="label"
-            item-value="iso"
-            :disabled="loading"
-            variant="solo"
-            density="compact"
-            dense
-            hide-details="auto"
-            class="justify-center"
-            style="max-width: 250px"
-            @update:model-value="resetColors()"
-          />
-        </v-col> -->
-  <!-- <v-col class="d-flex justify-end pb-0">
-          <div class="mr-2">
-            <shuffle-btn v-if="getPrefs('meeting.enableMusicButton')" />
-          </div>
-          <template v-if="getPrefs('media.enableMediaDisplayButton')">
-            <toggle-screen-btn class="mr-2" />
-          </template>
-        </v-col> -->
-  <!-- </v-col> -->
+  <div>
+    <v-toolbar>
+      <v-toolbar-title>Planned media</v-toolbar-title>
+      <template #extension>
+        <v-tabs v-model="currentWeek" grow centered>
+          <v-tab v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
+            {{ w.label }}
+          </v-tab>
+        </v-tabs>
+      </template>
+    </v-toolbar>
+    <action-preview
+      v-if="action"
+      :text="text(action)"
+      :icon="icon(action)"
+      @abort="action = ''"
+      @perform="execute(action)"
+    />
+    <v-row justify="center" class="pa-4">
+      <v-window v-model="currentWeek">
+        <v-window-item v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
+          <v-col cols="12">
+            <home-week-tiles
+              :base-date="baseDate"
+              :day-colors="dayColors"
+              :recurring-color="recurringColor"
+            />
+            <home-feature-tiles
+              :jw="jwSyncColor"
+              :cong="congSyncColor"
+              :mp4="mp4Color"
+            />
+          </v-col>
+        </v-window-item>
+      </v-window>
+      <v-col cols="12" class="text-center">
+        <v-btn
+          color="primary"
+          :disabled="!online"
+          :loading="loading"
+          size="large"
+          @click="startMediaSync()"
+        >
+          {{ $t('fetchMedia') }}
+        </v-btn>
+        <v-btn
+          v-if="isDev"
+          color="warning"
+          :disabled="!online"
+          :loading="loading"
+          class="ml-2"
+          @click="testApp()"
+        >
+          Test App
+        </v-btn>
+      </v-col>
+      <progress-bar :current="currentProgress" :total="totalProgress" />
+    </v-row>
+  </div>
 </template>
 <script setup lang="ts">
 import { fileURLToPath, pathToFileURL } from 'url'
@@ -142,6 +110,7 @@ const {
   weDayObject,
   weFormatted,
 } = useMeetingDays(currentWeek)
+watch(currentWeek, () => resetColors())
 
 const weekLength = computed(() => {
   let days = 0
@@ -165,8 +134,16 @@ const upcomingWeeks = computed(() => {
   for (let i = 0; i < 5; i++) {
     const week = $dayjs().add(i, 'weeks')
     const iso = week.isoWeek()
-    const label = week.startOf('week').format(`D${week.startOf('week').month() !== week.endOf('week').month() ? ' MMM' : ''}`) +
-      ` - ${week.endOf('week').format('D MMM')}`
+    const label =
+      week
+        .startOf('week')
+        .format(
+          `D${
+            week.startOf('week').month() !== week.endOf('week').month()
+              ? ' MMM'
+              : ''
+          }`
+        ) + ` - ${week.endOf('week').format('D MMM')}`
     weeks.push({ iso, label })
   }
 

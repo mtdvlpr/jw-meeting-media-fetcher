@@ -2,7 +2,7 @@ import vuetify from 'vite-plugin-vuetify'
 import { repository, version, devDependencies } from './package.json'
 import { LOCALES } from './src/constants/lang'
 
-const isDev = !!process.env.VITE_DEV_SERVER_URL
+const isDev = process.env.NODE_ENV === 'development'
 const sentryInit =
   !!process.env.SENTRY_DSN &&
   !!process.env.SENTRY_ORG &&

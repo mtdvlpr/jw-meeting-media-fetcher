@@ -1,64 +1,118 @@
 <template>
-  <v-toolbar color="primary">
-        <!-- <v-icon start icon="fa-calendar-week" /> -->
-        <v-toolbar-title>Planned media: {{ title }}</v-toolbar-title>
-        <v-spacer />
-        <template #extension>
-                <!-- need to fix type switch, something wrong with the v-model or something -->
-          <v-tabs v-model="value" grow centered>
-            <v-tab v-for="(t, index) in types" :key="index" :value="index">
-              {{ t.value }}
-            </v-tab>
-          </v-tabs>
-        </template>
-      </v-toolbar>
-    <manage-select-video :active="type === 'jwOrg' && !jwFile" @cancel="type = 'custom'" @select="selectVideo" />
-    <v-dialog v-if="fileString && type === 'jwpub'" persistent :model-value="selectDoc">
-      <manage-select-document :file="fileString" :set-progress="setProgress" @select="addMedia($event)"
-        @empty="reset()" />
+  <div class="manage-media">
+    <v-toolbar>
+      <!-- <v-icon start icon="fa-calendar-week" /> -->
+      <v-toolbar-title>Planned media: {{ title }}</v-toolbar-title>
+      <template #extension>
+        <!-- need to fix type switch, something wrong with the v-model or something -->
+        <v-tabs v-model="type" grow centered>
+          <v-tab v-for="t in types" :key="t.value" :value="t.value">
+            {{ t.label }}
+          </v-tab>
+        </v-tabs>
+      </template>
+    </v-toolbar>
+    <manage-select-video
+      :active="type === 'jwOrg' && !jwFile"
+      @cancel="type = 'custom'"
+      @select="selectVideo"
+    />
+    <v-dialog
+      v-if="fileString && type === 'jwpub'"
+      persistent
+      :model-value="selectDoc"
+    >
+      <manage-select-document
+        :file="fileString"
+        :set-progress="setProgress"
+        @select="addMedia($event)"
+        @empty="reset()"
+      />
     </v-dialog>
-      <!-- <manage-select-type v-model="type" :disabled="loading || saving" /> -->
-      <v-row v-if="type && type !== 'jwOrg'" no-gutters align="center" class="mt-4">
-        <v-col cols="1" class="text-center" align-self="center">
-          <v-icon icon="fa-file-export" />
-        </v-col>
-        <v-col cols="11">
-          <song-picker v-if="type === 'song'" v-model="jwFile" :disabled="loading || saving" />
-          <manage-select-file v-else :type="type" :path="fileString" :loading="loading || saving" @click="
-            type == 'custom' ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')
-          " />
-        </v-col>
-      </v-row>
-      <manage-media-prefix v-if="jwFile || files.length > 0" v-model="prefix" />
-      <v-col ref="dropzone" cols="12" class="px-0" style="position: relative">
-        <loading-icon v-if="loading || saving" />
-        <template v-else>
-          <v-overlay :model-value="isOverDropZone">
-            <v-icon icon="fa-download" size="x-large" bounce />
-          </v-overlay>
-          <manage-media-list :date="date" :new-file="jwFile" :new-files="files" :prefix="prefix" :media="media"
-            :show-input="!!type && type !== 'jwOrg'" :show-prefix="!!jwFile || files.length > 0"
-            @refresh="emit('refresh')" />
-        </template>
+    <v-row v-if="type && type !== 'jwOrg'" no-gutters class="mt-4 px-2">
+      <v-col cols="1" class="text-center" align-self="center">
+        <v-icon icon="fa-file-export" />
       </v-col>
-      <progress-bar fixed :current="currentProgress" :total="totalProgress" style="bottom: 72px" />
-      <v-footer class="manage-footer">
-        <v-col class="text-left">
-          <icon-btn v-if="jwFile || files.length > 0" variant="cancel" :disabled="loading || saving" click-twice
-            @click="cancel()" />
-        </v-col>
-        <v-col class="text-center">
-          <v-btn v-if="jwFile || files.length > 0" color="primary" min-width="32px" :loading="loading || saving"
-            @click="saveFiles()">
-            <v-icon icon="fa-save" size="small" />
-          </v-btn>
-          <v-btn v-else-if="dialog" color="btn" min-width="32px" @click="cancel()">
-            <v-icon icon="fa-xmark" size="small" />
-          </v-btn>
-          <icon-btn v-else variant="home" :disabled="loading || saving" />
-        </v-col>
-        <v-col />
-      </v-footer>
+      <v-col cols="11">
+        <song-picker
+          v-if="type === 'song'"
+          v-model="jwFile"
+          :disabled="loading || saving"
+        />
+        <manage-select-file
+          v-else
+          :type="type"
+          :path="fileString"
+          :loading="loading || saving"
+          @click="
+            type == 'custom' ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')
+          "
+        />
+      </v-col>
+    </v-row>
+    <manage-media-prefix v-if="jwFile || files.length > 0" v-model="prefix" />
+    <v-col
+      ref="dropzone"
+      cols="12"
+      class="px-0 pb-0"
+      style="position: relative"
+    >
+      <loading-icon v-if="loading || saving" />
+      <template v-else>
+        <v-overlay :model-value="isOverDropZone">
+          <v-icon icon="fa-download" size="x-large" bounce />
+        </v-overlay>
+        <manage-media-list
+          :date="date"
+          :new-file="jwFile"
+          :new-files="files"
+          :prefix="prefix"
+          :media="media"
+          :show-input="!!type && type !== 'jwOrg'"
+          :show-prefix="!!jwFile || files.length > 0"
+          @refresh="emit('refresh')"
+        />
+      </template>
+    </v-col>
+    <progress-bar
+      fixed
+      :current="currentProgress"
+      :total="totalProgress"
+      style="bottom: 72px"
+    />
+    <v-footer class="manage-footer" :style="footerStyle">
+      <v-col class="text-left">
+        <icon-btn
+          v-if="jwFile || files.length > 0"
+          variant="cancel"
+          :disabled="loading || saving"
+          click-twice
+          @click="cancel()"
+        />
+      </v-col>
+      <v-col class="text-center">
+        <v-btn
+          v-if="jwFile || files.length > 0"
+          color="primary"
+          min-width="32px"
+          :loading="loading || saving"
+          @click="saveFiles()"
+        >
+          <v-icon icon="fa-save" size="small" />
+        </v-btn>
+        <v-btn
+          v-else-if="dialog"
+          color="btn"
+          min-width="32px"
+          @click="cancel()"
+        >
+          <v-icon icon="fa-xmark" size="small" />
+        </v-btn>
+        <icon-btn v-else variant="home" :disabled="loading || saving" />
+      </v-col>
+      <v-col />
+    </v-footer>
+  </div>
 </template>
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
@@ -80,11 +134,11 @@ const props = defineProps<{
 const prefix = ref('')
 
 const { $i18n } = useNuxtApp()
-const value = 0
 const title = computed(() =>
   date.value === 'Recurring' ? $i18n.t('recurring') : date.value
 )
 
+// Type of media to add
 const types = [
   {
     label: $i18n.t('song'),
@@ -103,8 +157,6 @@ const types = [
     value: 'jwOrg',
   },
 ]
-
-// Type of media to add
 const type = ref('custom')
 watch(type, (val) => {
   reset(false)
@@ -351,14 +403,19 @@ const onDrop = (dropped: File[] | null) => {
 }
 const dropzone = ref<HTMLElement>()
 const { isOverDropZone } = useDropZone(dropzone, onDrop)
+
+const footerStyle = computed(() => {
+  if (props.dialog) return { width: '100%' }
+  return { width: 'calc(100% - 56px)' }
+})
 </script>
 <style lang="scss" scoped>
 .manage-media {
+  height: 100%;
   .manage-footer {
     position: fixed;
     bottom: 0;
     right: 0;
-    width: calc(100% - 56px);
     height: 72px;
   }
 }

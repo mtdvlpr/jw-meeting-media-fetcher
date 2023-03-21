@@ -1,5 +1,5 @@
 <template>
-  <v-row align="center" class="mt-0" style="width: 100%">
+  <v-row no-gutters class="mt-4 px-2">
     <v-col cols="1" class="text-center" align-self="center">
       <v-icon icon="fa-arrow-down-1-9" />
     </v-col>

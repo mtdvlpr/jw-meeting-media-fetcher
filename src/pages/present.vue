@@ -1,8 +1,8 @@
 <template>
-  <v-container
-    fluid
-    class="present-page align-start align-content-space-between pa-0 fill-height"
-  >
+  <div class="present-page">
+    <v-toolbar v-if="!date">
+      <v-toolbar-title>Select a date</v-toolbar-title>
+    </v-toolbar>
     <confirm-dialog
       v-model="dialog"
       description="obsZoomSceneActivate"
@@ -24,15 +24,13 @@
     <div id="zoomMeeting" />
     <media-controls v-if="date" />
     <present-select v-else :first-choice="firstChoice" />
-    <v-row>
-      <present-footer
-        :window-width="width"
-        :participant="participant"
-        @zoom-part="toggleZoomPart()"
-        @clear-participant="participant = null"
-      />
-    </v-row>
-  </v-container>
+    <present-footer
+      :window-width="width"
+      :participant="participant"
+      @zoom-part="toggleZoomPart()"
+      @clear-participant="participant = null"
+    />
+  </div>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
@@ -83,9 +81,10 @@ onMounted(() => {
   }
   if (zoomClient.value) {
     setTimeout(() => {
-      if (window.sockets && window.sockets.length > 0) {
+      const socket = zoomSocket()
+      if (socket) {
         log.debug('Found socket')
-        zoomStore.setWebsocket(zoomSocket())
+        zoomStore.setWebsocket(socket)
       }
     }, MS_IN_SEC)
   }

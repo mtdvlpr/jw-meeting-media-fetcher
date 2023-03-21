@@ -4,12 +4,10 @@
     ref="btn"
     v-click-outside="() => (clickedOnce = false)"
     :aria-label="variant"
-    :title="title"
     v-bind="{ ...style.props, ...$attrs }"
     :color="clickedOnce ? 'error' : style.props.color"
     :class="{
       ...style.props.class,
-      'pulse-danger': variant === 'settings' && !updateSuccess,
     }"
     :to="link"
     @click.stop="atClick()"
@@ -38,7 +36,7 @@
   </v-btn>
 </template>
 <script setup lang="ts">
-type Variant = 'home' | 'cancel' | 'settings' | 'play' | 'stop' | 'present'
+type Variant = 'home' | 'cancel' | 'play' | 'stop'
 const props = withDefaults(
   defineProps<{
     variant: Variant
@@ -67,10 +65,6 @@ const { atClick: atFirstClick, clickedOnce } = useClickTwice(() => {
   emit('click')
 })
 
-// Update state for settings button
-const statStore = useStatStore()
-const { updateSuccess } = storeToRefs(statStore)
-
 // Icon
 const getIcon = (
   icon: string | { text: string; props?: Record<string, any> }
@@ -91,14 +85,6 @@ const link = computed(() => {
     }
   }
   return useAttrs().to as string | undefined
-})
-
-// Icon title
-const title = computed(() => {
-  if (props.variant === 'present') {
-    return getPrefs<string>('media.presentShortcut')
-  }
-  return undefined
 })
 
 // Icon color
@@ -150,19 +136,6 @@ const styles: Styles = {
       },
     ],
   },
-  // present: {
-  //   to: '/present',
-  //   props: { color: 'primary' },
-  //   icons: ['fa-play', 'fa-sliders'],
-  // },
-  // settings: {
-  //   to: '/settings',
-  //   props: {
-  //     'min-width': '32px',
-  //     color: 'btn',
-  //   },
-  //   icons: [{ text: 'fa-user-cog', props: { color: 'white' } }],
-  // },
   play: {
     props: { color: 'primary' },
     icons: [{ text: 'fa-play', props: { size: 'medium' } }],

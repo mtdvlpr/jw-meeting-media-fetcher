@@ -40,22 +40,18 @@
             v-if="titleParts[3]"
             color="song"
             class="mr-3"
+            prepend-icon="fa-music"
             :title="`${translate('song')} ${cleanTitle(titleParts[3])}`"
           >
-            <template #prepend>
-              <v-icon icon="fa-music" />
-            </template>
             {{ titleParts[3] }}
           </v-chip>
           <v-chip
             v-if="titleParts[5]"
             color="paragraph"
             class="mr-3"
+            prepend-icon="fa-paragraph"
             :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
           >
-            <template #prepend>
-              <v-icon icon="fa-paragraph" />
-            </template>
             {{ titleParts[3] }}
           </v-chip>
           <div

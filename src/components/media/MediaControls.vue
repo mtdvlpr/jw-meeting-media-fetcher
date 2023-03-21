@@ -101,6 +101,9 @@ onMounted(() => {
 const zoomPart = inject(zoomPartKey, ref(false))
 const mediaActive = inject(mediaActiveKey, ref(false))
 watch(mediaActive, (val) => {
+  // Enable/disable nav
+  useStatStore().setNavDisabled(val)
+
   // Reset playback state
   items.value.forEach((item) => {
     item.play = false

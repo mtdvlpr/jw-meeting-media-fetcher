@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar class="present-top-bar">
+  <v-toolbar class="present-top-bar">
     <v-col class="text-left" cols="3">
       <v-menu location="bottom">
         <template #activator="{ props }">
@@ -53,7 +53,6 @@
         id="btn-toggle-meeting-date"
         class="px-3"
         variant="outlined"
-        color="secondary"
         :disabled="mediaActive"
         size="large"
         @click="clearDate()"
@@ -115,7 +114,7 @@
         <v-icon icon="fa-arrow-down-up-across-line" size="small" />
       </v-btn>
     </v-col>
-  </v-app-bar>
+  </v-toolbar>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'

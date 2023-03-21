@@ -208,14 +208,12 @@ const removeItem = async (item: MeetingFile | LocalFile) => {
 // Available list height
 const windowHeight = inject(windowHeightKey, ref(0))
 const listHeight = computed(() => {
-  const TOP_PADDING = 16
-  const HEADER = 64
-  const TYPE_SELECT = 48
+  const TOOLBAR = 112
   const INPUT = 56
-  const PREFIX = 52
+  const PREFIX = 56
   const EL_PADDING = 12
   const FOOTER = 72
-  let otherElements = FOOTER + TOP_PADDING + HEADER + TYPE_SELECT + EL_PADDING
+  let otherElements = FOOTER + TOOLBAR + EL_PADDING
   if (props.showInput) {
     otherElements += INPUT
   }

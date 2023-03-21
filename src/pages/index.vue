@@ -1,32 +1,36 @@
 <!-- Select a congregation on startup -->
 <template>
-  <v-toolbar>
-    <v-toolbar-title>
-      <v-icon icon="fa-building-user" size="x-large" />
-    </v-toolbar-title>
-  <!-- <v-spacer />
-          <template #extension>
-            <v-tabs v-model="value" grow centered>
-              <v-tab v-for="(t, index) in types" :key="index" :value="index">
-                {{ t.value }}
-              </v-tab>
-            </v-tabs>
-                </template> -->
-  </v-toolbar>
-  <v-row justify="start" align="start" class="pa-4">
-    <v-col cols="12">
-      <loading-icon v-if="loading" />
-      <v-list v-else>
-        <v-list-item v-for="c in congs" :key="c.id" :title="c.name" :active="c.id === cong"
-          @click="initPrefs(c.filename)">
-          <template v-if="c.id !== cong" #append>
-            <v-btn icon="fa-trash" size="small" @click="removeCong(c.path)" />
-          </template>
-        </v-list-item>
-        <v-list-item prepend-icon="fa-plus" title="Add new congregation" @click="createCong()" />
-      </v-list>
-    </v-col>
-  </v-row>
+  <div>
+    <v-toolbar>
+      <v-toolbar-title>
+        <v-icon icon="fa-building-user" size="x-large" />
+        Select your congregation
+      </v-toolbar-title>
+    </v-toolbar>
+    <v-row justify="start" align="start" class="pa-4">
+      <v-col cols="12">
+        <loading-icon v-if="loading" />
+        <v-list v-else>
+          <v-list-item
+            v-for="c in congs"
+            :key="c.id"
+            :title="c.name"
+            :active="c.id === cong"
+            @click="initPrefs(c.filename)"
+          >
+            <template v-if="c.id !== cong" #append>
+              <v-btn icon="fa-trash" size="small" @click="removeCong(c.path)" />
+            </template>
+          </v-list-item>
+          <v-list-item
+            prepend-icon="fa-plus"
+            title="Add new congregation"
+            @click="createCong()"
+          />
+        </v-list>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 <script setup lang="ts">
 import { platform, userInfo } from 'os'
@@ -205,10 +209,13 @@ const initPrefs = async (name: string, isNew = false) => {
       action: {
         type: 'link',
         label: 'wannaHelpForSure',
-        url: `${useRuntimeConfig().public.repo
-          }/discussions/new?category=translations&title=New+translation+in+${mediaLang.name
-          }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${mediaLang.name
-          } (${mediaLang.langcode}/${mediaLang.symbol}).`,
+        url: `${
+          useRuntimeConfig().public.repo
+        }/discussions/new?category=translations&title=New+translation+in+${
+          mediaLang.name
+        }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
+          mediaLang.name
+        } (${mediaLang.langcode}/${mediaLang.symbol}).`,
       },
     })
   } else if (isNew && appLang && STALE_LANGS.includes(appLang.symbol)) {
@@ -218,10 +225,13 @@ const initPrefs = async (name: string, isNew = false) => {
       action: {
         type: 'link',
         label: 'wannaHelpForSure',
-        url: `${useRuntimeConfig().public.repo
-          }/discussions/new?category=translations&title=New+translator+for+${appLang.name
-          }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${appLang.name
-          } (${appLang.langcode}/${appLang.symbol}).`,
+        url: `${
+          useRuntimeConfig().public.repo
+        }/discussions/new?category=translations&title=New+translator+for+${
+          appLang.name
+        }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
+          appLang.name
+        } (${appLang.langcode}/${appLang.symbol}).`,
       },
     })
   }

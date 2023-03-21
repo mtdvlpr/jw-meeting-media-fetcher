@@ -1,71 +1,114 @@
 <template>
-  <v-row no-gutters justify="center" class="fill-height settings">
-    <v-col cols="12" style="margin-bottom: 86px">
-      <v-tabs
-        v-model="tab"
-        color="primary"
-        bg-color="bg"
-        grow
-        style="position: sticky; top: 0; z-index: 2"
-      >
-        <v-tab>{{ $t('all') }}</v-tab>
-        <v-tab
-          v-for="h in headers"
-          :key="h.key"
-          :class="{ 'text-error': !!mounted && !h.valid }"
-        >
-          {{ getInitials(h.name) }}
-        </v-tab>
-      </v-tabs>
-      <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
-      <loading-icon v-if="!mounted" />
-      <v-expansion-panels
-        v-show="!!mounted"
-        v-model="panel"
-        multiple
-        accordion
-        :readonly="tab !== 0"
-      >
-        <v-expansion-panel :title="$t('optionsApp')" value="app">
-          <v-expansion-panel-text>
-            <settings-app
-              :prefs="prefs"
-              @valid="setValid('app', $event)"
-              @refresh="refreshPrefs('app', $event)"
-            />
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-        <v-expansion-panel :title="$t('optionsCongSync')" value="cong">
-          <v-expansion-panel-text>
-            <settings-cong
-              :prefs="prefs"
-              @valid="setValid('cong', $event)"
-              @refresh="refreshPrefs('cong', $event)"
-            />
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-        <v-expansion-panel :title="$t('optionsMedia')" value="media">
-          <v-expansion-panel-text>
-            <settings-media
-              :prefs="prefs"
-              @valid="setValid('media', $event)"
-              @refresh="refreshPrefs('media', $event)"
-            />
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-        <v-expansion-panel :title="$t('optionsMeetings')" value="meeting">
-          <v-expansion-panel-text>
-            <settings-meeting
-              :cache="cache"
-              :prefs="prefs"
-              @valid="setValid('meeting', $event)"
-              @refresh="refreshPrefs('meeting', $event)"
-              @cache="calcCache()"
-            />
-          </v-expansion-panel-text>
-        </v-expansion-panel>
-      </v-expansion-panels>
-    </v-col>
+  <div>
+    <v-toolbar>
+      <v-toolbar-title>Settings</v-toolbar-title>
+      <template #extension>
+        <v-tabs v-model="tab" grow centered>
+          <v-tab>{{ $t('all') }}</v-tab>
+          <v-tab
+            v-for="h in headers"
+            :key="h.key"
+            :disabled="!mounted"
+            :class="{ 'text-error': !!mounted && !h.valid }"
+          >
+            {{ getInitials(h.name) }}
+          </v-tab>
+        </v-tabs>
+      </template>
+    </v-toolbar>
+    <v-row no-gutters justify="center" class="fill-height settings">
+      <v-col cols="12" :style="`overflow:auto;max-height: ${contentHeight}px`">
+        <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
+        <loading-icon v-if="!mounted" />
+        <v-window v-show="!!mounted" v-model="tab">
+          <v-window-item :value="0">
+            <v-expansion-panels
+              v-model="panel"
+              multiple
+              accordion
+              :readonly="tab !== 0"
+            >
+              <v-expansion-panel :title="$t('optionsApp')" value="app">
+                <v-expansion-panel-text>
+                  <settings-app
+                    :prefs="prefs"
+                    @valid="setValid('app', $event)"
+                    @refresh="refreshPrefs('app', $event)"
+                  />
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel :title="$t('optionsCongSync')" value="cong">
+                <v-expansion-panel-text>
+                  <settings-cong
+                    :prefs="prefs"
+                    @valid="setValid('cong', $event)"
+                    @refresh="refreshPrefs('cong', $event)"
+                  />
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel :title="$t('optionsMedia')" value="media">
+                <v-expansion-panel-text>
+                  <settings-media
+                    :prefs="prefs"
+                    @valid="setValid('media', $event)"
+                    @refresh="refreshPrefs('media', $event)"
+                  />
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+              <v-expansion-panel :title="$t('optionsMeetings')" value="meeting">
+                <v-expansion-panel-text>
+                  <settings-meeting
+                    :cache="cache"
+                    :prefs="prefs"
+                    @valid="setValid('meeting', $event)"
+                    @refresh="refreshPrefs('meeting', $event)"
+                    @cache="calcCache()"
+                  />
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+          </v-window-item>
+          <v-window-item :value="1">
+            <v-container>
+              <settings-app
+                :prefs="prefs"
+                @valid="setValid('app', $event)"
+                @refresh="refreshPrefs('app', $event)"
+              />
+            </v-container>
+          </v-window-item>
+          <v-window-item :value="2">
+            <v-container>
+              <settings-cong
+                :prefs="prefs"
+                @valid="setValid('cong', $event)"
+                @refresh="refreshPrefs('cong', $event)"
+              />
+            </v-container>
+          </v-window-item>
+          <v-window-item :value="3">
+            <v-container>
+              <settings-media
+                :prefs="prefs"
+                @valid="setValid('media', $event)"
+                @refresh="refreshPrefs('media', $event)"
+              />
+            </v-container>
+          </v-window-item>
+          <v-window-item :value="4">
+            <v-container>
+              <settings-meeting
+                :cache="cache"
+                :prefs="prefs"
+                @valid="setValid('meeting', $event)"
+                @refresh="refreshPrefs('meeting', $event)"
+                @cache="calcCache()"
+              />
+            </v-container>
+          </v-window-item>
+        </v-window>
+      </v-col>
+    </v-row>
     <settings-footer
       :prefs="prefs"
       :mounting="!mounted"
@@ -74,12 +117,19 @@
       :refresh="refresh"
       @cache="cache = $event"
     />
-  </v-row>
+  </div>
 </template>
 <script setup lang="ts">
 import { PrefStore } from '~~/types'
 
 useHead({ title: 'Settings' })
+
+const { height } = useWindowSize()
+const contentHeight = computed(() => {
+  const TOOLBAR_HEIGHT = 112
+  const FOOTER_HEIGHT = 76
+  return height.value - TOOLBAR_HEIGHT - FOOTER_HEIGHT
+})
 
 // Control cache
 const cache = ref(0)
@@ -161,15 +211,6 @@ const setValid = (key: string, valid: boolean) => {
 
 // Header tabs
 const tab = ref(0)
-watch(tab, (val) => {
-  panel.value = []
-  if (val > 0) {
-    window.scrollTo(0, 0)
-    if (!panel.value.includes(headers.value[val - 1].key)) {
-      panel.value.push(headers.value[val - 1].key)
-    }
-  }
-})
 const getInitials = (word: string) => {
   return word
     .split(' ')

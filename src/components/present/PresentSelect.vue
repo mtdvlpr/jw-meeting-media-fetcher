@@ -1,5 +1,5 @@
 <template>
-  <v-row justify="start" align="start" class="present-select pa-4">
+  <v-row no-gutters align="start" class="present-select pa-4">
     <v-col cols="12">
       <v-list
         v-if="dates.length > 0"
@@ -9,11 +9,11 @@
         ${listHeight}
       `"
       >
-        <template v-for="date in dates" :key="date">
+        <template v-for="(date, i) in dates" :key="date">
           <v-list-item class="text-center" @click="selectDate(date)">
             <v-list-item-title>{{ date }}</v-list-item-title>
           </v-list-item>
-          <v-divider />
+          <v-divider v-if="i < dates.length - 1" />
         </template>
       </v-list>
       <p v-else>{{ $t('noMeetings') }}</p>

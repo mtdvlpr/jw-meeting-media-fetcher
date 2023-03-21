@@ -1,12 +1,10 @@
 <template>
-  <v-container class="fill-height py-0">
-    <manage-media
-      :media="media"
-      :loading="loading"
-      upload-media
-      @refresh="getExistingMedia()"
-    />
-  </v-container>
+  <manage-media
+    :media="media"
+    :loading="loading"
+    upload-media
+    @refresh="getExistingMedia()"
+  />
 </template>
 <script setup lang="ts">
 // eslint-disable-next-line import/named
