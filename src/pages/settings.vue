@@ -11,6 +11,7 @@
             :disabled="!mounted"
             :class="{ 'text-error': !!mounted && !h.valid }"
           >
+            <v-icon :icon="h.icon" start />
             {{ getInitials(h.name) }}
           </v-tab>
         </v-tabs>
@@ -139,24 +140,30 @@ const calcCache = () => (refresh.value = !refresh.value)
 // Headers
 const { $i18n } = useNuxtApp()
 const panel = ref(['app', 'cong', 'media', 'meeting'])
-const headers = ref<{ key: keyof PrefStore; name: string; valid: boolean }[]>([
+const headers = ref<
+  { key: keyof PrefStore; icon: string; name: string; valid: boolean }[]
+>([
   {
     key: 'app',
+    icon: 'fa-sliders',
     name: $i18n.t('optionsApp'),
     valid: false,
   },
   {
     key: 'cong',
+    icon: 'fa-cloud',
     name: $i18n.t('optionsCongSync'),
     valid: false,
   },
   {
     key: 'media',
+    icon: 'fa-photo-film',
     name: $i18n.t('optionsMedia'),
     valid: false,
   },
   {
     key: 'meeting',
+    icon: 'fa-people-roof',
     name: $i18n.t('optionsMeetings'),
     valid: false,
   },
