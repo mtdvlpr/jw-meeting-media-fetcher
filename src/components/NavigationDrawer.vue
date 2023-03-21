@@ -4,7 +4,7 @@
       <v-list-item title="M³">
         <template #subtitle>
           <v-btn
-            :to="localeRoute('/')"
+            :to="localePath('/')"
             size="x-small"
             variant="tonal"
             :disabled="!!musicFadeOut || navDisabled"
@@ -39,22 +39,22 @@ import { useRouteQuery } from '@vueuse/router'
 const { navDisabled } = storeToRefs(useStatStore())
 const { musicFadeOut } = storeToRefs(useMediaStore())
 const cong = useRouteQuery<string>('cong', '')
-const localeRoute = useLocaleRoute()
+const localePath = useLocalePath()
 const navItems = computed(() => [
   {
     title: 'Media playback',
     icon: 'fab fa-chromecast',
-    to: localeRoute('/present'),
+    to: localePath('/present'),
   },
   {
     title: 'Planned media',
     icon: 'fa-calendar-week',
-    to: localeRoute('/home'),
+    to: localePath('/home'),
   },
   {
     title: 'Settings',
     icon: 'fa-cog',
-    to: localeRoute('/settings'),
+    to: localePath('/settings'),
   },
 ])
 </script>

@@ -55,8 +55,17 @@
           Test App
         </v-btn>
       </v-col>
-      <progress-bar :current="currentProgress" :total="totalProgress" />
     </v-row>
+    <progress-bar :current="currentProgress" :total="totalProgress" />
+    <v-footer
+      v-if="shuffleEnabled || presentModeEnabled"
+      class="justify-end home-footer"
+    >
+      <v-col class="text-right" cols="auto">
+        <shuffle-btn v-if="shuffleEnabled" />
+        <toggle-screen-btn v-if="presentModeEnabled" class="mx-2" />
+      </v-col>
+    </v-footer>
   </div>
 </template>
 <script setup lang="ts">
@@ -71,6 +80,8 @@ useHead({ title: 'Home' })
 const { $dayjs } = useNuxtApp()
 const { isDev } = useRuntimeConfig().public
 const { online } = useOnline()
+const shuffleEnabled = getPrefs<boolean>('meeting.enableMusicButton')
+const presentModeEnabled = getPrefs<boolean>('media.enableMediaDisplayButton')
 
 const statStore = useStatStore()
 const { initialLoad } = storeToRefs(statStore)
@@ -462,3 +473,12 @@ const testApp = async () => {
   }
 }
 </script>
+<style lang="scss" scoped>
+.home-footer {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: calc(100% - 56px);
+  height: 76px;
+}
+</style>

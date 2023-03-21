@@ -2,9 +2,16 @@
   <v-footer class="settings-footer justify-space-between">
     <v-col cols="12" align-self="end" class="d-flex">
       <v-col class="d-flex pa-0 align-center" align-self="center">
-        <v-btn :color="updateSuccess ? undefined : 'error'" :class="{ 'mr-2': true, 'pulse-danger': !updateSuccess }"
-          @click="openReleases()">
-          <v-icon v-if="!updateSuccess" icon="fa-hand-point-right" class="mr-1" />
+        <v-btn
+          :color="updateSuccess ? undefined : 'error'"
+          :class="{ 'mr-2': true, 'pulse-danger': !updateSuccess }"
+          @click="openReleases()"
+        >
+          <v-icon
+            v-if="!updateSuccess"
+            icon="fa-hand-point-right"
+            class="mr-1"
+          />
           M³ {{ isDev ? 'dev' : version }}
         </v-btn>
         <v-btn class="mr-2" @click="report()">
@@ -16,30 +23,30 @@
         <v-btn :color="cacheColor" :loading="loading" @click="removeCache()">
           <v-icon icon="fa-trash" size="small" color="black" start />
           {{ `${cache}MB` }}
-          <v-tooltip v-if="cacheColor === 'warning'" activator="parent" location="top">
+          <v-tooltip
+            v-if="cacheColor === 'warning'"
+            activator="parent"
+            location="top"
+          >
             {{ $t('cleanCache') }}
           </v-tooltip>
-          <v-tooltip v-else activator="parent" model-value location="top" @update:model-value="() => { }">
+          <v-tooltip
+            v-else
+            activator="parent"
+            model-value
+            location="top"
+            @update:model-value="() => {}"
+          >
             {{ $t('clickAgain') }}
           </v-tooltip>
         </v-btn>
       </v-col>
       <v-col align-self="end" class="text-right pa-0">
-        <icon-btn v-if="cancel && isNew && !valid" variant="cancel" @click="goBack()" />
-                  <!-- add a notice when autosaved? -->
-            <!-- also, check that nav is blocked when settings invalid -->
-
-        <!-- <icon-btn
-          v-else
-          variant="home"
-          :loading="mounting"
-          :disabled="!valid"
-          :style="
-            valid || mounting
-              ? undefined
-              : 'background-color: #B71C1C !important'
-          "
-        /> -->
+        <icon-btn
+          v-if="cancel && isNew && !valid"
+          variant="cancel"
+          @click="goBack()"
+        />
       </v-col>
     </v-col>
   </v-footer>
