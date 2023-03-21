@@ -425,7 +425,12 @@ watch(
 
 watch(
   () => media.value.presentShortcut,
-  (val) => changeShortcut(val, 'openPresentMode')
+  (val) => {
+    changeShortcut(val, 'openPresentMode')
+    const store = useStatStore()
+    store.setShowMediaPlayback(false)
+    store.setShowMediaPlayback(true)
+  }
 )
 
 // Media window background

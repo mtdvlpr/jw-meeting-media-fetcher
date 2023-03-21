@@ -29,7 +29,11 @@
         :title="item.title"
         :disabled="navDisabled"
         :prepend-icon="item.icon"
-      />
+      >
+        <v-tooltip v-if="item.tooltip" activator="parent">
+          {{ item.tooltip }}
+        </v-tooltip>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
 </template>
@@ -46,11 +50,13 @@ const navItems = computed(() => {
       title: 'Planned media',
       icon: 'fa-calendar-week',
       to: localePath('/home'),
+      tooltip: '',
     },
     {
       title: 'Settings',
       icon: 'fa-cog',
       to: localePath('/settings'),
+      tooltip: '',
     },
   ]
   if (showMediaPlayback.value) {
@@ -58,6 +64,7 @@ const navItems = computed(() => {
       title: 'Media playback',
       icon: 'fab fa-chromecast',
       to: localePath('/present'),
+      tooltip: getPrefs<string>('media.presentShortcut'),
     })
   }
   return items

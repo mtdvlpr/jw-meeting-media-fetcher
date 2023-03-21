@@ -175,20 +175,15 @@ const initPrefs = async (name: string, isNew = false) => {
 
   // Open or close the media window depending on prefs
   const presentStore = usePresentStore()
-  if (
-    getPrefs<boolean>('media.enableMediaDisplayButton') &&
-    !presentStore.mediaScreenInit
-  ) {
+  const enableMediaDisplayButton = getPrefs<boolean>(
+    'media.enableMediaDisplayButton'
+  )
+  if (enableMediaDisplayButton && !presentStore.mediaScreenInit) {
     toggleMediaWindow('open')
-  } else if (
-    !getPrefs<boolean>('media.enableMediaDisplayButton') &&
-    presentStore.mediaScreenInit
-  ) {
+  } else if (!enableMediaDisplayButton && presentStore.mediaScreenInit) {
     toggleMediaWindow('close')
   }
-  useStatStore().setShowMediaPlayback(
-    getPrefs<boolean>('media.enableMediaDisplayButton')
-  )
+  useStatStore().setShowMediaPlayback(enableMediaDisplayButton)
 
   // Check if the app is available in the current media lang
   const langs = await getJWLangs()
