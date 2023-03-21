@@ -471,6 +471,12 @@ watch(
 )
 
 // Zoom options
+watch(
+  () => app.value.zoom.enable,
+  () => {
+    appForm.value?.validate()
+  }
+)
 const autoStartMeeting = useComputedLabel<AppPrefs>(
   'minutesBeforeMeeting',
   app,
@@ -499,6 +505,7 @@ watch(
     } else {
       resetOBS()
     }
+    appForm.value?.validate()
   }
 )
 watch(

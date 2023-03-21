@@ -325,6 +325,7 @@ watch(
       }
       loadBg()
     }
+    mediaForm.value?.validate()
   }
 )
 watch(
@@ -385,6 +386,12 @@ watch(
   }
 )
 const subLangs = computed(() => langs.value.filter((l) => !l.isSignLanguage))
+watch(
+  () => media.value.enableSubtitles,
+  () => {
+    mediaForm.value?.validate()
+  }
+)
 watch(
   () => media.value.langSubs,
   (val) => {

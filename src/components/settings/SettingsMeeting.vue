@@ -249,6 +249,12 @@ watch(cached, (val) => {
 })
 
 // Background music
+watch(
+  () => meeting.value.enableMusicButton,
+  () => {
+    meetingForm.value?.validate()
+  }
+)
 const isSignLanguage = () => useMediaStore().mediaLang?.isSignLanguage
 const musicFadeOutSmart = useComputedLabel<MeetingPrefs>(
   'musicFadeOutSmart',
