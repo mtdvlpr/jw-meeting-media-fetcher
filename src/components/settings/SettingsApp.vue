@@ -122,7 +122,7 @@
       :locked="isLocked('app.obs.enable')"
     >
       <template #label>
-        <span v-html="$t('enableObs')" />
+        <span v-html="$t('obsEnable')" />
       </template>
     </form-input>
     <template v-if="app.obs.enable">
@@ -218,7 +218,7 @@
       :locked="isLocked('app.zoom.enable')"
     >
       <template #label>
-        <span v-html="`${$t('enableZoom')} [BETA]`" />
+        <span v-html="`${$t('zoomEnable')} [BETA]`" />
       </template>
     </form-input>
     <template v-if="app.zoom.enable">

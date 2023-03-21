@@ -27,7 +27,7 @@
         :color="mp4"
       >
         <v-card-text class="text-center py-2">
-          {{ $t('convertDownloaded') }}
+          {{ $t('enableMp4Conversion') }}
         </v-card-text>
       </v-card>
     </v-col>

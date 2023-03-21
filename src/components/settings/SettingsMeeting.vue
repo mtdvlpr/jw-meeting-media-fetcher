@@ -105,7 +105,7 @@
         v-model="meeting.enableMusicFadeOut"
         field="switch"
         :locked="isLocked('meeting.enableMusicFadeOut')"
-        :label="$t('musicFadeOutType')"
+        :label="$t('enableMusicFadeOut')"
       />
       <v-row
         v-if="meeting.enableMusicFadeOut"

@@ -78,48 +78,32 @@ const forced = computed(() => flattenObject(prefs.value))
 const getDescription = (key: string) => {
   const lastKey = key.split('.').pop()!
 
+  // Generic keys
+  if (lastKey === 'port') return 'port'
+  if (lastKey === 'password') return 'password'
+
   // OBS
-  if (key === 'app.obs.enable') return 'enableObs'
-  const obsKeys = ['cameraScene', 'mediaScene', 'imageScene', 'zoomScene']
-  if (obsKeys.includes(lastKey)) {
+  if (key.startsWith('app.obs')) {
     return `obs${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
   }
 
   // Zoom
-  if (key === 'app.zoom.enable') return 'enableZoom'
-  const zoomKeys = [
-    'autoStartMeeting',
-    'autoStartTime',
-    'autoRename',
-    'hideComponent',
-    'id',
-    'name',
-    'spotlight',
-  ]
-  if (zoomKeys.includes(lastKey)) {
+  if (key === 'app.zoom.autoStartTime') return 'minutesBeforeMeeting'
+  if (key.startsWith('app.zoom')) {
     return `zoom${lastKey.charAt(0).toUpperCase() + lastKey.slice(1)}`
   }
 
   // Others
   switch (key) {
-    case 'media.autoPlayFirstTime':
-      return 'minutesBeforeMeeting'
-    case 'media.enableMp4Conversion':
-      return 'convertDownloaded'
     case 'media.lang':
       return 'mediaLang'
-    case 'media.langSubs':
-      return 'subsLang'
-    case 'media.langFallback':
-      return 'mediaLangFallback'
-    case 'meeting.enableMusicFadeOut':
+    case 'media.autoPlayFirstTime':
+      return 'minutesBeforeMeeting'
     case 'meeting.musicFadeOutTime':
-      return 'musicFadeOutType'
-    case 'meeting.mwDay':
+      return 'enableMusicFadeOut'
     case 'meeting.mwStartTime':
-    case 'meeting.weDay':
     case 'meeting.weStartTime':
-      return lastKey.substring(0, 2) + 'MeetingDay'
+      return lastKey.substring(0, 2) + 'Day'
     default:
       return lastKey
   }
