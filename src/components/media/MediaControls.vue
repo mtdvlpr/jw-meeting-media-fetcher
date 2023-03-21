@@ -200,7 +200,6 @@ useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
 })
 
 const setIndex = (index: number) => {
-  currentIndex.value = index
   const previousItem = items.value[currentIndex.value]
   if (previousItem && currentIndex.value !== index) {
     previousItem.deactivate = true

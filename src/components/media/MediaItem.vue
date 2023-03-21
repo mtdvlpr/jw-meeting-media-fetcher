@@ -195,13 +195,41 @@ onMounted(() => {
 })
 
 // Media active state
+const active = ref(false)
+watch(active, (val) => {
+  const imgPreview = document.querySelector<HTMLElement>(`#${id.value}-preview`)
+  if (imgPreview) {
+    imgPreview.style.cursor = val ? 'zoom-in' : 'default'
+  }
+
+  const ipcRenderer = useIpcRenderer()
+  if (val) {
+    current.value = true
+    ipcRenderer.on('videoEnd', () => {
+      active.value = false
+    })
+    ipcRenderer.on('resetZoom', () => {
+      resetZoom()
+    })
+  } else {
+    markers.value.forEach((marker) => {
+      marker.playing = false
+    })
+    progress.value = 0
+    newProgress.value = 0
+    videoStarted.value = false
+    paused.value = false
+
+    ipcRenderer.removeAllListeners('videoEnd')
+    ipcRenderer.removeAllListeners('resetZoom')
+  }
+})
 const mediaActive = inject(mediaActiveKey, ref(false))
 watch(mediaActive, (val) => {
   if (val && !active.value) {
     current.value = false
   } else if (!val) {
     active.value = false
-    progress.value = 0
   }
 })
 
@@ -214,7 +242,6 @@ const id = computed(() => strip('mediaitem-' + basename(props.src)))
 const url = computed(() => pathToFileURL(props.src).href)
 const sortable = inject(sortableKey, ref(false))
 const current = ref(false)
-const active = ref(false)
 const played = ref(false)
 const videoStarted = ref(false)
 const videoActive = inject(videoActiveKey, ref(false))
