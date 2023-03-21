@@ -36,25 +36,30 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 
-const { navDisabled } = storeToRefs(useStatStore())
+const { navDisabled, showMediaPlayback } = storeToRefs(useStatStore())
 const { musicFadeOut } = storeToRefs(useMediaStore())
 const cong = useRouteQuery<string>('cong', '')
 const localePath = useLocalePath()
-const navItems = computed(() => [
-  {
-    title: 'Media playback',
-    icon: 'fab fa-chromecast',
-    to: localePath('/present'),
-  },
-  {
-    title: 'Planned media',
-    icon: 'fa-calendar-week',
-    to: localePath('/home'),
-  },
-  {
-    title: 'Settings',
-    icon: 'fa-cog',
-    to: localePath('/settings'),
-  },
-])
+const navItems = computed(() => {
+  const items = [
+    {
+      title: 'Planned media',
+      icon: 'fa-calendar-week',
+      to: localePath('/home'),
+    },
+    {
+      title: 'Settings',
+      icon: 'fa-cog',
+      to: localePath('/settings'),
+    },
+  ]
+  if (showMediaPlayback.value) {
+    items.unshift({
+      title: 'Media playback',
+      icon: 'fab fa-chromecast',
+      to: localePath('/present'),
+    })
+  }
+  return items
+})
 </script>

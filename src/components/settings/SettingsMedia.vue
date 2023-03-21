@@ -326,6 +326,7 @@ watch(
       loadBg()
     }
     mediaForm.value?.validate()
+    useStatStore().setShowMediaPlayback(val)
   }
 )
 watch(

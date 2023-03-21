@@ -186,6 +186,9 @@ const initPrefs = async (name: string, isNew = false) => {
   ) {
     toggleMediaWindow('close')
   }
+  useStatStore().setShowMediaPlayback(
+    getPrefs<boolean>('media.enableMediaDisplayButton')
+  )
 
   // Check if the app is available in the current media lang
   const langs = await getJWLangs()

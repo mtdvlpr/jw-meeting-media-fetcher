@@ -18,6 +18,7 @@ interface Stats {
 interface StatStore {
   online: boolean
   navDisabled: boolean
+  showMediaPlayback: boolean
   initialLoad: boolean
   updateSuccess: boolean
   performance: Map<string, Perf>
@@ -27,6 +28,7 @@ interface StatStore {
 const defaultState: StatStore = {
   online: false, // Whether the user is connected to the internet
   navDisabled: false, // Whether navigation is disabled (e.g. when settings are invalid)
+  showMediaPlayback: false, // Whether the media playback nav item should be shown
   initialLoad: true, // Whether the app is loading for the first time
   updateSuccess: true, // Whether the update was successful
   performance: new Map(), // A map of performance data about how fast a file was downloaded
@@ -51,6 +53,9 @@ export const useStatStore = defineStore('stats', {
     },
     setNavDisabled(navDisabled: boolean) {
       this.navDisabled = navDisabled
+    },
+    setShowMediaPlayback(showMediaPlayback: boolean) {
+      this.showMediaPlayback = showMediaPlayback
     },
     setInitialLoad(initialLoad: boolean) {
       this.initialLoad = initialLoad
