@@ -101,6 +101,7 @@ const getDescription = (key: string) => {
     case 'media.autoPlayFirstTime':
       return 'minutesBeforeMeeting'
     case 'meeting.musicFadeOutTime':
+    case 'meeting.musicFadeOutType':
       return 'enableMusicFadeOut'
     case 'meeting.mwStartTime':
     case 'meeting.weStartTime':
