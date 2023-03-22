@@ -9,6 +9,7 @@
     :dark="isDark"
     :disabled="locked"
     :required="required"
+    :state="required && !value ? false : undefined"
     :clearable="!required"
     :select-text="$t('confirm')"
     :cancel-text="$t('cancel')"

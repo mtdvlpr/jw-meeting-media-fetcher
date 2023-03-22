@@ -401,3 +401,8 @@ const updateSlider = (val: string) => {
   }
 }
 </script>
+<style lang="scss">
+.btn-group-error {
+  --v-border-opacity: 1 !important;
+}
+</style>

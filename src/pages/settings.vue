@@ -197,6 +197,7 @@ const refreshPrefs = (key: keyof PrefStore, val: any) => {
 }
 
 // Validation
+useStatStore().setNavDisabled(true)
 const valid = computed(() => headers.value.every((h) => h.valid))
 watch(valid, (val) => {
   if (val) calcCache()

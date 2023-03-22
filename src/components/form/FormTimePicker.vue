@@ -4,10 +4,13 @@
     :dark="isDark"
     :disabled="locked"
     :required="required"
+    :state="required && !value ? false : undefined"
     :clearable="!required"
     :select-text="$t('confirm')"
     :cancel-text="$t('cancel')"
     time-picker
+    teleport-center
+    :teleport="true"
     minutes-increment="5"
   />
 </template>
