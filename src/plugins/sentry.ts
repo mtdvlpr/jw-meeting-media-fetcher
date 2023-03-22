@@ -1,5 +1,11 @@
 import { platform } from 'os'
-import * as Sentry from '@sentry/vue'
+import {
+  init,
+  setContext,
+  captureException,
+  vueRouterInstrumentation,
+  setUser,
+} from '@sentry/vue'
 import { BrowserTracing } from '@sentry/tracing'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -11,7 +17,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     const appName = appLongName.toLowerCase().replace(' ', '-')
     const releaseVersion = isDev || !ci ? 'dev' : version.substring(1)
 
-    Sentry.init({
+    init({
       app: nuxtApp.vueApp,
       dsn: sentryDsn,
       dist: platform().replace('32', ''),
@@ -21,7 +27,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       tracesSampleRate: isDev ? 1 : 0.1,
       integrations: [
         new BrowserTracing({
-          routingInstrumentation: Sentry.vueRouterInstrumentation(router),
+          routingInstrumentation: vueRouterInstrumentation(router),
         }),
       ],
     })
@@ -29,7 +35,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   return {
     provide: {
-      sentry: Sentry,
+      sentry: { setUser, setContext, captureException },
     },
   }
 })

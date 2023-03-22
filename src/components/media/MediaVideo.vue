@@ -88,7 +88,7 @@ import { basename, changeExt } from 'upath'
 import { type Duration } from 'dayjs/plugin/duration'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
-import { ipcRenderer, IpcRendererEvent } from 'electron'
+import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import { useRouteQuery } from '@vueuse/router'
 import { Time, Times, TimeString } from '~~/types'
 
