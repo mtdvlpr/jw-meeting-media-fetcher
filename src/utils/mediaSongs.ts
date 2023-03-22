@@ -85,9 +85,6 @@ export async function shuffleMusic(stop = false, immediately = false) {
   }
 
   if (stop) {
-    ipcRenderer.removeListener('videoProgress', onProgress)
-    ipcRenderer.removeAllListeners('videoEnd')
-
     if (store.songPub === 'sjjm') {
       const audio = document.querySelector<HTMLAudioElement>('#meetingMusic')
 
@@ -104,6 +101,8 @@ export async function shuffleMusic(stop = false, immediately = false) {
       }
       audio.remove()
     } else {
+      ipcRenderer.removeListener('videoProgress', onProgress)
+      ipcRenderer.removeAllListeners('videoEnd')
       ipcRenderer.send('hideMedia')
     }
 
