@@ -153,7 +153,7 @@ const types = [
     value: 'jwpub',
   },
   {
-    label: $i18n.t('syncJwOrgMedia'),
+    label: 'JW.org',
     value: 'jwOrg',
   },
 ]

@@ -27,7 +27,7 @@
         :color="mp4"
       >
         <v-card-text class="text-center py-2">
-          {{ $t('enableMp4Conversion') }}
+          {{ $t('mp4Conversion') }}
         </v-card-text>
       </v-card>
     </v-col>
@@ -39,15 +39,12 @@ defineProps<{
   cong: string
   mp4: string
 }>()
-const { $i18n } = useNuxtApp()
 const { client: congSync } = storeToRefs(useCongStore())
 const { mediaLang, fallbackLang } = storeToRefs(useMediaStore())
 const jwSync = computed(() => {
   let jwSyncString = ''
   if (mediaLang.value?.vernacularName) {
-    jwSyncString = `${$i18n.t('syncJwOrgMedia')} (${
-      mediaLang.value?.vernacularName
-    }`
+    jwSyncString = `JW.org (${mediaLang.value?.vernacularName}`
     if (fallbackLang.value?.vernacularName) {
       jwSyncString += ` / ${fallbackLang.value?.vernacularName}`
     }
