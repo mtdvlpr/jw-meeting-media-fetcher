@@ -4,7 +4,7 @@
     <v-toolbar>
       <v-toolbar-title>
         <v-icon icon="fa-building-user" size="x-large" />
-        Select your congregation
+        {{ $t('selectCong') }}
       </v-toolbar-title>
     </v-toolbar>
     <v-row justify="start" align="start" class="pa-4">
@@ -24,7 +24,7 @@
           </v-list-item>
           <v-list-item
             prepend-icon="fa-plus"
-            title="Add new congregation"
+            :title="$t('congregationAdd')"
             @click="createCong()"
           />
         </v-list>

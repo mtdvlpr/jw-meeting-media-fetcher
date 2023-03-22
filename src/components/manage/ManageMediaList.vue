@@ -36,7 +36,7 @@
       @refresh="atRefresh(item)"
     />
   </v-list>
-  <p v-else>{{ $t('noMedia') }}</p>
+  <p v-else class="px-4 text-center">{{ $t('noMedia') }}</p>
 </template>
 <script setup lang="ts">
 import { extname, join, trimExt } from 'upath'

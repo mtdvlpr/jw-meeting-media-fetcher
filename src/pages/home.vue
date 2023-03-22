@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar>
-      <v-toolbar-title>Planned media</v-toolbar-title>
+      <v-toolbar-title>{{ $t('plannedMedia') }}</v-toolbar-title>
       <template #extension>
         <v-tabs v-model="currentWeek" grow centered>
           <v-tab v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">

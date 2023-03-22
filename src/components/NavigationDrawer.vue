@@ -40,20 +40,21 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 
-const { navDisabled, showMediaPlayback } = storeToRefs(useStatStore())
-const { musicFadeOut } = storeToRefs(useMediaStore())
-const cong = useRouteQuery<string>('cong', '')
+const { $i18n } = useNuxtApp()
 const localePath = useLocalePath()
+const cong = useRouteQuery<string>('cong', '')
+const { musicFadeOut } = storeToRefs(useMediaStore())
+const { navDisabled, showMediaPlayback } = storeToRefs(useStatStore())
 const navItems = computed(() => {
   const items = [
     {
-      title: 'Planned media',
+      title: $i18n.t('plannedMedia'),
       icon: 'fa-calendar-week',
       to: localePath('/home'),
       tooltip: '',
     },
     {
-      title: 'Settings',
+      title: $i18n.t('settings'),
       icon: 'fa-cog',
       to: localePath('/settings'),
       tooltip: '',
@@ -61,7 +62,7 @@ const navItems = computed(() => {
   ]
   if (showMediaPlayback.value) {
     items.unshift({
-      title: 'Media playback',
+      title: $i18n.t('mediaPlayback'),
       icon: 'fab fa-chromecast',
       to: localePath('/present'),
       tooltip: getPrefs<string>('media.presentShortcut'),

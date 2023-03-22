@@ -1,8 +1,7 @@
 <template>
   <div class="manage-media">
     <v-toolbar>
-      <!-- <v-icon start icon="fa-calendar-week" /> -->
-      <v-toolbar-title>Planned media: {{ title }}</v-toolbar-title>
+      <v-toolbar-title>{{ $t('plannedMedia') }}: {{ title }}</v-toolbar-title>
       <template #extension>
         <!-- need to fix type switch, something wrong with the v-model or something -->
         <v-tabs v-model="type" grow centered>

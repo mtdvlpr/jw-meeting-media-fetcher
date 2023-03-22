@@ -1,7 +1,7 @@
 <template>
   <div class="present-page">
     <v-toolbar v-if="!date">
-      <v-toolbar-title>Select a date</v-toolbar-title>
+      <v-toolbar-title>{{ $t('selectDate') }}</v-toolbar-title>
     </v-toolbar>
     <confirm-dialog
       v-model="dialog"
