@@ -98,7 +98,7 @@ const selectVideo = (video: MediaItem) => {
         sanitize(video.title) + extname(videoFiles[0].progressiveDownloadURL),
       url: videoFiles[0].progressiveDownloadURL,
       checksum: videoFiles[0].checksum,
-      trackImage: video.images.lss?.lg ?? '',
+      trackImage: getVideoImg(video.images),
       primaryCategory: video.primaryCategory,
     }
     emit('select', meetingFile)
