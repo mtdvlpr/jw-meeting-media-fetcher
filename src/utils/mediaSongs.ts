@@ -1,5 +1,5 @@
 import { pathToFileURL } from 'url'
-import { ipcRenderer } from 'electron'
+import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import { extname, join, basename, resolve } from 'upath'
 import { FadeOutType, VideoFile } from '~~/types'
 
@@ -74,8 +74,18 @@ interface LocalSong {
 
 export async function shuffleMusic(stop = false, immediately = false) {
   const store = useMediaStore()
+
+  const onProgress = (_e: IpcRendererEvent, progress: number[]) => {
+    if (useMediaStore().musicFadeOut && store.musicFadeOut) {
+      const { $dayjs } = useNuxtApp()
+      store.setMusicFadeOut(
+        $dayjs.duration(progress[1] - progress[0], 's').format('mm:ss')
+      )
+    }
+  }
+
   if (stop) {
-    ipcRenderer.removeAllListeners('videoProgress')
+    ipcRenderer.removeListener('videoProgress', onProgress)
     ipcRenderer.removeAllListeners('videoEnd')
 
     if (store.songPub === 'sjjm') {
@@ -166,6 +176,7 @@ export async function shuffleMusic(stop = false, immediately = false) {
       warn('errorNoShuffleSongs')
     } else if (signLanguage) {
       playSignLanguageSong(songs, 0, !!store.musicFadeOut, isOnline)
+      if (store.musicFadeOut) ipcRenderer.on('videoProgress', onProgress)
     } else {
       createAudioElement(songs, 0, !!store.musicFadeOut, isOnline)
     }
@@ -188,15 +199,6 @@ async function playSignLanguageSong(
     ? await downloadIfRequired(songs[index] as VideoFile)
     : (songs[index] as LocalSong)?.path
 
-  ipcRenderer.on('videoProgress', (_e, progress) => {
-    if (store.musicFadeOut && !fadeOut) {
-      const { $dayjs } = useNuxtApp()
-      store.setMusicFadeOut(
-        $dayjs.duration(progress[1] - progress[0], 's').format('mm:ss')
-      )
-    }
-  })
-
   ipcRenderer.send('showMedia', { src: path })
 
   if (!fadeOut) {
@@ -204,7 +206,6 @@ async function playSignLanguageSong(
   }
 
   ipcRenderer.on('videoEnd', () => {
-    ipcRenderer.removeAllListeners('videoProgress')
     ipcRenderer.removeAllListeners('videoEnd')
     playSignLanguageSong(
       songs,

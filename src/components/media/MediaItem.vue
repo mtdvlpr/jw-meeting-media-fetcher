@@ -196,6 +196,12 @@ onMounted(() => {
 
 // Media active state
 const active = ref(false)
+const onVideoEnd = () => {
+  current.value = false
+}
+const onResetZoom = () => {
+  resetZoom()
+}
 watch(active, (val) => {
   const imgPreview = document.querySelector<HTMLElement>(`#${id.value}-preview`)
   if (imgPreview) {
@@ -205,12 +211,8 @@ watch(active, (val) => {
   const ipcRenderer = useIpcRenderer()
   if (val) {
     current.value = true
-    ipcRenderer.on('videoEnd', () => {
-      active.value = false
-    })
-    ipcRenderer.on('resetZoom', () => {
-      resetZoom()
-    })
+    ipcRenderer.on('videoEnd', onVideoEnd)
+    ipcRenderer.on('resetZoom', onResetZoom)
   } else {
     markers.value.forEach((marker) => {
       marker.playing = false
@@ -220,8 +222,8 @@ watch(active, (val) => {
     videoStarted.value = false
     paused.value = false
 
-    ipcRenderer.removeAllListeners('videoEnd')
-    ipcRenderer.removeAllListeners('resetZoom')
+    ipcRenderer.removeListener('videoEnd', onVideoEnd)
+    ipcRenderer.removeListener('resetZoom', onResetZoom)
   }
 })
 const mediaActive = inject(mediaActiveKey, ref(false))
