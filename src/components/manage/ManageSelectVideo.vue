@@ -20,7 +20,7 @@
             @click="selectVideo(video)"
           >
             <v-img
-              :src="video.images.lss ? video.images.lss.lg : ''"
+              :src="getVideoImg(video.images)"
               :aspect-ratio="2 / 1"
               width="100%"
               cover
@@ -39,7 +39,7 @@
 </template>
 <script setup lang="ts">
 import { extname } from 'upath'
-import { MediaItem, VideoFile } from '~~/types'
+import { Images, MediaItem, VideoFile } from '~~/types'
 
 defineProps<{
   active: boolean
@@ -64,6 +64,10 @@ const getVideos = async () => {
     log.error(e)
   }
   loading.value = false
+}
+
+const getVideoImg = (images: Images) => {
+  return images.lss?.lg ?? images.sqr?.lg ?? ''
 }
 
 const selectVideo = (video: MediaItem) => {
