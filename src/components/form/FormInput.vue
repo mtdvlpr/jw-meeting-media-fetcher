@@ -12,7 +12,7 @@
     variant="outlined"
     density="compact"
     :rules="rules"
-    :counter="max"
+    :counted="max > 0 ? max : undefined"
   >
     <template v-if="field === 'password'" #append-inner>
       <v-icon
@@ -76,7 +76,7 @@
     :rules="rules"
     density="compact"
     variant="outlined"
-    :counter="max"
+    :counted="max > 0 ? max : undefined"
     hide-no-data
   >
     <template v-for="(_, name) in $slots" #[name]="slotData">
@@ -251,7 +251,7 @@
         variant="outlined"
         color="primary"
         density="compact"
-        :max="max ? max : '100'"
+        :max="max > 0 ? max : '100'"
         class="align-center"
         :step="customInput ? 0.01 : 1"
         :label="customInput ? undefined : value + labelSuffix"
@@ -362,7 +362,7 @@ const rules = computed(() => {
       return !!v || $i18n.t('fieldRequired')
     })
   }
-  if (props.max) {
+  if (props.max > 0) {
     rules.push(
       (v: string) =>
         !v ||
