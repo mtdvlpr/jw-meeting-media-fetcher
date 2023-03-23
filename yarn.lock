@@ -737,7 +737,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint-community/eslint-utils@npm:^4.2.0":
+"@eslint-community/eslint-utils@npm:^4.2.0, @eslint-community/eslint-utils@npm:^4.3.0":
   version: 4.3.0
   resolution: "@eslint-community/eslint-utils@npm:4.3.0"
   dependencies:
@@ -903,7 +903,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@intlify/message-compiler@npm:9.3.0-beta.16, @intlify/message-compiler@npm:next":
+"@intlify/message-compiler@npm:9.3.0-beta.16":
   version: 9.3.0-beta.16
   resolution: "@intlify/message-compiler@npm:9.3.0-beta.16"
   dependencies:
@@ -913,10 +913,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@intlify/shared@npm:9.3.0-beta.16, @intlify/shared@npm:next":
+"@intlify/message-compiler@npm:next":
+  version: 9.3.0-beta.17
+  resolution: "@intlify/message-compiler@npm:9.3.0-beta.17"
+  dependencies:
+    "@intlify/shared": 9.3.0-beta.17
+    source-map: 0.6.1
+  checksum: 4062096fd5b70994e22997ff8a7a103dfcea5ef4bd78ef49fe833b066f40b78fdbbeacf704c0093a388b4bbba62016fc15d73ea63e726469e854665aed46329c
+  languageName: node
+  linkType: hard
+
+"@intlify/shared@npm:9.3.0-beta.16":
   version: 9.3.0-beta.16
   resolution: "@intlify/shared@npm:9.3.0-beta.16"
   checksum: 137bc6693bdc3a28b6958bf9fe4c726a4e6a7307680b51166dd1504c21cfdaaa9ef9126415df84c58287d1267ed0cfe14a43701aed922e1c712d09c009c748cf
+  languageName: node
+  linkType: hard
+
+"@intlify/shared@npm:9.3.0-beta.17, @intlify/shared@npm:next":
+  version: 9.3.0-beta.17
+  resolution: "@intlify/shared@npm:9.3.0-beta.17"
+  checksum: a5cad72936ee102550f54aef1eb68c7bc54fd922fd73911d75d2c3b49a3bf5b13c074fa7fe9069a7b912de5fe4c4ee0b5152a7f321715e68ce49881efb75ea7f
   languageName: node
   linkType: hard
 
@@ -4492,9 +4509,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.284":
-  version: 1.4.334
-  resolution: "electron-to-chromium@npm:1.4.334"
-  checksum: 8092fd18e30c68f68b197f7c151c149806fe307210d86a74c0544e05540c49b3de17e48def6c04af7886cefb927c45910cc18fddc475c0ed17ff0a1ddbc94268
+  version: 1.4.337
+  resolution: "electron-to-chromium@npm:1.4.337"
+  checksum: b7da59afa5e3239f222c3e146d27757cef10bdcb4180f3f77d7a7d339d1ee7c99d0e281807fe47a865426995a3d1c06809743ca71dddc0aaf65e749e66a8be40
   languageName: node
   linkType: hard
 
@@ -5104,8 +5121,8 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-vue@npm:^9.6.0, eslint-plugin-vue@npm:^9.7.0":
-  version: 9.9.0
-  resolution: "eslint-plugin-vue@npm:9.9.0"
+  version: 9.10.0
+  resolution: "eslint-plugin-vue@npm:9.10.0"
   dependencies:
     "@eslint-community/eslint-utils": ^4.3.0
     natural-compare: ^1.4.0
@@ -6152,7 +6169,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"h3@npm:^1.5.0, h3@npm:^1.6.0":
+"h3@npm:^1.5.0, h3@npm:^1.6.0, h3@npm:^1.6.2":
   version: 1.6.2
   resolution: "h3@npm:1.6.2"
   dependencies:
@@ -6955,7 +6972,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jiti@npm:^1.17.1, jiti@npm:^1.17.2":
+"jiti@npm:^1.17.1, jiti@npm:^1.17.2, jiti@npm:^1.18.2":
   version: 1.18.2
   resolution: "jiti@npm:1.18.2"
   bin:
@@ -8061,8 +8078,8 @@ __metadata:
   linkType: hard
 
 "nitropack@npm:~2.3.1":
-  version: 2.3.1
-  resolution: "nitropack@npm:2.3.1"
+  version: 2.3.2
+  resolution: "nitropack@npm:2.3.2"
   dependencies:
     "@cloudflare/kv-asset-handler": ^0.3.0
     "@netlify/functions": ^1.4.0
@@ -8085,17 +8102,17 @@ __metadata:
     defu: ^6.1.2
     destr: ^1.2.2
     dot-prop: ^7.2.0
-    esbuild: ^0.17.11
+    esbuild: ^0.17.12
     escape-string-regexp: ^5.0.0
     etag: ^1.8.1
-    fs-extra: ^11.1.0
+    fs-extra: ^11.1.1
     globby: ^13.1.3
     gzip-size: ^7.0.0
-    h3: ^1.6.0
+    h3: ^1.6.2
     hookable: ^5.5.1
     http-proxy: ^1.18.1
     is-primitive: ^3.0.1
-    jiti: ^1.17.2
+    jiti: ^1.18.2
     klona: ^2.0.6
     knitwork: ^1.0.0
     listhen: ^1.0.4
@@ -8110,7 +8127,7 @@ __metadata:
     pkg-types: ^1.0.2
     pretty-bytes: ^6.1.0
     radix3: ^1.0.0
-    rollup: ^3.19.1
+    rollup: ^3.20.0
     rollup-plugin-visualizer: ^5.9.0
     scule: ^1.0.0
     semver: ^7.3.8
@@ -8120,12 +8137,12 @@ __metadata:
     std-env: ^3.3.2
     ufo: ^1.1.1
     unenv: ^1.2.2
-    unimport: ^3.0.2
-    unstorage: ^1.4.0
+    unimport: ^3.0.3
+    unstorage: ^1.4.1
   bin:
     nitro: dist/cli.mjs
     nitropack: dist/cli.mjs
-  checksum: c1ecca14e7ff1093726335209ec5cbf77a7974040becd25035f5657b9a79b235eb988e6ff6024cb4f8351fd2dc6e6b569105583b6dbd89fb63da1175e4d39403
+  checksum: 4c04086078dbbffe62b4a5a08bcea5fa562ac18ba07fd4e1163d492f0a7f52a02631de9df8134085a7acf7e4d0dc2a469135222d164a04808d055526c5a47363
   languageName: node
   linkType: hard
 
@@ -9893,9 +9910,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rollup@npm:^3.10.0, rollup@npm:^3.18.0, rollup@npm:^3.19.1":
-  version: 3.20.0
-  resolution: "rollup@npm:3.20.0"
+"rollup@npm:^3.10.0, rollup@npm:^3.18.0, rollup@npm:^3.19.1, rollup@npm:^3.20.0":
+  version: 3.20.1
+  resolution: "rollup@npm:3.20.1"
   dependencies:
     fsevents: ~2.3.2
   dependenciesMeta:
@@ -9903,7 +9920,7 @@ __metadata:
       optional: true
   bin:
     rollup: dist/bin/rollup
-  checksum: ebf75f48eb81234f8233b4ed145b00841cefba26802d4f069f161247ffba085ca5bb165cc3cd662d9c36cfc135a67660dfff9088d3da2d2c6a70addc15f3233a
+  checksum: dc88f337133228311c4d52f005310f2b23ad6d0765b8909698aede1eecde32057ef2ae84e244fd27a45ff944f66f3c120d0b5e163c4642356d2d501df531b798
   languageName: node
   linkType: hard
 
@@ -10936,9 +10953,9 @@ __metadata:
   linkType: hard
 
 "type-fest@npm:^3.0.0":
-  version: 3.6.1
-  resolution: "type-fest@npm:3.6.1"
-  checksum: f7e39bf6b74a883661ec8642707f49c33cfcdc6221e1ba36b1d329c1cf301d87351b3ca0839b894cbfe47dc62140c0ce47e69c88f76800b678e0b67b7fe826e6
+  version: 3.7.0
+  resolution: "type-fest@npm:3.7.0"
+  checksum: df6d65e7c78ee4eb90350720cbfef7ee66e815122b19a9faa4e24d604256b8596ed80cba7a5736fa0fc6b95e4e3d49713eb346e90d65a54f78a7e222efb6eda7
   languageName: node
   linkType: hard
 
@@ -11047,7 +11064,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unimport@npm:^3.0.2":
+"unimport@npm:^3.0.2, unimport@npm:^3.0.3":
   version: 3.0.3
   resolution: "unimport@npm:3.0.3"
   dependencies:
@@ -11110,7 +11127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unstorage@npm:^1.4.0":
+"unstorage@npm:^1.4.1":
   version: 1.4.1
   resolution: "unstorage@npm:1.4.1"
   dependencies:

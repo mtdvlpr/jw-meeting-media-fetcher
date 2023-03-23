@@ -71,7 +71,7 @@
     "@zoomus/websdk": "^2.10.1",
     "click-outside-vue3": "^4.0.1",
     "dayjs": "^1.11.7",
-    "electron": "23.1.4",
+    "electron": "23.2.0",
     "electron-builder": "23.6.0",
     "esbuild": "^0.17.12",
     "eslint": "^8.36.0",
