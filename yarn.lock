@@ -749,9 +749,9 @@ __metadata:
   linkType: hard
 
 "@eslint-community/regexpp@npm:^4.4.0":
-  version: 4.4.0
-  resolution: "@eslint-community/regexpp@npm:4.4.0"
-  checksum: 2d127af0c752b80e8a782eacfe996a86925d21de92da3ffc6f9e615e701145e44a62e26bdd88bfac2cd76779c39ba8d9875a91046ec5e7e5f23cb647c247ea6a
+  version: 4.4.1
+  resolution: "@eslint-community/regexpp@npm:4.4.1"
+  checksum: db97d8d08e784147b55ab0dda5892503c1a0eebad94d1c4646d89a94f02ca70b25f05d8e021fc05a075e7eb312e03e21f63d84f0b327719f8cf3bb64e66917cb
   languageName: node
   linkType: hard
 
@@ -1985,9 +1985,9 @@ __metadata:
   linkType: hard
 
 "@types/scheduler@npm:*":
-  version: 0.16.2
-  resolution: "@types/scheduler@npm:0.16.2"
-  checksum: b6b4dcfeae6deba2e06a70941860fb1435730576d3689225a421280b7742318d1548b3d22c1f66ab68e414f346a9542f29240bc955b6332c5b11e561077583bc
+  version: 0.16.3
+  resolution: "@types/scheduler@npm:0.16.3"
+  checksum: 2b0aec39c24268e3ce938c5db2f2e77f5c3dd280e05c262d9c2fe7d890929e4632a6b8e94334017b66b45e4f92a5aa42ba3356640c2a1175fa37bef2f5200767
   languageName: node
   linkType: hard
 
@@ -3884,11 +3884,11 @@ __metadata:
   linkType: hard
 
 "css-declaration-sorter@npm:^6.3.1":
-  version: 6.3.1
-  resolution: "css-declaration-sorter@npm:6.3.1"
+  version: 6.4.0
+  resolution: "css-declaration-sorter@npm:6.4.0"
   peerDependencies:
     postcss: ^8.0.9
-  checksum: ff0d9989ee21ec4c42430b9bb86c43f973ed5024d68f30edc1e3fb07a22828ce3c3e5b922019f2ccbff606722e43c407c5c76e3cddac523ac4afcb31e4b2601c
+  checksum: b716bc3d79154d3d618a90bd192533adf6604307c176e25e715a3b7cde587ef16971769fbf496118a376794280edf97016653477936c38c5a74cc852d6e38873
   languageName: node
   linkType: hard
 
@@ -4525,16 +4525,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"electron@npm:23.1.4":
-  version: 23.1.4
-  resolution: "electron@npm:23.1.4"
+"electron@npm:23.2.0":
+  version: 23.2.0
+  resolution: "electron@npm:23.2.0"
   dependencies:
     "@electron/get": ^2.0.0
     "@types/node": ^16.11.26
     extract-zip: ^2.0.1
   bin:
     electron: cli.js
-  checksum: 42e167d5ae4e60b9a2bab191321645cb76b901d3c88dc7ae1551ecad2946aa4ebef9e49c347ca3db76032d84802d878a64a1123111579a270e3b8406c5a18b16
+  checksum: 175326a42946dd5fa55d4a4e550328109abcf868bda6d34e9f49caaa4a672ddf65624e76260cf767ba37e0278f96cf1b21b7204c8528476f3f516fcc4b4e097f
   languageName: node
   linkType: hard
 
@@ -5107,7 +5107,7 @@ __metadata:
   version: 9.9.0
   resolution: "eslint-plugin-vue@npm:9.9.0"
   dependencies:
-    eslint-utils: ^3.0.0
+    "@eslint-community/eslint-utils": ^4.3.0
     natural-compare: ^1.4.0
     nth-check: ^2.0.1
     postcss-selector-parser: ^6.0.9
@@ -5116,7 +5116,7 @@ __metadata:
     xml-name-validator: ^4.0.0
   peerDependencies:
     eslint: ^6.2.0 || ^7.0.0 || ^8.0.0
-  checksum: 059f9c1915504d074adf64bc3371d1e174f8844088d0e08800c958cbef09d7fdf2a0a949634187231645435a1ef31595c8c81f441000ec43589bb58a1282fe3c
+  checksum: 91c6f1ab59433cfa3ade0e6003ca4a9f3ee50e1fd6b49ad9487805dc582f1865ef27796ff18b89e92f37f9ed39d7bfb8c8ccd029c2b77bb3e26ce9b705713070
   languageName: node
   linkType: hard
 
@@ -6972,9 +6972,9 @@ __metadata:
   linkType: hard
 
 "js-sdsl@npm:^4.1.4":
-  version: 4.3.0
-  resolution: "js-sdsl@npm:4.3.0"
-  checksum: ce908257cf6909e213af580af3a691a736f5ee8b16315454768f917a682a4ea0c11bde1b241bbfaecedc0eb67b72101b2c2df2ffaed32aed5d539fca816f054e
+  version: 4.4.0
+  resolution: "js-sdsl@npm:4.4.0"
+  checksum: 7bb08a2d746ab7ff742720339aa006c631afe05e77d11eda988c1c35fae8e03e492e4e347e883e786e3ce6170685d4780c125619111f0730c11fdb41b04059c7
   languageName: node
   linkType: hard
 
@@ -7613,7 +7613,7 @@ __metadata:
     click-outside-vue3: ^4.0.1
     dayjs: ^1.11.7
     dotenv: ^16.0.3
-    electron: 23.1.4
+    electron: 23.2.0
     electron-builder: 23.6.0
     electron-store: ^8.1.0
     electron-updater: ^5.3.0
