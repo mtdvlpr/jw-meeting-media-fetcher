@@ -99,9 +99,7 @@ export async function downloadIfRequired(
 ): Promise<string> {
   const progressMap = useMediaStore().progress
   const downloadInProgress = progressMap.get(file.url)
-  if (downloadInProgress) {
-    return await downloadInProgress
-  }
+  if (downloadInProgress) await downloadInProgress
 
   // Set extra properties
   file.downloadRequired = true
