@@ -16,9 +16,6 @@ export default defineNuxtConfig({
   sourcemap: true,
   telemetry: false,
   typescript: { shim: false, typeCheck: true },
-  app: {
-    buildAssetsDir: '/',
-  },
   build: {
     transpile: ['@vuepic/vue-datepicker'],
   },
@@ -45,9 +42,6 @@ export default defineNuxtConfig({
       {
         renderer: {
           nodeIntegration: true,
-          optimizeDeps: {
-            include: ['fs-extra', 'obs-websocket-js', 'upath'],
-          },
         },
       },
     ],
