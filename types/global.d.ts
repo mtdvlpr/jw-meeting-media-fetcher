@@ -1,4 +1,4 @@
-interface PanzoomChangeEvent {
+export interface PanzoomChangeEvent {
   x: number
   y: number
   scale: number

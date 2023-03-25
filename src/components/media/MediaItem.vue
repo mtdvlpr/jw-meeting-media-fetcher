@@ -168,6 +168,7 @@ import { useIpcRenderer } from '@vueuse/electron'
 // eslint-disable-next-line import/named
 import { existsSync, readFileSync } from 'fs-extra'
 import { Marker, Times, TimeString, VideoFile } from '~~/types'
+import { PanzoomChangeEvent } from '~~/types/global'
 
 const emit = defineEmits(['playing', 'deactivated'])
 const props = defineProps<{
@@ -480,6 +481,20 @@ watch(showPrefix, (val) => {
 const panzoom = ref<PanzoomObject | null>(null)
 const getPreviewEl = () =>
   document.querySelector<HTMLElement>(`#${id.value}-preview`)!
+
+const onPanzoomChange = (e: CustomEvent<PanzoomChangeEvent>) => {
+  const previewEl = getPreviewEl()
+  if (!previewEl) return
+  useIpcRenderer().send('pan', {
+    x: e.detail.x / previewEl.clientWidth,
+    y: e.detail.y / previewEl.clientHeight,
+  })
+}
+
+onBeforeUnmount(() => {
+  getPreviewEl()?.removeEventListener('panzoomchange', onPanzoomChange)
+})
+
 const initPanzoom = async () => {
   const { default: Panzoom } = await import('@panzoom/panzoom')
   const previewEl = getPreviewEl()
@@ -492,13 +507,7 @@ const initPanzoom = async () => {
     panOnlyWhenZoomed: true,
   })
 
-  previewEl.addEventListener('panzoomchange', (e) => {
-    useIpcRenderer().send('pan', {
-      x: e.detail.x / previewEl.clientWidth,
-      y: e.detail.y / previewEl.clientHeight,
-    })
-  })
-
+  previewEl.addEventListener('panzoomchange', onPanzoomChange)
   resetZoom()
 }
 
