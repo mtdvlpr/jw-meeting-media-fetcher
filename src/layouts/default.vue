@@ -118,7 +118,7 @@ useIpcRendererOn('moveMediaWindowToOtherScreen', async () => {
 // MacOS update
 useIpcRendererOn('macUpdate', async (_e, version) => {
   try {
-    const release = await fetchRelease(`releases/tag/${version}`)
+    const release = await fetchRelease(`releases/tags/${version}`)
 
     const macDownload = release.assets.find(({ name }) => name.includes('dmg'))!
 
