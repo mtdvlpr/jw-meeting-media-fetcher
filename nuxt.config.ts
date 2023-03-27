@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   ssr: false,
   sourcemap: true,
   telemetry: false,
-  typescript: { shim: false, typeCheck: true },
+  typescript: { shim: false, typeCheck: false },
   build: {
     transpile: ['@vuepic/vue-datepicker'],
   },
