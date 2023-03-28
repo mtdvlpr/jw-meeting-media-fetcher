@@ -104,7 +104,8 @@ async function connectOBS<
             if (
               newScene.sceneName &&
               newScene.sceneName !== getPrefs<string>('app.obs.mediaScene') &&
-              newScene.sceneName !== getPrefs<string>('app.obs.zoomScene')
+              newScene.sceneName !== getPrefs<string>('app.obs.zoomScene') &&
+              newScene.sceneName !== getPrefs<string>('app.obs.imageScene')
             ) {
               store.setCurrentScene(newScene.sceneName)
             }
