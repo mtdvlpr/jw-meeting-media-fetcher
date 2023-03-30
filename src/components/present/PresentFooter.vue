@@ -3,7 +3,7 @@
     <v-col v-if="scene && zoomScene" cols="auto">
       <v-tooltip location="top">
         <template #activator="{ props: tProps }">
-          <v-btn icon @click="emit('zoomPart')">
+          <v-btn variant="text" rounded @click="emit('zoomPart')">
             <v-icon
               :icon="zoomPart ? 'fa-podcast' : 'fa-house-user'"
               size="medium"
@@ -16,7 +16,7 @@
       </v-tooltip>
     </v-col>
     <v-col v-else-if="obsEnabled && !scene">
-      <v-btn icon :loading="obsLoading" @click="initOBS()">
+      <v-btn variant="text" rounded :loading="obsLoading" @click="initOBS()">
         <v-tooltip location="top" activator="parent">
           {{ $t('obsRefresh') }}
         </v-tooltip>
@@ -33,14 +33,14 @@
         mandatory
         color="primary"
       >
-        <v-tooltip v-for="s in scenes" :key="s.value" location="top">
-          <template #activator="{ props: tProps }">
-            <v-btn :value="s.value" v-bind="tProps">
-              {{ showShortButtons ? s.shortText : s.value }}
-            </v-btn>
-          </template>
-          <span>{{ showShortButtons ? s.title : s.shortcut }}</span>
-        </v-tooltip>
+        <template v-for="s in scenes" :key="s.value">
+          <v-btn :value="s.value">
+            {{ showShortButtons ? s.shortText : s.value }}
+            <v-tooltip location="top" activator="parent">
+              {{ showShortButtons ? s.title : s.shortcut }}
+            </v-tooltip>
+          </v-btn>
+        </template>
       </v-btn-toggle>
       <form-input
         v-else

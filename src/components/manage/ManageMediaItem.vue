@@ -18,6 +18,7 @@
           model-value
           @update:model-value="() => {}"
         >
+          {{ $t('clickAgain') }}
           <template #activator="{ props: attrs }">
             <v-btn
               icon="fa-square-minus"
@@ -29,7 +30,6 @@
               @click="atClick()"
             />
           </template>
-          {{ $t('clickAgain') }}
         </v-tooltip>
         <v-btn
           v-else

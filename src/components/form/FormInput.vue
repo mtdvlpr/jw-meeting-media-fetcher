@@ -36,6 +36,7 @@
     </template>
     <template v-else-if="explanation && appendOuter" #append>
       <v-tooltip location="top">
+        {{ $t(explanation) }}
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
@@ -44,11 +45,11 @@
             style="margin-top: 2px"
           />
         </template>
-        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
     <template v-else-if="explanation" #append-inner>
       <v-tooltip location="top">
+        {{ $t(explanation) }}
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
@@ -57,7 +58,6 @@
             style="margin-top: 2px; pointer-events: auto"
           />
         </template>
-        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
     <template v-for="(_, name) in $slots" #[name]="slotData">
@@ -97,6 +97,7 @@
     </template>
     <template v-else-if="explanation" #append>
       <v-tooltip location="top">
+        {{ $t(explanation) }}
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
@@ -105,7 +106,6 @@
             style="margin-top: 2px"
           />
         </template>
-        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
   </v-autocomplete>
@@ -140,6 +140,7 @@
     </template>
     <template v-else-if="explanation" #append>
       <v-tooltip location="top">
+        {{ $t(explanation) }}
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
@@ -148,7 +149,6 @@
             style="margin-top: 2px"
           />
         </template>
-        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
   </v-select>
@@ -181,6 +181,7 @@
     </template>
     <template v-else-if="explanation" #append>
       <v-tooltip location="top">
+        {{ $t(explanation) }}
         <template #activator="{ props: attrs }">
           <v-icon
             v-bind="attrs"
@@ -189,17 +190,16 @@
             size="small"
           />
         </template>
-        <span>{{ $t(explanation) }}</span>
       </v-tooltip>
     </template>
   </v-switch>
   <v-row v-else-if="field == 'btn-group'" class="mb-4" justify="space-between">
     <v-col align-self="center" class="text-left">
       <v-tooltip v-if="locked" location="top">
+        {{ $t('settingLocked') }}
         <template #activator="{ props: attrs }">
           <span v-bind="attrs">{{ groupLabel }}</span>
         </template>
-        <span>{{ $t('settingLocked') }}</span>
       </v-tooltip>
       <span v-else>{{ groupLabel }}</span>
     </v-col>
@@ -272,6 +272,7 @@
         </template>
         <template v-else-if="explanation" #append>
           <v-tooltip location="top">
+            {{ $t(explanation) }}
             <template #activator="{ props: attrs }">
               <v-icon
                 v-bind="attrs"
@@ -280,7 +281,6 @@
                 style="margin-top: 2px"
               />
             </template>
-            <span>{{ $t(explanation) }}</span>
           </v-tooltip>
         </template>
         <template v-else-if="customInput" #append>

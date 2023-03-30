@@ -42,7 +42,8 @@
       </v-app-bar-nav-icon>
       <v-col cols="auto">
         <v-btn
-          icon
+          varint="text"
+          rounded
           aria-label="Toggle zoom component"
           @click="showZoomComponent = !showZoomComponent"
         >
@@ -55,7 +56,8 @@
           />
         </v-btn>
         <v-btn
-          icon
+          varint="text"
+          rounded
           :loading="loadingZoom"
           aria-label="Toggle zoom meeting"
           @click="toggleZoomMeeting()"
@@ -66,7 +68,8 @@
           <v-icon :icon="started ? 'fa-stop' : 'fa-play'" size="small" />
         </v-btn>
         <v-btn
-          icon
+          varint="text"
+          rounded
           aria-label="Mute Zoom participants"
           @click="muteParticipants(zoomSocket())"
         >

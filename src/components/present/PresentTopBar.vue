@@ -27,7 +27,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-btn icon aria-label="Add song" @click="emit('song')">
+      <v-btn varint="text" rounded aria-label="Add song" @click="emit('song')">
         <v-icon icon="fa-music" size="small" />
         <v-icon icon="fa-plus" size="small" />
         <v-tooltip activator="parent" location="bottom">
@@ -36,7 +36,8 @@
       </v-btn>
       <v-btn
         v-if="getPrefs('media.enableSubtitles') && ccAvailable"
-        icon
+        varint="text"
+        rounded
         aria-label="Toggle subtitles"
         :color="ccEnable ? 'primary' : undefined"
         @click="emit('cc')"
@@ -65,7 +66,8 @@
       <template v-if="getPrefs('media.enablePp')">
         <v-btn
           id="btn-pp-previous"
-          icon
+          varint="text"
+          rounded
           aria-label="Previous"
           :disabled="!mediaActive && currentIndex < 1"
           @click="emit('previous')"
@@ -77,7 +79,8 @@
         </v-btn>
         <v-btn
           id="btn-pp-next"
-          icon
+          varint="text"
+          rounded
           aria-label="Next"
           :disabled="!mediaActive && currentIndex == mediaCount - 1"
           @click="emit('next')"
@@ -92,7 +95,8 @@
         v-if="sortable"
         id="btn-order-save"
         aria-label="Save order"
-        icon
+        varint="text"
+        rounded
         @click="emit('sortable')"
       >
         <v-tooltip activator="parent" location="bottom">
@@ -103,7 +107,8 @@
       <v-btn
         v-else
         id="btn-order-change"
-        icon
+        varint="text"
+        rounded
         aria-label="Sort items"
         :disabled="mediaActive"
         @click="emit('sortable')"
