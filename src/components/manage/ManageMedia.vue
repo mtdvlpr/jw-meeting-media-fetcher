@@ -59,7 +59,7 @@
       <loading-icon v-if="loading || saving" />
       <template v-else>
         <v-overlay :model-value="isOverDropZone">
-          <v-icon icon="fa-download" size="x-large" bounce />
+          <v-icon icon="fa-download" size="x-large" />
         </v-overlay>
         <manage-media-list
           :date="date"
