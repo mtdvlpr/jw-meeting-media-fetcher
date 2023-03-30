@@ -54,7 +54,7 @@
       <v-btn
         v-if="meeting.enableMusicButton"
         :loading="status === 'loading'"
-        :disabled="!online"
+        :disabled="!appOnline"
         :color="
           status ? (status === 'loading' ? 'primary' : status) : 'primary'
         "
@@ -171,7 +171,7 @@ const emit = defineEmits<{
 }>()
 
 const { $dayjs } = useNuxtApp()
-const { online } = useOnline(true)
+const { appOnline } = useOnline()
 const meetingForm = ref<VFormRef | null>()
 const { prefs: meeting } = usePrefs<MeetingPrefs>('meeting', emit)
 const isTuesday = (date: Date) => $dayjs(date).day() === 2
