@@ -41,7 +41,12 @@ export default defineNuxtConfig({
       'nuxt-electron',
       {
         renderer: {
-          nodeIntegration: true,
+          resolve:
+            process.env.NODE_ENV === 'development'
+              ? {
+                  'fs-extra': () => ({ platform: 'node' }),
+                }
+              : undefined,
         },
       },
     ],
@@ -68,6 +73,7 @@ export default defineNuxtConfig({
     root: process.cwd(), // fix for: https://github.com/electron-vite/vite-plugin-electron-renderer/issues/32
     build: {
       sourcemap: true,
+      cssCodeSplit: true,
       target: 'chrome110',
     },
   },
