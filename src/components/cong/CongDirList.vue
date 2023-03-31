@@ -4,8 +4,6 @@
       <div v-if="node.dir" class="d-flex justify-end" style="width: 100%">
         <v-btn
           icon="fa-arrow-right"
-          variant="text"
-          rounded
           size="x-small"
           @click="emit('open', node.id)"
         />

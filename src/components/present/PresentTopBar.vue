@@ -1,14 +1,25 @@
 <template>
   <v-toolbar class="present-top-bar">
-    <v-col class="text-left" cols="3">
+    <v-col class="text-center" style="position: absolute">
+      <v-btn
+        id="btn-toggle-meeting-date"
+        class="px-3"
+        variant="outlined"
+        :disabled="mediaActive"
+        size="large"
+        @click="clearDate()"
+      >
+        {{ date }}
+      </v-btn>
+    </v-col>
+
+    <v-col class="text-left" cols="auto">
       <v-menu location="bottom">
         <template #activator="{ props }">
           <v-btn
             icon="fa-ellipsis-vertical"
-            variant="text"
             size="small"
             v-bind="props"
-            rounded
             aria-label="More actions"
             class="mr-2"
           />
@@ -27,7 +38,7 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-btn varint="text" rounded aria-label="Add song" @click="emit('song')">
+      <v-btn icon aria-label="Add song" @click="emit('song')">
         <v-icon icon="fa-music" size="small" />
         <v-icon icon="fa-plus" size="small" />
         <v-tooltip activator="parent" location="bottom">
@@ -36,8 +47,7 @@
       </v-btn>
       <v-btn
         v-if="getPrefs('media.enableSubtitles') && ccAvailable"
-        varint="text"
-        rounded
+        icon
         aria-label="Toggle subtitles"
         :color="ccEnable ? 'primary' : undefined"
         @click="emit('cc')"
@@ -49,25 +59,13 @@
       </v-btn>
     </v-col>
 
-    <v-col cols="6" class="text-center d-flex justify-center">
-      <v-btn
-        id="btn-toggle-meeting-date"
-        class="px-3"
-        variant="outlined"
-        :disabled="mediaActive"
-        size="large"
-        @click="clearDate()"
-      >
-        {{ date }}
-      </v-btn>
-    </v-col>
+    <v-spacer />
 
-    <v-col class="text-right" cols="3">
+    <v-col class="text-right" cols="auto">
       <template v-if="getPrefs('media.enablePp')">
         <v-btn
           id="btn-pp-previous"
-          varint="text"
-          rounded
+          icon
           aria-label="Previous"
           :disabled="!mediaActive && currentIndex < 1"
           @click="emit('previous')"
@@ -79,8 +77,7 @@
         </v-btn>
         <v-btn
           id="btn-pp-next"
-          varint="text"
-          rounded
+          icon
           aria-label="Next"
           :disabled="!mediaActive && currentIndex == mediaCount - 1"
           @click="emit('next')"
@@ -95,8 +92,7 @@
         v-if="sortable"
         id="btn-order-save"
         aria-label="Save order"
-        varint="text"
-        rounded
+        icon
         @click="emit('sortable')"
       >
         <v-tooltip activator="parent" location="bottom">
@@ -107,8 +103,7 @@
       <v-btn
         v-else
         id="btn-order-change"
-        varint="text"
-        rounded
+        icon
         aria-label="Sort items"
         :disabled="mediaActive"
         @click="emit('sortable')"

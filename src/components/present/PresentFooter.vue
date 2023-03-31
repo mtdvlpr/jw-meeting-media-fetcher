@@ -3,7 +3,7 @@
     <v-col v-if="scene && zoomScene" cols="auto">
       <v-tooltip location="top">
         <template #activator="{ props: tProps }">
-          <v-btn variant="text" rounded @click="emit('zoomPart')">
+          <v-btn icon @click="emit('zoomPart')">
             <v-icon
               :icon="zoomPart ? 'fa-podcast' : 'fa-house-user'"
               size="medium"
@@ -16,7 +16,7 @@
       </v-tooltip>
     </v-col>
     <v-col v-else-if="obsEnabled && !scene">
-      <v-btn variant="text" rounded :loading="obsLoading" @click="initOBS()">
+      <v-btn icon :loading="obsLoading" @click="initOBS()">
         <v-tooltip location="top" activator="parent">
           {{ $t('obsRefresh') }}
         </v-tooltip>

@@ -31,9 +31,7 @@
           <v-btn
             v-if="m.persistent || m.dismiss"
             icon="fa-xmark"
-            variant="text"
             size="x-small"
-            rounded
             class="align-right"
             @click="store.dismiss(i)"
           />

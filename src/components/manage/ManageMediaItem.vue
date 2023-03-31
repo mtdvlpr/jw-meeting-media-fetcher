@@ -22,8 +22,6 @@
           <template #activator="{ props: attrs }">
             <v-btn
               icon="fa-square-minus"
-              variant="text"
-              rounded
               size="x-small"
               color="error"
               v-bind="attrs"
@@ -34,8 +32,6 @@
         <v-btn
           v-else
           icon="fa-square-minus"
-          variant="text"
-          rounded
           size="x-small"
           color="warning"
           @click="atClick(item)"
@@ -84,8 +80,6 @@
           v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
           icon="fa-pen"
           size="x-small"
-          variant="text"
-          rounded
           aria-label="rename file"
           @click="emit('edit')"
         />
