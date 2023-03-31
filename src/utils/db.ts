@@ -1,4 +1,3 @@
-// import { platform } from 'os'
 // eslint-disable-next-line import/named
 import { readFileSync } from 'fs-extra'
 import { type Database } from '@stephen/sql.js'
@@ -120,10 +119,6 @@ async function getDb({
   }
 
   try {
-    /* const { sqlJsVersion } = useRuntimeConfig().public
-     const remotePath = (filename: string) =>
-      `https://cdnjs.cloudflare.com/ajax/libs/sql.js/${sqlJsVersion}/${filename}`
-*/
     const SQL = await import('@stephen/sql.js')
     const db = new SQL.Database(file)
     setDb(db, pub, issue, lang)
