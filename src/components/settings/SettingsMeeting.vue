@@ -311,7 +311,7 @@ const downloadShuffleMusic = async () => {
 <style lang="scss" scoped>
 .progress {
   position: fixed;
-  bottom: 0;
+  bottom: 76px;
   top: unset !important;
 }
 </style>
