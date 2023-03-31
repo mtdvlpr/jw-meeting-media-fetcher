@@ -2,6 +2,7 @@
   <div>
     <v-toolbar>
       <v-toolbar-title>{{ $t('plannedMedia') }}</v-toolbar-title>
+      <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
         <v-tabs v-model="currentWeek" grow centered>
           <v-tab v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
@@ -56,7 +57,6 @@
         </v-btn>
       </v-col>
     </v-row>
-    <progress-bar :current="currentProgress" :total="totalProgress" />
     <v-footer
       v-if="shuffleEnabled || presentModeEnabled"
       class="justify-end home-footer"
@@ -482,6 +482,5 @@ const testApp = async () => {
   bottom: 0;
   right: 0;
   width: calc(100% - 56px);
-  height: 76px;
 }
 </style>

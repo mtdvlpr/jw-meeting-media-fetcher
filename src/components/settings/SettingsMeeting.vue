@@ -152,7 +152,7 @@
     <progress-bar
       :current="currentProgress"
       :total="totalProgress"
-      style="bottom: 72px"
+      class="progress"
     />
   </v-form>
 </template>
@@ -308,3 +308,10 @@ const downloadShuffleMusic = async () => {
   }
 }
 </script>
+<style lang="scss" scoped>
+.progress {
+  position: fixed;
+  bottom: 0;
+  top: unset !important;
+}
+</style>

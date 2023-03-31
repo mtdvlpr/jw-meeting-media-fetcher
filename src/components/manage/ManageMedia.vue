@@ -2,6 +2,7 @@
   <div class="manage-media">
     <v-toolbar>
       <v-toolbar-title>{{ $t('plannedMedia') }}: {{ title }}</v-toolbar-title>
+      <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
         <!-- need to fix type switch, something wrong with the v-model or something -->
         <v-tabs v-model="type" grow centered>
@@ -73,12 +74,6 @@
         />
       </template>
     </v-col>
-    <progress-bar
-      fixed
-      :current="currentProgress"
-      :total="totalProgress"
-      style="bottom: 72px"
-    />
     <v-footer class="manage-footer" :style="footerStyle">
       <v-col class="text-left">
         <icon-btn
@@ -415,7 +410,6 @@ const footerStyle = computed(() => {
     position: fixed;
     bottom: 0;
     right: 0;
-    height: 72px;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <v-progress-linear
-    v-if="current || total"
+    :active="current > 0 || total > 0"
     stream
     striped
     :height="8"
@@ -16,10 +16,3 @@ defineProps<{
   total: number
 }>()
 </script>
-<style lang="scss" scoped>
-.progress-bar {
-  position: fixed;
-  bottom: 0;
-  top: unset !important;
-}
-</style>

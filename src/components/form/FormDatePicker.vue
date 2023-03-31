@@ -11,6 +11,7 @@
     :required="required"
     :state="required && !value ? false : undefined"
     :clearable="!required"
+    :placeholder="label"
     :select-text="$t('confirm')"
     :cancel-text="$t('cancel')"
     :disabled-dates="disabledDates"
