@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-toolbar>
-      <v-toolbar-title>Settings</v-toolbar-title>
+      <v-toolbar-title>{{ $t('settings') }}</v-toolbar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
         <v-tabs v-model="tab" grow centered>
