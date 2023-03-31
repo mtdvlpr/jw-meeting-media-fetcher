@@ -2341,7 +2341,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vueuse/core@npm:9.13.0, @vueuse/core@npm:^9.13.0":
+"@vueuse/core@npm:9.13.0":
   version: 9.13.0
   resolution: "@vueuse/core@npm:9.13.0"
   dependencies:
@@ -7375,7 +7375,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "meeting-media-manager@workspace:."
   dependencies:
-    "@babel/core": ^7.21.3
     "@fortawesome/fontawesome-svg-core": ^6.4.0
     "@fortawesome/free-brands-svg-icons": ^6.4.0
     "@fortawesome/free-regular-svg-icons": ^6.4.0
@@ -7394,7 +7393,6 @@ __metadata:
     "@types/node": ^18.15.11
     "@typescript-eslint/parser": ^5.57.0
     "@vuepic/vue-datepicker": ^4.2.3
-    "@vueuse/core": ^9.13.0
     "@vueuse/electron": ^9.13.0
     "@vueuse/nuxt": ^9.13.0
     "@vueuse/router": ^9.13.0
@@ -7437,7 +7435,6 @@ __metadata:
     vite-plugin-electron-renderer: ^0.13.14
     vite-plugin-vuetify: ^1.0.2
     vue: ^3.2.47
-    vue-router: ^4.1.6
     vue-tsc: ^1.2.0
     vue3-treeview: ^0.4.1
     vuedraggable: next
