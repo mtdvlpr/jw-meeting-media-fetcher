@@ -1,5 +1,5 @@
 import vuetify from 'vite-plugin-vuetify'
-import { repository, version, devDependencies } from './package.json'
+import { repository, version } from './package.json'
 import { LOCALES } from './src/constants/lang'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -75,9 +75,6 @@ export default defineNuxtConfig({
       sourcemap: true,
       cssCodeSplit: true,
       target: 'chrome110',
-      rollupOptions: {
-        external: [/node_modules\/sql\.js\/dist\/sql-wasm\.js$/],
-      },
     },
   },
   runtimeConfig: {
@@ -87,7 +84,6 @@ export default defineNuxtConfig({
       version: 'v' + version,
       repo: repository.url.replace('.git', ''),
       sentryInit,
-      sqlJsVersion: devDependencies['sql.js'].replace('^', ''),
       sentryOrg: process.env.SENTRY_ORG,
       sentryProject: process.env.SENTRY_PROJECT,
       sentryDsn: process.env.SENTRY_DSN,

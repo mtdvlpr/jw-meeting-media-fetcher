@@ -211,7 +211,6 @@ const congSync = computed(() => !!client)
 const mediaStore = useMediaStore()
 const { mediaLang, fallbackLang } = storeToRefs(mediaStore)
 const startMediaSync = async (dryrun = false) => {
-  useNotifyStore().dismissByMessage('dontForgetToGetMedia')
   const mPath = mediaPath()
   if (!mPath) return
 
@@ -219,6 +218,7 @@ const startMediaSync = async (dryrun = false) => {
     warn('errorOffline')
     return
   }
+  useNotifyStore().dismissByMessage('dontForgetToGetMedia')
   loading.value = true
   statStore.setNavDisabled(true)
   statStore.startPerf({ func: 'total', start: performance.now() })

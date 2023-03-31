@@ -253,12 +253,12 @@ const processFile = async (file: LocalFile | VideoFile) => {
     increaseProgress()
     return
   }
-  if (prefix) {
-    file.safeName = prefix + ' ' + file.safeName
+  if (prefix.value) {
+    file.safeName = prefix.value + ' ' + file.safeName
   }
 
   const congPromises: Promise<void>[] = []
-  const path = join(mediaPath(), date, file.safeName)
+  const path = join(mediaPath(), date.value, file.safeName)
 
   // JWPUB extract
   if (file.contents) {
