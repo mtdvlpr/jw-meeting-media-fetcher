@@ -363,9 +363,13 @@ useIpcRendererOn(
       if (cues) {
         for (let i = 0; i < cues.length; i++) {
           const cue = cues[i]
-          if (cue && toggle) {
+          if (cue) {
+            const newLine =
+              // @ts-ignore
+              +cue.line?.toString().replace('auto', '-1') * -1
             // @ts-ignore
-            cue.line = Math.abs(cue.line - 100)
+            console.log('newLine', newLine)
+            cue.line = toggle ? newLine : 'auto'
           }
         }
       }

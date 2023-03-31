@@ -72,7 +72,6 @@
       :rounded="0"
       variant="flat"
       class="cc-btn"
-      :style="ccToggle ? 'top: 4px' : 'bottom: 1px'"
       @click="ccToggle = !ccToggle"
     >
       <v-tooltip activator="parent" location="right">
@@ -178,7 +177,7 @@ watch(
       // Activate subtitles
       if (ccAvailable.value) {
         setTimeout(() => {
-          toggleSubtitles(ccEnable.value, ccToggle.value)
+          toggleSubtitles(ccEnable.value, false)
         }, MS_IN_SEC)
       }
       ipcRenderer.on('videoProgress', onProgress)
@@ -215,7 +214,7 @@ watch(ccToggle, () => {
 watch(
   () => ccEnable.value,
   (val) => {
-    if (props.playing) toggleSubtitles(val, ccToggle.value)
+    if (props.playing) toggleSubtitles(val, false)
   }
 )
 const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
@@ -346,6 +345,7 @@ const { clickedOnce, atClick } = useClickTwice(() => {
 
   .cc-btn {
     position: absolute;
+    bottom: 1px;
     left: 122px !important;
   }
 }
