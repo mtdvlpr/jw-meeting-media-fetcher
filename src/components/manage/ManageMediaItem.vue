@@ -1,6 +1,6 @@
 <template>
   <v-list-item
-    dense
+    density="compact"
     class="manage-media-item"
     style="position: static"
     :disabled="item.loading"
