@@ -28,8 +28,8 @@ _site
 !.yarn/versions
 
 # sql.js / pdf.js
-src/public/sql-wasm.wasm
-src/public/pdf.worker*
+src/**/sql-wasm.wasm
+src/**/pdf.worker*
 
 # MacOS
 .DS_Store

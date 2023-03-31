@@ -75,6 +75,9 @@ export default defineNuxtConfig({
       sourcemap: true,
       cssCodeSplit: true,
       target: 'chrome110',
+      rollupOptions: {
+        external: [/node_modules\/sql\.js\/dist\/sql-wasm\.js$/],
+      },
     },
   },
   runtimeConfig: {

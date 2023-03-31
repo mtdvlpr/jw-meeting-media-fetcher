@@ -26,12 +26,12 @@ const fluentFfmpegPath = path.join(
 )
 
 // Necessary sql.js file for reading sqlite databases from JWPUB files
-fs.copySync(sqlWasmPath, path.join(__dirname, 'src', 'public', 'sql-wasm.wasm'))
+fs.copySync(sqlWasmPath, path.join(__dirname, 'src', 'assets', 'sql-wasm.wasm'))
 
 // Necessary pdfjs worker file for converting PDFs to images
 fs.copySync(
   pdfWorkerPath,
-  path.join(__dirname, 'src', 'public', 'pdf.worker.min.js')
+  path.join(__dirname, 'src', 'assets', 'pdf.worker.min.js')
 )
 
 // Fix for: https://github.com/fluent-ffmpeg/node-fluent-ffmpeg/issues/573

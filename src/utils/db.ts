@@ -1,8 +1,10 @@
-/* eslint-disable import/named */
-import { platform } from 'os'
+// import { platform } from 'os'
+// eslint-disable-next-line import/named
 import { readFileSync } from 'fs-extra'
 import { type Database } from 'sql.js'
 import { join } from 'upath'
+// @ts-ignore
+import wasmUrl from '~/assets/sql-wasm.wasm?url'
 
 export function executeQuery<T extends { [key: string]: any }>(
   db: Database,
@@ -120,14 +122,15 @@ async function getDb({
   }
 
   try {
-    const { sqlJsVersion } = useRuntimeConfig().public
-    const remotePath = (filename: string) =>
+    /* const { sqlJsVersion } = useRuntimeConfig().public
+     const remotePath = (filename: string) =>
       `https://cdnjs.cloudflare.com/ajax/libs/sql.js/${sqlJsVersion}/${filename}`
-
+*/
     const { default: sqljs } = await import('sql.js')
+    console.log('wasm', wasmUrl)
+    console.log('sqljs', sqljs)
     const SQL = await sqljs({
-      locateFile: (filename: string) =>
-        platform() === 'win32' ? `/${filename}` : remotePath(filename),
+      locateFile: () => wasmUrl,
     })
     const db = new SQL.Database(file)
     setDb(db, pub, issue, lang)

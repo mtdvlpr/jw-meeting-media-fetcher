@@ -13,6 +13,8 @@ import {
 } from 'fs-extra'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import { type PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
+// @ts-ignore
+import pdfWorkerSrc from '~/assets/pdf.worker.min.js?url'
 import { Release, DateFormat } from '~~/types'
 
 export async function convertToMP4(
@@ -167,7 +169,7 @@ async function convertPdf(
 ): Promise<void> {
   const pdfjsLib = await import('pdfjs-dist')
   try {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js'
+    pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc
     const pdf = await pdfjsLib.getDocument({
       url: pathToFileURL(mediaFile).href,
       verbosity: 0,
