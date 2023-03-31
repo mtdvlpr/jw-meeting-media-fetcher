@@ -107,7 +107,7 @@
           v-if="active && paused"
           v-model="newProgress"
           color="primary"
-          dense
+          desnity="compact"
           aria-label="Video scrubber"
           hide-details="auto"
           step="any"
