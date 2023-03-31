@@ -368,7 +368,6 @@ useIpcRendererOn(
               // @ts-ignore
               +cue.line?.toString().replace('auto', '-1') * -1
             // @ts-ignore
-            console.log('newLine', newLine)
             cue.line = toggle ? newLine : 'auto'
           }
         }
