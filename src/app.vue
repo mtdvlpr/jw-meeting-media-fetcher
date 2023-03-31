@@ -21,7 +21,7 @@ useHead({
 <style lang="scss">
 @font-face {
   font-family: NotoSerif;
-  src: url('/NotoSerif-Bold.ttf') format('truetype');
+  src: url('/src/assets/NotoSerif-Bold.ttf') format('truetype');
 }
 
 html {
