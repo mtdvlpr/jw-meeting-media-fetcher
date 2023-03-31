@@ -148,6 +148,7 @@ const initZoomIntegration = async () => {
     await client
       .init({
         zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
+        // @ts-ignore
         language: useNuxtApp().$i18n.localeProperties.value.iso,
       })
       .catch(() => {

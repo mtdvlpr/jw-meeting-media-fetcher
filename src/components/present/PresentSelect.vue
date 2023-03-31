@@ -1,8 +1,9 @@
 <template>
   <v-row no-gutters align="start" class="present-select pa-4">
     <v-col cols="12">
+      <loading-icon v-if="loading" />
       <v-list
-        v-if="dates.length > 0"
+        v-else-if="dates.length > 0"
         :style="`
         width: 100%;
         overflow-y: auto;
@@ -28,6 +29,7 @@ const props = defineProps<{
   firstChoice?: boolean
 }>()
 
+const loading = ref(true)
 const { $dayjs } = useNuxtApp()
 const today = computed(() => {
   return $dayjs().format(getPrefs<DateFormat>('app.outputFolderDateFormat'))
@@ -40,6 +42,8 @@ onMounted(() => {
     selectDate(dates.value[0])
   } else if (props.firstChoice && dates.value.includes(today.value)) {
     selectDate(today.value)
+  } else {
+    loading.value = false
   }
 })
 
