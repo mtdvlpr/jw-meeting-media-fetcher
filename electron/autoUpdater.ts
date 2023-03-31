@@ -49,13 +49,17 @@ export function initAutoUpdater(winHandler: BrowserWinHandler) {
       })
     }
   })
-  autoUpdater.on('update-downloaded', () => {
-    updateDownloaded = true
-    winHandler.send('notifyUser', [
-      'updateDownloaded',
-      {
-        persistent: true,
-      },
-    ])
+  autoUpdater.on('update-downloaded', (e) => {
+    if (e.releaseName?.includes('[critical]')) {
+      autoUpdater.quitAndInstall(false)
+    } else {
+      updateDownloaded = true
+      winHandler.send('notifyUser', [
+        'updateDownloaded',
+        {
+          persistent: true,
+        },
+      ])
+    }
   })
 }
