@@ -2,6 +2,7 @@
   <div>
     <v-toolbar>
       <v-toolbar-title>Settings</v-toolbar-title>
+      <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
         <v-tabs v-model="tab" grow centered>
           <v-tab>{{ $t('all') }}</v-tab>
@@ -124,7 +125,10 @@
 import { PrefStore } from '~~/types'
 
 useHead({ title: 'Settings' })
+const { currentProgress, totalProgress, setProgress } = useProgress()
+provide(setProgressKey, setProgress)
 
+// Height
 const { height } = useWindowSize()
 const contentHeight = computed(() => {
   const TOOLBAR_HEIGHT = 112

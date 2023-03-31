@@ -149,11 +149,6 @@
         </v-col>
       </v-row>
     </template>
-    <progress-bar
-      :current="currentProgress"
-      :total="totalProgress"
-      class="progress"
-    />
   </v-form>
 </template>
 <script setup lang="ts">
@@ -271,7 +266,7 @@ const musicFadeOutTimer = useComputedLabel<MeetingPrefs>(
 )
 
 const processed = ref(0)
-const { currentProgress, totalProgress, setProgress } = useProgress()
+const setProgress = inject(setProgressKey, () => {})
 const downloadSong = async (song: VideoFile) => {
   await downloadIfRequired(song, setProgress)
   setProgress(++processed.value, NR_OF_KINGDOM_SONGS, true)

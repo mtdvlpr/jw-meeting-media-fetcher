@@ -3,9 +3,9 @@
     :active="current > 0 || total > 0"
     stream
     striped
+    absolute
     :height="8"
     color="primary"
-    class="progress-bar"
     :buffer-value="current"
     :model-value="total"
   />
