@@ -4,7 +4,6 @@
       <v-toolbar-title>{{ $t('plannedMedia') }}: {{ title }}</v-toolbar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
-        <!-- need to fix type switch, something wrong with the v-model or something -->
         <v-tabs v-model="type" grow centered>
           <v-tab v-for="t in types" :key="t.value" :value="t.value">
             {{ t.label }}
