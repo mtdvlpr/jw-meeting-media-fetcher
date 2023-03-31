@@ -17,7 +17,7 @@
   },
   "scripts": {
     "prebuild": "node pre-build.js",
-    "dev": "nuxi dev",
+    "dev": "nuxi dev --debug",
     "analyze": "nuxi analyze",
     "prepare": "nuxi prepare",
     "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 nuxi generate && electron-builder",

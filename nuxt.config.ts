@@ -13,7 +13,9 @@ const sentryInit =
 export default defineNuxtConfig({
   srcDir: 'src/',
   ssr: false,
-  sourcemap: true,
+  sourcemap: {
+    client: true,
+  },
   telemetry: false,
   typescript: { shim: false, typeCheck: false },
   build: {
@@ -75,6 +77,9 @@ export default defineNuxtConfig({
       sourcemap: true,
       cssCodeSplit: true,
       target: 'chrome110',
+    },
+    optimizeDeps: {
+      exclude: ['@stephen/sql.js'],
     },
   },
   runtimeConfig: {
