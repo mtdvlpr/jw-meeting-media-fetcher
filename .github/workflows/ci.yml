@@ -226,4 +226,3 @@ jobs:
           delete_tag_pattern: beta
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
-      
