@@ -147,12 +147,10 @@ const getPreview = (item: MeetingFile | LocalFile) => {
     preview.value = pathToFileURL(item.filepath).href
   } else if (online.value && item.url && isImage(item.url)) {
     if (client.value && item.congSpecific) {
-      client.value.getFileContents(item.url).then((contents) => {
+      client.value.getFileContents(item.url).then((c) => {
         preview.value =
           `data:;base64,` +
-          Buffer.from(new Uint8Array(contents as ArrayBuffer)).toString(
-            'base64'
-          )
+          Buffer.from(new Uint8Array(c as ArrayBuffer)).toString('base64')
       })
     } else if (item.url) {
       preview.value = pathToFileURL(item.url).href

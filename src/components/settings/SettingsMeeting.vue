@@ -185,7 +185,7 @@ const localeDays = computed(() => {
 })
 
 onMounted(() => {
-  // Vaildate coWeek
+  // Validate coWeek
   if (meeting.value.coWeek) {
     const date = $dayjs(meeting.value.coWeek, 'YYYY-MM-DD')
     if (!date.isValid() || date.isBefore($dayjs().startOf('week'))) {

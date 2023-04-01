@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/named
 import { existsSync, statSync } from 'fs-extra'
 import { join } from 'upath'
-import { type Database } from 'sql.js'
+import { type Database } from '@stephen/sql.js'
 import { MeetingFile, VideoFile, ImageFile, MultiMediaItem } from '~~/types'
 
 export async function getDocumentMultiMedia(

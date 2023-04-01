@@ -209,7 +209,7 @@ const saveFiles = async () => {
 
     if (client.value && online.value && props.uploadMedia) {
       const mPath = join(getPrefs<string>('cong.dir'), 'Media')
-      const datePath = join(mPath, date)
+      const datePath = join(mPath, date.value)
 
       try {
         await createCongDir(mPath)
@@ -326,7 +326,7 @@ const uploadFile = async (path: string) => {
   const filePath = join(
     getPrefs<string>('cong.dir'),
     'Media',
-    date,
+    date.value,
     basename(path)
   )
 

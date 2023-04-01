@@ -130,7 +130,7 @@ const change = ref(false)
 const emit = defineEmits(['done'])
 const updatePrefs = async () => {
   // If nothing changed, just close the modal
-  if (!change || !store.client) {
+  if (!change.value || !store.client) {
     emit('done')
     return
   }
