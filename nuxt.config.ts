@@ -13,9 +13,6 @@ const sentryInit =
 export default defineNuxtConfig({
   srcDir: 'src/',
   ssr: false,
-  sourcemap: {
-    client: true,
-  },
   telemetry: false,
   typescript: { shim: false, typeCheck: false },
   build: {
@@ -28,6 +25,9 @@ export default defineNuxtConfig({
     options: {
       hashMode: true,
     },
+  },
+  sourcemap: {
+    client: true,
   },
   modules: [
     '@nuxtjs/i18n',
@@ -43,6 +43,7 @@ export default defineNuxtConfig({
       'nuxt-electron',
       {
         renderer: {
+          // Fix for: https://github.com/caoxiemeihao/nuxt-electron/issues/16#issuecomment-1484776511
           resolve:
             process.env.NODE_ENV === 'development'
               ? {
@@ -72,7 +73,7 @@ export default defineNuxtConfig({
     },
   },
   vite: {
-    root: process.cwd(), // fix for: https://github.com/electron-vite/vite-plugin-electron-renderer/issues/32
+    root: process.cwd(), // Fix for: https://github.com/electron-vite/vite-plugin-electron-renderer/issues/32
     build: {
       sourcemap: true,
       cssCodeSplit: true,
