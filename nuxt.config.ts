@@ -88,7 +88,7 @@ export default defineNuxtConfig({
       isDev,
       ci: !!process.env.CI,
       version: 'v' + version,
-      repo: repository.url.replace('.git', ''),
+      repo: repository.url.replace('.git', '').replace('mtdvlpr', 'sircharlo'),
       sentryInit,
       sentryOrg: process.env.SENTRY_ORG,
       sentryProject: process.env.SENTRY_PROJECT,
