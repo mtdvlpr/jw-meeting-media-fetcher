@@ -17,12 +17,12 @@
     "url": "https://github.com/sircharlo/meeting-media-manager.git"
   },
   "scripts": {
-    "prebuild": "ts-node -T pre-build.ts",
-    "dev": "nuxi dev --debug",
+    "dev": "yarn build:prepare && nuxi dev",
     "analyze": "nuxi analyze",
     "prepare": "nuxi prepare",
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 nuxi generate && electron-builder",
-    "build-dev": "yarn build --c electron-builder-dev.yml",
+    "build:prepare": "ts-node -T pre-build.ts",
+    "build:dev": "yarn build --c electron-builder-dev.yml",
+    "build:prod": "cross-env NODE_OPTIONS=--max-old-space-size=4096 yarn build:prepare && nuxi generate && electron-builder",
     "lint:js": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
     "lint:prettier": "prettier --check .",
     "lint": "yarn lint:js && yarn lint:prettier",

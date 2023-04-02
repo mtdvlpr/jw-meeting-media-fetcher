@@ -114,15 +114,10 @@ jobs:
           echo ZOOM_SDK_KEY=${{ secrets.ZOOM_SDK_KEY }} >> .env
           echo ZOOM_SIGNATURE_ENDPOINT=${{ secrets.ZOOM_SIGNATURE_ENDPOINT }} >> .env
 
-      - name: Prepare build
-        run: |
-          yarn prebuild
-          yarn compile
-
       - name: Build Electron app
         env:
           GH_TOKEN: ${{ secrets.github_token }}
-        run: yarn run build -p always
+        run: yarn run build:prod -p always
 
   publish-release:
     name: 'Publish release'
