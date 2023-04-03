@@ -1887,17 +1887,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:7.37.1":
-  version: 7.37.1
-  resolution: "@sentry/core@npm:7.37.1"
-  dependencies:
-    "@sentry/types": 7.37.1
-    "@sentry/utils": 7.37.1
-    tslib: ^1.9.3
-  checksum: 92ce846cf5e490b5c1445acb30f3034cfde3023e2e1923fa11f712c4aba9fa0520571cd77ef57869249a839652e30b33d0b024f44c9e0bf2e1d3fe5816da2bcd
-  languageName: node
-  linkType: hard
-
 "@sentry/core@npm:7.46.0":
   version: 7.46.0
   resolution: "@sentry/core@npm:7.46.0"
