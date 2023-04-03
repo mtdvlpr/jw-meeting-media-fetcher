@@ -79,15 +79,13 @@ onMounted(() => {
       warn('errorPpEnable')
     }
   }
-  if (zoomClient.value) {
-    setTimeout(() => {
-      const socket = zoomSocket()
-      if (socket) {
-        log.debug('Found socket')
-        zoomStore.setWebsocket(socket)
-      }
-    }, MS_IN_SEC)
-  }
+  setTimeout(() => {
+    const socket = zoomSocket()
+    if (socket) {
+      log.debug('Found socket')
+      zoomStore.setWebsocket(socket)
+    }
+  }, MS_IN_SEC)
 })
 
 // OBS
@@ -147,6 +145,7 @@ const initZoomIntegration = async () => {
   try {
     await client
       .init({
+        debug: true,
         zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
         // @ts-ignore
         language: useNuxtApp().$i18n.localeProperties.value.iso,
@@ -157,6 +156,8 @@ const initZoomIntegration = async () => {
   } catch (e: unknown) {
     log.debug('Caught init error')
   }
+
+  connectZoom()
 
   if (getPrefs<boolean>('app.zoom.autoStartMeeting')) {
     executeBeforeMeeting(
@@ -185,12 +186,15 @@ const listenToZoomSocket = () => {
   }
 }
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 .present-page {
   #zoomMeeting {
     width: 0;
     height: 0;
-    z-index: 1;
+
+    > div {
+      z-index: 3;
+    }
   }
 }
 </style>

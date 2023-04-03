@@ -8,7 +8,7 @@ export const zoomSocket = () => {
 
 export async function connectZoom() {
   const store = useZoomStore()
-  const { enable, id, password, name } = getPrefs<ZoomPrefs>('app.zoom>')
+  const { enable, id, password, name } = getPrefs<ZoomPrefs>('app.zoom')
 
   if (!store.client || !enable || !id || !password || !name) {
     if (store.client) {
@@ -21,6 +21,13 @@ export async function connectZoom() {
 
   notify('remindNeedCoHost')
   const { zoomSdkKey, zoomSignatureEndpoint } = useRuntimeConfig().public
+  if (!zoomSdkKey) {
+    log.warn('No zoom SDK key found!')
+  }
+
+  if (!zoomSignatureEndpoint) {
+    log.warn('No zoom Signature Endpoint found!')
+  }
 
   try {
     await store.client
