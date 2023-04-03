@@ -12,6 +12,7 @@ on:
       - 'package.json'
       - 'electron/**/*'
       - 'nuxt.config.ts'
+      - 'tests/**/*'
       - 'yarn.lock'
 
 concurrency:
