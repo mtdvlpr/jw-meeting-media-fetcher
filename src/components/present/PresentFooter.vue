@@ -1,12 +1,13 @@
 <template>
   <v-footer class="justify-end present-footer">
-    <v-col v-if="scene && zoomScene" cols="auto">
+    <v-col v-if="date && scene && zoomScene" cols="auto">
       <v-tooltip location="top">
         <template #activator="{ props: tProps }">
           <v-btn icon @click="emit('zoomPart')">
             <v-icon
               :icon="zoomPart ? 'fa-podcast' : 'fa-house-user'"
               size="medium"
+              variant="text"
               :color="zoomPart ? 'success' : undefined"
               v-bind="tProps"
             />
@@ -15,7 +16,7 @@
         <span>{{ $t('obsZoomSceneToggle') }}</span>
       </v-tooltip>
     </v-col>
-    <v-col v-else-if="obsEnabled && !scene">
+    <v-col v-else-if="date && obsEnabled && !scene">
       <v-btn icon :loading="obsLoading" @click="initOBS()">
         <v-tooltip location="top" activator="parent">
           {{ $t('obsRefresh') }}
@@ -24,7 +25,7 @@
       </v-btn>
     </v-col>
     <v-col
-      v-if="scene && !zoomPart && scenes.length > 1"
+      v-if="date && scene && !zoomPart && scenes.length > 1"
       class="d-flex justify-end pa-1"
     >
       <v-btn-toggle
@@ -63,6 +64,7 @@ import { useIpcRendererOn } from '@vueuse/electron'
 import { type Participant } from '@zoomus/websdk/embedded'
 import { ObsPrefs } from '~~/types'
 
+const date = computed(() => useRoute().query.date as string)
 const emit = defineEmits(['zoomPart'])
 const props = defineProps<{
   windowWidth: number
