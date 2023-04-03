@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width: 100%">
     <v-dialog
       :model-value="!!participant"
       max-width="700px"
@@ -30,7 +30,7 @@
         </v-row>
       </v-card>
     </v-dialog>
-    <v-app-bar
+    <v-toolbar
       id="zoom-app-bar"
       height="56"
       theme="dark"
@@ -129,7 +129,7 @@
           </v-btn>
         </v-col>
       </v-col>
-    </v-app-bar>
+    </v-toolbar>
   </div>
 </template>
 <script setup lang="ts">
@@ -247,6 +247,8 @@ const spotlightParticipants = () => {
 </script>
 <style scoped lang="scss">
 #zoom-app-bar {
+  z-index: 2 !important;
+
   button.v-app-bar__nav-icon {
     cursor: initial !important;
 
