@@ -1,6 +1,6 @@
 <!-- Select a congregation on startup -->
 <template>
-  <div>
+  <div class="cong-select">
     <v-toolbar>
       <v-toolbar-title>
         <v-icon icon="fa-building-user" size="x-large" />

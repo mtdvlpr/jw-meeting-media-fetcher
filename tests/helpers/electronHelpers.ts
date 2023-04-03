@@ -46,14 +46,14 @@ export async function startApp(options: any = {}) {
 }
 
 async function selectCong(page: Page, congName: string) {
-  await page.locator('.v-list').waitFor({ state: 'visible' })
+  await page.locator('.cong-select .v-list').waitFor({ state: 'visible' })
   const cong = page.getByText(congName, { exact: true })
   if ((await cong.count()) > 0 && (await cong.isVisible())) {
     // Select congregation from list
     await cong.click()
   } else {
     // Click on first cong in list
-    await page.locator(`.v-list-item`).first().click()
+    await page.locator(`.cong-select .v-list-item`).first().click()
   }
 }
 
