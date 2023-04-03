@@ -33,3 +33,4 @@ win:
   publish: github
 nsis:
   oneClick: false
+  artifactName: meeting-media-manager-${version}-${arch}.${ext}
