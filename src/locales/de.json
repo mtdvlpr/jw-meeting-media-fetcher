@@ -194,7 +194,6 @@
   "zoomAutoRenameFormat": "Alter Name=Neuer Name",
   "zoomAutoStartMeeting": "Automatische Aktionen zum Start der Versammlung ausführen",
   "zoomEnable": "Zoom-Integration aktivieren",
-  "zoomHideComponent": "Zoom-Komponente standardmäßig ausblenden",
   "zoomId": "Zoom-Meeting-ID",
   "zoomMuteParticipants": "Zoomteilnehmer stummschalten",
   "zoomName": "Name des Zoomteilnehmers",

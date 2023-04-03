@@ -253,13 +253,6 @@
         :locked="isLocked('app.zoom.spotlight')"
       />
       <form-input
-        id="app.zoom.hideComponent"
-        v-model="app.zoom.hideComponent"
-        field="switch"
-        :label="$t('zoomHideComponent')"
-        :locked="isLocked('app.zoom.hideComponent')"
-      />
-      <form-input
         id="app.zoom.autoStartMeeting"
         v-model="app.zoom.autoStartMeeting"
         field="switch"

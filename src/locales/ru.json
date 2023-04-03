@@ -194,7 +194,6 @@
   "zoomAutoRenameFormat": "Старое имя=Новое имя",
   "zoomAutoStartMeeting": "Автоматически выполнять операции по началу встречи",
   "zoomEnable": "Включить интеграцию с Zoom",
-  "zoomHideComponent": "Скрыть компонент Zoom по умолчанию",
   "zoomId": "ID встречи Zoom",
   "zoomMuteParticipants": "Отключить звук участников Zoom",
   "zoomName": "Имя участника Zoom",

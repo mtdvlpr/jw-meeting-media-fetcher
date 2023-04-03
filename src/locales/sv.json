@@ -194,7 +194,6 @@
   "zoomAutoRenameFormat": "Gamla namnet=Nya namnet",
   "zoomAutoStartMeeting": "Utför automatiskt startåtgärder för möten",
   "zoomEnable": "Aktivera Zoom-integration",
-  "zoomHideComponent": "Dölj Zoomkomponent som standard",
   "zoomId": "Zoom mötes-ID",
   "zoomMuteParticipants": "Stäng av ljudet för Zoomdeltagare",
   "zoomName": "Deltagarnamn Zoom",

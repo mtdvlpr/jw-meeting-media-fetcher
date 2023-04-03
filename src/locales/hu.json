@@ -194,7 +194,6 @@
   "zoomAutoRenameFormat": "Régi név=Új név",
   "zoomAutoStartMeeting": "Automatikusan végezze el a meeting indítási műveleteket",
   "zoomEnable": "Zoom integráció bekapcsolása",
-  "zoomHideComponent": "Zoom komponens elrejtése alapértelmezetten",
   "zoomId": "Zoom Meeting ID",
   "zoomMuteParticipants": "Zoom résztvevők némítása",
   "zoomName": "Zoom résztvevő neve",

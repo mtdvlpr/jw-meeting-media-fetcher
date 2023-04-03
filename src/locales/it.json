@@ -194,7 +194,6 @@
   "zoomAutoRenameFormat": "Vecchio nome=Nuovo nome",
   "zoomAutoStartMeeting": "Esegue automaticamente le azioni di inizio riunione",
   "zoomEnable": "Abilita integrazione con Zoom",
-  "zoomHideComponent": "Nascondi componente Zoom per impostazione predefinita",
   "zoomId": "ID riunione Zoom",
   "zoomMuteParticipants": "Silenzia i partecipanti Zoom",
   "zoomName": "Nome partecipante zoom",

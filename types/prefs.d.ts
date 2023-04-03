@@ -15,7 +15,6 @@ export interface ZoomPrefs {
   id: string | null
   password: string | null
   spotlight: boolean
-  hideComponent: boolean
   autoRename: string[]
   autoStartMeeting: boolean
   autoStartTime: number | null

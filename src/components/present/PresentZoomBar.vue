@@ -141,7 +141,7 @@ const { started, coHost, hostID } = storeToRefs(store)
 
 onMounted(() => {
   setTimeout(() => {
-    showZoomComponent.value = !getPrefs<boolean>('app.zoom.hideComponent')
+    showZoomComponent.value = false
     const el = document.querySelector<HTMLButtonElement>(
       '#zoom-app-bar button.v-app-bar__nav-icon'
     )

@@ -200,7 +200,6 @@
   "zoomAutoRenameFormat": "Old Name=New Name",
   "zoomAutoStartMeeting": "Automatically perform start meeting actions",
   "zoomEnable": "Enable Zoom integration",
-  "zoomHideComponent": "Hide Zoom component by default",
   "zoomId": "Zoom Meeting ID",
   "zoomMuteParticipants": "Mute Zoom participants",
   "zoomName": "Zoom participant name",
