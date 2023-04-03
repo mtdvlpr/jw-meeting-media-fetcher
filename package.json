@@ -17,12 +17,12 @@
     "url": "https://github.com/mtdvlpr/meeting-media-manager.git"
   },
   "scripts": {
-    "dev": "yarn build:prepare && nuxi dev",
-    "analyze": "nuxi analyze",
+    "pre-build": "ts-node -T pre-build.ts",
+    "dev": "yarn pre-build && nuxi dev",
     "prepare": "nuxi prepare",
-    "build:prepare": "ts-node -T pre-build.ts",
-    "build:dev": "yarn build --c electron-builder-dev.yml",
-    "build:prod": "yarn build:prepare && cross-env NODE_OPTIONS=--max-old-space-size=4096 nuxi generate && electron-builder",
+    "analyze": "nuxi analyze",
+    "build-dev": "yarn build --c electron-builder-dev.yml",
+    "build": "yarn pre-build && cross-env NODE_OPTIONS=--max-old-space-size=4096 nuxi generate && electron-builder",
     "lint:js": "eslint --ext \".ts,.vue\" --ignore-path .gitignore .",
     "lint:prettier": "prettier --check .",
     "lint": "yarn lint:js && yarn lint:prettier",

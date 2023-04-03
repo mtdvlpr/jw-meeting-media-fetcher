@@ -67,13 +67,13 @@ jobs:
           )
         env:
           GH_TOKEN: ${{ secrets.github_token }}
-        run: yarn build:dev
+        run: yarn build-dev
 
       - name: Build app for beta
         if: inputs.type == 'beta'
         env:
           GH_TOKEN: ${{ secrets.github_token }}
-        run: yarn build:prod -p always
+        run: yarn build -p always
 
       - name: Build app for production
         if: |
@@ -83,7 +83,7 @@ jobs:
           startsWith(github.event.head_commit.message, 'chore(release)')
         env:
           GH_TOKEN: ${{ secrets.github_token }}
-        run: yarn build:prod -p onTagOrDraft
+        run: yarn build -p onTagOrDraft
 
       - name: Run tests
         if: inputs.type == 'test'

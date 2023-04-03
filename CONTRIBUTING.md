@@ -54,10 +54,10 @@ yarn analyze
 yarn prepare
 
 # Build electron application for production
-yarn build:prod
+yarn build
 
 # Build with minimal release files (necessary for test script)
-yarn build:dev
+yarn build-dev
 
 # Lint all .js/.ts/.vue files
 yarn lint
