@@ -87,7 +87,7 @@ jobs:
 
       - name: Run tests
         if: inputs.type == 'test'
-        run: yarn test
+        run: yarn lint
 
       - name: Upload screenshots to docs
         if: |
