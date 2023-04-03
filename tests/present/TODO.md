@@ -2,12 +2,12 @@
 
 ## General
 
-- [X] Test if page renders correctly
-- [X] Image plays correctly
-- [X] Video plays correctly
+- [x] Test if page renders correctly
+- [x] Image plays correctly
+- [x] Video plays correctly
 - [ ] Sign Language markers work
-- [X] Video can be paused
-- [X] Video can be scrubbed when paused
+- [x] Video can be paused
+- [x] Video can be scrubbed when paused
 - [ ] Custom start/end time
 - [ ] Keyboard shortcuts
 - [ ] Open folder

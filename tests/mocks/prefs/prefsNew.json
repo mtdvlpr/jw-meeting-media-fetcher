@@ -7,7 +7,7 @@
     "congregationName": "[TEST] old cong",
     "disableHardwareAcceleration": false,
     "localAppLang": "en",
-    "localOutputPath": "/home/manoah/Downloads",
+    "localOutputPath": null,
     "obs": {
       "enable": false,
       "port": null,
