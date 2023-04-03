@@ -60,7 +60,7 @@ export default class BrowserWinHandler {
       },
     })
 
-    this.browserWindow.setMenuBarVisibility(true)
+    this.browserWindow.setMenuBarVisibility(isDev)
 
     // open external urls in a browser and prevent default
     this.browserWindow.webContents.setWindowOpenHandler(({ url }) => {
