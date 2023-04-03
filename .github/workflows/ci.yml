@@ -7,7 +7,8 @@ on:
   push:
     branches: [main, master, refactor/next]
     paths:
-      - 'electron-builder.json5'
+      - 'electron-builder.yml'
+      - 'electron-builder-dev.yml'
       - 'package.json'
       - 'electron/**/*'
       - 'nuxt.config.ts'
