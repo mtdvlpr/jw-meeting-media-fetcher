@@ -34,7 +34,9 @@ jobs:
         run: PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 yarn install
 
       - name: Run linter
-        run: yarn lint
+        run: |
+          yarn prepare
+          yarn lint
       - name: Cancel workflow
         if: failure()
         uses: andymckay/cancel-action@0.3
