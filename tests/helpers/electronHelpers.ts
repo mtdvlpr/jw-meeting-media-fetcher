@@ -6,6 +6,7 @@ import * as ASAR from '@electron/asar'
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'fs-extra'
 import { expect, Page } from '@playwright/test'
 import { _electron, ElectronApplication } from 'playwright'
+import { sync } from 'fast-glob'
 import { name } from '../../package.json'
 import { delay } from './generalHelpers'
 import prefsNew from './../mocks/prefs/prefsNew.json'
@@ -89,8 +90,9 @@ export async function openHomePage(
 
   // Insert mock preferences
   writeFileSync(join(appPath, `prefs-${congId}.json`), JSON.stringify(prefs))
+  const nrOfCongs = sync(join(appPath, 'prefs-*.json')).length
 
-  if (onCongSelect) {
+  if (onCongSelect && nrOfCongs > 1) {
     await selectCong(page, congName)
   } else if (page.url().includes('settings')) {
     // Open the home page as test congregation
@@ -110,7 +112,7 @@ export async function openHomePage(
   // If not on correct cong, switch cong through menu
   if ((await page.locator(`text=${congName}`).count()) !== 1) {
     await page.reload({ waitUntil: 'domcontentloaded' })
-    await selectCong(page, congName)
+    if (nrOfCongs > 1) await selectCong(page, congName)
   }
 
   // Wait for page to finish loading
