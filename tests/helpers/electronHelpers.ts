@@ -97,6 +97,12 @@ export async function openHomePage(
   } else if (page.url().includes('settings')) {
     // Open the home page as test congregation
     await page.reload({ waitUntil: 'domcontentloaded' })
+    if (
+      nrOfCongs > 1 &&
+      (await page.locator('.fa-building-user').count()) > 0
+    ) {
+      await selectCong(page, congName)
+    }
   }
 
   // While still on the settings page, click on the home page button, until the prefs are accepted as valid
