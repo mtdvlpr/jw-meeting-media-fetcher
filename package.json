@@ -17,7 +17,7 @@
     "url": "https://github.com/mtdvlpr/meeting-media-manager.git"
   },
   "scripts": {
-    "pre-build": "ts-node -T pre-build.ts",
+    "pre-build": "yarn prepare && ts-node -T pre-build.ts",
     "dev": "yarn pre-build && nuxi dev",
     "prepare": "nuxi prepare",
     "analyze": "nuxi analyze",
