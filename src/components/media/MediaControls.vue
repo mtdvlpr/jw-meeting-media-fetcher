@@ -52,6 +52,9 @@ import { LocalFile } from '~~/types'
 
 const loading = ref(true)
 const addSong = ref(false)
+watch(addSong, (val) => {
+  if (val) window.scrollTo(0, 0)
+})
 
 // Current meeting date
 const date = useRouteQuery<string>('date', '')
