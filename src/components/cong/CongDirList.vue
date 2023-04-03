@@ -3,6 +3,7 @@
     <template #after-input="{ node }">
       <div v-if="node.dir" class="d-flex justify-end" style="width: 100%">
         <v-btn
+          variant="text"
           icon="fa-arrow-right"
           size="x-small"
           @click="emit('open', node.id)"

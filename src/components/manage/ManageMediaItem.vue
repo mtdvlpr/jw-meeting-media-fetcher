@@ -23,6 +23,7 @@
             <v-btn
               icon="fa-square-minus"
               size="x-small"
+              variant="text"
               color="error"
               v-bind="attrs"
               @click="atClick()"
@@ -33,6 +34,7 @@
           v-else
           icon="fa-square-minus"
           size="x-small"
+          variant="text"
           color="warning"
           @click="atClick(item)"
         />
@@ -40,6 +42,7 @@
       <v-list-item-action v-else class="my-0">
         <v-btn
           size="x-small"
+          variant="text"
           :icon="
             'fa-square' +
             (item.isLocal === undefined ? '-plus' : item.hidden ? '' : '-check')
@@ -80,6 +83,7 @@
           v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
           icon="fa-pen"
           size="x-small"
+          variant="text"
           aria-label="rename file"
           @click="emit('edit')"
         />

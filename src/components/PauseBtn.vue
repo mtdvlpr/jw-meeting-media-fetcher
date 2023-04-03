@@ -1,10 +1,9 @@
 <template>
   <v-btn
-    id="pause-btn"
     color="warning"
     aria-label="Pause"
     v-bind="$attrs"
-    :class="{ 'pulse-danger': toggled }"
+    :class="{ 'pulse-danger': toggled, 'pause-btn': true }"
     @click="emit('click')"
   >
     <v-tooltip activator="parent" :location="tooltip">

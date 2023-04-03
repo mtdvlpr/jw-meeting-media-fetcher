@@ -52,7 +52,7 @@
             prepend-icon="fa-paragraph"
             :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
           >
-            {{ titleParts[3] }}
+            {{ titleParts[5] }}
           </v-chip>
           <div
             class="clamp-lines text-regular"

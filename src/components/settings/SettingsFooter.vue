@@ -88,6 +88,7 @@ const cong = useRouteQuery('cong', '')
 const goBack = () => {
   log.debug('Go back')
   removeSync(join(appPath(), `prefs-${cong.value}.json`))
+  useStatStore().setNavDisabled(false)
   useRouter().back()
 }
 

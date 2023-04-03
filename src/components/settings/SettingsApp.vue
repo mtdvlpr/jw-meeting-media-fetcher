@@ -12,6 +12,7 @@
       id="app.theme"
       v-model="app.theme"
       field="select"
+      class="theme-preference"
       :items="[
         { title: $t('light'), value: 'light' },
         { title: $t('dark'), value: 'dark' },

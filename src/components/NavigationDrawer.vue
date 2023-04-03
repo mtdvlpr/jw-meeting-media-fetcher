@@ -9,7 +9,7 @@
             variant="tonal"
             :disabled="!!musicFadeOut || navDisabled"
           >
-            {{ cong }}
+            {{ getPrefs('app.congregationName') }}
           </v-btn>
         </template>
         <template #prepend>
@@ -28,6 +28,7 @@
         :to="item.to"
         :title="item.title"
         :disabled="navDisabled"
+        :aria-label="item.aria"
         :prepend-icon="item.icon"
       >
         <v-tooltip v-if="item.tooltip" activator="parent">
@@ -52,12 +53,14 @@ const navItems = computed(() => {
       icon: 'fa-calendar-week',
       to: localePath('/home'),
       tooltip: '',
+      aria: 'home',
     },
     {
       title: $i18n.t('settings'),
       icon: 'fa-cog',
       to: localePath('/settings'),
       tooltip: '',
+      aria: 'settings',
     },
   ]
   if (showMediaPlayback.value) {
@@ -66,6 +69,7 @@ const navItems = computed(() => {
       icon: 'fab fa-chromecast',
       to: localePath('/present'),
       tooltip: getPrefs<string>('media.presentShortcut'),
+      aria: 'present',
     })
   }
   return items

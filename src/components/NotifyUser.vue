@@ -32,6 +32,7 @@
             v-if="m.persistent || m.dismiss"
             icon="fa-xmark"
             size="x-small"
+            variant="text"
             class="align-right"
             @click="store.dismiss(i)"
           />

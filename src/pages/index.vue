@@ -19,7 +19,12 @@
             @click="initPrefs(c.filename)"
           >
             <template v-if="c.id !== cong" #append>
-              <v-btn icon="fa-trash" size="small" @click="removeCong(c.path)" />
+              <v-btn
+                icon="fa-trash"
+                variant="text"
+                size="small"
+                @click="removeCong(c.path)"
+              />
             </template>
           </v-list-item>
           <v-list-item

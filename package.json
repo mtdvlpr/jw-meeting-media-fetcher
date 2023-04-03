@@ -27,7 +27,7 @@
     "lint:prettier": "prettier --check .",
     "lint": "yarn lint:js && yarn lint:prettier",
     "lint:fix": "prettier --write --list-different . && yarn lint:js --fix",
-    "test": "yarn lint"
+    "test": "xvfb-maybe -- playwright test"
   },
   "engines": {
     "node": "^18.14.2",
@@ -47,6 +47,7 @@
     "electron-window-state": "^5.0.3"
   },
   "devDependencies": {
+    "@electron/asar": "^3.2.3",
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-brands-svg-icons": "^6.4.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
@@ -56,6 +57,7 @@
     "@nuxtjs/i18n": "next",
     "@panzoom/panzoom": "^4.5.1",
     "@pinia/nuxt": "^0.4.7",
+    "@playwright/test": "^1.32.1",
     "@sentry/tracing": "^7.46.0",
     "@sentry/vue": "^7.46.0",
     "@stephen/sql.js": "^1.8.6",
@@ -85,6 +87,7 @@
     "fullname": "^4.0.1",
     "h264-mp4-encoder": "^1.0.12",
     "image-size": "^1.0.2",
+    "jimp": "^0.22.7",
     "jszip": "^3.10.1",
     "nuxt": "^3.3.3",
     "nuxt-electron": "^0.4.5",
@@ -93,6 +96,7 @@
     "obs-websocket-js-v5": "npm:obs-websocket-js@5.0.2",
     "pdfjs-dist": "^3.4.120",
     "pinia": "^2.0.33",
+    "playwright": "^1.32.1",
     "prettier": "^2.8.7",
     "sass": "^1.60.0",
     "ts-node": "^10.9.1",
@@ -108,6 +112,7 @@
     "vue3-treeview": "^0.4.1",
     "vuedraggable": "next",
     "vuetify": "^3.1.12",
-    "webdav": "^4.11.2"
+    "webdav": "^4.11.2",
+    "xvfb-maybe": "^0.2.1"
   }
 }

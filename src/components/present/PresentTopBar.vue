@@ -19,6 +19,7 @@
           <v-btn
             icon="fa-ellipsis-vertical"
             size="small"
+            variant="text"
             v-bind="props"
             aria-label="More actions"
             class="mr-2"

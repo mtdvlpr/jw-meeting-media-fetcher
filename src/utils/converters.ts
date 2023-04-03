@@ -115,7 +115,7 @@ export async function convertToVLC() {
       },
     }
     write(
-      join(mediaPath(), date, `{date}.xspf`),
+      join(mediaPath(), date, `${date}.xspf`),
       new XMLBuilder({ ignoreAttributes: false }).build(playlistItems)
     )
   })
