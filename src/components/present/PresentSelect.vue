@@ -2,22 +2,26 @@
   <v-row no-gutters align="start" class="present-select pa-4">
     <v-col cols="12">
       <loading-icon v-if="loading" />
-      <v-list
-        v-else-if="dates.length > 0"
-        :style="`
-        width: 100%;
-        overflow-y: auto;
-        ${listHeight}
-      `"
-      >
-        <template v-for="(date, i) in dates" :key="date">
-          <v-list-item class="text-center" @click="selectDate(date)">
-            <v-list-item-title>{{ date }}</v-list-item-title>
-          </v-list-item>
-          <v-divider v-if="i < dates.length - 1" />
-        </template>
-      </v-list>
-      <p v-else>{{ $t('noMeetings') }}</p>
+      <v-row class="calendar">
+        <v-row v-for="(week, i) in weeks" :key="i" class="week">
+          <v-col v-for="(day, j) in week" :key="j" class="day">
+            <v-card
+              v-ripple="!day.actionable"
+              class="ma-1"
+              :class="{
+                notActionable: !day.actionable,
+                pastMonth: new Date(day.date).getUTCMonth() !== currentMonth,
+              }"
+              @click="day.actionable && selectDate(day.date)"
+            >
+              <v-card-text>{{
+                new Date(day.date).toISOString().slice(5, 10)
+              }}</v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-row>
+      <p v-if="!loading && dates.length === 0">{{ $t('noMeetings') }}</p>
     </v-col>
   </v-row>
 </template>
@@ -36,8 +40,6 @@ const today = computed(() => {
 })
 
 onMounted(() => {
-  getDates()
-
   if (props.firstChoice && dates.value.length === 1) {
     selectDate(dates.value[0])
   } else if (props.firstChoice && dates.value.includes(today.value)) {
@@ -64,36 +66,75 @@ const selectDate = (date: string) => {
 }
 
 const dates = ref<string[]>([])
-const getDates = () => {
-  const mPath = mediaPath()
-  if (!mPath) {
-    useRouter().push({
-      path: useLocalePath()('/settings'),
-      query: useRoute().query,
-    })
-    return
-  }
-  dates.value = findAll(join(mPath, '*'), {
-    onlyDirectories: true,
-    ignore: [join(mPath, 'Recurring')],
+const mPath = mediaPath()
+if (!mPath) {
+  useRouter().push({
+    path: useLocalePath()('/settings'),
+    query: useRoute().query,
   })
-    .map((path) => basename(path))
-    .filter(
-      (date) =>
-        validDate(date) &&
-        findAll(join(mPath, date, '*.!(title|vtt|json)')).length > 0
-    )
 }
-
-// Computed list height
-const windowHeight = inject(windowHeightKey, ref(0))
-const listHeight = computed(() => {
-  const OTHER_ELEMENTS = 181
-  return `max-height: ${windowHeight.value - OTHER_ELEMENTS}px`
+dates.value = findAll(join(mPath, '*'), {
+  onlyDirectories: true,
+  ignore: [join(mPath, 'Recurring')],
 })
+  .map((path) => basename(path))
+  .filter(
+    (date) =>
+      validDate(date) &&
+      findAll(join(mPath, date, '*.!(title|vtt|json)')).length > 0
+  )
+
+const currentMonth = new Date().getMonth()
+const todayDate = new Date()
+const firstDayOfMonth = new Date(
+  todayDate.getFullYear(),
+  todayDate.getMonth(),
+  1
+)
+const lastDayOfMonth = new Date(
+  todayDate.getFullYear(),
+  todayDate.getMonth() + 1,
+  0
+)
+const firstDayOfWeek = new Date(firstDayOfMonth)
+firstDayOfWeek.setDate(firstDayOfMonth.getDate() - firstDayOfMonth.getDay())
+const lastDayOfWeek = new Date(lastDayOfMonth)
+lastDayOfWeek.setDate(lastDayOfMonth.getDate() + (6 - lastDayOfMonth.getDay()))
+
+const weeks = ref<object[]>([])
+const currentDay = new Date(firstDayOfWeek)
+// eslint-disable-next-line no-unmodified-loop-condition
+while (currentDay <= lastDayOfWeek) {
+  const week = []
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(currentDay)
+    const actionable = dates.value.some((d) => {
+      return (
+        new Date(d).toISOString().substring(0, 10) ===
+        date.toISOString().substring(0, 10)
+      )
+    })
+    week.push({
+      date: date.toISOString().substring(0, 10),
+      actionable,
+      month: currentDay.getMonth(),
+    })
+    currentDay.setDate(currentDay.getDate() + 1)
+  }
+  weeks.value.push(week)
+}
 </script>
 <style lang="scss" scoped>
 .present-select {
   width: 100%;
+}
+.pastMonth {
+  opacity: 0.5;
+}
+.notActionable {
+  color: red;
+}
+.active {
+  cursor: pointer;
 }
 </style>
