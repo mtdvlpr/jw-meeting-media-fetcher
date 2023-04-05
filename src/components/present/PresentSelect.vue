@@ -1,32 +1,40 @@
 <template>
-  <v-row no-gutters align="start" class="present-select pa-4">
-    <v-col cols="12">
+  <v-row align="start" class="present-select pa-4">
+    <v-col>
       <loading-icon v-if="loading" />
-      <v-row class="calendar">
-        <v-row v-for="(week, i) in weeks" :key="i" class="week">
-          <v-col v-for="(day, j) in week" :key="j" class="day">
-            <v-card
-              v-ripple="!day.actionable"
-              class="ma-1"
-              :class="{
-                notActionable: !day.actionable,
-                pastMonth: new Date(day.date).getUTCMonth() !== currentMonth,
-              }"
-              @click="day.actionable && selectDate(day.date)"
-            >
-              <v-card-text>{{
-                new Date(day.date).toISOString().slice(5, 10)
-              }}</v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
+      <v-row no-gutters class="calendar">
+        <v-col>
+          <v-row v-for="(week, i) in weeks" :key="i" no-gutters class="week">
+            <v-col v-for="(day, j) in week" :key="j" class="day">
+              <!-- :text="day.count ? day.count + ' items' : ''" -->
+              <v-card
+                v-ripple="day.actionable && !day.inPast"
+                variant="outlined"
+                :subtitle="day.month"
+                :title="day.dayOfMonth"
+                class="ma-1"
+                :class="{
+                  notActionable: !day.actionable,
+                  notRelevant: !day.actionable,
+                  notThisMonth: !day.currentMonth,
+                  inPast: day.inPast,
+                }"
+                @click="day.actionable && !day.inPast && selectDate(day.date)"
+              >
+                <v-card-text></v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-col>
       </v-row>
       <p v-if="!loading && dates.length === 0">{{ $t('noMeetings') }}</p>
     </v-col>
   </v-row>
 </template>
+
 <script setup lang="ts">
 import { basename, join } from 'upath'
+import weekday from 'dayjs/plugin/weekday'
 import { DateFormat } from '~~/types'
 
 const props = defineProps<{
@@ -65,7 +73,7 @@ const selectDate = (date: string) => {
   })
 }
 
-const dates = ref<string[]>([])
+const dates = ref<object[]>([])
 const mPath = mediaPath()
 if (!mPath) {
   useRouter().push({
@@ -73,67 +81,77 @@ if (!mPath) {
     query: useRoute().query,
   })
 }
-dates.value = findAll(join(mPath, '*'), {
+
+const directories = findAll(join(mPath, '*'), {
   onlyDirectories: true,
   ignore: [join(mPath, 'Recurring')],
 })
-  .map((path) => basename(path))
-  .filter(
-    (date) =>
-      validDate(date) &&
-      findAll(join(mPath, date, '*.!(title|vtt|json)')).length > 0
-  )
 
-const currentMonth = new Date().getMonth()
-const todayDate = new Date()
-const firstDayOfMonth = new Date(
-  todayDate.getFullYear(),
-  todayDate.getMonth(),
-  1
-)
-const lastDayOfMonth = new Date(
-  todayDate.getFullYear(),
-  todayDate.getMonth() + 1,
-  0
-)
-const firstDayOfWeek = new Date(firstDayOfMonth)
-firstDayOfWeek.setDate(firstDayOfMonth.getDate() - firstDayOfMonth.getDay())
-const lastDayOfWeek = new Date(lastDayOfMonth)
-lastDayOfWeek.setDate(lastDayOfMonth.getDate() + (6 - lastDayOfMonth.getDay()))
+console.log(directories)
 
-const weeks = ref<object[]>([])
-const currentDay = new Date(firstDayOfWeek)
-// eslint-disable-next-line no-unmodified-loop-condition
+dates.value = directories
+  .map((path) => {
+    const name = basename(path)
+    const files = findAll(join(mPath, name, '*.!(title|vtt|json)'))
+    const count = files.length
+    return { name, count }
+  })
+  .filter(({ name, count }) => validDate(name) && count > 0)
+$dayjs.extend(weekday)
+const todayDate = $dayjs().startOf('day')
+const firstDayOfMonth = todayDate.startOf('month')
+const previousSunday = firstDayOfMonth.subtract(
+  firstDayOfMonth.weekday() + 1,
+  'day'
+)
+const lastDayOfMonth = todayDate.endOf('month')
+const lastDayOfWeek = lastDayOfMonth.endOf('week')
+const weeks: {
+  month: any
+  dayOfMonth: any
+  inPast: any
+  date: string
+  actionable: boolean
+  currentMonth: any
+}[][] = []
+let currentDay = previousSunday
 while (currentDay <= lastDayOfWeek) {
   const week = []
   for (let i = 0; i < 7; i++) {
-    const date = new Date(currentDay)
-    const actionable = dates.value.some((d) => {
-      return (
-        new Date(d).toISOString().substring(0, 10) ===
-        date.toISOString().substring(0, 10)
-      )
+    const date = currentDay
+    const mediaItems = dates.value.find((d: { name }) => {
+      return $dayjs(d.name).isSame(date, 'day')
     })
+    console.log('123', mediaItems)
     week.push({
-      date: date.toISOString().substring(0, 10),
-      actionable,
-      month: currentDay.getMonth(),
+      date: date.format('YYYY-MM-DD'),
+      dayOfMonth: date.format('D'),
+      month: date.format('MMM'),
+      actionable: mediaItems?.count > 0,
+      count: mediaItems?.count,
+      currentMonth: date.isSame(todayDate, 'month'),
+      inPast: date.isBefore(todayDate),
     })
-    currentDay.setDate(currentDay.getDate() + 1)
+    currentDay = currentDay.add(1, 'day')
   }
-  weeks.value.push(week)
+  weeks.push(week)
 }
 </script>
 <style lang="scss" scoped>
 .present-select {
   width: 100%;
 }
-.pastMonth {
-  opacity: 0.5;
-}
 .notActionable {
   color: red;
 }
+.notThisMonth {
+  color: blue;
+}
+
+.notRelevant {
+  opacity: 0.5;
+}
+
 .active {
   cursor: pointer;
 }
