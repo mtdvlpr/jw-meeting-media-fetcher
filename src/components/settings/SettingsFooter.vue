@@ -55,6 +55,7 @@
 import { useRouteQuery } from '@vueuse/router'
 import { removeSync } from 'fs-extra'
 import { join } from 'upath'
+import getFolderSize from 'get-folder-size'
 import { PrefStore } from '~~/types'
 
 const props = defineProps<{
@@ -117,46 +118,43 @@ const setShuffleMusicFiles = () => {
   if (!pPath || !props.prefs.media.lang) return
   shuffleMusicFiles.value = isSignLanguage()
     ? join(pPath, '..', props.prefs.media.lang, 'sjj', '**', '*.mp4')
+    : props.prefs.media.lang === 'E'
+    ? ''
     : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
 }
 
-const calcCache = () => {
+const calcCache = async () => {
   setShuffleMusicFiles()
-  if (!props.prefs.app.localOutputPath && !props.prefs.media.lang) {
-    emit('cache', 0)
+  let size = 0
+  if (props.prefs.app.localOutputPath || props.prefs.media.lang) {
+    const mPath = mediaPath()
+    const folders = getCacheFolders()
+    for (const folder of folders) {
+      try {
+        const options = mPath ? { ignore: /Recurring/ } : {}
+        size +=
+          Math.round((await getFolderSize.loose(folder, options)) / 104857.6) /
+          10
+      } catch (err) {
+        console.error(folder, err)
+      }
+    }
   }
-
-  const mPath = mediaPath()
-  const folders = getCacheFolders()
-
-  emit(
-    'cache',
-    parseFloat(
-      (
-        findAllStats(folders, {
-          ignore: mPath ? [join(mPath, 'Recurring')] : [],
-        })
-          .map((f) => f.stats?.size ?? 0)
-          .reduce((a, b) => a + b, 0) /
-        BYTES_IN_KIBI_BYTE /
-        BYTES_IN_KIBI_BYTE
-      ).toFixed(1)
-    )
-  )
+  emit('cache', size)
 }
 
 const getCacheFolders = (onlyDirs = false) => {
   const folders: string[] = []
   const pPath = pubPath()
   const mPath = mediaPath()
-  if (mPath) folders.push(join(mPath, onlyDirs ? '*' : '**'))
+  if (mPath) folders.push(join(mPath, onlyDirs ? '*' : ''))
   if (pPath) {
-    folders.push(onlyDirs ? pPath : join(pPath, '**'))
+    folders.push(pPath)
     if (!onlyDirs) folders.push(shuffleMusicFiles.value)
     const fallbackLang = props.prefs.media.langFallback
     if (fallbackLang) {
       const fallbackDir = join(pPath, '..', fallbackLang)
-      folders.push(onlyDirs ? fallbackDir : join(fallbackDir, '**'))
+      folders.push(fallbackDir)
     }
   }
   return folders
