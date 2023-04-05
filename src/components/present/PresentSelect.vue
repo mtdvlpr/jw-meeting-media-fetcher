@@ -99,13 +99,11 @@ dates.value = directories
   .filter(({ name, count }) => validDate(name) && count > 0)
 $dayjs.extend(weekday)
 const todayDate = $dayjs().startOf('day')
-const firstDayOfMonth = todayDate.startOf('month')
-const previousSunday = firstDayOfMonth.subtract(
-  firstDayOfMonth.weekday() + 1,
-  'day'
-)
-const lastDayOfMonth = todayDate.endOf('month')
-const lastDayOfWeek = lastDayOfMonth.endOf('week')
+// const firstDayOfMonth = todayDate.startOf('month')
+const firstDay = todayDate.subtract(todayDate.weekday() + 1, 'day')
+// const lastDayOfMonth = todayDate.endOf('month')
+// const lastDayOfWeek = lastDayOfMonth.endOf('week')
+const lastDay = firstDay.add(4, 'weeks')
 const weeks: {
   month: any
   dayOfMonth: any
@@ -114,8 +112,8 @@ const weeks: {
   actionable: boolean
   currentMonth: any
 }[][] = []
-let currentDay = previousSunday
-while (currentDay <= lastDayOfWeek) {
+let currentDay = firstDay
+while (currentDay <= lastDay) {
   const week = []
   for (let i = 0; i < 7; i++) {
     const date = currentDay
@@ -142,12 +140,18 @@ while (currentDay <= lastDayOfWeek) {
   width: 100%;
 }
 .notActionable {
-  color: red;
+  color: blue;
+  background-color: lightblue;
 }
 .notThisMonth {
-  color: blue;
+  color: red;
+  background-color: lightgrey;
 }
 
+.inPast {
+  color: yellow;
+  background-color: lightyellow;
+}
 .notRelevant {
   opacity: 0.5;
 }
