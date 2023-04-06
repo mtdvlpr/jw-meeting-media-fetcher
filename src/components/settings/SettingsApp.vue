@@ -492,6 +492,7 @@ const removeAutoRename = (index: number) => {
 watch(
   () => app.value.obs.enable,
   (val) => {
+    setPrefs('app.obs.enable', val)
     if (val && obsComplete.value) {
       getScenes().then(() => {
         if (appForm.value) appForm.value.validate()
@@ -504,7 +505,8 @@ watch(
 )
 watch(
   () => app.value.obs.useV4,
-  () => {
+  (val) => {
+    setPrefs('app.obs.useV4', val)
     if (obsComplete.value) {
       getScenes()
     }

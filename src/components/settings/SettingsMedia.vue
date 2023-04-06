@@ -331,9 +331,12 @@ watch(
 )
 watch(
   () => media.value.preferredOutput,
-  async () => {
+  (val) => {
+    setPrefs('media.preferredOutput', val)
     if (media.value.enableMediaDisplayButton) {
-      ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
+      getMediaWindowDestination().then((dest) => {
+        ipcRenderer.send('showMediaWindow', dest)
+      })
     }
   }
 )
@@ -377,6 +380,7 @@ watch(
   () => media.value.lang,
   (val) => {
     if (!val) return
+    setPrefs('media.lang', val)
     useDbStore().clear()
     useMediaStore().clear()
     getPubAvailability(val)
