@@ -128,13 +128,14 @@ const calcCache = async () => {
   setShuffleMusicFiles()
   let size = 0
   if (props.prefs.app.localOutputPath || props.prefs.media.lang) {
-    const mPath = mediaPath()
     const folders = getCacheFolders()
 
     for (const folder of folders) {
       try {
-        const options = mPath ? { ignore: /Recurring/ } : {}
-        size += (await getFolderSize.loose(folder, options)) / 1000 / 1000
+        size +=
+          (await getFolderSize.loose(folder, { ignore: /Recurring/ })) /
+          1000 /
+          1000
       } catch (e) {
         log.error(folder, e)
       }
@@ -148,9 +149,10 @@ const getCacheFolders = (onlyDirs = false) => {
   const folders: string[] = []
   const pPath = pubPath()
   const mPath = mediaPath()
-  if (mPath) folders.push(join(mPath, onlyDirs ? '*' : ''))
+  const mediaLang = props.prefs.media.lang
+  if (mPath) folders.push(join(mPath, '..', mediaLang, onlyDirs ? '*' : ''))
   if (pPath) {
-    folders.push(pPath)
+    folders.push(join(pPath, '..', mediaLang))
     if (!onlyDirs && shuffleMusicFiles.value) {
       folders.push(...findAll(shuffleMusicFiles.value))
     }
