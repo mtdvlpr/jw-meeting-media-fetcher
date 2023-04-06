@@ -2109,6 +2109,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/get-folder-size@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@types/get-folder-size@npm:3.0.1"
+  dependencies:
+    "@types/node": "*"
+  checksum: fadd190d8433795f192382fb6e48c36c4f0c8c3e768653f055beac52fa4aa90d92a1d68e70bd8fd14029a64d3bb883056b0929fcebd1dbf76c8850713b679a1b
+  languageName: node
+  linkType: hard
+
 "@types/glob@npm:^7.1.1":
   version: 7.2.0
   resolution: "@types/glob@npm:7.2.0"
@@ -6183,6 +6192,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"gar@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "gar@npm:1.0.4"
+  checksum: 6b1010b5c17056526298734bfa08716f111cd023394dbe32496841e2f7b0dfe9e742b8ddb56103c0867f2ae80f5f069262916e5398ac982467be4da240ba7bb9
+  languageName: node
+  linkType: hard
+
 "gauge@npm:^3.0.0":
   version: 3.0.2
   resolution: "gauge@npm:3.0.2"
@@ -6227,6 +6243,17 @@ __metadata:
   version: 2.0.5
   resolution: "get-caller-file@npm:2.0.5"
   checksum: b9769a836d2a98c3ee734a88ba712e62703f1df31b94b784762c433c27a386dd6029ff55c2a920c392e33657d80191edbf18c61487e198844844516f843496b9
+  languageName: node
+  linkType: hard
+
+"get-folder-size@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "get-folder-size@npm:4.0.0"
+  dependencies:
+    gar: ^1.0.4
+  bin:
+    get-folder-size: bin/get-folder-size.js
+  checksum: 7fa8bc0c61505dae43fd8d7540ef17cb1098c7caee7c9b2d607dfd5e20ea2a1de071540e277b4577069b48d7df88548614ef0096f1f0dbad54e3bbf165362d3d
   languageName: node
   linkType: hard
 
@@ -8070,6 +8097,7 @@ __metadata:
     "@stephen/sql.js": ^1.8.6
     "@types/fluent-ffmpeg": ^2.1.21
     "@types/fs-extra": ^11.0.1
+    "@types/get-folder-size": ^3.0.1
     "@types/node": ^18.15.11
     "@typescript-eslint/parser": ^5.57.1
     "@vuepic/vue-datepicker": ^4.3.0
@@ -8096,6 +8124,7 @@ __metadata:
     fluent-ffmpeg: ^2.1.2
     fs-extra: ^11.1.1
     fullname: ^4.0.1
+    get-folder-size: ^4.0.0
     h264-mp4-encoder: ^1.0.12
     image-size: ^1.0.2
     jimp: ^0.22.7

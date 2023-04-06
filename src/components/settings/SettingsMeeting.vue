@@ -152,6 +152,7 @@
   </v-form>
 </template>
 <script setup lang="ts">
+import { promises as fs } from 'fs'
 import { extname, join } from 'upath'
 import { MeetingPrefs, PrefStore, VFormRef, VideoFile } from '~~/types'
 
@@ -184,7 +185,7 @@ const localeDays = computed(() => {
   })
 })
 
-onMounted(() => {
+onMounted(async () => {
   // Validate coWeek
   if (meeting.value.coWeek) {
     const date = $dayjs(meeting.value.coWeek, 'YYYY-MM-DD')
@@ -193,7 +194,7 @@ onMounted(() => {
     }
   }
 
-  cached.value = shuffleMusicCached()
+  cached.value = await shuffleMusicCached()
   if (meetingForm.value) meetingForm.value.validate()
 })
 
@@ -214,25 +215,26 @@ watch(meetingDaysValid, (val) => emit('valid', valid.value && val))
 // Cache
 watch(
   () => props.cache,
-  () => {
-    cached.value = shuffleMusicCached()
+  async () => {
+    cached.value = await shuffleMusicCached()
   }
 )
-const shuffleMusicCached = () => {
-  const pPath = pubPath()
-  if (!pPath) return false
-  if (!props.prefs.media.lang) return false
-  if (isSignLanguage()) {
-    return (
-      findAll(join(pPath, '..', props.prefs.media.lang, 'sjj', '**', '*.mp4'))
-        .length === NR_OF_KINGDOM_SONGS
+const shuffleMusicCached = async () => {
+  let matchingFiles = 0
+  try {
+    const pPath = pubPath()
+    if (!pPath || !props.prefs.media.lang) return false
+    const langDir = isSignLanguage() ? props.prefs.media.lang : 'E'
+    const folders = await fs.readdir(
+      join(pPath, '..', langDir, 'sjj' + (isSignLanguage() ? '' : 'm'))
     )
-  } else {
-    return (
-      findAll(join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')).length ===
-      NR_OF_KINGDOM_SONGS
-    )
+    matchingFiles = isSignLanguage()
+      ? folders.filter((file) => file.endsWith('.mp4')).length
+      : folders.filter((file) => file.endsWith('.mp3')).length
+  } catch (err) {
+    console.error(err)
   }
+  return matchingFiles === NR_OF_KINGDOM_SONGS
 }
 const cached = ref(false)
 watch(cached, (val) => {
