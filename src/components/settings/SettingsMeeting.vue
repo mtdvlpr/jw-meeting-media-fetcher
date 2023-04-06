@@ -152,7 +152,7 @@
   </v-form>
 </template>
 <script setup lang="ts">
-import { promises as fs } from 'fs'
+import { readdir } from 'fs-extra'
 import { extname, join } from 'upath'
 import { MeetingPrefs, PrefStore, VFormRef, VideoFile } from '~~/types'
 
@@ -185,7 +185,7 @@ const localeDays = computed(() => {
   })
 })
 
-onMounted(async () => {
+onMounted(() => {
   // Validate coWeek
   if (meeting.value.coWeek) {
     const date = $dayjs(meeting.value.coWeek, 'YYYY-MM-DD')
@@ -194,7 +194,7 @@ onMounted(async () => {
     }
   }
 
-  cached.value = await shuffleMusicCached()
+  setShuffleMusicCached()
   if (meetingForm.value) meetingForm.value.validate()
 })
 
@@ -215,26 +215,25 @@ watch(meetingDaysValid, (val) => emit('valid', valid.value && val))
 // Cache
 watch(
   () => props.cache,
-  async () => {
-    cached.value = await shuffleMusicCached()
+  () => {
+    setShuffleMusicCached()
   }
 )
-const shuffleMusicCached = async () => {
+const setShuffleMusicCached = async () => {
   let matchingFiles = 0
   try {
     const pPath = pubPath()
     if (!pPath || !props.prefs.media.lang) return false
-    const langDir = isSignLanguage() ? props.prefs.media.lang : 'E'
-    const folders = await fs.readdir(
-      join(pPath, '..', langDir, 'sjj' + (isSignLanguage() ? '' : 'm'))
-    )
-    matchingFiles = isSignLanguage()
-      ? folders.filter((file) => file.endsWith('.mp4')).length
-      : folders.filter((file) => file.endsWith('.mp3')).length
-  } catch (err) {
-    console.error(err)
+    const isSign = isSignLanguage()
+    const langDir = isSign ? props.prefs.media.lang : 'E'
+    const pubCode = isSign ? 'sjj' : 'sjjm'
+    const ext = isSign ? '.mp4' : '.mp3'
+    const folders = await readdir(join(pPath, '..', langDir, pubCode))
+    matchingFiles = folders.filter((file) => file.endsWith(ext)).length
+  } catch (e) {
+    log.error(e)
   }
-  return matchingFiles === NR_OF_KINGDOM_SONGS
+  cached.value = matchingFiles === NR_OF_KINGDOM_SONGS
 }
 const cached = ref(false)
 watch(cached, (val) => {

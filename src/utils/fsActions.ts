@@ -43,26 +43,6 @@ export function findAll(path: string | string[], options?: Options) {
   return []
 }
 
-export function findAllStats(path: string | string[], options?: Options) {
-  try {
-    const results = sync(path, {
-      ...options,
-      stats: true,
-    })
-    log.debug(path, results)
-    return results
-  } catch (e: any) {
-    if (e.message?.includes('operation not permitted')) {
-      const identifier = e.message.split("'")[1]
-      warn('errorSetVars', { identifier }, e)
-    } else {
-      const identifier = path instanceof Array ? path[0] : path
-      warn('errorSetVars', { identifier }, e)
-    }
-  }
-  return []
-}
-
 export function rm(files: string | string[]) {
   if (!Array.isArray(files)) files = [files]
   files.forEach((file) => {

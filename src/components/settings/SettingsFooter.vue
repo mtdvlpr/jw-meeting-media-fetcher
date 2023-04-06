@@ -124,23 +124,24 @@ const setShuffleMusicFiles = () => {
 }
 
 const calcCache = async () => {
+  loading.value = true
   setShuffleMusicFiles()
   let size = 0
   if (props.prefs.app.localOutputPath || props.prefs.media.lang) {
     const mPath = mediaPath()
     const folders = getCacheFolders()
+
     for (const folder of folders) {
       try {
         const options = mPath ? { ignore: /Recurring/ } : {}
-        size +=
-          Math.round((await getFolderSize.loose(folder, options)) / 104857.6) /
-          10
-      } catch (err) {
-        console.error(folder, err)
+        size += (await getFolderSize.loose(folder, options)) / 1000 / 1000
+      } catch (e) {
+        log.error(folder, e)
       }
     }
   }
-  emit('cache', size)
+  emit('cache', parseFloat(size.toFixed(1)))
+  loading.value = false
 }
 
 const getCacheFolders = (onlyDirs = false) => {
@@ -150,7 +151,9 @@ const getCacheFolders = (onlyDirs = false) => {
   if (mPath) folders.push(join(mPath, onlyDirs ? '*' : ''))
   if (pPath) {
     folders.push(pPath)
-    if (!onlyDirs) folders.push(shuffleMusicFiles.value)
+    if (!onlyDirs && shuffleMusicFiles.value) {
+      folders.push(...findAll(shuffleMusicFiles.value))
+    }
     const fallbackLang = props.prefs.media.langFallback
     if (fallbackLang) {
       const fallbackDir = join(pPath, '..', fallbackLang)
@@ -173,7 +176,7 @@ const removeCache = async () => {
     loading.value = true
 
     const mPath = mediaPath()
-    if (mPath) rm(findAll(shuffleMusicFiles.value))
+    if (mPath && shuffleMusicFiles.value) rm(findAll(shuffleMusicFiles.value))
     const folders = getCacheFolders(true)
     rm(
       findAll(folders, {
