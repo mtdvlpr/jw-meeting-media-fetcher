@@ -20,9 +20,8 @@ if (
 ) {
   vitePlugins.push(
     sentryVitePlugin({
-      include: './dist',
       dryRun: isDev,
-      ignore: ['node_modules', 'vite.config.ts'],
+      include: './dist',
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
