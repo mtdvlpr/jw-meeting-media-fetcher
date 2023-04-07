@@ -6,6 +6,7 @@ import {
   MediaPrefs,
   MeetingPrefs,
   PrefStore,
+  ZoomPrefs,
 } from '~~/types'
 
 export function isLocked(key: string) {
@@ -101,6 +102,10 @@ export async function forcePrefs(refresh = false) {
       prefs.app.obs = Object.assign(
         getPrefs<ObsPrefs>('app.obs'),
         prefs.app.obs ?? {}
+      )
+      prefs.app.zoom = Object.assign(
+        getPrefs<ZoomPrefs>('app.zoom'),
+        prefs.app.zoom ?? {}
       )
       const newPrefs = {
         app: Object.assign(getPrefs<AppPrefs>('app'), prefs.app ?? {}),
