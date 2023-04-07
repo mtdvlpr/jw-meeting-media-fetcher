@@ -1674,13 +1674,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pinia/nuxt@npm:^0.4.7":
-  version: 0.4.7
-  resolution: "@pinia/nuxt@npm:0.4.7"
+"@pinia/nuxt@npm:^0.4.8":
+  version: 0.4.8
+  resolution: "@pinia/nuxt@npm:0.4.8"
   dependencies:
     "@nuxt/kit": ^3.0.0
-    pinia: ">=2.0.31"
-  checksum: 6ff568fad66406898003ecc1703a0120d70f5413f71efedd69a0d45421df4092b9ccddbe77455ee2d57c543097163c83826259d7744825fc9063b703df136c60
+    pinia: ">=2.0.34"
+  checksum: 35a2d472e74629251500124181e4db9da347d8c1cc1399857fcab06b9a7b1c4a2c752535a75a31705ac1b129c454a30280e5e69f7e0ddd84f6546903b8304c02
   languageName: node
   linkType: hard
 
@@ -8226,7 +8226,7 @@ __metadata:
     "@nuxtjs/eslint-config-typescript": ^12.0.0
     "@nuxtjs/i18n": next
     "@panzoom/panzoom": ^4.5.1
-    "@pinia/nuxt": ^0.4.7
+    "@pinia/nuxt": ^0.4.8
     "@playwright/test": ^1.32.2
     "@sentry/electron": ^4.4.0
     "@sentry/tracing": ^7.47.0
@@ -8252,7 +8252,6 @@ __metadata:
     electron-store: ^8.1.0
     electron-updater: ^5.3.0
     electron-window-state: ^5.0.3
-    esbuild: ^0.17.15
     eslint: ^8.37.0
     eslint-config-prettier: ^8.8.0
     eslint-plugin-prettier: ^4.2.1
@@ -8273,7 +8272,6 @@ __metadata:
     obs-websocket-js: ^4.0.3
     obs-websocket-js-v5: "npm:obs-websocket-js@5.0.2"
     pdfjs-dist: ^3.5.141
-    pinia: ^2.0.33
     playwright: ^1.32.2
     prettier: ^2.8.7
     sass: ^1.61.0
@@ -9632,9 +9630,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinia@npm:>=2.0.31, pinia@npm:^2.0.33":
-  version: 2.0.33
-  resolution: "pinia@npm:2.0.33"
+"pinia@npm:>=2.0.34":
+  version: 2.0.34
+  resolution: "pinia@npm:2.0.34"
   dependencies:
     "@vue/devtools-api": ^6.5.0
     vue-demi: "*"
@@ -9647,7 +9645,7 @@ __metadata:
       optional: true
     typescript:
       optional: true
-  checksum: efd9cf1d61521ab2a4549f93ada6e2c1b9feeb6c8f2f482281a53c0079e0008f02adaebb07a782865ccfe896876ac60447ef4586fc6eeaeaf17d634767e22638
+  checksum: f31333f481b53b500341e43a6dd7d16a494963b9e0473f4e621439342bcc9eac529bd0aeb2574ca4e60596e1d96d32d23ef3e166425a842fa41fe927e26457de
   languageName: node
   linkType: hard
 
