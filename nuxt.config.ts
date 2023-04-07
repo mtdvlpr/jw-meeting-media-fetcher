@@ -13,7 +13,11 @@ const sentryInit =
   !!process.env.SENTRY_PROJECT &&
   !!process.env.SENTRY_AUTH_TOKEN
 
-if (sentryInit) {
+if (
+  sentryInit &&
+  !process.env.SENTRY_DISABLE &&
+  !!process.env.SENTRY_SOURCE_MAPS
+) {
   vitePlugins.push(
     sentryVitePlugin({
       include: './dist',
