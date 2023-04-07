@@ -134,7 +134,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
-import { type Participant } from '@zoomus/websdk/embedded'
+import type { Participant } from '@zoomus/websdk/embedded'
 
 const store = useZoomStore()
 const { started, coHost, hostID } = storeToRefs(store)

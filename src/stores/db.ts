@@ -1,4 +1,4 @@
-import { type Database } from '@stephen/sql.js'
+import type { Database } from '@stephen/sql.js'
 
 interface State {
   dbs: Map<string, Map<string, Database>>

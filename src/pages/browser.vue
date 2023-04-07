@@ -19,7 +19,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { type Point } from 'electron'
+import type { Point } from 'electron'
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 

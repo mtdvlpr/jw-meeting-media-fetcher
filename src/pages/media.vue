@@ -15,7 +15,7 @@
 </template>
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
-import { type PanzoomObject } from '@panzoom/panzoom'
+import type { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRendererOn } from '@vueuse/electron'
 import { ipcRenderer } from 'electron'
 import { basename, changeExt, join } from 'upath'

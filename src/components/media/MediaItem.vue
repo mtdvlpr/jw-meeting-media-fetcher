@@ -163,7 +163,7 @@
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
 import { basename, changeExt, join } from 'upath'
-import { type PanzoomObject } from '@panzoom/panzoom'
+import type { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRenderer } from '@vueuse/electron'
 // eslint-disable-next-line import/named
 import { existsSync, readFileSync } from 'fs-extra'

@@ -1,4 +1,4 @@
-import { type ParticipantPropertiesPayload } from '@zoomus/websdk/embedded'
+import type { ParticipantPropertiesPayload } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
 
 export const zoomSocket = () => {

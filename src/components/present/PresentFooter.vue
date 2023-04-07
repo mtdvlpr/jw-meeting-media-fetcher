@@ -61,7 +61,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRendererOn } from '@vueuse/electron'
-import { type Participant } from '@zoomus/websdk/embedded'
+import type { Participant } from '@zoomus/websdk/embedded'
 import { ObsPrefs } from '~~/types'
 
 const date = computed(() => useRoute().query.date as string)

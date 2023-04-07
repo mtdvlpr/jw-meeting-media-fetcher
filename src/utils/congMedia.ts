@@ -1,8 +1,8 @@
-import { type Dayjs } from 'dayjs'
+import type { Dayjs } from 'dayjs'
 // eslint-disable-next-line import/named
 import { statSync } from 'fs-extra'
 import { join, extname, basename } from 'upath'
-import { type LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { MeetingFile, DateFormat, CongFile } from '~~/types'
 
 export function getCongMedia(baseDate: Dayjs, now: Dayjs) {

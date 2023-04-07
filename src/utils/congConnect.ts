@@ -1,5 +1,5 @@
 import { join, dirname, basename, resolve } from 'upath'
-import { type WebDAVClient, type FileStat } from 'webdav/web/types'
+import type { WebDAVClient, FileStat } from 'webdav/web/types'
 import { CongPrefs, DateFormat } from '~~/types'
 
 export async function connect(

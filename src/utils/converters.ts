@@ -1,7 +1,7 @@
 /* eslint-disable import/named */
 import { pathToFileURL } from 'url'
 import { platform } from 'os'
-import { type Dayjs } from 'dayjs'
+import type { Dayjs } from 'dayjs'
 import {
   existsSync,
   statSync,
@@ -12,7 +12,7 @@ import {
   chmodSync,
 } from 'fs-extra'
 import { join, changeExt, dirname, basename, extname } from 'upath'
-import { type PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
+import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
 // @ts-ignore
 import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url'
 import { Release, DateFormat } from '~~/types'

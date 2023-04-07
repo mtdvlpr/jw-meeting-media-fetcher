@@ -1,4 +1,4 @@
-import { type EmbeddedClient, type Participant } from '@zoomus/websdk/embedded'
+import type { EmbeddedClient, Participant } from '@zoomus/websdk/embedded'
 
 interface ZoomStore {
   client: typeof EmbeddedClient | null

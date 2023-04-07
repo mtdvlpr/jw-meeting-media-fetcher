@@ -1,5 +1,5 @@
-import { type Dayjs } from 'dayjs'
-import { type Duration } from 'dayjs/plugin/duration'
+import type { Dayjs } from 'dayjs'
+import type { Duration } from 'dayjs/plugin/duration'
 
 export default function (stop: Dayjs | number, onStop: () => void) {
   const { $dayjs } = useNuxtApp()

@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/named
 import { readFileSync } from 'fs-extra'
-import { type Database } from '@stephen/sql.js'
+import type { Database } from '@stephen/sql.js'
 import { join } from 'upath'
 
 export function executeQuery<T extends { [key: string]: any }>(

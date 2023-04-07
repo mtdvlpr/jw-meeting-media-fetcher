@@ -39,7 +39,7 @@
 </template>
 <script setup lang="ts">
 import { platform, userInfo } from 'os'
-import { type LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { basename, join } from 'upath'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'

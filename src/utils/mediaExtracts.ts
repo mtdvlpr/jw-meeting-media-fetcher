@@ -1,5 +1,5 @@
-import { type Dayjs } from 'dayjs'
-import { type Database } from '@stephen/sql.js'
+import type { Dayjs } from 'dayjs'
+import type { Database } from '@stephen/sql.js'
 import { MeetingFile, MultiMediaExtract } from '~~/types'
 
 export async function getDocumentExtract(

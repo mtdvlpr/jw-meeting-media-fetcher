@@ -30,7 +30,7 @@
   </v-col>
 </template>
 <script setup lang="ts">
-import { type Dayjs } from 'dayjs'
+import type { Dayjs } from 'dayjs'
 import { DateFormat } from '~~/types'
 
 const props = defineProps<{
