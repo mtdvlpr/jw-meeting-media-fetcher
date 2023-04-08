@@ -1,6 +1,17 @@
 <template>
+  <v-card
+    v-if="dropping"
+    :height="listHeight - 32"
+    class="d-flex ma-4"
+    style="border: 1px dashed"
+  >
+    <v-card-text class="d-flex flex-column justify-center align-center">
+      {{ $t('dropFiles') }}
+      <v-icon icon="fa-download" size="x-large" class="mt-4" />
+    </v-card-text>
+  </v-card>
   <v-list
-    v-if="mediaList.length > 0"
+    v-else-if="mediaList.length > 0"
     density="compact"
     :style="`overflow-y: auto;max-height: ${listHeight}px`"
   >
@@ -51,6 +62,7 @@ const props = defineProps<{
   prefix: string
   showPrefix?: boolean
   showInput?: boolean
+  dropping?: boolean
 }>()
 
 onMounted(() => {

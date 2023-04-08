@@ -58,15 +58,13 @@
     >
       <loading-icon v-if="loading || saving" />
       <template v-else>
-        <v-overlay :model-value="isOverDropZone">
-          <v-icon icon="fa-download" size="x-large" />
-        </v-overlay>
         <manage-media-list
           :date="date"
           :new-file="jwFile"
           :new-files="files"
           :prefix="prefix"
           :media="media"
+          :dropping="isOverDropZone"
           :show-input="!!type && type !== 'jwOrg'"
           :show-prefix="!!jwFile || files.length > 0"
           @refresh="emit('refresh')"
