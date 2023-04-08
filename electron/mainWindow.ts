@@ -42,12 +42,9 @@ function onClose(e: Event) {
     e.preventDefault()
     return
   }
-  if (!isDev && !allowClose && closeAttempts < 2) {
+  if (!allowClose && closeAttempts < 2) {
     e.preventDefault()
-    win?.webContents.send('notifyUser', [
-      'cantCloseMediaWindowOpen',
-      { type: 'warning' },
-    ])
+    win?.webContents.send('notifyUser', ['cantCloseMediaWindowOpen'])
     closeAttempts++
     setTimeout(() => {
       closeAttempts--

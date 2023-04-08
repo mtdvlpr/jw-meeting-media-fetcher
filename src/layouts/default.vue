@@ -1,6 +1,12 @@
 <template>
   <v-app>
     <notify-user />
+    <confirm-dialog
+      v-model="dialog"
+      description="quitWhilePresenting"
+      @cancel="dialog = false"
+      @confirm="quitApp()"
+    />
     <navigation-drawer />
     <v-main>
       <slot />
@@ -71,8 +77,15 @@ useIpcRendererOn('themeUpdated', (_e, theme: string) => {
 useIpcRendererOn('log', (_e, msg) => {
   log.debug('[main]', msg)
 })
+
+const dialog = ref(false)
+const quitApp = () => {
+  ipcRenderer.send('exit')
+}
 useIpcRendererOn('notifyUser', (_e, msg: any[]) => {
-  if (msg[0]) {
+  if (msg[0] === 'cantCloseMediaWindowOpen') {
+    dialog.value = true
+  } else if (msg[0]) {
     notify(msg[0], msg[1], msg[3])
   } else {
     log.warn('Notify message is empty: ', msg)

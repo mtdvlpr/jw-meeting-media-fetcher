@@ -144,6 +144,7 @@
   "preferredOutput": "Show media presentation window in",
   "presentShortcut": "Shortcut to open media presentation mode",
   "publicTalk": "Public Talk",
+  "quitWhilePresenting": "You are about to close M³ while in presentation mode. Are you sure you want to quit?",
   "recurring": "Recurring media",
   "refresh": "Refresh media list",
   "remindNeedCoHost": "Don't forget to make the Zoom integration user a co-host",
