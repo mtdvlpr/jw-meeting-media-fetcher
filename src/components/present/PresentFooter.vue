@@ -1,27 +1,22 @@
 <template>
   <v-footer class="justify-end present-footer">
     <v-col v-if="date && scene && zoomScene" cols="auto">
-      <v-tooltip location="top">
-        <template #activator="{ props: tProps }">
-          <v-btn icon @click="emit('zoomPart')">
-            <v-icon
-              :icon="zoomPart ? 'fa-podcast' : 'fa-house-user'"
-              size="medium"
-              variant="text"
-              :color="zoomPart ? 'success' : undefined"
-              v-bind="tProps"
-            />
-          </v-btn>
-        </template>
-        <span>{{ $t('obsZoomSceneToggle') }}</span>
-      </v-tooltip>
+      <v-btn icon variant="text" size="medium" @click="emit('zoomPart')">
+        <v-icon
+          :icon="zoomPart ? 'fa-podcast' : 'fa-house-user'"
+          :color="zoomPart ? 'success' : undefined"
+        />
+        <v-tooltip location="top" activator="parent">
+          {{ $t('obsZoomSceneToggle') }}
+        </v-tooltip>
+      </v-btn>
     </v-col>
     <v-col v-else-if="date && obsEnabled && !scene">
       <v-btn icon :loading="obsLoading" @click="initOBS()">
+        <v-icon icon="fa-rotate-right" size="medium" />
         <v-tooltip location="top" activator="parent">
           {{ $t('obsRefresh') }}
         </v-tooltip>
-        <v-icon icon="fa-rotate-right" size="medium" />
       </v-btn>
     </v-col>
     <v-col
