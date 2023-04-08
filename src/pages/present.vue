@@ -21,7 +21,9 @@
         return-object
       />
     </confirm-dialog>
-    <div id="zoomMeeting" />
+    <div id="zoomMeetingContainer" style="display: none">
+      <div id="zoomMeeting" />
+    </div>
     <media-controls v-if="date" />
     <present-select v-else :first-choice="firstChoice" />
     <present-footer

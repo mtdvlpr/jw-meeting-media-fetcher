@@ -141,7 +141,6 @@ const { started, coHost, hostID } = storeToRefs(store)
 
 onMounted(() => {
   setTimeout(() => {
-    showZoomComponent.value = false
     const el = document.querySelector<HTMLButtonElement>(
       '#zoom-app-bar button.v-app-bar__nav-icon'
     )
@@ -171,7 +170,7 @@ const toggleParticipant = (participant: Participant) => {
 // Zoom component
 const showZoomComponent = ref(false)
 watch(showZoomComponent, (show: boolean) => {
-  const el = document.getElementById('zoomMeeting')
+  const el = document.getElementById('zoomMeetingContainer')
   if (!el) return
   el.style.display = show ? 'flex' : 'none'
 })
