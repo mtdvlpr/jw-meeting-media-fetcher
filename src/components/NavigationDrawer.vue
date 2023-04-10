@@ -44,6 +44,7 @@ import { useRouteQuery } from '@vueuse/router'
 const { $i18n } = useNuxtApp()
 const localePath = useLocalePath()
 const cong = useRouteQuery<string>('cong', '')
+const { isDev } = useRuntimeConfig().public
 const { musicFadeOut } = storeToRefs(useMediaStore())
 const { navDisabled, showMediaPlayback } = storeToRefs(useStatStore())
 const navItems = computed(() => {
@@ -68,6 +69,15 @@ const navItems = computed(() => {
       title: $i18n.t('mediaPlayback'),
       icon: 'fab fa-chromecast',
       to: localePath('/present'),
+      tooltip: getPrefs<string>('media.presentShortcut'),
+      aria: 'present',
+    })
+  }
+  if (isDev) {
+    items.splice(1, 0, {
+      title: $i18n.t('mediaPlayback') + ' DEV',
+      icon: 'fab fa-chromecast',
+      to: localePath('/presentnew'),
       tooltip: getPrefs<string>('media.presentShortcut'),
       aria: 'present',
     })
