@@ -4252,6 +4252,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"compare-versions@npm:^6.0.0-rc.1":
+  version: 6.0.0-rc.1
+  resolution: "compare-versions@npm:6.0.0-rc.1"
+  checksum: ada8d19dab267ef432e7aea91ff7b4422284e3b44245a4d7b4caaf1353d0279e5f17b3767050e06a9cf84670120d19b427b5191b71b7284a125482fcd1eda789
+  languageName: node
+  linkType: hard
+
 "compress-commons@npm:^4.1.0":
   version: 4.1.1
   resolution: "compress-commons@npm:4.1.1"
@@ -8244,6 +8251,7 @@ __metadata:
     "@vueuse/router": ^9.13.0
     "@zoomus/websdk": ^2.11.0
     click-outside-vue3: ^4.0.1
+    compare-versions: ^6.0.0-rc.1
     cross-env: ^7.0.3
     dayjs: ^1.11.7
     dotenv: ^16.0.3

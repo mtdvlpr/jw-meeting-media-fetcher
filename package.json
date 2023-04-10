@@ -73,6 +73,7 @@
     "@vueuse/router": "^9.13.0",
     "@zoomus/websdk": "^2.11.0",
     "click-outside-vue3": "^4.0.1",
+    "compare-versions": "^6.0.0-rc.1",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.7",
     "electron": "24.0.0",

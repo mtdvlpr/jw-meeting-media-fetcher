@@ -227,7 +227,13 @@ export async function cleanup() {
           removeSync(JWMMF)
         }
 
-        if (lastVersion !== '0') {
+        const firstVersionPath = join(appPath(), 'firstRunVersion.json')
+        if (lastVersion === '0' && !existsSync(firstVersionPath)) {
+          write(firstVersionPath, version)
+        } else {
+          if (!existsSync(firstVersionPath)) {
+            write(firstVersionPath, lastVersion)
+          }
           notify('updateInstalled', {
             identifier: version,
             action: {
