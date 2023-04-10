@@ -18,13 +18,21 @@
           </v-tabs>
         </template> -->
     </v-toolbar>
-    <v-row no-gutters justify="center" class="h-100 settings">
+    <v-row no-gutters justify="center" class="settings">
+      <v-text-field
+        v-model="filter"
+        clearable
+        hide-details="auto"
+        label="Filter"
+        @change="filterPrefs"
+        @click:clear="clearFilter"
+      ></v-text-field>
       <v-col cols="12">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
         <!-- <loading-icon v-if="!mounted" /> -->
         <v-list density="compact">
           <template
-            v-for="(parentValue, parentKey) in settings"
+            v-for="(parentValue, parentKey) in filteredPrefs"
             :key="parentKey"
           >
             <v-list-group>
@@ -83,7 +91,9 @@
 <script lang="ts">
 export default {
   data: () => ({
+    active: true,
     mounted: false,
+    filter: '',
     settings: {
       General: {
         congregationName: 'Congregation name',
@@ -199,8 +209,62 @@ export default {
     tab: 0,
     cache: 0,
     refresh: false,
+    lists: { id: Number },
   }),
-  computed: {},
+  computed: {
+    filteredPrefs() {
+      if (!this.filter) return this.settings
+      const filtered = {}
+      Object.keys(this.settings).forEach((parentKey) => {
+        const parentValue = this.settings[parentKey]
+        const filteredChildren = {}
+        Object.keys(parentValue).forEach((childKey) => {
+          const childValue = parentValue[childKey]
+          if (typeof childValue === 'object') {
+            const filteredSettings = {}
+            Object.keys(childValue).forEach((settingKey) => {
+              const settingValue = childValue[settingKey]
+              if (
+                settingValue
+                  .toString()
+                  .toLowerCase()
+                  .includes(this.filter.toLowerCase())
+              ) {
+                filteredSettings[settingKey] = settingValue
+              }
+            })
+            if (Object.keys(filteredSettings).length > 0) {
+              filteredChildren[childKey] = filteredSettings
+            }
+          } else if (
+            childKey
+              .toString()
+              .toLowerCase()
+              .includes(this.filter.toLowerCase())
+          ) {
+            filteredChildren[childKey] = childValue
+          }
+        })
+        if (Object.keys(filteredChildren).length > 0) {
+          filtered[parentKey] = filteredChildren
+        }
+      })
+      console.log(this.active)
+
+      return filtered
+    },
+    listSelection: {
+      get: function () {
+        return this.lists.id
+      },
+      set: function (newVal) {
+        this.$emit(
+          'input',
+          this.settings.find((item) => item.id === newVal)
+        )
+      },
+    },
+  },
   mounted() {
     useHead({ title: 'Settings' })
     const { setProgress } = useProgress()
@@ -245,6 +309,18 @@ export default {
     // ) {
     //   this.prefs[key] = val
     // },
+    filterPrefs() {
+      // expand all v-list-groups
+      this.$nextTick(() => {
+        const listGroups = document.querySelectorAll('.v-list-group')
+        listGroups.forEach((listGroup) => {
+          listGroup.active = true
+        })
+      })
+    },
+    clearFilter() {
+      this.filter = ''
+    },
     calcCache() {
       return (this.refresh = !this.refresh)
     },
