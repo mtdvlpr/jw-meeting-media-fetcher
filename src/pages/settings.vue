@@ -2,9 +2,9 @@
   <div>
     <v-toolbar>
       <v-toolbar-title>{{ $t('settings') }}</v-toolbar-title>
-      <progress-bar :current="currentProgress" :total="totalProgress" />
+      <!-- <progress-bar :current="currentProgress" :total="totalProgress" /> -->
       <template #extension>
-        <v-tabs v-model="tab" grow centered>
+        <v-tabs v-model="tab" grow>
           <v-tab>{{ $t('all') }}</v-tab>
           <v-tab
             v-for="h in headers"
@@ -19,17 +19,12 @@
       </template>
     </v-toolbar>
     <v-row no-gutters justify="center" class="fill-height settings">
-      <v-col cols="12" :style="`overflow:auto;max-height: ${contentHeight}px`">
+      <v-col cols="12">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
         <loading-icon v-if="!mounted" />
         <v-window v-show="!!mounted" v-model="tab">
           <v-window-item :value="0">
-            <v-expansion-panels
-              v-model="panel"
-              multiple
-              accordion
-              :readonly="tab !== 0"
-            >
+            <v-expansion-panels v-model="panel" multiple :readonly="tab !== 0">
               <v-expansion-panel :title="$t('optionsApp')" value="app">
                 <v-expansion-panel-text>
                   <settings-app
@@ -121,113 +116,116 @@
     />
   </div>
 </template>
-<script setup lang="ts">
-import { PrefStore } from '~~/types'
+<script lang="ts">
+import { AppPrefs, CongPrefs, MediaPrefs, MeetingPrefs } from '~~/types'
 
-useHead({ title: 'Settings' })
-const { currentProgress, totalProgress, setProgress } = useProgress()
-provide(setProgressKey, setProgress)
-
-// Height
-const { height } = useWindowSize()
-const contentHeight = computed(() => {
-  const TOOLBAR_HEIGHT = 112
-  const FOOTER_HEIGHT = 76
-  return height.value - TOOLBAR_HEIGHT - FOOTER_HEIGHT
-})
-
-// Control cache
-const cache = ref(0)
-const refresh = ref(false)
-const calcCache = () => (refresh.value = !refresh.value)
-
-// Headers
 const { $i18n } = useNuxtApp()
-const panel = ref(['app', 'cong', 'media', 'meeting'])
-const headers = ref<
-  { key: keyof PrefStore; icon: string; name: string; valid: boolean }[]
->([
-  {
-    key: 'app',
-    icon: 'fa-sliders',
-    name: $i18n.t('optionsApp'),
-    valid: false,
+export default {
+  data: () => ({
+    panel: ['app', 'cong', 'media', 'meeting'],
+    headers: [
+      {
+        key: 'app',
+        icon: 'fa-sliders',
+        name: $i18n.t('optionsApp'),
+        valid: false,
+      },
+      {
+        key: 'cong',
+        icon: 'fa-cloud',
+        name: $i18n.t('optionsCongSync'),
+        valid: false,
+      },
+      {
+        key: 'media',
+        icon: 'fa-photo-film',
+        name: $i18n.t('optionsMedia'),
+        valid: false,
+      },
+      {
+        key: 'meeting',
+        icon: 'fa-people-roof',
+        name: $i18n.t('optionsMeetings'),
+        valid: false,
+      },
+    ],
+    mounted: false,
+    headersChanged: 0,
+    prefs: { ...PREFS },
+    tab: 0,
+    cache: 0,
+    refresh: false,
+  }),
+  computed: {
+    valid() {
+      return this.headers.every((h) => h.valid)
+    },
   },
-  {
-    key: 'cong',
-    icon: 'fa-cloud',
-    name: $i18n.t('optionsCongSync'),
-    valid: false,
-  },
-  {
-    key: 'media',
-    icon: 'fa-photo-film',
-    name: $i18n.t('optionsMedia'),
-    valid: false,
-  },
-  {
-    key: 'meeting',
-    icon: 'fa-people-roof',
-    name: $i18n.t('optionsMeetings'),
-    valid: false,
-  },
-])
-const mounted = ref(false)
-const headersChanged = ref(0)
-watch(
-  headers,
-  (val) => {
-    val.forEach((h) => {
-      const match = panel.value.indexOf(h.key)
-      if (!h.valid && match === -1) {
-        panel.value.push(h.key)
-      } else if (!mounted.value && h.valid && match > -1) {
-        if (tab.value === 0) {
-          panel.value.splice(match, 1)
+  mounted() {
+    useHead({ title: 'Settings' })
+    const { setProgress } = useProgress()
+    provide(setProgressKey, setProgress)
+
+    // Headers
+    watch(
+      this.headers,
+      (val) => {
+        val.forEach((h) => {
+          const match = this.panel.indexOf(h.key)
+          if (!h.valid && match === -1) {
+            this.panel.push(h.key)
+          } else if (!this.mounted && h.valid && match > -1) {
+            if (this.tab === 0) {
+              this.panel.splice(match, 1)
+            }
+          }
+        })
+        this.headersChanged++
+        this.mounted ||= this.valid || this.headersChanged > 4
+      },
+      { deep: true }
+    )
+
+    // Prefs
+    watch(this.prefs, () => this.calcCache(), { deep: true })
+
+    // Validation
+    useStatStore().setNavDisabled(true)
+    const valid = computed(() => this.headers.every((h) => h.valid))
+    watch(valid, (val) => {
+      if (val) this.calcCache()
+      useStatStore().setNavDisabled(!val)
+      if (this.prefs.media.enableMediaDisplayButton) {
+        const key = this.prefs.media.presentShortcut
+        if (val && key) {
+          setShortcut({ key, fn: 'openPresentMode' })
+        } else {
+          unsetShortcut('openPresentMode')
         }
       }
     })
-    headersChanged.value++
-    mounted.value ||= valid.value || headersChanged.value > 4
   },
-  { deep: true }
-)
-
-// Prefs
-const prefs = ref({ ...PREFS })
-watch(prefs, () => calcCache(), { deep: true })
-const refreshPrefs = (key: keyof PrefStore, val: any) => {
-  prefs.value[key] = val
-}
-
-// Validation
-useStatStore().setNavDisabled(true)
-const valid = computed(() => headers.value.every((h) => h.valid))
-watch(valid, (val) => {
-  if (val) calcCache()
-  useStatStore().setNavDisabled(!val)
-  if (prefs.value.media.enableMediaDisplayButton) {
-    const key = prefs.value.media.presentShortcut
-    if (val && key) {
-      setShortcut({ key, fn: 'openPresentMode' })
-    } else {
-      unsetShortcut('openPresentMode')
-    }
-  }
-})
-
-const setValid = (key: string, valid: boolean) => {
-  const match = headers.value.find((h) => h.key === key)
-  if (match) match.valid = valid
-}
-
-// Header tabs
-const tab = ref(0)
-const getInitials = (word: string) => {
-  return word
-    .split(' ')
-    .map((w) => w[0])
-    .join('')
+  methods: {
+    setValid(key: string, valid: boolean) {
+      const match = this.headers.find((h) => h.key === key)
+      if (match) match.valid = valid
+    },
+    getInitials(word: string) {
+      return word
+        .split(' ')
+        .map((w) => w[0])
+        .join('')
+    },
+    refreshPrefs(
+      key: string,
+      val: AppPrefs | CongPrefs | MediaPrefs | MeetingPrefs
+    ) {
+      this.prefs[key] = val
+    },
+    calcCache() {
+      return (this.refresh = !this.refresh)
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>
