@@ -347,19 +347,6 @@ export default {
         const dayIndex = this.weeks[weekIndex].findIndex(
           (day: any) => day.date === date
         )
-        console.log(
-          'DEBUG',
-          'Date',
-          date,
-          'WEEK',
-          weekIndex,
-          'DAY',
-          dayIndex,
-          'CURRENT',
-          this.mediaTotals[date].current,
-          'TOTAL',
-          this.mediaTotals[date].total
-        )
         if (dayIndex > -1) {
           this.weeks[weekIndex][dayIndex].progress =
             (this.mediaTotals[date].current / this.mediaTotals[date].total) *
@@ -416,8 +403,6 @@ export default {
       )
 
       const promises: Promise<void>[] = []
-      console.debug('DEBUG', meetings, this.mediaTotals)
-
       meetings.forEach((parts, date) => {
         parts.forEach((media) => {
           media.forEach((item) => {

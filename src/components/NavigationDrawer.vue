@@ -81,6 +81,13 @@ const navItems = computed(() => {
       tooltip: getPrefs<string>('media.presentShortcut'),
       aria: 'present',
     })
+    items.splice(1, 0, {
+      title: $i18n.t('settings') + ' DEV',
+      icon: 'fa-cog',
+      to: localePath('/settingsnew'),
+      tooltip: '',
+      aria: 'settings',
+    })
   }
   return items
 })
