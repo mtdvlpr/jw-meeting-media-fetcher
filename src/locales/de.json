@@ -84,7 +84,7 @@
   "hideMediaLogo": "Logo aus dem Medienpräsentationsfenster ausblenden",
   "hideWinAfterMedia": "Medienfenster nach der Wiedergabe ausblenden",
   "hideWinAfterMediaExplain": "Hauptsächlich für Versammlungen in Gebärdensprache",
-  "hostname": "Web-Adresse",
+  "server": "Web-Adresse",
   "includePrinted": "Druckausgaben einschließen, wenn verfügbar",
   "info": "Hinweis",
   "infoPubIgnored": "Medien für die folgende Publikation können nicht abgerufen werden:",

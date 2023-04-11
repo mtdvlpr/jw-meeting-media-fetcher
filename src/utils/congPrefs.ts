@@ -23,16 +23,16 @@ export function isLocked(key: string) {
   if (!store.prefs[keys[0] as keyof PrefStore]) return false
 
   if (keys.length === 2) {
-    // @ts-ignore
+    // @ts-expect-error
     return store.prefs[keys[0]][keys[1]] !== undefined
   }
   // If pref is in a sub object (e.g. app.obs.enable)
   else if (keys.length === 3) {
-    // @ts-ignore
+    // @ts-expect-error
     if (!store.prefs[keys[0]][keys[1]]) {
       return false
     }
-    // @ts-ignore
+    // @ts-expect-error
     return store.prefs[keys[0]][keys[1]][keys[2]] !== undefined
   } else {
     throw new Error('Invalid key')

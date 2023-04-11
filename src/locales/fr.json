@@ -84,7 +84,7 @@
   "hideMediaLogo": "Masquer le logo dans la fenêtre de présentation des médias",
   "hideWinAfterMedia": "Masquer la fenêtre multimédia après la fin de la lecture du média",
   "hideWinAfterMediaExplain": "Utile surtout pour les réunions tenues en langue des signes",
-  "hostname": "Adresse du serveur",
+  "server": "Adresse du serveur",
   "includePrinted": "Inclure les médias en format imprimé lorsqu'ils sont disponibles",
   "info": "Information",
   "infoPubIgnored": "Impossible de récupérer les médias pour la publication suivante :",

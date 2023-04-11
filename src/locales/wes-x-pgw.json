@@ -84,7 +84,7 @@
   "hideMediaLogo": "No show logo for inside picture window",
   "hideWinAfterMedia": "Hide picture window after video don finish play",
   "hideWinAfterMediaExplain": "Useful mostly for meetings held in sign-language",
-  "hostname": "Host name",
+  "server": "Host name",
   "includePrinted": "Include printed media when available",
   "info": "Information",
   "infoPubIgnored": "We no fit load picture or video for this book or brochure:",

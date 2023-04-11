@@ -84,7 +84,7 @@
   "hideMediaLogo": "Logó elrejtése a médiabemutató ablakból",
   "hideWinAfterMedia": "Médiaablak elrejtése a lejátszás befejezése után",
   "hideWinAfterMediaExplain": "Elsősorban a jelnyelven tartott összejöveteleken hasznos",
-  "hostname": "Hosztnév",
+  "server": "Hosztnév",
   "includePrinted": "A nyomtatott média bevonása, ha rendelkezésre áll",
   "info": "Információ",
   "infoPubIgnored": "Nem sikerült lekérni a médiatartalmat a következő kiadványhoz:",

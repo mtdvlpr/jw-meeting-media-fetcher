@@ -628,7 +628,7 @@ const setCustomCachePath = async () => {
 }
 
 // Rename background image when congregation name changes
-const oldName = ref(PREFS.app.congregationName)
+const oldName = ref<string | null>(PREFS.app.congregationName)
 watchDebounced(
   () => app.value.congregationName,
   (val) => {

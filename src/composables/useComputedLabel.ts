@@ -1,3 +1,4 @@
+import type { MaybeRef } from '@vueuse/core'
 import {
   AppPrefs,
   CongPrefs,
@@ -12,7 +13,7 @@ export default function <
   S extends ObsPrefs | ZoomPrefs = ZoomPrefs
 >(
   label: string,
-  ref: Ref<T>,
+  ref: MaybeRef<T>,
   key: keyof T,
   fallback = 0,
   subKey?: T extends AppPrefs ? keyof S : undefined
@@ -20,9 +21,9 @@ export default function <
   const { $i18n } = useNuxtApp()
   const computedLabel = computed(() => {
     const value = subKey
-      ? // @ts-ignore
-        ref.value[key][subKey] ?? fallback
-      : ref.value[key] ?? fallback
+      ? // @ts-expect-error
+        unref(ref)[key][subKey] ?? fallback
+      : unref(ref)[key] ?? fallback
     return $i18n.t(label).replace('<span>XX</span>', value.toString())
   })
 

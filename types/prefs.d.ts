@@ -50,9 +50,10 @@ export interface AppPrefs {
 }
 
 export interface CongPrefs {
+  enable: boolean
   server: string | null
   port: string | null
-  user: string | null
+  username: string | null
   password: string | null
   dir: string | null
 }

@@ -84,7 +84,7 @@
   "hideMediaLogo": "Skryť logo z okna zobrazovania médií",
   "hideWinAfterMedia": "Skryť okno s médiami po prehraní",
   "hideWinAfterMediaExplain": "Užitočné hlavne pre zhromaždenia v znakovom jazyku",
-  "hostname": "Názov počítača",
+  "server": "Názov počítača",
   "includePrinted": "Zahrnúť tlačené médiá ak sú k dispozícií",
   "info": "Informácie",
   "infoPubIgnored": "Nepodarilo sa získať médiá pre nasledujúce publikácie:",

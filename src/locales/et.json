@@ -83,7 +83,7 @@
   "hideMediaLogo": "Peida logo meediaesitluse aknast",
   "hideWinAfterMedia": "Peida meediumiaken pärast meedia esitamise lõpetamist",
   "hideWinAfterMediaExplain": "Üldiselt kasulik, kui koosolekuid peetakse viipekeeles",
-  "hostname": "Hostinimi",
+  "server": "Hostinimi",
   "includePrinted": "Kaasa trükitud väljaandeid, kui need on olemas",
   "info": "Teave",
   "infoPubIgnored": "Järgmise väljaande jaoks ei saa meediat importida:",

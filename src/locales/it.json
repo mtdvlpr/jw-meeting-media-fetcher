@@ -84,7 +84,7 @@
   "hideMediaLogo": "Nascondi il logo dalla finestra di presentazione multimediale",
   "hideWinAfterMedia": "Nascondi la finestra dei media al termine della riproduzione dei media",
   "hideWinAfterMediaExplain": "Utile soprattutto per adunanze tenute in lingua dei segni",
-  "hostname": "Indirizzo web",
+  "server": "Indirizzo web",
   "includePrinted": "Includere l'edizione stampata se disponibile",
   "info": "Informazione",
   "infoPubIgnored": "Impossibile recuperare i file multimediali per la seguente pubblicazione:",

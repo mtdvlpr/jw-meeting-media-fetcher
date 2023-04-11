@@ -365,9 +365,9 @@ useIpcRendererOn(
           const cue = cues[i]
           if (cue) {
             const newLine =
-              // @ts-ignore
+              // @ts-expect-error
               +cue.line?.toString().replace('auto', '-1') * -1
-            // @ts-ignore
+            // @ts-expect-error
             cue.line = toggle ? newLine : 'auto'
           }
         }

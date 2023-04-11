@@ -185,7 +185,7 @@ export default {
         )
         // Set markers for sign language videos
         const path = mediaPath()
-        if (item.markers && path) {
+        if (item.markers && path && item.folder && item.safeName) {
           const markers = Array.from(
             new Set(
               item.markers.markers.map(
@@ -200,7 +200,7 @@ export default {
             )
           ).map((m) => JSON.parse(m))
           write(
-            join(path, item.folder!, changeExt(item.safeName!, 'json')),
+            join(path, item.folder, changeExt(item.safeName, 'json')),
             JSON.stringify(markers)
           )
         }

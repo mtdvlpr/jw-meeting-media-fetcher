@@ -56,9 +56,9 @@ const initController = (iframe: HTMLIFrameElement) => {
   useIpcRenderer().send('sendSize')
   const html = document.querySelector('html')!
   const body = document.querySelector('body')!
-  // @ts-ignore
+  // @ts-expect-error
   html.style['-webkit-app-region'] = 'no-drag'
-  // @ts-ignore
+  // @ts-expect-error
   body.style['-webkit-app-region'] = 'no-drag'
 
   iframe.onload = () => {
@@ -108,7 +108,7 @@ const initController = (iframe: HTMLIFrameElement) => {
           className:
             typeof el.className === 'string'
               ? el.className
-              : // @ts-ignore
+              : // @ts-expect-error
                 el.className?.baseVal, // SVGAnimatedString
           text: el.textContent,
           alt: el.getAttribute('alt'),
@@ -117,7 +117,7 @@ const initController = (iframe: HTMLIFrameElement) => {
         }
         log.debug('Target', target)
 
-        // @ts-ignore: target does not exist on type Element
+        // @ts-expect-error: target does not exist on type Element
         if (target.tag === 'a' && el.target === '_blank') {
           e.preventDefault()
           useIpcRenderer().send('openWebsite', target.href)

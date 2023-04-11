@@ -7,12 +7,15 @@
         <v-text-field
           v-model="filter"
           label="Search"
-          clearable
           hide-details="auto"
           density="compact"
+          clearable
         />
       </template>
     </v-toolbar>
+    <v-dialog :v-model="forcingPrefs" fullscreen :scrim="false" persistent>
+      <cong-forced-prefs @done="forcingPrefs = false" />
+    </v-dialog>
     <v-row no-gutters justify="center" class="fill-height settings">
       <v-col cols="12" :style="`overflow:auto;max-height: ${contentHeight}px`">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
@@ -54,6 +57,7 @@ import { extname, join } from 'upath'
 import {
   Action,
   Group,
+  MeetingPrefs,
   Setting,
   Settings,
   ShortJWLang,
@@ -95,6 +99,7 @@ watch(valid, (val) => {
   }
 })
 
+const forcingPrefs = ref(false)
 const RESOLUTIONS = ['240p', '360p', '480p', '720p']
 const dateFormats = [
   'DD-MM-YYYY',
@@ -130,6 +135,15 @@ const getLangs = async () => {
     prefs.value.media.lang = null
   }
 }
+
+const { scenes } = storeToRefs(useObsStore())
+const obsComplete = computed(() => {
+  return (
+    prefs.value.app.obs.enable &&
+    isValidPort(prefs.value.app.obs.port) &&
+    !!prefs.value.app.obs.password
+  )
+})
 
 onMounted(() => {
   getLangs()
@@ -484,7 +498,15 @@ const groups = computed((): Settings => {
     ],
     Integrations: [
       {
-        key: 'enableObs',
+        key: 'app.obs.enable',
+        label: 'obsEnable',
+        onChange: (val: boolean) => {
+          if (val && obsComplete.value) {
+            getScenes()
+          } else {
+            resetOBS()
+          }
+        },
       },
       {
         type: 'group',
@@ -492,9 +514,15 @@ const groups = computed((): Settings => {
         value: [
           {
             key: 'app.obs.useV4',
+            label: 'obsUseV4',
+            onChange: () => {
+              if (obsComplete.value) {
+                getScenes()
+              }
+            },
           },
           {
-            type: 'text',
+            type: 'password',
             key: 'app.obs.password',
           },
           {
@@ -502,25 +530,62 @@ const groups = computed((): Settings => {
             key: 'app.obs.port',
           },
           {
-            type: 'text',
+            type: 'select',
             key: 'app.obs.cameraScene',
+            label: 'obsCameraScene',
+            props: {
+              items: scenes.value.filter(
+                (s) =>
+                  s !== prefs.value.app.obs.mediaScene &&
+                  s !== prefs.value.app.obs.zoomScene &&
+                  s !== prefs.value.app.obs.imageScene
+              ),
+            },
           },
           {
-            type: 'text',
+            type: 'select',
             key: 'app.obs.imageScene',
+            label: 'obsImageScene',
+            props: {
+              items: scenes.value.filter(
+                (s) =>
+                  s !== prefs.value.app.obs.mediaScene &&
+                  s !== prefs.value.app.obs.zoomScene &&
+                  s !== prefs.value.app.obs.cameraScene
+              ),
+            },
           },
           {
-            type: 'text',
+            type: 'select',
             key: 'app.obs.mediaScene',
+            label: 'obsMediaScene',
+            props: {
+              items: scenes.value.filter(
+                (s) =>
+                  s !== prefs.value.app.obs.cameraScene &&
+                  s !== prefs.value.app.obs.zoomScene &&
+                  s !== prefs.value.app.obs.imageScene
+              ),
+            },
           },
           {
-            type: 'text',
+            type: 'select',
             key: 'app.obs.zoomScene',
+            label: 'obsZoomScene',
+            props: {
+              items: scenes.value.filter(
+                (s) =>
+                  s !== prefs.value.app.obs.mediaScene &&
+                  s !== prefs.value.app.obs.cameraScene &&
+                  s !== prefs.value.app.obs.imageScene
+              ),
+            },
           },
         ],
       },
       {
         key: 'cong.enable',
+        label: 'webdavEnable',
       },
       {
         type: 'group',
@@ -528,7 +593,10 @@ const groups = computed((): Settings => {
         value: [
           {
             type: 'text',
-            key: 'cong.hostname',
+            key: 'cong.server',
+            props: {
+              prefix: 'https://',
+            },
           },
           {
             type: 'text',
@@ -541,12 +609,13 @@ const groups = computed((): Settings => {
           {
             type: 'text',
             key: 'cong.dir',
+            label: 'webdavFolder',
           },
           {
             type: 'action',
-            label: 'congWideActions',
+            label: 'settingsLocked',
             action: () => {
-              console.log('cong wide actions')
+              forcingPrefs.value = true
             },
           },
         ],
@@ -561,13 +630,16 @@ const groups = computed((): Settings => {
           {
             type: 'text',
             key: 'app.zoom.autoRename',
+            label: 'zoomAutoRename',
           },
           {
             key: 'autoStartMeeting',
+            label: 'zoomAutoStartMeeting',
           },
           {
             type: 'text',
             key: 'app.zoom.id',
+            label: 'zoomId',
           },
           {
             type: 'password',
@@ -575,10 +647,12 @@ const groups = computed((): Settings => {
           },
           {
             key: 'app.zoom.spotlight',
+            label: 'zoomSpotlight',
           },
           {
             type: 'text',
             key: 'app.zoom.name',
+            label: 'zoomName',
           },
         ],
       },
@@ -588,7 +662,7 @@ const groups = computed((): Settings => {
         key: 'media.autoPlayFirst',
       },
       {
-        key: 'autoStartMusic',
+        key: 'meeting.autoStartMusic',
       },
       {
         type: 'select',
@@ -609,7 +683,7 @@ const groups = computed((): Settings => {
         label: $i18n.t('backgroundMusic'),
         value: [
           {
-            key: 'meeting.enableShuffleMusic',
+            key: 'meeting.enableMusicButton',
           },
           {
             type: 'slider',
@@ -624,12 +698,37 @@ const groups = computed((): Settings => {
         key: 'meeting.coWeek',
       },
       {
+        key: 'meeting.enableMusicFadeOut',
+      },
+      {
         type: 'slider',
         key: 'meeting.musicFadeOutTime',
       },
       {
         type: 'btn-group',
         key: 'meeting.musicFadeOutType',
+        props: {
+          groupItems: [
+            {
+              title: useComputedLabel<MeetingPrefs>(
+                'musicFadeOutSmart',
+                prefs.value.meeting,
+                'musicFadeOutTime',
+                PREFS.meeting.musicFadeOutTime
+              ),
+              value: 'smart',
+            },
+            {
+              title: useComputedLabel<MeetingPrefs>(
+                'musicFadeOutTimer',
+                prefs.value.meeting,
+                'musicFadeOutTime',
+                PREFS.meeting.musicFadeOutTime
+              ),
+              value: 'timer',
+            },
+          ],
+        },
       },
       {
         type: 'time',

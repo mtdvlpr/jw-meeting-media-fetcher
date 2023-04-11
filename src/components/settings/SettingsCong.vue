@@ -33,8 +33,8 @@
       @keydown.enter.prevent="submit()"
     />
     <form-input
-      id="cong.user"
-      v-model="cong.user"
+      id="cong.username"
+      v-model="cong.username"
       :label="$t('username')"
       :required="!!cong.server"
       :rules="[!complete || error !== 'credentials']"
@@ -112,7 +112,7 @@ const { client, prefs: cong } = usePrefs<CongPrefs>('cong', emit)
 const complete = computed(() => {
   return !!(
     cong.value.server &&
-    cong.value.user &&
+    cong.value.username &&
     cong.value.password &&
     cong.value.dir
   )
@@ -156,11 +156,11 @@ const submit = async () => {
   if (complete.value) {
     loading.value = true
     error.value = (await connect(
-      cong.value.server as string,
-      cong.value.user as string,
-      cong.value.password as string,
-      cong.value.dir as string
-    )) as string
+      cong.value.server!,
+      cong.value.username!,
+      cong.value.password!,
+      cong.value.dir!
+    ))!
     if (client.value) {
       updateContentsTree()
       forcePrefs()

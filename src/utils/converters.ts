@@ -13,7 +13,7 @@ import {
 } from 'fs-extra'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
-// @ts-ignore
+// @ts-expect-error
 import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url'
 import { Release, DateFormat } from '~~/types'
 

@@ -11,6 +11,14 @@ export const parseRes = (res?: string) => {
   return +res.replace(/\D/g, '')
 }
 
+export const isValidPort = (port: string | null) => {
+  if (!port) return false
+  const regexExp =
+    /^((6553[0-5])|(655[0-2]\d)|(65[0-4]\d{2})|(6[0-4]\d{3})|([1-5]\d{4})|([0-5]{0,5})|(\d{1,4}))$/gi
+
+  return regexExp.test(port)
+}
+
 export async function loadFont(font: 'yeartext' | 'icon') {
   let fontFile = await localFontPath(
     font === 'icon' ? JW_ICONS_FONT : WT_CLEARTEXT_FONT

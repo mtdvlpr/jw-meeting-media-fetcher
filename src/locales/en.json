@@ -86,7 +86,7 @@
   "hideMediaLogo": "Hide logo from media presentation window",
   "hideWinAfterMedia": "Hide media window after media finished playing",
   "hideWinAfterMediaExplain": "Useful mostly for meetings held in sign-language",
-  "hostname": "Web address",
+  "server": "Web address",
   "includePrinted": "Include printed media when available",
   "info": "Information",
   "infoPubIgnored": "Unable to fetch media for the following publication:",

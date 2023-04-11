@@ -228,7 +228,10 @@ const saveFiles = async () => {
 
     await Promise.allSettled(promises)
 
-    await convertUnusableFiles(mediaPath()!, setProgress)
+    const localMediaPath = mediaPath()
+    if (localMediaPath) {
+      await convertUnusableFiles(localMediaPath, setProgress)
+    }
     if (client.value && props.uploadMedia) await updateContent()
     emit('refresh')
   } catch (e: unknown) {
@@ -270,7 +273,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
     }
 
     // Download markers if required
-    if ((file as VideoFile).markers) {
+    if ((file as VideoFile).markers && file.folder && file.safeName) {
       const markers = Array.from(
         new Set(
           (file as VideoFile).markers?.markers?.map(
@@ -287,8 +290,8 @@ const processFile = async (file: LocalFile | VideoFile) => {
 
       const markerPath = join(
         mediaPath(),
-        file.folder!,
-        changeExt(file.safeName!, 'json')
+        file.folder,
+        changeExt(file.safeName, 'json')
       )
       write(markerPath, JSON.stringify(markers))
       congPromises.push(uploadFile(markerPath))

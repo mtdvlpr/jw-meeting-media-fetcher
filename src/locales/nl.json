@@ -84,7 +84,7 @@
   "hideMediaLogo": "Verberg logo in media presentatie modus",
   "hideWinAfterMedia": "Verberg media scherm nadat media is afgespeeld",
   "hideWinAfterMediaExplain": "Handig voor gebarentaal groepen",
-  "hostname": "Hostnaam",
+  "server": "Hostnaam",
   "includePrinted": "Haal geprinte media op als het beschikbaar is",
   "info": "Informatie",
   "infoPubIgnored": "Kon de media van de volgende publicatie niet ophalen:",

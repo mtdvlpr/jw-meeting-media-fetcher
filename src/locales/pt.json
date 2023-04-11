@@ -84,7 +84,7 @@
   "hideMediaLogo": "Ocultar o logotipo da tela de exibição de mídias",
   "hideWinAfterMedia": "Ocultar a tela de exibição de mídias após a reprodução de mídia",
   "hideWinAfterMediaExplain": "Útil principalmente para reuniões realizadas em língua de sinais",
-  "hostname": "Endereço Web",
+  "server": "Endereço Web",
   "includePrinted": "Incluir mídia impressa quando disponível",
   "info": "Informação",
   "infoPubIgnored": "Não foi possível baixar os arquivos de mídia dessa publicação:",

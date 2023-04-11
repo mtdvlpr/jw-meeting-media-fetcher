@@ -138,8 +138,8 @@ const getPreview = (item: MeetingFile | LocalFile) => {
     return preview.value
   }
   preview.value = item.trackImage || item.thumbnail || ''
-  if (preview.value) {
-    previewName.value = item.safeName!
+  if (preview.value && item.safeName) {
+    previewName.value = item.safeName
     return preview.value
   }
   loading.value = true

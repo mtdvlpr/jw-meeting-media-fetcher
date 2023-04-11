@@ -149,7 +149,7 @@ const initZoomIntegration = async () => {
       .init({
         debug: true,
         zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
-        // @ts-ignore
+        // @ts-expect-error
         language: useNuxtApp().$i18n.localeProperties.value.iso,
       })
       .catch(() => {

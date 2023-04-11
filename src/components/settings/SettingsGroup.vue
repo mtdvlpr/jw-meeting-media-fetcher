@@ -6,7 +6,7 @@
     <template v-for="(subSetting, index) in setting.value" :key="index">
       <v-list-item
         v-if="subSetting.type == 'action'"
-        :title="subSetting.label"
+        :title="$t(subSetting.label)"
         @click="subSetting.type == 'action' && subSetting.action"
       />
       <settings-item v-else :setting="subSetting" />
@@ -15,7 +15,11 @@
   <v-list-item
     v-else-if="setting.type == 'action'"
     :title="$t(setting.label)"
-    @click="setting.type == 'action' && setting.action"
+    @click="
+      () => {
+        if (setting.type == 'action') setting.action()
+      }
+    "
   >
   </v-list-item>
   <settings-item v-else :setting="setting" />

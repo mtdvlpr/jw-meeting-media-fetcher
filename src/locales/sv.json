@@ -84,7 +84,7 @@
   "hideMediaLogo": "Dölj logotypen från mediapresentationsfönstret",
   "hideWinAfterMedia": "Dölj mediafönstret efter att media har spelat klart",
   "hideWinAfterMediaExplain": "Användbart för möten som hålls på teckenspråk",
-  "hostname": "Värdnamn",
+  "server": "Värdnamn",
   "includePrinted": "Inkludera tryckt media när det är tillgängligt",
   "info": "Information",
   "infoPubIgnored": "Kunde inte hämta media för följande publikation:",

@@ -1,5 +1,5 @@
 import { PrefStore } from '~~/types'
-export const PREFS: PrefStore = {
+export const PREFS = {
   app: {
     autoOpenFolderWhenDone: false,
     autoQuitWhenDone: false,
@@ -37,9 +37,10 @@ export const PREFS: PrefStore = {
     },
   },
   cong: {
+    enable: false,
     server: null,
     port: null,
-    user: null,
+    username: null,
     password: null,
     dir: null,
   },
@@ -83,7 +84,7 @@ export const PREFS: PrefStore = {
     weDay: null,
     weStartTime: null,
   },
-}
+} satisfies PrefStore
 
 export const ENUMS = {
   theme: ['system', 'light', 'dark'],

@@ -84,7 +84,7 @@
   "hideMediaLogo": "Ascundeți logo-ul din fereastra de prezentare media",
   "hideWinAfterMedia": "Ascundeți fereastra media după redarea materialului",
   "hideWinAfterMediaExplain": "Util în cea mai mare parte pentru întrunirilor în limbajul semnelor",
-  "hostname": "Adresă web",
+  "server": "Adresă web",
   "includePrinted": "Includeți media tipărită atunci când este disponibil",
   "info": "Informații",
   "infoPubIgnored": "Nu se poate prelua materialele media pentru următoarea publicație:",

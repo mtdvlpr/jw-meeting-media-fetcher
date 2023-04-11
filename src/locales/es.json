@@ -84,7 +84,7 @@
   "hideMediaLogo": "Ocultar el logotipo en la ventana de presentación multimedia",
   "hideWinAfterMedia": "Ocultar la ventana de presentación multimedia después de que los contenidos terminan de reproducirse",
   "hideWinAfterMediaExplain": "Útil principalmente para reuniones celebradas en lenguaje de señas",
-  "hostname": "Nombre de host",
+  "server": "Nombre de host",
   "includePrinted": "Incluir medios impresos cuando estén disponibles",
   "info": "Información",
   "infoPubIgnored": "No se puede obtener contenido multimedia para la siguiente publicación:",

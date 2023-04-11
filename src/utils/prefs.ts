@@ -158,13 +158,17 @@ const schema: Schema<PrefStore> = {
   cong: {
     type: 'object',
     properties: {
+      enable: {
+        type: 'boolean',
+        default: PREFS.cong.enable,
+      },
       server: {
         type: ['string', 'null'],
         default: PREFS.cong.server,
       },
-      user: {
+      username: {
         type: ['string', 'null'],
-        default: PREFS.cong.user,
+        default: PREFS.cong.username,
       },
       password: {
         type: ['string', 'null'],
@@ -388,7 +392,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
             store.set(newProp.key, newProp.val)
             store.delete(key as keyof PrefStore)
 
-            // @ts-ignore: 'cong.port' is not defined as a key of PrefStore
+            // @ts-expect-error: 'cong.port' is not defined as a key of PrefStore
             store.reset('cong.port')
           } catch (e) {
             log.error(e)
@@ -401,26 +405,37 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
             'media.enablePp',
             store.get('app.ppEnable') || store.get('media.enablePp')
           )
-          // @ts-ignore: 'app.ppEnable' is not defined as a key of PrefStore
+          // @ts-expect-error: 'app.ppEnable' is not defined as a key of PrefStore
           store.delete('app.ppEnable')
         }
       },
       '22.12.0': (store) => {
         if (store.get('app.localAdditionalMediaPrompt') !== undefined) {
-          // @ts-ignore: 'app.localAdditionalMediaPrompt' is not defined as a key of PrefStore
+          // @ts-expect-error: 'app.localAdditionalMediaPrompt' is not defined as a key of PrefStore
           store.delete('app.localAdditionalMediaPrompt')
         }
       },
       '23.1.0': (store) => {
         if (store.get('media.excludeLffi') !== undefined) {
-          // @ts-ignore: 'app.excludeLffi' is not defined as a key of PrefStore
+          // @ts-expect-error: 'app.excludeLffi' is not defined as a key of PrefStore
           store.delete('media.excludeLffi')
         }
         const excludeLffiImages = store.get('media.excludeLffiImages')
         if (excludeLffiImages !== undefined) {
           store.set('media.excludeLffImages', excludeLffiImages)
-          // @ts-ignore: 'app.excludeLffiImages' is not defined as a key of PrefStore
+          // @ts-expect-error: 'app.excludeLffiImages' is not defined as a key of PrefStore
           store.delete('media.excludeLffiImages')
+        }
+      },
+      '23.4.0': (store) => {
+        if (store.get('cong.user') !== undefined) {
+          store.set('cong.username', store.get('cong.user'))
+          // @ts-expect-error: 'cong.user' is not defined as a key of PrefStore
+          store.delete('cong.user')
+        }
+        const { server, username, password, dir } = store.get('cong')
+        if (server && username && password && dir) {
+          store.set('cong.enable', true)
         }
       },
     },
@@ -533,9 +548,9 @@ export function migrate2290(key: string, newVal: any) {
 
   // Final check against the schema
   const schemaType = isObsPref
-    ? // @ts-ignore: newkey is not defined as a key of properties
+    ? // @ts-expect-error: newkey is not defined as a key of properties
       schema?.app?.properties?.obs?.properties[newKey]?.type
-    : // @ts-ignore: newkey is not defined as a key of properties
+    : // @ts-expect-error: newkey is not defined as a key of properties
       schema[root]?.properties[newKey]?.type
   if (schemaType) {
     if (typeof schemaType === 'string') {

@@ -84,7 +84,7 @@
   "hideMediaLogo": "Ocultar o logotipo JW da tela de exibição de mídias",
   "hideWinAfterMedia": "Ocultar a tela secundária após a reprodução de multimédia",
   "hideWinAfterMediaExplain": "Útil principalmente para reuniões realizadas em língua de sinais",
-  "hostname": "Nome do host",
+  "server": "Nome do host",
   "includePrinted": "Incluir multimédia impressa quando disponível",
   "info": "Informação",
   "infoPubIgnored": "Não foi possível descarregar os ficheiros de multimédia dessa publicação:",

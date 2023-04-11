@@ -84,7 +84,7 @@
   "hideMediaLogo": "Piilota logo mediaesitysikkunasta",
   "hideWinAfterMedia": "Piilota mediaikkuna median toiston päätyttyä",
   "hideWinAfterMediaExplain": "Hyödyllinen enimmäkseen viittomakielellä pidettäviin kokouksiin",
-  "hostname": "Isäntänimi",
+  "server": "Isäntänimi",
   "includePrinted": "Sisällytä tulostettu media, jos saatavilla",
   "info": "Tiedot",
   "infoPubIgnored": "Mediaa ei voi noutaa seuraavaa julkaisua varten:",
