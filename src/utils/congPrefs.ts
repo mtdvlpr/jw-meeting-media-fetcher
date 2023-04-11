@@ -100,11 +100,11 @@ export async function forcePrefs(refresh = false) {
 
       if (!prefs.app) prefs.app = {}
       prefs.app.obs = Object.assign(
-        getPrefs<ObsPrefs>('app.obs'),
+        getPrefs<ObsPrefs>('app.obs') ?? {},
         prefs.app.obs ?? {}
       )
       prefs.app.zoom = Object.assign(
-        getPrefs<ZoomPrefs>('app.zoom'),
+        getPrefs<ZoomPrefs>('app.zoom') ?? {},
         prefs.app.zoom ?? {}
       )
       const newPrefs = {
