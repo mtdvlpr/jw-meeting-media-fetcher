@@ -21,7 +21,9 @@
         return-object
       />
     </confirm-dialog>
-    <div id="zoomMeeting" />
+    <div id="zoomMeetingContainer" style="display: none">
+      <div id="zoomMeeting" />
+    </div>
     <media-controls v-if="date" />
     <present-select-new v-else :first-choice="firstChoice" />
     <present-footer
@@ -34,7 +36,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
-import { type Participant } from '@zoomus/websdk/embedded'
+import type { Participant } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
 
 const date = computed(() => useRoute().query.date as string)
