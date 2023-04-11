@@ -4,7 +4,7 @@
       <v-toolbar-title>{{ $t('plannedMedia') }}</v-toolbar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
-        <v-tabs v-model="currentWeek" grow centered>
+        <v-tabs v-model="currentWeek" grow>
           <v-tab v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
             {{ w.label }}
           </v-tab>

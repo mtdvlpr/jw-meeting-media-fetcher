@@ -4,7 +4,7 @@
       <v-toolbar-title>{{ $t('settings') }}</v-toolbar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
-        <v-tabs v-model="tab" grow centered>
+        <v-tabs v-model="tab" grow>
           <v-tab>{{ $t('all') }}</v-tab>
           <v-tab
             v-for="h in headers"
