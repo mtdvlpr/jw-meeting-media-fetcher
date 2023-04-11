@@ -1,6 +1,11 @@
 <template>
   <!-- <loading-icon v-if="loading" /> -->
   <v-container class="calendar present-select pa-4 grow">
+    <v-row no-gutters>
+      <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">
+        <v-card :subtitle="day" variant="tonal" color="grey"></v-card>
+      </v-col>
+    </v-row>
     <v-row
       v-for="(week, i) in weeks"
       :key="i"
@@ -11,19 +16,11 @@
         <!-- :text="day.count ? day.count + ' items' : ''" -->
         <v-card
           v-ripple="day.actionable && !day.inPast"
-          :variant="day.inPast || day.actionable ? 'tonal' : 'outlined'"
+          :variant="day.inPast ? 'tonal' : undefined"
           :subtitle="day.month"
           :title="day.dayOfMonth"
           class="ma-1"
-          :color="
-            day.inPast
-              ? 'grey'
-              : !day.currentMonth
-              ? 'green'
-              : day.actionable
-              ? 'primary'
-              : 'primary'
-          "
+          :color="day.inPast ? 'grey' : day.actionable ? 'primary' : 'white'"
           :class="{
             inPast: day.inPast,
           }"
@@ -49,6 +46,7 @@ export default {
     return {
       // loading: true,
       firstChoice: false,
+      dayNames: [] as Array<string>,
       datesWithMedia: [] as Array<{
         name: string
         count: number
@@ -100,11 +98,12 @@ export default {
 
       $dayjs.extend(weekday)
       const todayDate = $dayjs().startOf('day')
-      // const firstDayOfMonth = todayDate.startOf('month')
       const firstDay = todayDate.subtract(todayDate.weekday() + 1, 'day')
-      // const lastDayOfMonth = todayDate.endOf('month')
-      // const lastDayOfWeek = lastDayOfMonth.endOf('week')
       const lastDay = firstDay.add(3, 'weeks')
+
+      for (let i = 0; i < 7; i++) {
+        this.dayNames[i] = firstDay.add(i, 'day').format('ddd')
+      }
 
       let currentDay = firstDay
       while (currentDay <= lastDay) {
@@ -150,35 +149,20 @@ export default {
         this.weeks.push(week)
       }
 
-      this.syncMedia(false, this.datesWithPlannedMeetings)
-      /* if (this.firstChoice && this.datesWithMedia.length === 1) {
-        this.selectDate(this.datesWithMedia[0].name)
-      } else */ if (
+      // this.syncMedia(false, this.datesWithPlannedMeetings)
+
+      if (
         this.firstChoice &&
         this.datesWithMedia
           .map((el) => el.name)
           .includes(this.today.format('YYYY-MM-DD'))
       ) {
         this.selectDate(this.today.format('YYYY-MM-DD'))
-      } /* else {
-        this.loading = false
-      } */
+      }
     }
   },
   methods: {
-    syncMedia(dryrun = false, datesToSync: { date: string; type: string }[]) {
-      // onst statStore = useStatStore()
-      // statStore.startPerf({ func: 'syncJWorgMedia', start: performance.now() })
-      for (const date of datesToSync) {
-        try {
-          this.syncJWMediaTest(dryrun, date)
-        } catch (e) {
-          console.error(e)
-        }
-      }
-      // statStore.stopPerf({ func: 'syncJWorgMedia', stop: performance.now() })
-    },
-    async syncMediaItem(date: string, item: MeetingFile): Promise<void> {
+    async syncMediaItem(date: string, item: MeetingFile) {
       if (item.filesize && (item.url || item.filepath)) {
         log.info(
           `%c[jwOrg] [${date}] ${item.safeName}`,
@@ -265,20 +249,27 @@ export default {
         )
       }
     },
-    async syncJWMediaTest(
+    async syncMedia(
       dryrun = false,
-      date: { date: string; type: string }
+      datesToSync: { date: string; type: string }[]
     ) {
       if (!dryrun) {
         // const totalTime = Math.floor(Math.random() * 6) + 5 // random duration between 5 and 10 seconds
         // const elapsed = 0
-
-        if (date.type === 'mw') {
-          await getMwMedia(date.date)
-        } else if (date.type === 'we') {
-          await getWeMedia(date.date)
+        for (const date of datesToSync) {
+          try {
+            if (!this.syncedMedia.includes(date.date + date.type)) {
+              if (date.type === 'mw') {
+                await getMwMedia(date.date)
+              } else if (date.type === 'we') {
+                await getWeMedia(date.date)
+              }
+              this.syncedMedia.push(date.date + date.type)
+            }
+          } catch (e) {
+            console.error(e)
+          }
         }
-
         createMediaNames()
         /*
             if (congSync.value) {
@@ -295,11 +286,11 @@ export default {
             } */
 
         if (!dryrun) {
-          await Promise.allSettled([
-            // syncCongServerMedia(),
-            // syncLocalRecurring(),
-            this.syncAllJWMedia(dryrun),
-          ])
+          // await Promise.allSettled([
+          // syncCongServerMedia(),
+          // syncLocalRecurring(),
+          this.syncAllJWMedia()
+          // ])
         }
         /*
         
@@ -369,7 +360,7 @@ export default {
         },
       })
     },
-    async syncAllJWMedia(dryrun: boolean) {
+    syncAllJWMedia() {
       const { $dayjs } = useNuxtApp()
       const meetings = new Map(
         Array.from(useMediaStore().meetings)
@@ -410,7 +401,7 @@ export default {
               !this.syncedMedia.includes(date + item.uniqueId)
             ) {
               if (item.uniqueId) this.syncedMedia.push(date + item.uniqueId)
-              await this.syncMediaItem(date, item)
+              this.syncMediaItem(date, item)
             }
           }
         }
