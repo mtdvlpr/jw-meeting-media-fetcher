@@ -145,51 +145,6 @@ const updatePrefs = (key: string, value: any) => {
 provide(prefsKey, prefs)
 provide(updatePrefsKey, updatePrefs)
 
-const filteredGroups = computed(() => {
-  if (!filter.value) return groups.value
-  const filtered: Settings = {}
-  for (const [group, settings] of Object.entries(groups.value)) {
-    if (group.toLowerCase().includes(filter.value.toLowerCase())) {
-      filtered[group] = settings
-    } else {
-      const filteredSettings: (Setting | Action | Group)[] = []
-      settings.forEach((setting) => {
-        if (setting.type === 'group') {
-          const filteredSubSettings: (Setting | Action)[] = []
-          setting.value.forEach((subSetting) => {
-            if (
-              $i18n
-                // @ts-expect-error
-                .t(subSetting.label ?? subSetting.key.split('.').pop())
-                .toLowerCase()
-                .includes(filter.value.toLowerCase())
-            ) {
-              filteredSubSettings.push(subSetting)
-            }
-          })
-          if (filteredSubSettings.length > 0) {
-            filteredSettings.push({
-              ...setting,
-              value: filteredSubSettings,
-            })
-          }
-        } else if (
-          $i18n
-            // @ts-expect-error
-            .t(setting.label ?? setting.key.split('.').pop())
-            .toLowerCase()
-            .includes(filter.value.toLowerCase())
-        ) {
-          filteredSettings.push(setting)
-        }
-      })
-      if (filteredSettings.length > 0) {
-        filtered[group] = filteredSettings
-      }
-    }
-  }
-  return filtered
-})
 const groups = computed((): Settings => {
   return {
     General: [
@@ -386,10 +341,11 @@ const groups = computed((): Settings => {
         label: $i18n.t('advanced'),
         value: [
           {
-            key: 'media.convertDownloaded',
+            key: 'media.enableMp4Conversion',
+            explanation: 'enableMp4ConversionExplain',
           },
           {
-            key: 'media.keepOriginals',
+            key: 'media.keepOriginalsAfterConversion',
           },
           {
             key: 'media.enableVlcPlaylistCreation',
@@ -402,7 +358,7 @@ const groups = computed((): Settings => {
           },
           {
             type: 'autocomplete',
-            key: 'media.mediaLangFallback',
+            key: 'media.langFallback',
             props: {
               items: langs.value.filter(
                 (l) =>
@@ -685,6 +641,52 @@ const groups = computed((): Settings => {
       },
     ],
   }
+})
+
+const filteredGroups = computed(() => {
+  if (!filter.value) return groups.value
+  const filtered: Settings = {}
+  for (const [group, settings] of Object.entries(groups.value)) {
+    if (group.toLowerCase().includes(filter.value.toLowerCase())) {
+      filtered[group] = settings
+    } else {
+      const filteredSettings: (Setting | Action | Group)[] = []
+      settings.forEach((setting) => {
+        if (setting.type === 'group') {
+          const filteredSubSettings: (Setting | Action)[] = []
+          setting.value.forEach((subSetting) => {
+            if (
+              $i18n
+                // @ts-expect-error
+                .t(subSetting.label ?? subSetting.key.split('.').pop())
+                .toLowerCase()
+                .includes(filter.value.toLowerCase())
+            ) {
+              filteredSubSettings.push(subSetting)
+            }
+          })
+          if (filteredSubSettings.length > 0) {
+            filteredSettings.push({
+              ...setting,
+              value: filteredSubSettings,
+            })
+          }
+        } else if (
+          $i18n
+            // @ts-expect-error
+            .t(setting.label ?? setting.key.split('.').pop())
+            .toLowerCase()
+            .includes(filter.value.toLowerCase())
+        ) {
+          filteredSettings.push(setting)
+        }
+      })
+      if (filteredSettings.length > 0) {
+        filtered[group] = filteredSettings
+      }
+    }
+  }
+  return filtered
 })
 </script>
 <style lang="scss" scoped>

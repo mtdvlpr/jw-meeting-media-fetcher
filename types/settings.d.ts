@@ -13,6 +13,7 @@ export interface Setting {
   type?: Field | 'path' | 'date' | 'time'
   key: string
   label?: string
+  explanation?: string
   props?: { [key: string]: any }
   onChange?: (val: any, oldVal: any) => void
 }

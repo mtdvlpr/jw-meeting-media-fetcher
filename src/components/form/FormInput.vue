@@ -5,7 +5,7 @@
     ref="field"
     v-model="value"
     :type="field === 'password' && passwordVisible ? 'text' : field"
-    :disabled="!!$attrs.disabled || locked"
+    :disabled="!!$attrs.disabled || isLocked(id)"
     :class="{ 'py-1': true, 'mb-2': required }"
     v-bind="$attrs"
     color="primary"
@@ -14,51 +14,12 @@
     :rules="rules"
     :counted="max > 0 ? max : undefined"
   >
-    <template v-if="field === 'password'" #append-inner>
+    <template v-if="!isLocked(id) && field === 'password'" #append-inner>
       <v-icon
         :icon="passIcon"
         size="small"
         @click="passwordVisible = !passwordVisible"
       />
-    </template>
-    <template v-else-if="locked" #append-inner>
-      <v-tooltip activator="parent" location="top">
-        {{ $t('settingLocked') }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            icon="fa-lock"
-            size="small"
-            v-bind="attrs"
-            style="margin-top: 2px; pointer-events: auto"
-          />
-        </template>
-      </v-tooltip>
-    </template>
-    <template v-else-if="explanation && appendOuter" #append>
-      <v-tooltip location="top">
-        {{ $t(explanation) }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            v-bind="attrs"
-            icon="fa-circle-question"
-            size="small"
-            style="margin-top: 2px"
-          />
-        </template>
-      </v-tooltip>
-    </template>
-    <template v-else-if="explanation" #append-inner>
-      <v-tooltip location="top">
-        {{ $t(explanation) }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            v-bind="attrs"
-            icon="fa-circle-question"
-            size="small"
-            style="margin-top: 2px; pointer-events: auto"
-          />
-        </template>
-      </v-tooltip>
     </template>
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
@@ -70,7 +31,7 @@
     ref="field"
     v-model="value"
     color="primary"
-    :disabled="!!$attrs.disabled || locked"
+    :disabled="!!$attrs.disabled || isLocked(id)"
     :class="{ 'py-1': true, 'mb-2': required }"
     v-bind="$attrs"
     :rules="rules"
@@ -82,32 +43,6 @@
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
     </template>
-    <template v-if="locked" #append>
-      <v-tooltip activator="parent" location="top">
-        {{ $t('settingLocked') }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            icon="fa-lock"
-            size="small"
-            v-bind="attrs"
-            style="margin-top: 2px; pointer-events: auto"
-          />
-        </template>
-      </v-tooltip>
-    </template>
-    <template v-else-if="explanation" #append>
-      <v-tooltip location="top">
-        {{ $t(explanation) }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            v-bind="attrs"
-            size="small"
-            icon="fa-circle-question"
-            style="margin-top: 2px"
-          />
-        </template>
-      </v-tooltip>
-    </template>
   </v-autocomplete>
   <v-select
     v-else-if="field == 'select'"
@@ -117,39 +52,13 @@
     variant="outlined"
     color="primary"
     density="compact"
-    :disabled="!!$attrs.disabled || locked"
+    :disabled="!!$attrs.disabled || isLocked(id)"
     :class="{ 'py-1': true, 'mb-2': required }"
     v-bind="$attrs"
     :rules="rules"
   >
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
-    </template>
-    <template v-if="locked" #append>
-      <v-tooltip activator="parent" location="top">
-        {{ $t('settingLocked') }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            icon="fa-lock"
-            size="small"
-            v-bind="attrs"
-            style="margin-top: 2px; pointer-events: auto"
-          />
-        </template>
-      </v-tooltip>
-    </template>
-    <template v-else-if="explanation" #append>
-      <v-tooltip location="top">
-        {{ $t(explanation) }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            v-bind="attrs"
-            icon="fa-circle-question"
-            size="small"
-            style="margin-top: 2px"
-          />
-        </template>
-      </v-tooltip>
     </template>
   </v-select>
   <v-switch
@@ -160,42 +69,21 @@
     density="compact"
     variant="outlined"
     color="primary"
-    :disabled="!!$attrs.disabled || locked"
+    :disabled="!!$attrs.disabled || isLocked(id)"
     v-bind="$attrs"
   >
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
     </template>
-    <template v-if="locked" #append>
-      <v-tooltip activator="parent" location="top">
-        {{ $t('settingLocked') }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            icon="fa-lock"
-            size="small"
-            v-bind="attrs"
-            style="margin-top: 3px; pointer-events: auto"
-          />
-        </template>
-      </v-tooltip>
-    </template>
-    <template v-else-if="explanation" #append>
-      <v-tooltip location="top">
-        {{ $t(explanation) }}
-        <template #activator="{ props: attrs }">
-          <v-icon
-            v-bind="attrs"
-            icon="fa-circle-question"
-            style="margin-top: 3px"
-            size="small"
-          />
-        </template>
-      </v-tooltip>
-    </template>
   </v-switch>
-  <v-row v-else-if="field == 'btn-group'" class="mb-4" justify="space-between">
+  <v-row
+    v-else-if="field == 'btn-group'"
+    no-gutters
+    class="py-1"
+    justify="space-between"
+  >
     <v-col align-self="center" class="text-left">
-      <v-tooltip v-if="locked" location="top">
+      <v-tooltip v-if="isLocked(id)" location="top">
         {{ $t('settingLocked') }}
         <template #activator="{ props: attrs }">
           <span v-bind="attrs">{{ $t(groupLabel) }}</span>
@@ -220,11 +108,11 @@
           :id="safeId + '-' + key"
           :key="key"
           :value="item.value"
-          :disabled="!!$attrs.disabled || locked"
+          :disabled="!!$attrs.disabled || isLocked(id)"
         >
           {{ item.title }}
         </v-btn>
-        <v-btn v-if="locked" icon="fa-lock" size="small" disabled />
+        <v-btn v-if="isLocked(id)" icon="fa-lock" size="small" disabled />
       </v-btn-toggle>
     </v-col>
     <v-col
@@ -246,7 +134,7 @@
         :id="safeId"
         ref="field"
         v-model="value"
-        :disabled="!!$attrs.disabled || locked"
+        :disabled="!!$attrs.disabled || isLocked(id)"
         v-bind="$attrs"
         variant="outlined"
         color="primary"
@@ -257,33 +145,7 @@
         :label="customInput ? undefined : value + labelSuffix"
         hide-details="auto"
       >
-        <template v-if="locked" #append>
-          <v-tooltip activator="parent" location="top">
-            {{ $t('settingLocked') }}
-            <template #activator="{ props: attrs }">
-              <v-icon
-                icon="fa-lock"
-                size="small"
-                v-bind="attrs"
-                style="margin-top: 2px; pointer-events: auto"
-              />
-            </template>
-          </v-tooltip>
-        </template>
-        <template v-else-if="explanation" #append>
-          <v-tooltip location="top">
-            {{ $t(explanation) }}
-            <template #activator="{ props: attrs }">
-              <v-icon
-                v-bind="attrs"
-                size="small"
-                icon="fa-circle-question"
-                style="margin-top: 2px"
-              />
-            </template>
-          </v-tooltip>
-        </template>
-        <template v-else-if="customInput" #append>
+        <template v-if="!isLocked(id) && customInput" #append>
           <v-text-field
             :model-value="formattedSlider"
             class="mt-0 pt-0"
@@ -330,9 +192,7 @@ const props = withDefaults(
     groupItems?: { title: string; value: any }[]
     required?: boolean
     labelSuffix?: string
-    locked?: boolean
     appendOuter?: boolean
-    explanation?: string
   }>(),
   {
     id: '',
@@ -340,7 +200,6 @@ const props = withDefaults(
     groupLabel: '',
     groupItems: () => [],
     labelSuffix: '',
-    explanation: '',
     field: 'text',
   }
 )

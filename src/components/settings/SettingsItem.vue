@@ -1,13 +1,31 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <v-list-item
     v-if="setting.type == 'switch' || setting.type == undefined"
-    :title="$t(label)"
     @click="value = !value"
   >
+    <span v-html="$t(label)" />
     <template #prepend>
       <v-list-item-action start>
         <v-switch :model-value="value" color="primary" hide-details />
       </v-list-item-action>
+    </template>
+    <template v-if="setting.explanation || isLocked(setting.key)" #append>
+      <v-tooltip location="top" activator="parent">
+        <template #activator="{ props: attrs }">
+          <v-icon
+            :icon="isLocked(setting.key) ? 'fa-lock' : 'fa-circle-question'"
+            size="small"
+            v-bind="attrs"
+            style="margin-top: 2px; pointer-events: auto"
+          />
+        </template>
+        {{
+          $t(
+            isLocked(setting.key) ? 'settingLocked' : setting.explanation ?? ''
+          )
+        }}
+      </v-tooltip>
     </template>
   </v-list-item>
   <form-date-picker
@@ -31,6 +49,7 @@
       </v-col>
       <v-col class="pl-0">
         <form-input
+          :id="setting.key"
           :model-value="value"
           readonly
           class="py-1"
@@ -43,12 +62,47 @@
   </v-list-item>
   <v-list-item v-else>
     <form-input
+      :id="setting.key"
       v-model="value"
       :field="setting.type"
       :label="$t(label)"
       hide-details="auto"
       v-bind="setting.props"
-    />
+    >
+      <template
+        v-if="
+          (setting.explanation || isLocked(setting.key)) &&
+          (setting.type === 'text' || setting.type === 'password')
+        "
+        #append-inner
+      >
+        <v-icon
+          :icon="isLocked(setting.key) ? 'fa-lock' : 'fa-circle-question'"
+          size="small"
+          style="margin-top: 2px; pointer-events: auto"
+        >
+          <v-tooltip location="top" activator="parent">
+            $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
+          </v-tooltip>
+        </v-icon>
+      </template>
+      <template
+        v-else-if="setting.explanation || isLocked(setting.key)"
+        #append
+      >
+        <v-icon
+          :icon="isLocked(setting.key) ? 'fa-lock' : 'fa-circle-question'"
+          size="small"
+          style="margin-top: 2px; pointer-events: auto"
+        >
+          <v-tooltip location="top" activator="parent">
+            {{
+              $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
+            }}
+          </v-tooltip>
+        </v-icon>
+      </template>
+    </form-input>
   </v-list-item>
 </template>
 <script setup lang="ts">
