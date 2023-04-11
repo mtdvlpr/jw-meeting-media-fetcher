@@ -40,7 +40,7 @@ const timeToString = (
     .toString()
     .padStart(2, '0')}`
 }
-const value = ref(stringToTime(props.modelValue))
+const value = ref(stringToTime(props.modelValue.toString()))
 watch(value, (val) => {
   emit('update:modelValue', timeToString(val))
 })
