@@ -23,22 +23,21 @@
         v-model="filter"
         clearable
         hide-details="auto"
+        density="compact"
         label="Filter"
-        @change="filterPrefs"
-        @click:clear="clearFilter"
       ></v-text-field>
       <v-col cols="12">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
         <!-- <loading-icon v-if="!mounted" /> -->
-        <v-list density="compact">
+        <v-list density="compact" :opened="opened" open-strategy="multiple">
           <template
             v-for="(parentValue, parentKey) in filteredPrefs"
             :key="parentKey"
           >
-            <v-list-group>
+            <v-list-group ref="listGroup" :value="filter ? 1 : parentKey">
               <template #activator="{ props }">
                 <v-list-item
-                  v-bind="props"
+                  v-bind="!filter && props"
                   :title="parentKey"
                   variant="tonal"
                   color="primary"
@@ -48,10 +47,13 @@
                 v-for="(childValue, childKey) in parentValue"
                 :key="childKey"
               >
-                <v-list-group v-if="typeof childValue === 'object'">
+                <v-list-group
+                  v-if="typeof childValue === 'object'"
+                  :value="filter ? 1 : childKey"
+                >
                   <template #activator="{ props }">
                     <v-list-item
-                      v-bind="props"
+                      v-bind="!filter && props"
                       :title="childKey"
                       variant="tonal"
                     ></v-list-item>
@@ -209,7 +211,7 @@ export default {
     tab: 0,
     cache: 0,
     refresh: false,
-    lists: { id: Number },
+    opened: [],
   }),
   computed: {
     filteredPrefs() {
@@ -249,20 +251,8 @@ export default {
           filtered[parentKey] = filteredChildren
         }
       })
-      console.log(this.active)
-
+      this.opened = [1]
       return filtered
-    },
-    listSelection: {
-      get: function () {
-        return this.lists.id
-      },
-      set: function (newVal) {
-        this.$emit(
-          'input',
-          this.settings.find((item) => item.id === newVal)
-        )
-      },
     },
   },
   mounted() {
@@ -309,18 +299,6 @@ export default {
     // ) {
     //   this.prefs[key] = val
     // },
-    filterPrefs() {
-      // expand all v-list-groups
-      this.$nextTick(() => {
-        const listGroups = document.querySelectorAll('.v-list-group')
-        listGroups.forEach((listGroup) => {
-          listGroup.active = true
-        })
-      })
-    },
-    clearFilter() {
-      this.filter = ''
-    },
     calcCache() {
       return (this.refresh = !this.refresh)
     },
