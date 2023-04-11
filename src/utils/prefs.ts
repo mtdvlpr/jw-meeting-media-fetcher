@@ -600,6 +600,7 @@ export function setPrefs(key: string, value: any) {
     ...prefs,
     obs: prefs.app?.obs,
   })
+  return prefs
 }
 
 export function prefsInitialized() {

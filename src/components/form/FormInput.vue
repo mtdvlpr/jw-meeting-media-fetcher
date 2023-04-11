@@ -6,7 +6,7 @@
     v-model="value"
     :type="field === 'password' && passwordVisible ? 'text' : field"
     :disabled="!!$attrs.disabled || locked"
-    :class="{ 'mb-2': required }"
+    :class="{ 'py-1': true, 'mb-2': required }"
     v-bind="$attrs"
     color="primary"
     variant="outlined"
@@ -71,7 +71,7 @@
     v-model="value"
     color="primary"
     :disabled="!!$attrs.disabled || locked"
-    :class="{ 'mb-2': required }"
+    :class="{ 'py-1': true, 'mb-2': required }"
     v-bind="$attrs"
     :rules="rules"
     density="compact"
@@ -118,7 +118,7 @@
     color="primary"
     density="compact"
     :disabled="!!$attrs.disabled || locked"
-    :class="{ 'mb-2': required }"
+    :class="{ 'py-1': true, 'mb-2': required }"
     v-bind="$attrs"
     :rules="rules"
   >
@@ -198,10 +198,10 @@
       <v-tooltip v-if="locked" location="top">
         {{ $t('settingLocked') }}
         <template #activator="{ props: attrs }">
-          <span v-bind="attrs">{{ groupLabel }}</span>
+          <span v-bind="attrs">{{ $t(groupLabel) }}</span>
         </template>
       </v-tooltip>
-      <span v-else>{{ groupLabel }}</span>
+      <span v-else>{{ $t(groupLabel) }}</span>
     </v-col>
     <v-col align-self="center" class="text-right">
       <v-btn-toggle

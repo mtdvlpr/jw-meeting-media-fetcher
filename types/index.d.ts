@@ -5,6 +5,7 @@ export * from './github'
 export * from './cong'
 export * from './store'
 export * from './electron'
+export * from './settings'
 
 export type VFormRef = {
   id: number | string
