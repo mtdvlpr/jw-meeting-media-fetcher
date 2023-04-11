@@ -70,6 +70,7 @@ export default {
           progress: number
         }>
       >,
+      syncedMedia: [],
       today: this.$dayjs().startOf('day'),
     }
   },
@@ -119,8 +120,7 @@ export default {
 
           // Weekend
           const weDay = getPrefs<number>('meeting.weDay')
-          const weekDay = date.day() === 0 ? 6 : date.day() - 1
-          console.log(weekDay, mwDay, weDay)
+          const weekDay = (date.day() + 6) % 7
           if (!date.isBefore(todayDate)) {
             if (weekDay === mwDay) {
               this.datesWithPlannedMeetings.push({
@@ -138,7 +138,8 @@ export default {
             date: date.format('YYYY-MM-DD'),
             dayOfMonth: date.format('D'),
             month: date.format('MMM'),
-            actionable: mediaItems?.count > 0,
+            actionable:
+              mediaItems?.count > 0 || weekDay === mwDay || weekDay === weDay,
             count: mediaItems?.count,
             currentMonth: date.isSame(todayDate, 'month'),
             inPast: date.isBefore(todayDate),
@@ -353,7 +354,6 @@ export default {
             100
         }
       }
-      // console.log(this.weeks)
     },
     validDate(date: string) {
       return this.$dayjs(
@@ -373,7 +373,7 @@ export default {
       const { $dayjs } = useNuxtApp()
       const meetings = new Map(
         Array.from(useMediaStore().meetings)
-          .filter(([date, _parts]) => {
+          .filter(([date]) => {
             if (date === 'Recurring') return false
             const dateObj = $dayjs(
               date,
@@ -381,39 +381,40 @@ export default {
             )
             return dateObj.isValid()
           })
-          .map(([date, parts]) => {
-            const newParts = new Map(
-              Array.from(parts).map(([part, media]) => {
-                const newMedia = media.filter(
+          .map(([date, parts]) => [
+            date,
+            new Map(
+              Array.from(parts).map(([part, media]) => [
+                part,
+                media.filter(
                   ({ congSpecific, hidden, isLocal }) =>
-                    !congSpecific && !hidden && !isLocal // Filter out cong specific media, hidden media and local media
-                )
-                return [part, newMedia]
-              })
-            )
-            return [date, newParts]
-          })
+                    !congSpecific && !hidden && !isLocal
+                ),
+              ])
+            ),
+          ])
       )
 
-      meetings.forEach((parts, date) =>
-        parts.forEach((media) => {
-          this.mediaTotals[date] ??= { total: 0, current: 0 }
-          this.mediaTotals[date].total += media.length
-        })
+      this.mediaTotals = Object.fromEntries(
+        Array.from(meetings).map(([date, parts]) => [
+          date,
+          { total: parts.size, current: 0 },
+        ])
       )
 
-      const promises: Promise<void>[] = []
-      meetings.forEach((parts, date) => {
-        parts.forEach((media) => {
-          media.forEach((item) => {
-            if (!dryrun) {
-              promises.push(this.syncMediaItem(date, item))
+      for (const [date, parts] of meetings.entries()) {
+        for (const [, media] of parts.entries()) {
+          for (const item of media) {
+            if (
+              !item.uniqueId ||
+              !this.syncedMedia.includes(date + item.uniqueId)
+            ) {
+              if (item.uniqueId) this.syncedMedia.push(date + item.uniqueId)
+              await this.syncMediaItem(date, item)
             }
-          })
-        })
-      })
-
-      await Promise.allSettled(promises)
+          }
+        }
+      }
     },
   },
 }
