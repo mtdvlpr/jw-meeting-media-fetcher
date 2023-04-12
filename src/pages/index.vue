@@ -267,9 +267,9 @@ const initPrefs = async (name: string, isNew = false) => {
   // If all cong fields are filled in, try to connect to the server
   useCongStore().clear()
   if (!getPrefs<boolean>('app.offline')) {
-    const { server, user, password, dir } = getPrefs<CongPrefs>('cong')
-    if (server && user && password && dir) {
-      const error = await connect(server, user, password, dir)
+    const { server, username, password, dir } = getPrefs<CongPrefs>('cong')
+    if (server && username && password && dir) {
+      const error = await connect(server, username, password, dir)
       if (error === 'success') {
         forcePrefs()
       } else {

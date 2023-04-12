@@ -111,10 +111,16 @@ export async function updateContent() {
   const store = useCongStore()
   if (!store.client) return
 
-  const { server, user, password, dir } = getPrefs<CongPrefs>('cong')
+  const { server, username, password, dir } = getPrefs<CongPrefs>('cong')
   let contents: FileStat[] = []
-  if (server && user && password && dir) {
-    contents = await getCongDirectory(store.client, server, user, password, dir)
+  if (server && username && password && dir) {
+    contents = await getCongDirectory(
+      store.client,
+      server,
+      username,
+      password,
+      dir
+    )
   }
   store.setContents(contents)
 }
