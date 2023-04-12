@@ -19,18 +19,45 @@ export interface Setting extends SubSetting {
   type?: Field | 'path' | 'date' | 'time' | 'list'
   label?: string
   prepend?: SubSetting
+  append?: Action
   explanation?: string
 }
 
 export interface Action {
   type: 'action'
   label: string
+  icon?: boolean
+  props?: { [key: string]: any }
   action: () => void
 }
+
+export type GroupID =
+  | 'general'
+  | 'media'
+  | 'advanced'
+  | 'integrations'
+  | 'playback'
+  | 'meetings'
+
+export type SubGroupID =
+  | 'videos'
+  | 'afterSync'
+  | 'mediaAdvanced'
+  | 'shortcuts'
+  | 'obs'
+  | 'webdav'
+  | 'zoom'
+  | 'playbackAdvanced'
+  | 'music'
 export interface Group {
   type: 'group'
+  id: SubGroupID
   label: string
   value: (Setting | Action)[]
 }
 
-export type Settings = { [key: string]: (Setting | Group | Action)[] }
+export interface Settings {
+  id: GroupID
+  label: string
+  settings: (Setting | Group | Action)[]
+}

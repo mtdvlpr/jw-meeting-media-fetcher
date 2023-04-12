@@ -85,6 +85,31 @@
       </v-chip>
     </v-col>
   </v-list-item>
+  <v-list-item v-else-if="setting.append">
+    <v-col class="d-flex pa-0 pb-2 align-center">
+      <form-input
+        :id="setting.key"
+        v-model="value"
+        :field="setting.type"
+        :label="$t(label)"
+        hide-details="auto"
+        v-bind="setting.props"
+      />
+      <v-btn
+        class="ml-2"
+        color="primary"
+        v-bind="setting.append.props"
+        @click="setting.append && setting.append.action()"
+      >
+        <v-icon
+          v-if="setting.append.icon"
+          :icon="setting.append.label"
+          size="small"
+        />
+        <span v-else>{{ $t(setting.append.label) }}</span>
+      </v-btn>
+    </v-col>
+  </v-list-item>
   <v-list-item v-else>
     <form-input
       :id="setting.key"
