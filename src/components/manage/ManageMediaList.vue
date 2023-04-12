@@ -13,7 +13,7 @@
   <v-list
     v-else-if="mediaList.length > 0"
     density="compact"
-    :style="`overflow-y: auto;max-height: ${listHeight}px`"
+    :style="`position: static;overflow-y: auto;max-height: ${listHeight}px`"
   >
     <v-dialog
       v-if="edit"

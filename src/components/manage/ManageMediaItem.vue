@@ -2,8 +2,9 @@
   <v-list-item
     density="compact"
     class="manage-media-item"
-    style="position: static"
     :disabled="item.loading"
+    @mouseover="hovering = true"
+    @mouseleave="hovering = false"
   >
     <template #prepend>
       <v-list-item-action v-if="item.loading" class="my-0">
@@ -51,31 +52,29 @@
         />
       </v-list-item-action>
     </template>
-    <v-hover v-slot="{ isHovering }">
-      <v-img
-        v-if="isHovering && getPreview(item)"
-        :src="preview"
-        alt="Loading..."
-        class="tooltip-img"
-        style="max-width=200px"
-      />
-      <v-list-item-title
-        v-if="item.isLocal === undefined"
-        :class="{
-          'text-decoration-line-through': item.ignored,
-        }"
-      >
-        {{ prefix + ' ' + item.safeName }}
-      </v-list-item-title>
-      <v-list-item-title
-        v-else
-        :class="{
-          'text-decoration-line-through': item.hidden,
-        }"
-      >
-        {{ item.safeName }}
-      </v-list-item-title>
-    </v-hover>
+    <v-img
+      v-if="getPreview(item) && hovering"
+      :src="preview"
+      :alt="loading ? 'Loading...' : item.safeName"
+      class="tooltip-img"
+    />
+
+    <v-list-item-title
+      v-if="item.isLocal === undefined"
+      :class="{
+        'text-decoration-line-through': item.ignored,
+      }"
+    >
+      {{ prefix + ' ' + item.safeName }}
+    </v-list-item-title>
+    <v-list-item-title
+      v-else
+      :class="{
+        'text-decoration-line-through': item.hidden,
+      }"
+    >
+      {{ item.safeName }}
+    </v-list-item-title>
     <template #append>
       <v-list-item-action class="my-0">
         <v-icon v-if="item.recurring" icon="fa-sync-alt" color="info" />
@@ -129,6 +128,7 @@ const props = defineProps<{
 // Get media preview
 const loading = ref(false)
 const preview = ref('')
+const hovering = ref(false)
 const { online } = useOnline()
 const previewName = ref('')
 const { client, contents } = storeToRefs(useCongStore())
@@ -162,6 +162,7 @@ const getPreview = (item: MeetingFile | LocalFile) => {
   }
   loading.value = false
   previewName.value = item.safeName!
+  console.log('preview', preview.value)
   return preview.value
 }
 
@@ -249,10 +250,14 @@ const typeIcon = (filename?: string) => {
 </script>
 <style lang="scss" scoped>
 .manage-media-item {
+  position: static;
+
   .tooltip-img {
     content: ' ';
     position: absolute;
-    bottom: calc(100% - 13px);
+    min-height: 100px;
+    min-width: 200px;
+    bottom: calc(100% - 25px);
     left: 50%;
     transform: translate(-50%, 0);
   }

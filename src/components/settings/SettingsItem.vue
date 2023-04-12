@@ -60,6 +60,31 @@
       </v-col>
     </v-row>
   </v-list-item>
+  <v-list-item v-else-if="setting.type === 'list'">
+    <v-col class="d-flex pa-0 pb-2 align-center">
+      <form-input
+        :id="setting.key"
+        v-model="newValue"
+        :label="$t(label)"
+        :placeholder="$t(`${label}Format`)"
+        hide-details="auto"
+      />
+      <v-btn class="ml-2" color="primary" @click="addNewValue()">
+        <v-icon icon="fa-add" size="small" />
+      </v-btn>
+    </v-col>
+    <v-col>
+      <v-chip
+        v-for="(name, i) in value"
+        :key="name"
+        closable
+        class="mb-2 mr-2"
+        @click:close="removeValue(i)"
+      >
+        {{ name }}
+      </v-chip>
+    </v-col>
+  </v-list-item>
   <v-list-item v-else>
     <form-input
       :id="setting.key"
@@ -69,6 +94,16 @@
       hide-details="auto"
       v-bind="setting.props"
     >
+      <template v-if="setting.prepend" #prepend>
+        <form-input
+          v-if="setting.prepend"
+          :id="setting.prepend.key"
+          v-model="prependValue"
+          :field="setting.prepend.type"
+          hide-details="auto"
+          v-bind="setting.prepend.props"
+        />
+      </template>
       <template
         v-if="
           (setting.explanation || isLocked(setting.key)) &&
@@ -142,6 +177,30 @@ if (props.setting.type === 'text') {
   })
 }
 
+// Prepend input
+const prependValue = ref(getPrefs<any>(props.setting.prepend?.key ?? ''))
+if (props.setting.prepend) {
+  watch(prependValue, (val, oldVal) => {
+    if (!props.setting.prepend) return
+    update(props.setting.prepend.key, val)
+    if (props.setting.prepend.onChange) {
+      props.setting.prepend.onChange(val, oldVal)
+    }
+  })
+}
+
+// List input
+const newValue = ref('')
+const addNewValue = () => {
+  if (!newValue.value) return
+  value.value.push(newValue.value)
+  newValue.value = ''
+}
+const removeValue = (index: number) => {
+  value.value.splice(index, 1)
+}
+
+// Path input
 const setPath = async () => {
   const result = await ipcRenderer.invoke('openDialog', {
     properties: ['openDirectory'],

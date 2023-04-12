@@ -54,6 +54,8 @@
 import { ipcRenderer } from 'electron'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { extname, join } from 'upath'
+// eslint-disable-next-line import/named
+import { readFileSync } from 'fs-extra'
 import {
   Action,
   Group,
@@ -68,6 +70,10 @@ useHead({ title: 'Settings' })
 const { setTheme } = useTheme()
 const { currentProgress, totalProgress, setProgress } = useProgress()
 provide(setProgressKey, setProgress)
+
+// Stores
+const { scenes } = storeToRefs(useObsStore())
+const { client } = storeToRefs(useCongStore())
 const { screens, mediaScreenInit } = storeToRefs(usePresentStore())
 
 // Height
@@ -136,7 +142,6 @@ const getLangs = async () => {
   }
 }
 
-const { scenes } = storeToRefs(useObsStore())
 const obsComplete = computed(() => {
   return (
     prefs.value.app.obs.enable &&
@@ -303,9 +308,7 @@ const groups = computed((): Settings => {
           }
         },
       },
-      {
-        key: 'meeting.specialCong',
-      },
+      { key: 'meeting.specialCong' },
       {
         type: 'group',
         label: $i18n.t('videos'),
@@ -342,12 +345,8 @@ const groups = computed((): Settings => {
         type: 'group',
         label: $i18n.t('actionsToUndertakeAfterMediaSync'),
         value: [
-          {
-            key: 'app.autoOpenFolderWhenDone',
-          },
-          {
-            key: 'app.autoQuitWhenDone',
-          },
+          { key: 'app.autoOpenFolderWhenDone' },
+          { key: 'app.autoQuitWhenDone' },
         ],
       },
       {
@@ -358,18 +357,10 @@ const groups = computed((): Settings => {
             key: 'media.enableMp4Conversion',
             explanation: 'enableMp4ConversionExplain',
           },
-          {
-            key: 'media.keepOriginalsAfterConversion',
-          },
-          {
-            key: 'media.enableVlcPlaylistCreation',
-          },
-          {
-            key: 'media.excludeTh',
-          },
-          {
-            key: 'media.excludeLffImages',
-          },
+          { key: 'media.keepOriginalsAfterConversion' },
+          { key: 'media.enableVlcPlaylistCreation' },
+          { key: 'media.excludeTh' },
+          { key: 'media.excludeLffImages' },
           {
             type: 'autocomplete',
             key: 'media.langFallback',
@@ -404,15 +395,9 @@ const groups = computed((): Settings => {
       },
     ],
     'Advanced Settings': [
-      {
-        key: 'app.autoRunAtBoot',
-      },
-      {
-        key: 'app.autoStartSync',
-      },
-      {
-        key: 'app.betaUpdates',
-      },
+      { key: 'app.autoRunAtBoot' },
+      { key: 'app.autoStartSync' },
+      { key: 'app.betaUpdates' },
       {
         type: 'action',
         label: 'clean cache',
@@ -441,24 +426,16 @@ const groups = computed((): Settings => {
           }
         },
       },
-      {
-        key: 'app.disableAutoUpdate',
-      },
-      {
-        key: 'app.disableHardwareAcceleration',
-      },
+      { key: 'app.disableAutoUpdate' },
+      { key: 'app.disableHardwareAcceleration' },
       {
         key: 'media.hideMediaLogo',
         onChange: () => {
           refreshBackgroundImgPreview()
         },
       },
-      {
-        key: 'media.hideWinAfterMedia',
-      },
-      {
-        key: 'app.offlineMode',
-      },
+      { key: 'media.hideWinAfterMedia' },
+      { key: 'app.offlineMode' },
       {
         type: 'group',
         label: $i18n.t('keyboardShortcuts'),
@@ -482,9 +459,7 @@ const groups = computed((): Settings => {
             type: 'text',
             key: 'media.shuffleShortcut',
           },
-          {
-            key: 'media.enablePp',
-          },
+          { key: 'media.enablePp' },
           {
             type: 'text',
             key: 'media.ppBackward',
@@ -628,7 +603,7 @@ const groups = computed((): Settings => {
         label: 'Zoom',
         value: [
           {
-            type: 'text',
+            type: 'list',
             key: 'app.zoom.autoRename',
             label: 'zoomAutoRename',
           },
@@ -658,23 +633,71 @@ const groups = computed((): Settings => {
       },
     ],
     'Media playback': [
-      {
-        key: 'media.autoPlayFirst',
-      },
-      {
-        key: 'meeting.autoStartMusic',
-      },
+      { key: 'media.autoPlayFirst' },
+      { key: 'meeting.autoStartMusic' },
       {
         type: 'select',
         key: 'media.preferredOutput',
+        props: {
+          items: [
+            { title: $i18n.t('window'), value: 'window' },
+            ...screens.value.map((s) => {
+              return {
+                title: s.title,
+                value: s.id,
+              }
+            }),
+          ],
+        },
+        onChange: () => {
+          if (prefs.value.media.enableMediaDisplayButton) {
+            getMediaWindowDestination().then((dest) => {
+              ipcRenderer.send('showMediaWindow', dest)
+            })
+          }
+        },
       },
       {
         type: 'group',
         label: $i18n.t('advanced'),
         value: [
           {
-            type: 'path',
-            key: 'media.background',
+            type: 'action',
+            label: 'mediaWindowBackground',
+            action: async () => {
+              const result = await ipcRenderer.invoke('openDialog', {
+                properties: ['openFile'],
+                filters: [
+                  {
+                    name: 'Image',
+                    extensions: ['jpg', 'png', 'jpeg', 'gif', 'svg'],
+                  },
+                ],
+              })
+              if (!result || result.canceled) return
+              if (isImage(result.filePaths[0])) {
+                const background = result.filePaths[0]
+                const filename = `custom-background-image-${prefs.value.app.congregationName}`
+                const extension = extname(background)
+                rm(findAll(join(appPath(), filename + '*')))
+                copy(background, join(appPath(), filename + extension))
+
+                // Upload the background to the cong server
+                if (client.value && prefs.value.cong.dir) {
+                  await client.value.putFileContents(
+                    join(prefs.value.cong.dir, filename + extension),
+                    readFileSync(background),
+                    {
+                      overwrite: true,
+                    }
+                  )
+                }
+
+                refreshBackgroundImgPreview()
+              } else {
+                warn('notAnImage')
+              }
+            },
           },
         ],
       },
@@ -697,16 +720,14 @@ const groups = computed((): Settings => {
         type: 'date',
         key: 'meeting.coWeek',
       },
-      {
-        key: 'meeting.enableMusicFadeOut',
-      },
-      {
-        type: 'slider',
-        key: 'meeting.musicFadeOutTime',
-      },
+      { key: 'meeting.enableMusicFadeOut' },
       {
         type: 'btn-group',
         key: 'meeting.musicFadeOutType',
+        prepend: {
+          type: 'slider',
+          key: 'meeting.musicFadeOutTime',
+        },
         props: {
           groupItems: [
             {

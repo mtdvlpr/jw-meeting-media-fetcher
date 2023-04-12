@@ -9,13 +9,17 @@ export type Field =
   | 'select'
   | 'autocomplete'
 
-export interface Setting {
-  type?: Field | 'path' | 'date' | 'time'
+export interface SubSetting {
+  type?: Field
   key: string
-  label?: string
-  explanation?: string
   props?: { [key: string]: any }
   onChange?: (val: any, oldVal: any) => void
+}
+export interface Setting extends SubSetting {
+  type?: Field | 'path' | 'date' | 'time' | 'list'
+  label?: string
+  prepend?: SubSetting
+  explanation?: string
 }
 
 export interface Action {

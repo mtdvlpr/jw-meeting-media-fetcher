@@ -89,7 +89,8 @@
           <span v-bind="attrs">{{ $t(groupLabel) }}</span>
         </template>
       </v-tooltip>
-      <span v-else>{{ $t(groupLabel) }}</span>
+      <span v-else-if="groupLabel">{{ $t(groupLabel) }}</span>
+      <slot v-else name="prepend" />
     </v-col>
     <v-col align-self="center" class="text-right">
       <v-btn-toggle
