@@ -32,12 +32,12 @@
       </v-col>
     </v-row>
   </v-container>
-  <p v-if="!loading && datesWithMedia.length === 0">{{ $t('noMeetings') }}</p>
 </template>
 
 <script lang="ts">
 import { basename, changeExt, extname, join } from 'upath'
-import { statSync, existsSync, emptyDirSync } from 'fs-extra'
+// eslint-disable-next-line import/named
+import { statSync, existsSync } from 'fs-extra'
 import weekday from 'dayjs/plugin/weekday'
 import { MeetingFile, DateFormat } from '~~/types'
 
@@ -68,7 +68,7 @@ export default {
           progress: number
         }>
       >,
-      syncedMedia: [],
+      syncedMedia: [] as string[],
       today: this.$dayjs().startOf('day'),
     }
   },
