@@ -53,7 +53,7 @@
 </template>
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
-import { removeSync } from 'fs-extra'
+import { remove } from 'fs-extra'
 import { join } from 'upath'
 import getFolderSize from 'get-folder-size'
 import { PrefStore } from '~~/types'
@@ -86,9 +86,9 @@ const openReleases = () => {
 }
 
 const cong = useRouteQuery('cong', '')
-const goBack = () => {
+const goBack = async () => {
   log.debug('Go back')
-  removeSync(join(appPath(), `prefs-${cong.value}.json`))
+  await remove(join(appPath(), `prefs-${cong.value}.json`))
   useStatStore().setNavDisabled(false)
   useRouter().back()
 }

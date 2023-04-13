@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/named
-import { existsSync, readFileSync } from 'fs-extra'
+import { pathExists, readFile, readFileSync } from 'fs-extra'
 import { join } from 'upath'
 import { ShortJWLang, JWLang, Filter } from '~~/types'
 
@@ -10,7 +10,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   const recentlyUpdated =
     lastUpdate && $dayjs(lastUpdate).isAfter($dayjs().subtract(3, 'months'))
 
-  if (forceReload || !existsSync(langPath) || !recentlyUpdated) {
+  if (forceReload || !(await pathExists(langPath)) || !recentlyUpdated) {
     try {
       const result = await $fetch<{ languages: JWLang[] }>(
         'https://www.jw.org/en/languages',
@@ -43,7 +43,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
     }
   }
 
-  if (!existsSync(langPath)) {
+  if (!(await pathExists(langPath))) {
     return getJWLangs(true)
   }
 
@@ -130,7 +130,7 @@ export async function getPubAvailability(
   try {
     const langPath = join(appPath(), 'langs.json')
     const langs = <ShortJWLang[]>(
-      JSON.parse(readFileSync(langPath, 'utf8') ?? '[]')
+      JSON.parse((await readFile(langPath, 'utf8')) ?? '[]')
     )
 
     const langObject = langs.find((l) => l.langcode === lang)

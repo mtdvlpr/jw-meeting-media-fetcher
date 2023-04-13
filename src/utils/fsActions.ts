@@ -7,8 +7,11 @@ import {
   readdirSync,
   removeSync,
   ensureFileSync,
-  readFileSync,
-  statSync,
+  readFile,
+  pathExists,
+  remove,
+  stat,
+  readdir,
 } from 'fs-extra'
 import { sync, type Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
@@ -151,7 +154,9 @@ export async function renamePubs(
   const mPath = mediaPath()
   if (!mPath) return
   const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
-  readdirSync(mPath).forEach((dir) => {
+  const dirs = await readdir(mPath)
+  for (let i = 0; i < dirs.length; i++) {
+    const dir = dirs[i]
     const path = join(mPath, dir)
     const date = useNuxtApp().$dayjs(
       dir,
@@ -159,8 +164,10 @@ export async function renamePubs(
       oldLocale.dayjs ?? oldLocale.code
     )
 
-    if (date.isValid() && statSync(path).isDirectory()) {
-      readdirSync(path).forEach((file) => {
+    if (date.isValid() && (await stat(path)).isDirectory()) {
+      const files = await readdir(path)
+      for (let j = 0; j < files.length; j++) {
+        const file = files[j]
         const newName = file
           .replace(
             ' - ' + translate('song', oldLocale.code),
@@ -171,22 +178,22 @@ export async function renamePubs(
             ' - ' + translate('paragraph', newLocale.code)
           )
         rename(join(path, file), file, newName)
-      })
-
+      }
       rename(
         path,
         dir,
         date.locale(newLocale.dayjs ?? newLocale.code).format(dateFormat)
       )
     }
-  })
+  }
 
   const congStore = useCongStore()
   if (congStore.client) {
     const promises: Promise<void>[] = []
-    congStore.contents.forEach((file) => {
-      promises.push(renameCongFile(file, oldLocale, newLocale))
-    })
+    const contents = congStore.contents
+    for (let i = 0; i < contents.length; i++) {
+      promises.push(renameCongFile(contents[i], oldLocale, newLocale))
+    }
     await Promise.allSettled(promises)
   }
 }
@@ -200,10 +207,10 @@ export async function cleanup() {
   // Cleanup old JWMMF/M3 files
   try {
     // Try to get previous version
-    if (existsSync(versionPath)) {
-      lastVersion = readFileSync(versionPath, 'utf8')
-    } else if (existsSync(join(JWMMF, 'lastRunVersion.json'))) {
-      lastVersion = readFileSync(join(JWMMF, 'lastRunVersion.json'), 'utf8')
+    if (await pathExists(versionPath)) {
+      lastVersion = await readFile(versionPath, 'utf8')
+    } else if (await pathExists(join(JWMMF, 'lastRunVersion.json'))) {
+      lastVersion = await readFile(join(JWMMF, 'lastRunVersion.json'), 'utf8')
     }
   } catch (e) {
     error('warnUnknownLastVersion', e)
@@ -224,14 +231,14 @@ export async function cleanup() {
           files.forEach((file) => {
             move(file, join(appPath(), basename(file)), true)
           })
-          removeSync(JWMMF)
+          remove(JWMMF)
         }
 
         const firstVersionPath = join(appPath(), 'firstRunVersion.json')
-        if (lastVersion === '0' && !existsSync(firstVersionPath)) {
+        if (lastVersion === '0' && !(await pathExists(firstVersionPath))) {
           write(firstVersionPath, version)
         } else {
-          if (!existsSync(firstVersionPath)) {
+          if (!(await pathExists(firstVersionPath))) {
             write(firstVersionPath, lastVersion)
           }
           notify('updateInstalled', {
@@ -256,12 +263,13 @@ export async function cleanup() {
     const prefFiles = findAll(join(appPath(), 'prefs-*.json'), {
       ignore: [join(appPath(), `prefs-${cong}.json`)],
     })
-    prefFiles.forEach((file) => {
-      const prefs = <PrefStore>JSON.parse(readFileSync(file, 'utf8'))
+    for (let i = 0; i < prefFiles.length; i++) {
+      const file = prefFiles[i]
+      const prefs = <PrefStore>JSON.parse(await readFile(file, 'utf8'))
       // @ts-expect-error: congregationName doesn't exist in ElectronStore
       if (!prefs.congregationName && !prefs.app?.congregationName) {
         rm(file)
       }
-    })
+    }
   }
 }

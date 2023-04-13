@@ -1,6 +1,6 @@
 import type { Dayjs } from 'dayjs'
 // eslint-disable-next-line import/named
-import { statSync } from 'fs-extra'
+import { stat } from 'fs-extra'
 import { join, extname, basename } from 'upath'
 import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { MeetingFile, DateFormat, CongFile } from '~~/types'
@@ -229,7 +229,7 @@ async function syncCongMediaItem(
       if (
         duplicate &&
         item.safeName &&
-        (statSync(duplicate).size === item.filesize ||
+        ((await stat(duplicate)).size === item.filesize ||
           extname(item.safeName) === '.svg')
       ) {
         if (basename(duplicate) !== item.safeName) {

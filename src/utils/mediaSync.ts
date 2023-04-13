@@ -1,6 +1,6 @@
 import type { Dayjs } from 'dayjs'
-// eslint-disable-next-line import/named
-import { statSync, existsSync, emptyDirSync } from 'fs-extra'
+
+import { pathExists, stat, emptyDir } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
 import { MeetingFile, SmallMediaFile, VideoFile, DateFormat } from '~~/types'
 
@@ -107,8 +107,8 @@ export async function downloadIfRequired(
   file.cacheDir = pubPath(file)!
   file.cacheFile = join(file.cacheDir, file.cacheFilename!)
   file.destFilename = file.folder ? file.safeName : file.cacheFilename
-  if (existsSync(file.cacheFile)) {
-    file.downloadRequired = file.filesize !== statSync(file.cacheFile).size
+  if (await pathExists(file.cacheFile)) {
+    file.downloadRequired = file.filesize !== (await stat(file.cacheFile)).size
   }
 
   const subtitlesEnabled = getPrefs<boolean>('media.enableSubtitles')
@@ -142,7 +142,7 @@ export async function downloadIfRequired(
       )
 
       if (extname(file.cacheFile) === '.jwpub') {
-        emptyDirSync(file.cacheDir)
+        await emptyDir(file.cacheDir)
       }
       write(file.cacheFile, downloadedFile)
 
@@ -303,7 +303,7 @@ async function syncMediaItem(
       duplicate &&
       item.safeName &&
       basename(duplicate) !== item.safeName &&
-      (statSync(duplicate).size === item.filesize ||
+      ((await stat(duplicate)).size === item.filesize ||
         extname(item.safeName) === '.svg')
     ) {
       rename(
@@ -321,7 +321,10 @@ async function syncMediaItem(
       await store.progress.get(newItem.url)
     } else if (path && item.filepath && item.folder && item.safeName) {
       const dest = join(path, item.folder, item.safeName)
-      if (!existsSync(dest) || statSync(dest).size !== item.filesize) {
+      if (
+        !(await pathExists(dest)) ||
+        (await stat(dest)).size !== item.filesize
+      ) {
         copy(item.filepath, dest)
       }
     }

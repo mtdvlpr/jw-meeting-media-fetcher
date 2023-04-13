@@ -85,8 +85,7 @@
 import { pathToFileURL } from 'url'
 import { basename, changeExt } from 'upath'
 import type { Duration } from 'dayjs/plugin/duration'
-// eslint-disable-next-line import/named
-import { existsSync } from 'fs-extra'
+import { exists } from 'fs-extra'
 import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import { useRouteQuery } from '@vueuse/router'
 import { Time, Times, TimeString } from '~~/types'
@@ -221,10 +220,10 @@ const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
 const toggleSubtitles = (enabled: boolean, toggle = false) => {
   ipcRenderer.send('toggleSubtitles', { enabled, toggle })
 }
-const setCCAvailable = () => {
+const setCCAvailable = async () => {
   ccAvailable.value =
     getPrefs<boolean>('media.enableSubtitles') &&
-    existsSync(changeExt(props.src, 'vtt'))
+    (await exists(changeExt(props.src, 'vtt')))
 }
 
 // Custom start/end times

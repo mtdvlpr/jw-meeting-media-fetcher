@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/named
-import { readFileSync } from 'fs-extra'
+import { readFile } from 'fs-extra'
 import type { Database } from '@stephen/sql.js'
 import { join } from 'upath'
 
@@ -90,7 +89,7 @@ export async function getDbFromJWPUB(
         pub,
         issue,
         lang,
-        file: readFileSync(dbPath),
+        file: await readFile(dbPath),
       })
     } else return null
   } catch (e) {

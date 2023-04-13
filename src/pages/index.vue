@@ -42,7 +42,7 @@ import { platform, userInfo } from 'os'
 import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { basename, join } from 'upath'
 // eslint-disable-next-line import/named
-import { existsSync } from 'fs-extra'
+import { pathExists } from 'fs-extra'
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import { CongPrefs, ObsPrefs, Theme } from '~~/types'
@@ -146,7 +146,7 @@ const initPrefs = async (name: string, isNew = false) => {
   // Set disabledHardwareAcceleration to user pref
   const disableHA = getPrefs<boolean>('app.disableHardwareAcceleration')
   const haPath = join(appPath(), 'disableHardwareAcceleration')
-  const haExists = existsSync(haPath)
+  const haExists = await pathExists(haPath)
 
   // Only do something if the value is not in sync with the presence of the file
   if (disableHA && !haExists) {

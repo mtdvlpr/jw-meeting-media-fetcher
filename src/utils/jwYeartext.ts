@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/named
-import { existsSync, readFileSync, statSync } from 'fs-extra'
+import { readFile, stat, pathExists } from 'fs-extra'
 import { WT_CLEARTEXT_FONT, JW_ICONS_FONT } from '~/constants/general'
 
 export async function getYearText(
@@ -14,7 +14,7 @@ export async function getYearText(
   if (!wtlocale) return null
   const path = await ytPath(lang)
 
-  if (force || !existsSync(path)) {
+  if (force || !(await pathExists(path))) {
     log.debug('Fetching yeartext', wtlocale)
     try {
       const result = await $fetch<{ content: string; message: string }>(
@@ -49,7 +49,7 @@ export async function getYearText(
     }
   } else {
     try {
-      yeartext = readFileSync(path, 'utf8')
+      yeartext = await readFile(path, 'utf8')
     } catch (e) {
       warn('errorOffline')
     }
@@ -87,7 +87,11 @@ async function getWtFont(font: string, force = false) {
     }
   }
 
-  if (force || !existsSync(fontPath) || statSync(fontPath).size !== size) {
+  if (
+    force ||
+    !(await pathExists(fontPath)) ||
+    (await stat(fontPath)).size !== size
+  ) {
     try {
       const result = await $fetch<ArrayBuffer | Uint8Array>(font, {
         responseType: 'arrayBuffer',
