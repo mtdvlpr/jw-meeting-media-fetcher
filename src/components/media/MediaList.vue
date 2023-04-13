@@ -23,7 +23,7 @@
           :stop-now="song.stop"
           :deactivate="song.deactivate"
           :streaming-file="song"
-          @playing="emit('index', -1)"
+          @playing="setIndex('song')"
           @deactivated="deactivateSong"
         />
       </v-list>
@@ -43,14 +43,14 @@
           @start="dragging = true"
           @end="dragging = false"
         >
-          <template #item="{ element, index }">
+          <template #item="{ element }">
             <media-item
               :src="element.path"
               :play-now="element.play"
               :stop-now="element.stop"
               :deactivate="element.deactivate"
-              @playing="emit('index', index)"
-              @deactivated="emit('deactivate', index)"
+              @playing="setIndex(element.id)"
+              @deactivated="resetDeactivate(element.id)"
             />
           </template>
         </draggable>
@@ -70,14 +70,14 @@
             @start="dragging = true"
             @end="dragging = false"
           >
-            <template #item="{ element, index }">
+            <template #item="{ element }">
               <media-item
                 :src="element.path"
                 :play-now="element.play"
                 :stop-now="element.stop"
                 :deactivate="element.deactivate"
-                @playing="emit('index', treasureItems.length + index)"
-                @deactivated="emit('deactivate', treasureItems.length + index)"
+                @playing="setIndex(element.id)"
+                @deactivated="resetDeactivate(element.id)"
               />
             </template>
           </draggable>
@@ -97,21 +97,14 @@
           @start="dragging = true"
           @end="dragging = false"
         >
-          <template #item="{ element, index }">
+          <template #item="{ element }">
             <media-item
               :src="element.path"
               :play-now="element.play"
               :stop-now="element.stop"
               :deactivate="element.deactivate"
-              @playing="
-                emit('index', treasureItems.length + applyItems.length + index)
-              "
-              @deactivated="
-                emit(
-                  'deactivate',
-                  treasureItems.length + applyItems.length + index
-                )
-              "
+              @playing="setIndex(element.id)"
+              @deactivated="resetDeactivate(element.id)"
             />
           </template>
         </draggable>
@@ -131,14 +124,14 @@
           @start="dragging = true"
           @end="dragging = false"
         >
-          <template #item="{ element, index }">
+          <template #item="{ element }">
             <media-item
               :src="element.path"
               :play-now="element.play"
               :stop-now="element.stop"
               :deactivate="element.deactivate"
-              @playing="emit('index', index)"
-              @deactivated="emit('deactivate', index)"
+              @playing="setIndex(element.id)"
+              @deactivated="resetDeactivate(element.id)"
             />
           </template>
         </draggable>
@@ -157,14 +150,14 @@
           @start="dragging = true"
           @end="dragging = false"
         >
-          <template #item="{ element, index }">
+          <template #item="{ element }">
             <media-item
               :src="element.path"
               :play-now="element.play"
               :stop-now="element.stop"
               :deactivate="element.deactivate"
-              @playing="emit('index', publicTalkItems.length + index)"
-              @deactivated="emit('deactivate', publicTalkItems.length + index)"
+              @playing="setIndex(element.id)"
+              @deactivated="resetDeactivate(element.id)"
             />
           </template>
         </draggable>
@@ -180,14 +173,14 @@
         @start="dragging = true"
         @end="dragging = false"
       >
-        <template #item="{ element, index }">
+        <template #item="{ element }">
           <media-item
             :src="element.path"
             :play-now="element.play"
             :stop-now="element.stop"
             :deactivate="element.deactivate"
-            @playing="emit('index', index)"
-            @deactivated="emit('deactivate', index)"
+            @playing="setIndex(element.id)"
+            @deactivated="resetDeactivate(element.id)"
           />
         </template>
       </draggable>
@@ -210,7 +203,7 @@ type MediaItem = {
 }
 const emit = defineEmits<{
   (e: 'song'): void
-  (e: 'index', index: number): void
+  (e: 'index', id: number): void
   (e: 'deactivate', index: number): void
 }>()
 
@@ -302,6 +295,19 @@ const setItems = (val: MediaItem[]) => {
   } else {
     applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
   }
+}
+
+const resetDeactivate = (id: string) => {
+  emit(
+    'deactivate',
+    props.items.findIndex((item) => item.id === id)
+  )
+}
+const setIndex = (id: string) => {
+  emit(
+    'index',
+    props.items.findIndex((item) => item.id === id)
+  )
 }
 
 // Song
