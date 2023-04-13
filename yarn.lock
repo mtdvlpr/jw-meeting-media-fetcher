@@ -1977,8 +1977,8 @@ __metadata:
   linkType: hard
 
 "@sentry/cli@npm:^2.17.0":
-  version: 2.17.1
-  resolution: "@sentry/cli@npm:2.17.1"
+  version: 2.17.2
+  resolution: "@sentry/cli@npm:2.17.2"
   dependencies:
     https-proxy-agent: ^5.0.0
     node-fetch: ^2.6.7
@@ -1987,7 +1987,7 @@ __metadata:
     which: ^2.0.2
   bin:
     sentry-cli: bin/sentry-cli
-  checksum: 4de319bab53c93ace5011e228c43151b584c854729fb902f6dabdfb2b6dc7d2184fb8e020d1bcdfc7ec1614a9e60ae204669ef2c1dbfdf3d48cf487b57943480
+  checksum: d91583fb4196c9dd0be6e72c6a676bef13a0d77c93c1a85d65d325ed97a8d85fb0e2da1f461638cb4512077d507217ed6cb58a8a6792e5e6af97efb1073c3ee0
   languageName: node
   linkType: hard
 
@@ -2426,13 +2426,13 @@ __metadata:
   linkType: hard
 
 "@types/react@npm:*":
-  version: 18.0.34
-  resolution: "@types/react@npm:18.0.34"
+  version: 18.0.35
+  resolution: "@types/react@npm:18.0.35"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: 60d2766e7644ec480075bbb154bf8fb8476089466b643662ef59964e27cae2d8c71fd9c717a4dfa9627c3e050fa2ae866d10d16f66b4509058d1bfe2a564b18c
+  checksum: e65670397216e037b150a509ec08189140b4c20b82b612ac00b2a7133202be2d1def1e7ee69617b2df06ab4c00c43c4ee23e84788ad661aea9664da2f27c518a
   languageName: node
   linkType: hard
 
@@ -5034,9 +5034,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.284":
-  version: 1.4.359
-  resolution: "electron-to-chromium@npm:1.4.359"
-  checksum: ee8a6eae66a25200b6870dbd6b78d7c0cb2bbb873884d72141871f6e4080955135c16dcf46138158fc5aba5a5fa9177dc0aa37a7f0aaae54bb65305264f72c51
+  version: 1.4.361
+  resolution: "electron-to-chromium@npm:1.4.361"
+  checksum: 66b3210c9c5abec7812ce8b936a9e53fa49a2ccb8b4345e1e4d601dfff5e1e22d07ddddeaf84b0dd6bb01522e505dbb7fc91929a7028b02281e5928f36d2e4dc
   languageName: node
   linkType: hard
 
@@ -5587,15 +5587,15 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-vuetify@npm:latest":
-  version: 2.0.0-beta.3
-  resolution: "eslint-plugin-vuetify@npm:2.0.0-beta.3"
+  version: 2.0.0-beta.4
+  resolution: "eslint-plugin-vuetify@npm:2.0.0-beta.4"
   dependencies:
     eslint-plugin-vue: ^9.6.0
     requireindex: ^1.2.0
   peerDependencies:
     eslint: ^8.0.0
     vuetify: ^3.0.0
-  checksum: 998702433f19fabf39ed361791629ab1727ae9f9c9093b1edc2846fc16ed1bd0feef4235901a8a0f72b260b135c0875c345d143d756e8c8498aa9ab62be95d82
+  checksum: 0937719ecf6cae1c90baa6cbd71b04ace987e628edfb076c9271f8127d369edd1d3168144ddd23869008b0f7402c113ed0f494176ab3818711cd4ccb9cda5ccd
   languageName: node
   linkType: hard
 
@@ -8275,7 +8275,7 @@ __metadata:
     vue-tsc: ^1.2.0
     vue3-treeview: ^0.4.1
     vuedraggable: next
-    vuetify: ^3.1.13
+    vuetify: ^3.1.14
     webdav: ^4.11.2
     xvfb-maybe: ^0.2.1
   languageName: unknown
@@ -12502,9 +12502,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vuetify@npm:^3.1.13":
-  version: 3.1.13
-  resolution: "vuetify@npm:3.1.13"
+"vuetify@npm:^3.1.14":
+  version: 3.1.14
+  resolution: "vuetify@npm:3.1.14"
   peerDependencies:
     vite-plugin-vuetify: ^1.0.0-alpha.12
     vue: ^3.2.0
@@ -12517,7 +12517,7 @@ __metadata:
       optional: true
     webpack-plugin-vuetify:
       optional: true
-  checksum: 8fd2aaca26028c2822a4a780b7ddd45912eb1c87b29cd65c51d511662163b279683af6c450b2de39e47edf8ed654664bccfbf11cf1be75ba56838f9686665549
+  checksum: 6f8b28eb17e29c715a587220ffa234827c0f2805988ddcd90195031255b2a4c18a52ed5ef1e48bf458cfe497eb344992eecc6613bf0072bf9e18a2a3713df06f
   languageName: node
   linkType: hard
 
