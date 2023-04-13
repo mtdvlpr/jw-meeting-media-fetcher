@@ -5,7 +5,7 @@
     striped
     absolute
     :height="8"
-    color="primary"
+    :color="color || 'primary'"
     :buffer-value="current"
     :model-value="total"
   />
@@ -14,5 +14,6 @@
 defineProps<{
   current: number
   total: number
+  color?: string
 }>()
 </script>

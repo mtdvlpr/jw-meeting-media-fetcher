@@ -27,7 +27,11 @@
           @click="day.actionable && !day.inPast && selectDate(day.date)"
         >
           <v-card-text></v-card-text>
-          <progress-bar :current="day.progress" :total="day.progress" />
+          <progress-bar
+            :current="day.progress"
+            :total="day.progress"
+            color="blue-lighten-3"
+          />
         </v-card>
       </v-col>
     </v-row>
