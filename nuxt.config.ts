@@ -3,6 +3,7 @@ import type { PluginOption } from 'vite'
 import vuetify from 'vite-plugin-vuetify'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { repository, version } from './package.json'
+import { appLongName } from './src/constants/general'
 import { LOCALES } from './src/constants/lang'
 
 const vitePlugins: PluginOption[] = []
