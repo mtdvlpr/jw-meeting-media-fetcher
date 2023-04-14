@@ -1,6 +1,6 @@
 import { platform } from 'os'
 import { expect, test } from '@playwright/test'
-import { ElectronApplication, Page } from 'playwright'
+import type { ElectronApplication, Page } from 'playwright'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { join } from 'upath'

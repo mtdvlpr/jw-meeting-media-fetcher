@@ -3,7 +3,7 @@ import { platform } from 'os'
 import { existsSync } from 'fs-extra'
 import { sync } from 'fast-glob'
 import { expect, test } from '@playwright/test'
-import { ElectronApplication, Page } from 'playwright'
+import type { ElectronApplication, Page } from 'playwright'
 import { join } from 'upath'
 import { version } from '../../package.json'
 import {
