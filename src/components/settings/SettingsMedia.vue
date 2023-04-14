@@ -244,8 +244,7 @@
   </v-form>
 </template>
 <script setup lang="ts">
-// eslint-disable-next-line import/named
-import { readFileSync } from 'fs-extra'
+import { readFile } from 'fs-extra'
 import { extname, join } from 'upath'
 import { ipcRenderer } from 'electron'
 import { MediaPrefs, PrefStore, ShortJWLang, VFormRef } from '~~/types'
@@ -470,7 +469,7 @@ const uploadBg = async () => {
     if (client.value && props.prefs.cong.dir) {
       await client.value.putFileContents(
         join(props.prefs.cong.dir, filename + extension),
-        readFileSync(background),
+        await readFile(background),
         {
           overwrite: true,
         }

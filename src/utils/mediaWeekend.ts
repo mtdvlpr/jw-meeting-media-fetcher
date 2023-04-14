@@ -1,5 +1,5 @@
 /* eslint-disable import/named */
-import { existsSync, statSync } from 'fs-extra'
+import { pathExists, stat } from 'fs-extra'
 import { join } from 'upath'
 import type { Database } from '@stephen/sql.js'
 import {
@@ -166,7 +166,7 @@ async function addImgToPart(
 ): Promise<void> {
   if (isImage(img.FilePath)) {
     let LocalPath = join(pubPath(), 'w', issue, '0', img.FilePath)
-    if (!existsSync(LocalPath)) {
+    if (!(await pathExists(LocalPath))) {
       LocalPath = join(
         pubPath({
           pub: 'w',
@@ -182,7 +182,7 @@ async function addImgToPart(
     const pictureObj: ImageFile = {
       title: FileName,
       filepath: LocalPath,
-      filesize: statSync(LocalPath).size,
+      filesize: (await stat(LocalPath)).size,
       queryInfo: img,
     }
     addMediaItemToPart(date, 1, pictureObj)

@@ -3,13 +3,13 @@ import { pathToFileURL } from 'url'
 import { platform } from 'os'
 import type { Dayjs } from 'dayjs'
 import {
-  existsSync,
-  statSync,
-  readFileSync,
-  writeFileSync,
+  pathExists,
+  stat,
+  readFile,
+  writeFile,
   constants,
-  accessSync,
-  chmodSync,
+  access,
+  chmod,
 } from 'fs-extra'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
@@ -280,7 +280,10 @@ async function setupFFmpeg(
   )[0]
   const ffMpegPath = join(appPath(), 'ffmpeg')
   const zipPath = join(ffMpegPath, 'zip', version.name)
-  if (!existsSync(zipPath) || statSync(zipPath).size !== version.size) {
+  if (
+    !(await pathExists(zipPath)) ||
+    (await stat(zipPath)).size !== version.size
+  ) {
     rm(join(ffMpegPath, 'zip'))
     write(
       zipPath,
@@ -297,7 +300,7 @@ async function setupFFmpeg(
 
   const { default: JSZip } = await import('jszip')
   const zipper = new JSZip()
-  const zipFile = await zipper.loadAsync(readFileSync(zipPath))
+  const zipFile = await zipper.loadAsync(await readFile(zipPath))
   let entry
   let entryPath
   for (const [filename, fileObject] of Object.entries(zipFile.files)) {
@@ -308,11 +311,11 @@ async function setupFFmpeg(
   }
 
   if (entry && entryPath) {
-    writeFileSync(entryPath, await entry.async('nodebuffer'))
+    await writeFile(entryPath, await entry.async('nodebuffer'))
     try {
-      accessSync(entryPath, constants.X_OK)
+      await access(entryPath, constants.X_OK)
     } catch (e) {
-      chmodSync(entryPath, '777')
+      await chmod(entryPath, '777')
     }
     ffmpeg.setFfmpegPath(entryPath)
     store.setFFmpeg(true)

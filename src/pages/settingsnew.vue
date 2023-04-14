@@ -61,8 +61,8 @@
 import { ipcRenderer } from 'electron'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { extname, join } from 'upath'
-// eslint-disable-next-line import/named
-import { readFileSync } from 'fs-extra'
+
+import { readFile } from 'fs-extra'
 import {
   Action,
   Group,
@@ -823,7 +823,7 @@ const groups = computed((): Settings[] => {
                   if (client.value && prefs.value.cong.dir) {
                     await client.value.putFileContents(
                       join(prefs.value.cong.dir, filename + extension),
-                      readFileSync(background),
+                      await readFile(background),
                       {
                         overwrite: true,
                       }

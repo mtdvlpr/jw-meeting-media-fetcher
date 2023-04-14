@@ -189,8 +189,8 @@
 </template>
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
-// eslint-disable-next-line import/named
-import { readFileSync } from 'fs-extra'
+
+import { readFile } from 'fs-extra'
 import { basename, join } from 'upath'
 import draggable from 'vuedraggable'
 import { DateFormat, VideoFile } from '~~/types'
@@ -243,9 +243,9 @@ const fallback = {
   living: 'LIVING AS CHRISTIANS',
 }
 const mwbHeadings = ref(fallback)
-const getMwbHeadings = () => {
+const getMwbHeadings = async () => {
   try {
-    const file = readFileSync(join(pubPath(), 'mwb', 'headings.json'), 'utf8')
+    const file = await readFile(join(pubPath(), 'mwb', 'headings.json'), 'utf8')
     mwbHeadings.value = file ? JSON.parse(file) : fallback
   } catch (e: any) {
     mwbHeadings.value = fallback

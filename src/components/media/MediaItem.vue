@@ -107,8 +107,7 @@
           v-if="active && paused"
           v-model="newProgress"
           color="primary"
-          desnity="compact"
-          aria-label="Video scrubber"
+          density="compact"
           hide-details="auto"
           step="any"
           :min="clippedStart"
@@ -165,8 +164,8 @@ import { pathToFileURL } from 'url'
 import { basename, changeExt, join } from 'upath'
 import type { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRenderer } from '@vueuse/electron'
-// eslint-disable-next-line import/named
-import { existsSync, readFileSync } from 'fs-extra'
+
+import { exists, readFile } from 'fs-extra'
 import { Marker, Times, TimeString, VideoFile } from '~~/types'
 import { PanzoomChangeEvent } from '~~/types/global'
 
@@ -179,13 +178,13 @@ const props = defineProps<{
   streamingFile?: VideoFile
 }>()
 
-onMounted(() => {
+onMounted(async () => {
   // Sign language markers
   getMarkers()
 
   // Streaming song
   if (props.streamingFile) {
-    streamDownloaded.value = existsSync(localStreamPath.value)
+    streamDownloaded.value = await exists(localStreamPath.value)
     if (!streamDownloaded.value) {
       downloadSong()
     }
@@ -275,7 +274,7 @@ const downloadSong = async () => {
   downloading.value = true
   await downloadIfRequired(props.streamingFile)
   downloading.value = false
-  streamDownloaded.value = existsSync(localStreamPath.value)
+  streamDownloaded.value = await exists(localStreamPath.value)
 }
 
 // Play media
@@ -417,11 +416,12 @@ watch(
 
 // Get sign language video markers
 const markers = ref<Marker[]>([])
-const getMarkers = () => {
-  if (isImage(props.src) || !existsSync(changeExt(props.src, 'json'))) return
+const getMarkers = async () => {
+  if (isImage(props.src) || !(await exists(changeExt(props.src, 'json'))))
+    return
   const { $dayjs } = useNuxtApp()
   const markerArray = JSON.parse(
-    readFileSync(changeExt(props.src, 'json'), 'utf8')
+    await readFile(changeExt(props.src, 'json'), 'utf8')
   ) as Marker[]
 
   // For each marker, calculate the custom start and end time

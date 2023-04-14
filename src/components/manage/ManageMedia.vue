@@ -108,8 +108,8 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 import { ipcRenderer } from 'electron'
-// eslint-disable-next-line import/named
-import { readFileSync, statSync } from 'fs-extra'
+
+import { readFile, stat } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
 import { LocalFile, MeetingFile, VideoFile } from '~~/types'
 
@@ -302,7 +302,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
   if (client && online && props.uploadMedia) {
     const perf: any = {
       start: performance.now(),
-      bytes: statSync(path).size,
+      bytes: (await stat(path)).size,
       name: file.safeName,
     }
 
@@ -332,7 +332,7 @@ const uploadFile = async (path: string) => {
   )
 
   try {
-    await client.value.putFileContents(filePath, readFileSync(path), {
+    await client.value.putFileContents(filePath, await readFile(path), {
       overwrite: true,
       /* onUploadProgress: ({ loaded, total }) => {
         setProgress(loaded, total)

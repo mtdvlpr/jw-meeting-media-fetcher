@@ -1,6 +1,6 @@
 import { pathToFileURL } from 'url'
-// eslint-disable-next-line import/named
-import { existsSync } from 'fs-extra'
+
+import { pathExists } from 'fs-extra'
 import { join } from 'upath'
 import { JW_ICONS_FONT } from '~/constants/general'
 
@@ -23,7 +23,7 @@ export async function loadFont(font: 'yeartext' | 'icon') {
   let fontFile = await localFontPath(
     font === 'icon' ? JW_ICONS_FONT : WT_CLEARTEXT_FONT
   )
-  if (!existsSync(fontFile)) {
+  if (!(await pathExists(fontFile))) {
     fontFile = findOne(
       join(
         await wtFontPath(),
@@ -31,7 +31,7 @@ export async function loadFont(font: 'yeartext' | 'icon') {
       )
     )
   }
-  if (fontFile && existsSync(fontFile)) {
+  if (fontFile && (await pathExists(fontFile))) {
     const fontFace = new FontFace(
       font === 'icon' ? 'JW-Icons' : 'Wt-ClearText-Bold',
       `url(${pathToFileURL(fontFile).href})`

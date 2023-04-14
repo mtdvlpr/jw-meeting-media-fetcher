@@ -27,7 +27,11 @@
           @click="day.actionable && !day.inPast && selectDate(day.date)"
         >
           <v-card-text></v-card-text>
-          <progress-bar :current="day.progress" :total="day.progress" />
+          <progress-bar
+            :current="day.progress"
+            :total="day.progress"
+            color="blue-lighten-3"
+          />
         </v-card>
       </v-col>
     </v-row>
@@ -36,8 +40,8 @@
 
 <script lang="ts">
 import { basename, changeExt, extname, join } from 'upath'
-// eslint-disable-next-line import/named
-import { statSync, existsSync } from 'fs-extra'
+
+import { stat, exists } from 'fs-extra'
 import weekday from 'dayjs/plugin/weekday'
 import { MeetingFile, DateFormat } from '~~/types'
 
@@ -99,7 +103,7 @@ export default {
       $dayjs.extend(weekday)
       const todayDate = $dayjs().startOf('day')
       const firstDay = todayDate.subtract(todayDate.weekday() + 1, 'day')
-      const lastDay = firstDay.add(3, 'weeks')
+      const lastDay = firstDay.add(2, 'weeks')
 
       for (let i = 0; i < 7; i++) {
         this.dayNames[i] = firstDay.add(i, 'day').format('ddd')
@@ -149,7 +153,7 @@ export default {
         this.weeks.push(week)
       }
 
-      // this.syncMedia(false, this.datesWithPlannedMeetings)
+      this.syncMedia(false, this.datesWithPlannedMeetings)
 
       if (
         this.firstChoice &&
@@ -163,6 +167,7 @@ export default {
   },
   methods: {
     async syncMediaItem(date: string, item: MeetingFile) {
+      console.log('DEBUG 10')
       if (item.filesize && (item.url || item.filepath)) {
         log.info(
           `%c[jwOrg] [${date}] ${item.safeName}`,
@@ -189,6 +194,7 @@ export default {
             JSON.stringify(markers)
           )
         }
+        console.log('DEBUG 11')
 
         // Prevent duplicates
         const duplicate = path
@@ -203,12 +209,13 @@ export default {
               )
             )
           : null
+        console.log('DEBUG 12')
 
         if (
           duplicate &&
           item.safeName &&
           basename(duplicate) !== item.safeName &&
-          (statSync(duplicate).size === item.filesize ||
+          ((await stat(duplicate)).size === item.filesize ||
             extname(item.safeName) === '.svg')
         ) {
           rename(
@@ -216,22 +223,34 @@ export default {
             basename(duplicate),
             item.safeName.replace('.svg', '.png')
           )
+          console.log('DEBUG 13')
         } else if (item.url) {
+          console.log('DEBUG 14')
           const store = useMediaStore()
           const newItem = JSON.parse(JSON.stringify(item))
           store.setProgress({
             key: newItem.url,
             promise: downloadIfRequired(newItem),
           })
+          console.log('DEBUG 15')
+
           await store.progress.get(newItem.url)
+          console.log('DEBUG 16')
         } else if (path && item.filepath && item.folder && item.safeName) {
+          console.log('DEBUG 17')
+
           const dest = join(path, item.folder, item.safeName)
-          if (!existsSync(dest) || statSync(dest).size !== item.filesize) {
+          if (
+            !(await exists(dest)) ||
+            (await stat(dest)).size !== item.filesize
+          ) {
             copy(item.filepath, dest)
           }
         }
+        console.log('DEBUG 18')
         this.mediaTotals[date].current++
         this.setProgress(date)
+        console.log('DEBUG 19')
       } else {
         warn(
           'warnFileNotAvailable',
@@ -270,6 +289,8 @@ export default {
             console.error(e)
           }
         }
+        console.log('DEBUG 1')
+
         createMediaNames()
         /*
             if (congSync.value) {
@@ -284,6 +305,7 @@ export default {
                 congSyncColor.value = 'error'
               }
             } */
+        console.log('DEBUG 2')
 
         if (!dryrun) {
           // await Promise.allSettled([
@@ -292,6 +314,8 @@ export default {
           this.syncAllJWMedia()
           // ])
         }
+        console.log('DEBUG 3')
+
         /*
         
             await convertUnusableFiles(mPath, setProgress)
@@ -316,18 +340,6 @@ export default {
               convertToVLC()
             }
 */
-
-        // visual test, doesnt do anything
-        // const intervalId = setInterval(async () => {
-        //   elapsed++
-        //   const progress = elapsed / totalTime
-        //   if (reportProgress) {
-        //     await this.setProgress(date.date, progress)
-        //   }
-        //   if (elapsed >= totalTime) {
-        //     clearInterval(intervalId)
-        //   }
-        // }, 1000)
       }
     },
     setProgress(date: string) {
@@ -362,6 +374,8 @@ export default {
     },
     syncAllJWMedia() {
       const { $dayjs } = useNuxtApp()
+      console.log('DEBUG 4')
+
       const meetings = new Map(
         Array.from(useMediaStore().meetings)
           .filter(([date]) => {
@@ -385,6 +399,7 @@ export default {
             ),
           ])
       )
+      console.log('DEBUG 5')
 
       this.mediaTotals = Object.fromEntries(
         Array.from(meetings).map(([date, parts]) => [
@@ -392,6 +407,7 @@ export default {
           { total: parts.size, current: 0 },
         ])
       )
+      console.log('DEBUG 6')
 
       for (const [date, parts] of meetings.entries()) {
         for (const [, media] of parts.entries()) {
@@ -406,6 +422,7 @@ export default {
           }
         }
       }
+      console.log('DEBUG 7')
     },
   },
 }

@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/named
-import { existsSync, statSync } from 'fs-extra'
+import { pathExists, stat } from 'fs-extra'
 import { join } from 'upath'
 import type { Database } from '@stephen/sql.js'
 import { MeetingFile, VideoFile, ImageFile, MultiMediaItem } from '~~/types'
@@ -218,7 +217,7 @@ async function processMultiMediaItem(
             mmItem.FilePath
           )
 
-          if (lang && !mmItem.Link && !existsSync(mmItem.LocalPath)) {
+          if (lang && !mmItem.Link && !(await pathExists(mmItem.LocalPath))) {
             mmItem.LocalPath = join(
               pubPath(<MeetingFile>{
                 BeginParagraphOrdinal: 0,
@@ -230,7 +229,7 @@ async function processMultiMediaItem(
             )
           }
 
-          if (fallbackLang && !existsSync(mmItem.LocalPath)) {
+          if (fallbackLang && !(await pathExists(mmItem.LocalPath))) {
             mmItem.LocalPath = join(
               pubPath(<MeetingFile>{
                 BeginParagraphOrdinal: 0,
@@ -255,7 +254,7 @@ async function processMultiMediaItem(
         title: mmItem.FileName,
         queryInfo: mmItem,
         filepath: memOnly ? undefined : mmItem.LocalPath,
-        filesize: memOnly ? undefined : statSync(mmItem.LocalPath!).size,
+        filesize: memOnly ? undefined : (await stat(mmItem.LocalPath!)).size,
       }
 
       return picture
