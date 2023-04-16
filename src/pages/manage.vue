@@ -2,7 +2,7 @@
   <manage-media
     :media="media"
     :loading="loading"
-    upload-media
+    :upload-media="true"
     @refresh="getExistingMedia()"
   />
 </template>
