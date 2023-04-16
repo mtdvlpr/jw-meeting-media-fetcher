@@ -9,6 +9,8 @@
     :dark="isDark"
     :disabled="locked"
     :required="required"
+    teleport-center
+    :teleport="true"
     :state="required && !value ? false : undefined"
     :clearable="!required"
     :placeholder="label"
