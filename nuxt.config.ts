@@ -89,11 +89,11 @@ export default defineNuxtConfig({
     langDir: 'locales',
     defaultLocale: 'en',
     locales: LOCALES,
+    types: 'composition',
     detectBrowserLanguage: false,
-    vueI18n: {
-      legacy: false,
-      fallbackLocale: 'en',
-      warnHtmlMessage: false,
+    precompile: {
+      strictMessage: false,
+      escapeHtml: true,
     },
   },
   vite: {
