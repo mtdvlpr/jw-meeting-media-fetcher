@@ -42,7 +42,7 @@ import { basename, changeExt, extname, join } from 'upath'
 
 import { stat, exists } from 'fs-extra'
 import weekday from 'dayjs/plugin/weekday'
-import { MeetingFile, DateFormat } from '~~/types'
+import { MediaPrefs, MeetingFile, DateFormat } from '~~/types'
 
 export default {
   data() {
@@ -119,15 +119,16 @@ export default {
         this.weeks.push(week)
       }
 
-      this.syncMedia(false, this.datesWithPlannedMeetings)
       const lastPage = useRouter().options.history.state.back?.toString()
-      if (
-        lastPage &&
-        !lastPage.includes('present') &&
-        ((todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
-          (todayDate.day() + 6) % 7 === weDay)
-      )
-        this.selectDate(this.today.format('YYYY-MM-DD'))
+      if (!lastPage || !lastPage.includes('present')) {
+        this.syncMedia(this.datesWithPlannedMeetings)
+        if (
+          (todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
+          (todayDate.day() + 6) % 7 === weDay
+        ) {
+          this.selectDate(this.today.format('YYYY-MM-DD'))
+        }
+      }
     }
   },
   methods: {
@@ -214,71 +215,49 @@ export default {
         )
       }
     },
-    async syncMedia(
-      dryrun = false,
-      datesToSync: { date: string; type: string }[]
-    ) {
-      if (!dryrun) {
-        // const totalTime = Math.floor(Math.random() * 6) + 5 // random duration between 5 and 10 seconds
-        // const elapsed = 0
-        for (const date of datesToSync) {
-          try {
-            if (date.type === 'mw') {
-              await getMwMedia(date.date)
-            } else if (date.type === 'we') {
-              await getWeMedia(date.date)
-            }
-            await this.syncJWMediaByDate(date.date)
-          } catch (e) {
-            console.error(e)
+    async syncMedia(datesToSync: { date: string; type: string }[]) {
+      const { client } = useCongStore()
+      const congSync = computed(() => !!client)
+      if (congSync.value) {
+        try {
+          // getCongMedia(baseDate.value, now)
+          // need to fix/tweak getCongMedia to get cong media between today and last date
+          // syncCongServerMedia()
+        } catch (e) {
+          error('errorGetCongMedia', e)
+        }
+      }
+      for (const date of datesToSync) {
+        try {
+          if (date.type === 'mw') {
+            await getMwMedia(date.date)
+          } else if (date.type === 'we') {
+            await getWeMedia(date.date)
           }
+          createMediaNames()
+          await this.syncJWMediaByDate(date.date)
+        } catch (e) {
+          console.error(e)
         }
-        createMediaNames()
-        /*
-            if (congSync.value) {
-              try {
-                congSyncColor.value = 'warning'
-                getCongMedia(baseDate.value, now)
-                if (dryrun) {
-                  congSyncColor.value = 'success'
-                }
-              } catch (e) {
-                error('errorGetCongMedia', e)
-                congSyncColor.value = 'error'
-              }
-            } */
-        if (!dryrun) {
-          // await Promise.allSettled([
-          // syncCongServerMedia(),
-          // syncLocalRecurring(),
-          // this.syncAllJWMedia()
-          // ])
+      }
+      // syncLocalRecurringMedia()
+      // need to fix/tweak syncLocalRecurringMedia to get do so between today and last date
+      const mPath = mediaPath()
+      if (mPath) {
+        await convertUnusableFiles(mPath)
+      }
+      const { enableMp4Conversion, enableVlcPlaylistCreation } =
+        getPrefs<MediaPrefs>('media')
+      if (enableMp4Conversion) {
+        try {
+          // await convertToMP4(baseDate.value, now)
+          // need to fix/tweak convertToMP4 to convert files from all folders between today and last date
+        } catch (e: unknown) {
+          log.error(e)
         }
-
-        /*
-        
-            await convertUnusableFiles(mPath, setProgress)
-        
-            const { enableMp4Conversion, enableVlcPlaylistCreation } =
-              getPrefs<MediaPrefs>('media')
-        
-            if (enableMp4Conversion) {
-              statStore.startPerf({ func: 'convertMP4', start: performance.now() })
-              mp4Color.value = 'warning'
-              try {
-                await convertToMP4(baseDate.value, now, setProgress)
-                mp4Color.value = 'success'
-              } catch (e: unknown) {
-                log.error(e)
-                mp4Color.value = 'error'
-              }
-              statStore.stopPerf({ func: 'convertMP4', stop: performance.now() })
-            }
-        
-            if (enableVlcPlaylistCreation) {
-              convertToVLC()
-            }
-*/
+      }
+      if (enableVlcPlaylistCreation) {
+        await convertToVLC()
       }
     },
     setProgress(date: string, current: number, total: number) {
