@@ -222,18 +222,18 @@ const spotlightParticipants = () => {
     warn('errorNotCoHost')
     return
   }
-  toggleSplotlight(zoomSocket(), false)
+  toggleSpotlight(zoomSocket(), false)
   if (spotlightActive.value) {
     muteParticipants(zoomSocket())
     if (hostID.value && getPrefs<boolean>('app.zoom.spotlight')) {
-      toggleSplotlight(zoomSocket(), true, hostID.value)
+      toggleSpotlight(zoomSocket(), true, hostID.value)
     }
     participants.value = []
     store.setSpotlights([])
   } else {
     store.setSpotlights(participants.value.map((p) => p.userId))
     for (const p of participants.value) {
-      toggleSplotlight(zoomSocket(), true, p.userId)
+      toggleSpotlight(zoomSocket(), true, p.userId)
       toggleMic(zoomSocket(), false, p.userId)
     }
 

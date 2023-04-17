@@ -223,6 +223,12 @@ const isWeDay = computed(() => meetingDay.value === 'we')
 
 onMounted(() => {
   setItems(props.items)
+  const watcher = reactive({
+    items: props.items,
+  })
+  watchEffect(() => {
+    setItems(watcher.items)
+  })
   getMwbHeadings()
   meetingDay.value = isMeetingDay(
     useNuxtApp().$dayjs(
