@@ -125,6 +125,7 @@ function convertSvg(mediaFile: string): void {
   const div = document.createElement('div')
   const image = document.createElement('img')
   const canvas = document.createElement('canvas')
+  div.style.display = 'none'
   div.append(image, canvas)
   document.body.appendChild(div)
 
@@ -153,7 +154,9 @@ function convertSvg(mediaFile: string): void {
     )
 
     rm(mediaFile)
-    div.remove()
+    console.log(div)
+
+    // div.remove()
   }
 
   image.onerror = (e) => {
