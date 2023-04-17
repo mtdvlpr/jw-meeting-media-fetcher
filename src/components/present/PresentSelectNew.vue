@@ -80,7 +80,6 @@ export default {
     } else {
       $dayjs.extend(weekday)
       const todayDate = $dayjs().startOf('day')
-      const mwDay = getPrefs<number>('meeting.mwDay')
       const weDay = getPrefs<number>('meeting.weDay')
       const firstDay = todayDate.subtract(todayDate.weekday() + 1, 'day')
       const lastDay = firstDay.add(2, 'weeks')
@@ -94,7 +93,7 @@ export default {
           const date = currentDay
           const weekDay = (date.day() + 6) % 7
           if (!date.isBefore(todayDate)) {
-            if (weekDay === mwDay) {
+            if (weekDay === getMwDay(date)) {
               this.datesWithPlannedMeetings.push({
                 date: date.format('YYYY-MM-DD'),
                 type: 'mw',
@@ -110,7 +109,7 @@ export default {
             date: date.format('YYYY-MM-DD'),
             dayOfMonth: date.format('D'),
             month: date.format('MMM'),
-            meetingDay: weekDay === mwDay || weekDay === weDay,
+            meetingDay: weekDay === getMwDay(date) || weekDay === weDay,
             currentMonth: date.isSame(todayDate, 'month'),
             inPast: date.isBefore(todayDate),
             progress: 0,
@@ -125,7 +124,7 @@ export default {
       if (
         lastPage &&
         !lastPage.includes('present') &&
-        ((todayDate.day() + 6) % 7 === mwDay ||
+        ((todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
           (todayDate.day() + 6) % 7 === weDay)
       )
         this.selectDate(this.today.format('YYYY-MM-DD'))
