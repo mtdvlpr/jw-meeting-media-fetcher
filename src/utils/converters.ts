@@ -70,7 +70,7 @@ export async function convertUnusableFiles(
   })
 
   if (setProgress) initProgress(pdfFiles.length + svgFiles.length)
-
+  console.log('convertUnusableFiles total', pdfFiles.length + svgFiles.length)
   pdfFiles.forEach((pdf) => {
     promises.push(convertPdf(pdf, setProgress))
   })
@@ -154,9 +154,7 @@ function convertSvg(mediaFile: string): void {
     )
 
     rm(mediaFile)
-    console.log(div)
-
-    // div.remove()
+    div.remove()
   }
 
   image.onerror = (e) => {
