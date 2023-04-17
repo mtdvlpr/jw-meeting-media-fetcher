@@ -19,7 +19,15 @@
           :subtitle="day.month"
           :title="day.dayOfMonth"
           class="ma-1"
-          :color="day.inPast ? 'grey' : day.meetingDay ? 'primary' : 'white'"
+          :color="
+            day.inPast
+              ? 'grey'
+              : day.meetingDay
+              ? 'primary'
+              : day.nonMeetingMedia
+              ? 'blue-lighten-4'
+              : 'white'
+          "
           :class="{
             inPast: day.inPast,
           }"
@@ -60,6 +68,7 @@ export default {
           month: string
           meetingDay: boolean
           currentMonth: boolean
+          nonMeetingMedia: boolean | number
           inPast: boolean
           progress: number
         }>
@@ -83,6 +92,7 @@ export default {
       const weDay = getPrefs<number>('meeting.weDay')
       const firstDay = todayDate.subtract(todayDate.weekday() + 1, 'day')
       const lastDay = firstDay.add(2, 'weeks')
+      const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
       for (let i = 0; i < 7; i++) {
         this.dayNames[i] = firstDay.add(i, 'day').format('ddd')
       }
@@ -95,22 +105,28 @@ export default {
           if (!date.isBefore(todayDate)) {
             if (weekDay === getMwDay(date)) {
               this.datesWithPlannedMeetings.push({
-                date: date.format('YYYY-MM-DD'),
+                date: date.format(dateFormat),
                 type: 'mw',
               })
             } else if (weekDay === weDay) {
               this.datesWithPlannedMeetings.push({
-                date: date.format('YYYY-MM-DD'),
+                date: date.format(dateFormat),
                 type: 'we',
               })
             }
           }
+          const meetingDay = weekDay === getMwDay(date) || weekDay === weDay
           week.push({
-            date: date.format('YYYY-MM-DD'),
+            date: date.format(dateFormat),
             dayOfMonth: date.format('D'),
             month: date.format('MMM'),
-            meetingDay: weekDay === getMwDay(date) || weekDay === weDay,
+            meetingDay,
             currentMonth: date.isSame(todayDate, 'month'),
+            nonMeetingMedia:
+              !meetingDay &&
+              findAll(join(mediaPath(), date.format(dateFormat), '*')).filter(
+                (f) => isAudio(f) || isVideo(f) || isImage(f)
+              ).length,
             inPast: date.isBefore(todayDate),
             progress: 0,
           })
@@ -118,7 +134,6 @@ export default {
         }
         this.weeks.push(week)
       }
-
       const lastPage = useRouter().options.history.state.back?.toString()
       if (!lastPage || !lastPage.includes('present')) {
         this.syncMedia(this.datesWithPlannedMeetings)
@@ -126,7 +141,7 @@ export default {
           (todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
           (todayDate.day() + 6) % 7 === weDay
         ) {
-          this.selectDate(this.today.format('YYYY-MM-DD'))
+          this.selectDate(this.today.format(dateFormat))
         }
       }
     }
