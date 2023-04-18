@@ -22,7 +22,7 @@
           :color="
             day.inPast
               ? 'grey'
-              : day.meetingDay
+              : day.meetingType
               ? 'primary'
               : day.nonMeetingMedia
               ? 'blue-lighten-4'
@@ -57,16 +57,12 @@ export default {
     return {
       // loading: true,
       dayNames: [] as Array<string>,
-      datesWithPlannedMeetings: [] as Array<{
-        date: string
-        type: string
-      }>,
       weeks: [] as Array<
         Array<{
           date: string
           dayOfMonth: string
           month: string
-          meetingDay: boolean
+          meetingType: string | undefined
           currentMonth: boolean
           nonMeetingMedia: boolean | number
           inPast: boolean
@@ -102,28 +98,23 @@ export default {
         for (let i = 0; i < 7; i++) {
           const date = currentDay
           const weekDay = (date.day() + 6) % 7
-          if (!date.isBefore(todayDate)) {
-            if (weekDay === getMwDay(date)) {
-              this.datesWithPlannedMeetings.push({
-                date: date.format(dateFormat),
-                type: 'mw',
-              })
-            } else if (weekDay === weDay) {
-              this.datesWithPlannedMeetings.push({
-                date: date.format(dateFormat),
-                type: 'we',
-              })
-            }
-          }
-          const meetingDay = weekDay === getMwDay(date) || weekDay === weDay
+          const isTodayOrAfter = !date.isBefore(todayDate)
+          const isMwDay = weekDay === getMwDay(date)
+          const isWeDay = weekDay === weDay
+          const meetingType =
+            isTodayOrAfter && isMwDay
+              ? 'mw'
+              : isTodayOrAfter && isWeDay
+              ? 'we'
+              : undefined
           week.push({
             date: date.format(dateFormat),
             dayOfMonth: date.format('D'),
             month: date.format('MMM'),
-            meetingDay,
+            meetingType,
             currentMonth: date.isSame(todayDate, 'month'),
             nonMeetingMedia:
-              !meetingDay &&
+              !meetingType &&
               findAll(join(mediaPath(), date.format(dateFormat), '*')).filter(
                 (f) => isAudio(f) || isVideo(f) || isImage(f)
               ).length,
@@ -136,7 +127,7 @@ export default {
       }
       const lastPage = useRouter().options.history.state.back?.toString()
       if (!lastPage || !lastPage.includes('present')) {
-        this.syncMedia(this.datesWithPlannedMeetings)
+        this.syncMedia(this.weeks.flat())
         if (
           (todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
           (todayDate.day() + 6) % 7 === weDay
@@ -230,49 +221,39 @@ export default {
         )
       }
     },
-    async syncMedia(datesToSync: { date: string; type: string }[]) {
+    async syncMedia(
+      datesToSync: {
+        date: string
+        dayOfMonth: string
+        month: string
+        meetingType: string | undefined
+        currentMonth: boolean
+        nonMeetingMedia: number | boolean
+        inPast: boolean
+        progress: number
+      }[]
+    ) {
       const { client } = useCongStore()
       const congSync = computed(() => !!client)
-      if (congSync.value) {
+      const { enableMp4Conversion, enableVlcPlaylistCreation } =
+        getPrefs<MediaPrefs>('media')
+      console.log('datesToSync', datesToSync)
+      for (const dateToSync of datesToSync) {
         try {
-          // getCongMedia(baseDate.value, now)
-          // need to fix/tweak getCongMedia to get cong media between today and last date
-          // syncCongServerMedia()
-        } catch (e) {
-          error('errorGetCongMedia', e)
-        }
-      }
-      for (const date of datesToSync) {
-        try {
-          if (date.type === 'mw') {
-            await getMwMedia(date.date)
-          } else if (date.type === 'we') {
-            await getWeMedia(date.date)
-          }
-          createMediaNames()
-          await this.syncJWMediaByDate(date.date)
+          if (congSync.value) getCongMediaByDate(dateToSync.date) // need to define this one
+          if (dateToSync.meetingType)
+            await this.syncJWMediaByDate(
+              dateToSync.date,
+              dateToSync.meetingType
+            )
+          await syncLocalRecurringMediaByDate(dateToSync.date)
+          await convertUnusableFilesByDate(dateToSync.date)
+          if (enableMp4Conversion) await convertToMP4ByDate(dateToSync.date)
+          if (enableVlcPlaylistCreation)
+            await convertToVLCByDate(dateToSync.date)
         } catch (e) {
           console.error(e)
         }
-      }
-      // syncLocalRecurringMedia()
-      // need to fix/tweak syncLocalRecurringMedia to get do so between today and last date
-      const mPath = mediaPath()
-      if (mPath) {
-        await convertUnusableFiles(mPath)
-      }
-      const { enableMp4Conversion, enableVlcPlaylistCreation } =
-        getPrefs<MediaPrefs>('media')
-      if (enableMp4Conversion) {
-        try {
-          // await convertToMP4(baseDate.value, now)
-          // need to fix/tweak convertToMP4 to convert files from all folders between today and last date
-        } catch (e: unknown) {
-          log.error(e)
-        }
-      }
-      if (enableVlcPlaylistCreation) {
-        await convertToVLC()
       }
     },
     setProgress(date: string, current: number, total: number) {
@@ -303,11 +284,17 @@ export default {
         },
       })
     },
-    async syncJWMediaByDate(meetingDate: string) {
+    async syncJWMediaByDate(date: string, meetingType: string | undefined) {
+      if (meetingType === 'mw') {
+        await getMwMedia(date)
+      } else if (meetingType === 'we') {
+        await getWeMedia(date)
+      }
+      createMediaNames()
       const meetingMedia = Object.fromEntries(
         Array.from(useMediaStore().meetings)
-          .filter(([date]) => {
-            return date === meetingDate
+          .filter(([meetingMediaDate]) => {
+            return meetingMediaDate === date
           })
           .map(([date, parts]) => [
             date,

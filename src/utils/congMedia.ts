@@ -1,5 +1,4 @@
 import type { Dayjs } from 'dayjs'
-// eslint-disable-next-line import/named
 import { stat } from 'fs-extra'
 import { join, extname, basename } from 'upath'
 import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
@@ -143,6 +142,121 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
     func: 'getCongMedia',
     stop: performance.now(),
   })
+}
+
+export function getCongMediaByDate(date: string) {
+  // const mediaStore = useMediaStore()
+  // const tree = updateContentsTree()
+  // const mediaFolder = tree.find(({ basename }) => basename === 'Media')
+  // const hiddenFolder = tree.find(({ basename }) => basename === 'Hidden')
+  // // const dates = ['Recurring', now.format(dateFormat)]
+  // mediaStore.setMultiple({
+  //   date,
+  //   par: -1,
+  //   media: [],
+  //   overwrite: true,
+  // })
+  // // Get cong media
+  // if (mediaFolder?.children) {
+  //   let recurringMedia: MeetingFile[] = []
+  //   const { $dayjs } = useNuxtApp()
+  //   mediaFolder.children
+  //     .filter((date) => !!date.children)
+  //     .forEach((date) => {
+  //       const day = $dayjs(date.basename, dateFormat)
+  //       const isRecurring = date.basename === 'Recurring'
+  //       const isMeetingDay =
+  //         day.isValid() &&
+  //         day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]') &&
+  //         now.isSameOrBefore(day)
+  //       if (isRecurring || isMeetingDay) {
+  //         const media: MeetingFile[] =
+  //           date.children?.map((mediaFile) => {
+  //             return <MeetingFile>{
+  //               safeName: mediaFile.basename,
+  //               congSpecific: true,
+  //               filesize: mediaFile.size,
+  //               folder: date.basename,
+  //               url: mediaFile.filename,
+  //             }
+  //           }) ?? []
+  //         mediaStore.setMultiple({
+  //           date: date.basename,
+  //           par: -1,
+  //           media,
+  //           overwrite: true,
+  //         })
+  //         if (isRecurring) {
+  //           recurringMedia = useCloneDeep(media)
+  //         }
+  //       }
+  //     })
+  //   // Set recurring media for each date
+  //   dates.forEach((date) => {
+  //     mediaStore.setMultiple({
+  //       date,
+  //       par: -1,
+  //       media: useCloneDeep(recurringMedia)
+  //         .map((m) => {
+  //           m.folder = date
+  //           m.recurring = true
+  //           return m
+  //         })
+  //         .filter((m) => {
+  //           const media = mediaStore.meetings.get(date)?.get(-1)
+  //           if (media) {
+  //             return !media.find(({ safeName }) => safeName === m.safeName)
+  //           } else {
+  //             return true
+  //           }
+  //         }),
+  //     })
+  //   })
+  // }
+  // // Set hidden media
+  // if (hiddenFolder?.children) {
+  //   const { $dayjs } = useNuxtApp()
+  //   const meetings = mediaStore.meetings
+  //   hiddenFolder.children
+  //     .filter((date) => !!date.children)
+  //     .forEach((date) => {
+  //       const mediaMap = meetings.get(date.basename)
+  //       const day = $dayjs(date.basename, dateFormat)
+  //       const isMeetingDay =
+  //         day.isValid() &&
+  //         day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]') &&
+  //         now.isSameOrBefore(day)
+  //       if (isMeetingDay && mediaMap) {
+  //         date.children?.forEach((hiddenFile) => {
+  //           let found = false
+  //           mediaMap.forEach((media, par) => {
+  //             if (found) return
+  //             const result = media.find(
+  //               ({ safeName }) => safeName === hiddenFile.basename
+  //             )
+  //             if (result) {
+  //               mediaStore.setHidden({
+  //                 date: date.basename,
+  //                 par,
+  //                 mediaName: hiddenFile.basename,
+  //                 hidden: true,
+  //               })
+  //               // Remove hidden media if it was already downloaded
+  //               rm(join(mediaPath(), date.basename, hiddenFile.basename))
+  //               log.info(
+  //                 '%c[hiddenMedia] [' +
+  //                   date.basename +
+  //                   '] ' +
+  //                   hiddenFile.basename,
+  //                 'background-color: #fff3cd; color: #856404;'
+  //               )
+  //               found = true
+  //             }
+  //           })
+  //         })
+  //       }
+  //     })
+  // }
 }
 
 export async function syncCongMedia(

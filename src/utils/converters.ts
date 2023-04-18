@@ -56,6 +56,17 @@ export async function convertToMP4(
   await Promise.allSettled(promises)
 }
 
+export async function convertToMP4ByDate(date: string) {
+  const files = findAll(join(mediaPath(), date, '*')).filter(
+    (f) => isAudio(f) || isImage(f)
+  )
+  const promises: Promise<void>[] = []
+  files.forEach((file) => {
+    promises.push(createVideo(file))
+  })
+  await Promise.allSettled(promises)
+}
+
 export async function convertUnusableFiles(
   dir: string,
   setProgress?: (loaded: number, total: number, global?: boolean) => void
@@ -80,6 +91,22 @@ export async function convertUnusableFiles(
     if (setProgress) increaseProgress(setProgress)
   })
 
+  await Promise.allSettled(promises)
+}
+
+export async function convertUnusableFilesByDate(date: string) {
+  const mPath = mediaPath()
+  if (!mPath) return
+  const promises: Promise<void>[] = []
+  const pdfFiles = findAll(join(mPath, date, '*pdf'))
+  const svgFiles = findAll(join(mPath, date, '*svg'))
+  console.log('convertUnusableFiles total', pdfFiles.length + svgFiles.length)
+  pdfFiles.forEach((pdf) => {
+    promises.push(convertPdf(pdf))
+  })
+  svgFiles.forEach((svg) => {
+    convertSvg(svg)
+  })
   await Promise.allSettled(promises)
 }
 
@@ -121,16 +148,45 @@ export async function convertToVLC() {
   })
 }
 
+export async function convertToVLCByDate(date: string) {
+  const { XMLBuilder } = await import('fast-xml-parser')
+  const playlistFiles = findAll(join(mediaPath(), date, '*')).map((k) => ({
+    location: pathToFileURL(k).href,
+  }))
+  if (playlistFiles.length === 0) return
+  const playlistItems = {
+    '?xml': {
+      '@_version': '1.0',
+      '@_encoding': 'UTF-8',
+    },
+    playlist: {
+      title: date,
+      trackList: {
+        track: playlistFiles,
+      },
+      '@_xmlns': 'http://xspf.org/ns/0/',
+      '@_xmlns:vlc': 'http://www.videolan.org/vlc/playlist/ns/0/',
+      '@_version': '1',
+    },
+  }
+  write(
+    join(mediaPath(), date, `${date}.xspf`),
+    new XMLBuilder({ ignoreAttributes: false }).build(playlistItems)
+  )
+}
+
 function convertSvg(mediaFile: string): void {
   const div = document.createElement('div')
   const image = document.createElement('img')
   const canvas = document.createElement('canvas')
   div.style.display = 'none'
+  div.style.height = (FULL_HD[1] * 2).toString() + 'px'
   div.append(image, canvas)
   document.body.appendChild(div)
 
   image.onload = () => {
     image.height = FULL_HD[1] * 2
+    image.width = FULL_HD[0] * 2
     canvas.height = image.height
     canvas.width = image.width
 
@@ -347,7 +403,7 @@ function resize(x: number, y: number, xMax?: number, yMax?: number): number[] {
 
 function createVideo(
   file: string,
-  setProgress: (loaded: number, total: number, global?: boolean) => void
+  setProgress?: (loaded: number, total: number, global?: boolean) => void
 ): Promise<void> {
   const output = changeExt(file, 'mp4')
   return new Promise<void>((resolve) => {
@@ -355,7 +411,7 @@ function createVideo(
       // If mp3, just add audio to empty video
       if (extname(file).includes('mp3')) {
         import('fluent-ffmpeg').then(({ default: ffmpeg }) => {
-          setupFFmpeg(ffmpeg, setProgress)
+          setupFFmpeg(ffmpeg, setProgress!)
             .then(() => {
               ffmpeg(file)
                 .noVideo()
@@ -363,7 +419,7 @@ function createVideo(
                 .on('end', () => {
                   if (!getPrefs<boolean>('media.keepOriginalsAfterConversion'))
                     rm(file)
-                  increaseProgress(setProgress)
+                  increaseProgress(setProgress!)
                   return resolve()
                 })
             })
@@ -373,7 +429,7 @@ function createVideo(
                 { identifier: basename(file) },
                 e
               )
-              increaseProgress(setProgress)
+              increaseProgress(setProgress!)
               return resolve()
             })
         })
@@ -441,7 +497,7 @@ function createVideo(
                   ) {
                     rm(file)
                   }
-                  increaseProgress(setProgress)
+                  increaseProgress(setProgress!)
                   return resolve()
                 }
                 img.src = pathToFileURL(file).href
@@ -454,7 +510,7 @@ function createVideo(
       }
     } catch (e) {
       warn('warnMp4ConversionFailure', { identifier: basename(file) }, e)
-      increaseProgress(setProgress)
+      increaseProgress(setProgress!)
       return resolve()
     }
   })

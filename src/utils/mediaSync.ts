@@ -29,6 +29,14 @@ export function syncLocalRecurringMedia(baseDate: Dayjs) {
   })
 }
 
+export async function syncLocalRecurringMediaByDate(date: string) {
+  const path = mediaPath()
+  if (!path || !(await pathExists(join(path, date)))) return
+  findAll(join(path, 'Recurring', '*')).forEach((recurringItem: string) => {
+    copy(recurringItem, join(path, date, basename(recurringItem)))
+  })
+}
+
 export function createMediaNames() {
   const statStore = useStatStore()
   const mediaStore = useMediaStore()
