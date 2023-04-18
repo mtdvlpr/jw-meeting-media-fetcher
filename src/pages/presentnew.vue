@@ -1,5 +1,5 @@
 <template>
-  <v-flex class="present-page">
+  <div class="present-page">
     <v-toolbar v-if="!date">
       <v-toolbar-title>{{ $t('selectDate') }}</v-toolbar-title>
     </v-toolbar>
@@ -25,14 +25,14 @@
       <div id="zoomMeeting" />
     </div>
     <media-controls v-if="date" />
-    <present-select-new v-else :first-choice="firstChoice" />
+    <present-select-new v-else />
     <present-footer
       :window-width="width"
       :participant="participant"
       @zoom-part="toggleZoomPart()"
       @clear-participant="participant = null"
     />
-  </v-flex>
+  </div>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'

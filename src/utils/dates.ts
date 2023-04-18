@@ -18,7 +18,8 @@ export function isMeetingDay(date?: Dayjs) {
 
 export function isCoWeek(baseDate?: Dayjs) {
   const { $dayjs } = useNuxtApp()
-  if (!baseDate) baseDate = $dayjs().startOf('week')
+  if (!baseDate) baseDate = $dayjs()
+  baseDate = baseDate.startOf('week')
   const coWeek = getPrefs<string>('meeting.coWeek')
   return (
     coWeek &&

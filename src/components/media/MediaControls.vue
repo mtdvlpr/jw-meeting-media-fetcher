@@ -8,7 +8,6 @@
             :loading="loading"
             dialog
             @cancel="managingMedia = false"
-            @refresh="getMedia()"
           />
         </v-container>
       </v-sheet>
@@ -25,7 +24,6 @@
       @next="next()"
       @sortable="sortable = !sortable"
       @show-prefix="togglePrefix()"
-      @refresh="getMedia()"
       @manage-media="managingMedia = true"
     />
     <present-zoom-bar v-if="zoomIntegration" />
@@ -48,9 +46,10 @@
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import { basename, dirname, join } from 'upath'
+import * as fileWatcher from 'chokidar'
 import { LocalFile } from '~~/types'
 
-const loading = ref(true)
+const loading = ref(false)
 const addSong = ref(false)
 watch(addSong, () => {
   scrollToItem(0)
@@ -82,8 +81,49 @@ const localMedia = computed((): LocalFile[] =>
 // Zoom store
 const { client: zoomIntegration } = storeToRefs(useZoomStore())
 
+// Get media files
+type MediaItem = {
+  id: string
+  path: string
+  play: boolean
+  stop: boolean
+  deactivate: boolean
+}
+const mPath = mediaPath()
+const items = reactive(ref<MediaItem[]>([]))
+
 onMounted(() => {
-  getMedia()
+  fileWatcher
+    .watch(join(mPath, date.value))
+    .on('add', (path: any) => {
+      if (isImage(path) || isVideo(path) || isAudio(path)) {
+        const cleanName = sanitize(basename(path), true)
+        const filename = basename(path)
+        if (filename !== cleanName) {
+          rename(path, filename, cleanName)
+        }
+        items.value.push({
+          id: strip('mediaitem-' + cleanName),
+          path: join(dirname(path), cleanName),
+          play: false,
+          stop: false,
+          deactivate: false,
+        })
+        items.value = items.value.sort((a, b): any => a.id.localeCompare(b.id))
+      }
+    })
+    .on('change', (path: any, stats: any) => {
+      console.log('file was changed', path)
+      if (stats) console.log(stats)
+    })
+    .on('unlink', (path: any) => {
+      const index = items.value.findIndex((item): boolean => {
+        return item.id === strip(`mediaitem-${sanitize(basename(path), true)}`)
+      })
+      if (index !== -1) {
+        items.value.splice(index, 1)
+      }
+    })
 
   // Auto play first media item
   if (getPrefs<boolean>('media.autoPlayFirst')) {
@@ -120,10 +160,10 @@ watch(mediaActive, (val) => {
   const zoomStore = useZoomStore()
   const hostID = zoomStore.hostID
   if (zoomStore.client && !zoomPart.value && zoomStore.spotlights.length > 0) {
-    toggleSplotlight(zoomSocket(), false)
-    if (val && hostID) toggleSplotlight(zoomSocket(), true, hostID)
+    toggleSpotlight(zoomSocket(), false)
+    if (val && hostID) toggleSpotlight(zoomSocket(), true, hostID)
     zoomStore.spotlights.forEach((person) => {
-      toggleSplotlight(zoomSocket(), true, person)
+      toggleSpotlight(zoomSocket(), true, person)
     })
     if (!val && mediaVisible) {
       useIpcRenderer().send('toggleMediaWindowFocus')
@@ -147,40 +187,8 @@ watch(mediaActive, (val) => {
   }
 })
 
-// Get media files
-type MediaItem = {
-  id: string
-  path: string
-  play: boolean
-  stop: boolean
-  deactivate: boolean
-}
-const items = ref<MediaItem[]>([])
-const getMedia = () => {
-  const mPath = mediaPath()
-  if (!mPath || !date.value) return
-  loading.value = true
-
-  items.value = findAll(join(mPath, date.value, '*'))
-    .filter((f) => isImage(f) || isVideo(f) || isAudio(f))
-    .sort((a, b) => a.localeCompare(b))
-    .map((path) => {
-      const cleanName = sanitize(basename(path), true)
-      const filename = basename(path)
-      if (filename !== cleanName) {
-        rename(path, filename, cleanName)
-      }
-      return {
-        id: strip('mediaitem-' + cleanName),
-        path: join(dirname(path), cleanName),
-        play: false,
-        stop: false,
-        deactivate: false,
-      }
-    })
-
-  loading.value = false
-}
+// TODO: need to run this when leaving page to avoid many simultaneous watchers!
+// watcher.close().then(() => console.log('closed'));
 
 // File prefix
 const showPrefix = ref(false)

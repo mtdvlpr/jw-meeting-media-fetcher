@@ -15,7 +15,7 @@ export async function startMeeting(socket: WebSocket | null) {
   toggleVideo(socket, true, hostID)
   await toggleMic(socket, false, hostID)
   if (getPrefs<boolean>('app.zoom.spotlight')) {
-    toggleSplotlight(socket, true, hostID)
+    toggleSpotlight(socket, true, hostID)
   }
 }
 
@@ -27,7 +27,7 @@ export function stopMeeting(socket: WebSocket | null) {
     store.setStarted(false)
   }
 
-  toggleSplotlight(socket, false)
+  toggleSpotlight(socket, false)
   toggleAllowUnmute(socket, true)
   if (store.hostID) toggleVideo(socket, false, store.hostID)
 }
@@ -182,7 +182,7 @@ function toggleVideo(
   )
 }
 
-export function toggleSplotlight(
+export function toggleSpotlight(
   socket: WebSocket | null,
   enable: boolean,
   userID?: number

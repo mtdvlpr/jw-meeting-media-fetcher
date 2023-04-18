@@ -13,22 +13,29 @@
       class="week v-row-auto"
     >
       <v-col v-for="(day, j) in week" :key="j" class="day">
-        <!-- :text="day.count ? day.count + ' items' : ''" -->
         <v-card
-          v-ripple="day.actionable && !day.inPast"
+          v-ripple="!day.inPast"
           :variant="day.inPast ? 'tonal' : undefined"
           :subtitle="day.month"
           :title="day.dayOfMonth"
           class="ma-1"
-          :color="day.inPast ? 'grey' : day.actionable ? 'primary' : 'white'"
+          :color="
+            day.inPast
+              ? 'grey'
+              : day.meetingDay
+              ? 'primary'
+              : day.nonMeetingMedia
+              ? 'blue-lighten-4'
+              : 'white'
+          "
           :class="{
             inPast: day.inPast,
           }"
-          @click="day.actionable && !day.inPast && selectDate(day.date)"
+          @click="!day.inPast && selectDate(day.date)"
         >
           <v-card-text></v-card-text>
           <progress-bar
-            :current="day.progress"
+            :current="0"
             :total="day.progress"
             color="blue-lighten-3"
           />
@@ -43,36 +50,29 @@ import { basename, changeExt, extname, join } from 'upath'
 
 import { stat, exists } from 'fs-extra'
 import weekday from 'dayjs/plugin/weekday'
-import { MeetingFile, DateFormat } from '~~/types'
+import { MediaPrefs, MeetingFile, DateFormat } from '~~/types'
 
 export default {
   data() {
     return {
       // loading: true,
-      firstChoice: false,
       dayNames: [] as Array<string>,
-      datesWithMedia: [] as Array<{
-        name: string
-        count: number
-      }>,
       datesWithPlannedMeetings: [] as Array<{
         date: string
         type: string
       }>,
-      mediaTotals: {} as { [key: string]: { total: number; current: number } },
       weeks: [] as Array<
         Array<{
           date: string
           dayOfMonth: string
           month: string
-          actionable: boolean
-          count: number | undefined
+          meetingDay: boolean
           currentMonth: boolean
+          nonMeetingMedia: boolean | number
           inPast: boolean
           progress: number
         }>
       >,
-      syncedMedia: [] as string[],
       today: this.$dayjs().startOf('day'),
     }
   },
@@ -87,64 +87,46 @@ export default {
         query: useRoute().query,
       })
     } else {
-      const directories = findAll(join(mediaPath(), '*'), {
-        onlyDirectories: true,
-        ignore: [join(mediaPath(), 'Recurring')],
-      })
-      this.datesWithMedia = directories
-        .map((path) => {
-          const name = basename(path)
-          const files = findAll(join(mediaPath(), name, '*.!(title|vtt|json)'))
-          const count = files.length
-          return { name, count }
-        })
-        .filter(({ name, count }) => this.validDate(name) && count > 0)
-
       $dayjs.extend(weekday)
       const todayDate = $dayjs().startOf('day')
+      const weDay = getPrefs<number>('meeting.weDay')
       const firstDay = todayDate.subtract(todayDate.weekday() + 1, 'day')
       const lastDay = firstDay.add(2, 'weeks')
-
+      const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
       for (let i = 0; i < 7; i++) {
         this.dayNames[i] = firstDay.add(i, 'day').format('ddd')
       }
-
       let currentDay = firstDay
       while (currentDay <= lastDay) {
         const week = []
         for (let i = 0; i < 7; i++) {
           const date = currentDay
-          const mediaItems = this.datesWithMedia.find((d) =>
-            $dayjs((d as any).name).isSame(date, 'day')
-          ) as unknown as { count: number }
-
-          // Midweek
-          const mwDay = getPrefs<number>('meeting.mwDay')
-
-          // Weekend
-          const weDay = getPrefs<number>('meeting.weDay')
           const weekDay = (date.day() + 6) % 7
           if (!date.isBefore(todayDate)) {
-            if (weekDay === mwDay) {
+            if (weekDay === getMwDay(date)) {
               this.datesWithPlannedMeetings.push({
-                date: date.format('YYYY-MM-DD'),
+                date: date.format(dateFormat),
                 type: 'mw',
               })
             } else if (weekDay === weDay) {
               this.datesWithPlannedMeetings.push({
-                date: date.format('YYYY-MM-DD'),
+                date: date.format(dateFormat),
                 type: 'we',
               })
             }
           }
+          const meetingDay = weekDay === getMwDay(date) || weekDay === weDay
           week.push({
-            date: date.format('YYYY-MM-DD'),
+            date: date.format(dateFormat),
             dayOfMonth: date.format('D'),
             month: date.format('MMM'),
-            actionable:
-              mediaItems?.count > 0 || weekDay === mwDay || weekDay === weDay,
-            count: mediaItems?.count,
+            meetingDay,
             currentMonth: date.isSame(todayDate, 'month'),
+            nonMeetingMedia:
+              !meetingDay &&
+              findAll(join(mediaPath(), date.format(dateFormat), '*')).filter(
+                (f) => isAudio(f) || isVideo(f) || isImage(f)
+              ).length,
             inPast: date.isBefore(todayDate),
             progress: 0,
           })
@@ -152,22 +134,20 @@ export default {
         }
         this.weeks.push(week)
       }
-
-      this.syncMedia(false, this.datesWithPlannedMeetings)
-
-      if (
-        this.firstChoice &&
-        this.datesWithMedia
-          .map((el) => el.name)
-          .includes(this.today.format('YYYY-MM-DD'))
-      ) {
-        this.selectDate(this.today.format('YYYY-MM-DD'))
+      const lastPage = useRouter().options.history.state.back?.toString()
+      if (!lastPage || !lastPage.includes('present')) {
+        this.syncMedia(this.datesWithPlannedMeetings)
+        if (
+          (todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
+          (todayDate.day() + 6) % 7 === weDay
+        ) {
+          this.selectDate(this.today.format(dateFormat))
+        }
       }
     }
   },
   methods: {
     async syncMediaItem(date: string, item: MeetingFile) {
-      console.log('DEBUG 10')
       if (item.filesize && (item.url || item.filepath)) {
         log.info(
           `%c[jwOrg] [${date}] ${item.safeName}`,
@@ -194,7 +174,6 @@ export default {
             JSON.stringify(markers)
           )
         }
-        console.log('DEBUG 11')
 
         // Prevent duplicates
         const duplicate = path
@@ -209,7 +188,6 @@ export default {
               )
             )
           : null
-        console.log('DEBUG 12')
 
         if (
           duplicate &&
@@ -223,22 +201,10 @@ export default {
             basename(duplicate),
             item.safeName.replace('.svg', '.png')
           )
-          console.log('DEBUG 13')
         } else if (item.url) {
-          console.log('DEBUG 14')
-          const store = useMediaStore()
           const newItem = JSON.parse(JSON.stringify(item))
-          store.setProgress({
-            key: newItem.url,
-            promise: downloadIfRequired(newItem),
-          })
-          console.log('DEBUG 15')
-
-          await store.progress.get(newItem.url)
-          console.log('DEBUG 16')
+          await downloadIfRequired(newItem)
         } else if (path && item.filepath && item.folder && item.safeName) {
-          console.log('DEBUG 17')
-
           const dest = join(path, item.folder, item.safeName)
           if (
             !(await exists(dest)) ||
@@ -247,10 +213,6 @@ export default {
             copy(item.filepath, dest)
           }
         }
-        console.log('DEBUG 18')
-        this.mediaTotals[date].current++
-        this.setProgress(date)
-        console.log('DEBUG 19')
       } else {
         warn(
           'warnFileNotAvailable',
@@ -268,81 +230,52 @@ export default {
         )
       }
     },
-    async syncMedia(
-      dryrun = false,
-      datesToSync: { date: string; type: string }[]
-    ) {
-      if (!dryrun) {
-        // const totalTime = Math.floor(Math.random() * 6) + 5 // random duration between 5 and 10 seconds
-        // const elapsed = 0
-        for (const date of datesToSync) {
-          try {
-            if (!this.syncedMedia.includes(date.date + date.type)) {
-              if (date.type === 'mw') {
-                await getMwMedia(date.date)
-              } else if (date.type === 'we') {
-                await getWeMedia(date.date)
-              }
-              this.syncedMedia.push(date.date + date.type)
-            }
-          } catch (e) {
-            console.error(e)
+    async syncMedia(datesToSync: { date: string; type: string }[]) {
+      const { client } = useCongStore()
+      const congSync = computed(() => !!client)
+      if (congSync.value) {
+        try {
+          // getCongMedia(baseDate.value, now)
+          // need to fix/tweak getCongMedia to get cong media between today and last date
+          // syncCongServerMedia()
+        } catch (e) {
+          error('errorGetCongMedia', e)
+        }
+      }
+      for (const date of datesToSync) {
+        try {
+          if (date.type === 'mw') {
+            await getMwMedia(date.date)
+          } else if (date.type === 'we') {
+            await getWeMedia(date.date)
           }
+          createMediaNames()
+          await this.syncJWMediaByDate(date.date)
+        } catch (e) {
+          console.error(e)
         }
-        console.log('DEBUG 1')
-
-        createMediaNames()
-        /*
-            if (congSync.value) {
-              try {
-                congSyncColor.value = 'warning'
-                getCongMedia(baseDate.value, now)
-                if (dryrun) {
-                  congSyncColor.value = 'success'
-                }
-              } catch (e) {
-                error('errorGetCongMedia', e)
-                congSyncColor.value = 'error'
-              }
-            } */
-        console.log('DEBUG 2')
-
-        if (!dryrun) {
-          // await Promise.allSettled([
-          // syncCongServerMedia(),
-          // syncLocalRecurring(),
-          this.syncAllJWMedia()
-          // ])
+      }
+      // syncLocalRecurringMedia()
+      // need to fix/tweak syncLocalRecurringMedia to get do so between today and last date
+      const mPath = mediaPath()
+      if (mPath) {
+        await convertUnusableFiles(mPath)
+      }
+      const { enableMp4Conversion, enableVlcPlaylistCreation } =
+        getPrefs<MediaPrefs>('media')
+      if (enableMp4Conversion) {
+        try {
+          // await convertToMP4(baseDate.value, now)
+          // need to fix/tweak convertToMP4 to convert files from all folders between today and last date
+        } catch (e: unknown) {
+          log.error(e)
         }
-        console.log('DEBUG 3')
-
-        /*
-        
-            await convertUnusableFiles(mPath, setProgress)
-        
-            const { enableMp4Conversion, enableVlcPlaylistCreation } =
-              getPrefs<MediaPrefs>('media')
-        
-            if (enableMp4Conversion) {
-              statStore.startPerf({ func: 'convertMP4', start: performance.now() })
-              mp4Color.value = 'warning'
-              try {
-                await convertToMP4(baseDate.value, now, setProgress)
-                mp4Color.value = 'success'
-              } catch (e: unknown) {
-                log.error(e)
-                mp4Color.value = 'error'
-              }
-              statStore.stopPerf({ func: 'convertMP4', stop: performance.now() })
-            }
-        
-            if (enableVlcPlaylistCreation) {
-              convertToVLC()
-            }
-*/
+      }
+      if (enableVlcPlaylistCreation) {
+        await convertToVLC()
       }
     },
-    setProgress(date: string) {
+    setProgress(date: string, current: number, total: number) {
       const weekIndex = this.weeks.findIndex((week: any) => {
         return week.some((day: any) => day.date === date)
       })
@@ -352,9 +285,7 @@ export default {
           (day: any) => day.date === date
         )
         if (dayIndex > -1) {
-          this.weeks[weekIndex][dayIndex].progress =
-            (this.mediaTotals[date].current / this.mediaTotals[date].total) *
-            100
+          this.weeks[weekIndex][dayIndex].progress = (current / total) * 100
         }
       }
     },
@@ -372,23 +303,15 @@ export default {
         },
       })
     },
-    syncAllJWMedia() {
-      const { $dayjs } = useNuxtApp()
-      console.log('DEBUG 4')
-
-      const meetings = new Map(
+    async syncJWMediaByDate(meetingDate: string) {
+      const meetingMedia = Object.fromEntries(
         Array.from(useMediaStore().meetings)
           .filter(([date]) => {
-            if (date === 'Recurring') return false
-            const dateObj = $dayjs(
-              date,
-              getPrefs<DateFormat>('app.outputFolderDateFormat')
-            )
-            return dateObj.isValid()
+            return date === meetingDate
           })
           .map(([date, parts]) => [
             date,
-            new Map(
+            Object.fromEntries(
               Array.from(parts).map(([part, media]) => [
                 part,
                 media.filter(
@@ -399,30 +322,28 @@ export default {
             ),
           ])
       )
-      console.log('DEBUG 5')
-
-      this.mediaTotals = Object.fromEntries(
-        Array.from(meetings).map(([date, parts]) => [
-          date,
-          { total: parts.size, current: 0 },
-        ])
+      const totalItems = Object.entries(meetingMedia).reduce(
+        (sum, [, parts]) => {
+          return (
+            sum +
+            Object.entries(parts).reduce((partSum, [, media]) => {
+              return partSum + media.length
+            }, 0)
+          )
+        },
+        0
       )
-      console.log('DEBUG 6')
-
-      for (const [date, parts] of meetings.entries()) {
-        for (const [, media] of parts.entries()) {
+      for (const [date, parts] of Object.entries(meetingMedia)) {
+        let currentItem = 1
+        // this.setProgress(date)
+        for (const [, media] of Object.entries(parts)) {
           for (const item of media) {
-            if (
-              !item.uniqueId ||
-              !this.syncedMedia.includes(date + item.uniqueId)
-            ) {
-              if (item.uniqueId) this.syncedMedia.push(date + item.uniqueId)
-              this.syncMediaItem(date, item)
-            }
+            await this.syncMediaItem(date, item)
+            currentItem++
+            this.setProgress(date, currentItem, totalItems)
           }
         }
       }
-      console.log('DEBUG 7')
     },
   },
 }

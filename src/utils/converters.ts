@@ -70,7 +70,7 @@ export async function convertUnusableFiles(
   })
 
   if (setProgress) initProgress(pdfFiles.length + svgFiles.length)
-
+  console.log('convertUnusableFiles total', pdfFiles.length + svgFiles.length)
   pdfFiles.forEach((pdf) => {
     promises.push(convertPdf(pdf, setProgress))
   })
@@ -125,6 +125,7 @@ function convertSvg(mediaFile: string): void {
   const div = document.createElement('div')
   const image = document.createElement('img')
   const canvas = document.createElement('canvas')
+  div.style.display = 'none'
   div.append(image, canvas)
   document.body.appendChild(div)
 

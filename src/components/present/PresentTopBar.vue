@@ -132,7 +132,6 @@ const emit = defineEmits([
   'cc',
   'previous',
   'next',
-  'refresh',
   'sortable',
   'manageMedia',
   'showPrefix',
@@ -155,14 +154,6 @@ const setCcAvailable = () => {
 onMounted(() => {
   setCcAvailable()
 })
-
-// Refresh media
-const refresh = () => {
-  emit('refresh')
-  setTimeout(() => {
-    setCcAvailable()
-  }, MS_IN_SEC)
-}
 
 // Change meeting date
 const clearDate = () => {
@@ -205,12 +196,6 @@ const actions = [
     title: $i18n.t('manageMedia'),
     icon: 'fa-folder-plus',
     action: () => emit('manageMedia'),
-  },
-  {
-    title: $i18n.t('refresh'),
-    icon: 'fa-rotate-right',
-    action: refresh,
-    disabled: true,
   },
   {
     title: $i18n.t('openFolder'),
