@@ -20,14 +20,10 @@ const sentryInit =
   !!process.env.SENTRY_PROJECT &&
   !!process.env.SENTRY_AUTH_TOKEN
 
-if (
-  sentryInit &&
-  !process.env.SENTRY_DISABLE &&
-  !!process.env.SENTRY_SOURCE_MAPS
-) {
+if (sentryInit && !process.env.SENTRY_DISABLE) {
   vitePlugins.push(
     sentryVitePlugin({
-      dryRun: isDev,
+      dryRun: isDev || !process.env.SENTRY_SOURCE_MAPS,
       telemetry: false,
       include: '.',
       org: process.env.SENTRY_ORG,
