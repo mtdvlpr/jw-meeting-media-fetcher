@@ -31,7 +31,7 @@
           :class="{
             inPast: day.inPast,
           }"
-          @click="!day.inPast && selectDate(day.date)"
+          @click="day.inPast ? null : selectDate(day.date)"
         >
           <v-card-text></v-card-text>
           <progress-bar
@@ -237,7 +237,6 @@ export default {
       const congSync = computed(() => !!client)
       const { enableMp4Conversion, enableVlcPlaylistCreation } =
         getPrefs<MediaPrefs>('media')
-      console.log('datesToSync', datesToSync)
       for (const dateToSync of datesToSync) {
         try {
           if (congSync.value) getCongMediaByDate(dateToSync.date) // need to define this one
@@ -339,16 +338,7 @@ export default {
 .present-select {
   width: 100%;
 }
-
-.notThisMonth {
-  color: blueviolet;
-}
-
-.notRelevant {
-  opacity: 0.5;
-}
-
-.active {
-  cursor: pointer;
+.inPast {
+  cursor: unset;
 }
 </style>
