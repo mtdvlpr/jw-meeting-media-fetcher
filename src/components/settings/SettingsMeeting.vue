@@ -152,7 +152,7 @@
   </v-form>
 </template>
 <script setup lang="ts">
-import { readdir } from 'fs-extra'
+import { ensureDir, readdir } from 'fs-extra'
 import { extname, join } from 'upath'
 import { MeetingPrefs, PrefStore, VFormRef, VideoFile } from '~~/types'
 
@@ -228,6 +228,7 @@ const setShuffleMusicCached = async () => {
     const langDir = isSign ? props.prefs.media.lang : 'E'
     const pubCode = isSign ? 'sjj' : 'sjjm'
     const ext = isSign ? '.mp4' : '.mp3'
+    await ensureDir(join(pPath, '..', langDir, pubCode))
     const folders = await readdir(join(pPath, '..', langDir, pubCode))
     matchingFiles = folders.filter((file) => file.endsWith(ext)).length
   } catch (e) {
