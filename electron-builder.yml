@@ -7,7 +7,7 @@ directories:
   output: build
 files:
   - filter:
-      - .output/**/*
+      - dist
       - dist-electron
 extraResources:
   - from: build/icons/media
