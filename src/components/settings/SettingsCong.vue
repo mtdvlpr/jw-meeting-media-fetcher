@@ -10,7 +10,7 @@
     </v-dialog>
 
     <v-btn color="primary" class="mb-4">
-      {{ $t('hostname') }}
+      {{ $t('server') }}
       <v-menu activator="parent" location="bottom">
         <v-list>
           <v-list-item
@@ -26,7 +26,7 @@
     <form-input
       id="cong.server"
       v-model="cong.server"
-      :label="$t('hostname')"
+      :label="$t('server')"
       prefix="https://"
       :rules="[!complete || error !== 'host' || !online]"
       @blur="submit()"
