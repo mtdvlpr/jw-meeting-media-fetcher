@@ -15,7 +15,69 @@
         />
       </template>
     </v-toolbar>
-    <v-dialog :v-model="forcingPrefs" fullscreen :scrim="false" persistent>
+    <v-dialog v-model="isNew" fullscreen transition="fade-transition">
+      <template #activator="{ props }">
+        <v-btn
+          color="primary"
+          v-bind="props"
+          @click="currentInitialSetting = 0"
+        >
+          Open First Time Wizard
+        </v-btn>
+      </template>
+      <v-card class="h-100">
+        <v-carousel cycle :show-arrows="false" hide-delimiters height="100%">
+          <v-carousel-item v-for="(language, index) in locales" :key="index">
+            <v-sheet color="blue-grey-lighten-5" height="100%">
+              <div
+                class="d-flex fill-height justify-center align-center text-h2 pa-5"
+              >
+                <div>
+                  <!-- eventually show "Welcome" in every language }} -->
+                  {{ language.name }}
+                </div>
+              </div>
+            </v-sheet>
+          </v-carousel-item>
+        </v-carousel>
+        <v-carousel
+          v-model="currentInitialSetting"
+          progress="primary"
+          :show-arrows="false"
+          height="100%"
+          hide-delimiters
+          delimiter-icon="square"
+        >
+          <v-carousel-item v-for="setting in initialSettings" :key="setting">
+            <v-sheet height="100%">
+              <div class="d-flex fill-height justify-center align-center">
+                <div>{{ setting }}</div>
+                <div>
+                  <v-btn
+                    class="ma-3"
+                    @click="
+                      initialSettingsDone
+                        ? (isNew = false)
+                        : currentInitialSetting++
+                    "
+                  >
+                    {{ initialSettingsDone ? 'Explore more settings' : 'Next' }}
+                  </v-btn>
+                  <v-btn
+                    v-if="initialSettingsDone"
+                    class="ma-3"
+                    @click="isNew = false"
+                  >
+                    Go to media calendar
+                  </v-btn>
+                </div>
+              </div>
+            </v-sheet>
+          </v-carousel-item>
+        </v-carousel>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="forcingPrefs" fullscreen :scrim="false" persistent>
       <cong-forced-prefs @done="forcingPrefs = false" />
     </v-dialog>
     <v-row no-gutters justify="center" class="fill-height settings">
@@ -61,7 +123,6 @@
 import { ipcRenderer } from 'electron'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { extname, join } from 'upath'
-
 import { readFile } from 'fs-extra'
 import {
   Action,
@@ -74,7 +135,25 @@ import {
   VFormRef,
   VideoFile,
 } from '~~/types'
-
+const { $i18n, $dayjs } = useNuxtApp()
+const locales = $i18n.locales.value as LocaleObject[]
+const isNew = ref(true) // eventually, actually get the real value here
+const initialSettings = [
+  'Lorem ipsum',
+  'dolor sit',
+  'amet consectetur',
+  'adipiscing elit',
+  'sed do',
+  'eiusmod tempor',
+  'incididunt ut',
+  'labore et',
+  'dolore magna',
+  'aliqua. Ut',
+]
+const currentInitialSetting = ref(0)
+const initialSettingsDone = ref(
+  computed(() => currentInitialSetting.value === initialSettings.length - 1)
+)
 useHead({ title: 'Settings' })
 const { setTheme } = useTheme()
 const { online } = useOnline()
@@ -178,7 +257,6 @@ onMounted(() => {
 
 // Prefs
 const filter = ref('')
-const { $i18n, $dayjs } = useNuxtApp()
 const prefs = ref({ ...(getAllPrefs() ?? PREFS) })
 const updatePrefs = (key: string, value: any) => {
   prefs.value = setPrefs(key, value)
