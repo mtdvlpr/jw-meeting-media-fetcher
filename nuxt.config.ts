@@ -91,10 +91,16 @@ export default defineNuxtConfig({
     locales: LOCALES,
     types: 'composition',
     detectBrowserLanguage: false,
-    precompile: {
+    vueI18n: {
+      legacy: false,
+      fallbackLocale: 'en',
+      warnHtmlMessage: false,
+      warnHtmlInMessage: 'off',
+    },
+    /* precompile: {
       strictMessage: false,
       escapeHtml: true,
-    },
+    }, */
   },
   vite: {
     root: process.cwd(), // Fix for: https://github.com/electron-vite/vite-plugin-electron-renderer/issues/32

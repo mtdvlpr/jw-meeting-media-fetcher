@@ -5216,7 +5216,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.17.16, esbuild@npm:^0.17.5":
+"esbuild@npm:^0.17.16, esbuild@npm:^0.17.17, esbuild@npm:^0.17.5":
   version: 0.17.17
   resolution: "esbuild@npm:0.17.17"
   dependencies:
@@ -8233,7 +8233,7 @@ __metadata:
     electron-store: ^8.1.0
     electron-updater: ^5.3.0
     electron-window-state: ^5.0.3
-    esbuild: ^0.17.16
+    esbuild: ^0.17.17
     eslint: ^8.38.0
     eslint-config-prettier: ^8.8.0
     eslint-plugin-prettier: ^4.2.1
