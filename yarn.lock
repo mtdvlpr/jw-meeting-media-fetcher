@@ -8260,9 +8260,9 @@ __metadata:
     ts-node: ^10.9.1
     typescript: ^5.0.4
     upath: ^2.0.1
-    vite: ^4.2.1
+    vite: ^4.2.2
     vite-electron-plugin: ^0.8.2
-    vite-plugin-electron-renderer: ^0.13.14
+    vite-plugin-electron-renderer: ^0.14.1
     vite-plugin-vuetify: ^1.0.2
     vue: ^3.2.47
     vue-router: ^4.1.6
@@ -12273,12 +12273,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-electron-renderer@npm:^0.13.14":
-  version: 0.13.14
-  resolution: "vite-plugin-electron-renderer@npm:0.13.14"
+"vite-plugin-electron-renderer@npm:^0.14.1":
+  version: 0.14.1
+  resolution: "vite-plugin-electron-renderer@npm:0.14.1"
   dependencies:
     lib-esm: ~0.3.0
-  checksum: fdeb874139d4e3809a9a2257ff5c3f723871bf58346d4720fbbeb979c211a8f2209d33a8899e85567080d0c77954d0b6efcb1c18191262406315102f2630243b
+  checksum: 45c4cdcb8179bac824fc2116f110880904a5f8be850ed7f1e88af530296197512860b4a6cee0c49854ade73616f287fc205ec812c0aa4eba5f5ac931c05da890
   languageName: node
   linkType: hard
 
@@ -12303,9 +12303,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^3.0.0 || ^4.0.0, vite@npm:^4.2.1, vite@npm:~4.2.1":
-  version: 4.2.1
-  resolution: "vite@npm:4.2.1"
+"vite@npm:^3.0.0 || ^4.0.0, vite@npm:^4.2.2, vite@npm:~4.2.1":
+  version: 4.2.2
+  resolution: "vite@npm:4.2.2"
   dependencies:
     esbuild: ^0.17.5
     fsevents: ~2.3.2
@@ -12337,7 +12337,7 @@ __metadata:
       optional: true
   bin:
     vite: bin/vite.js
-  checksum: 70eb162ffc299017a3c310e3adc95e9661def6b17aafd1f8e5e02e516766060435590dbe3df1e4e95acc3583c728a76e91f07c546221d1e701f1b2b021293f45
+  checksum: 7fff9d046f6091c02e030aa5f45e68939b9bec1dd15d4e2c3c084d82ec185300295f3db26f537daf2e19f9ad191be260bf70e5fe0e2d9054f174a7ad457623f8
   languageName: node
   linkType: hard
 

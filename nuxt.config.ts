@@ -6,8 +6,14 @@ import { repository, version } from './package.json'
 import { appLongName } from './src/constants/general'
 import { LOCALES } from './src/constants/lang'
 
-const vitePlugins: PluginOption[] = []
 const isDev = process.env.NODE_ENV === 'development'
+
+const ignorePages: string[] = []
+if (!isDev) {
+  ignorePages.push(...['/presentnew', '/settingsnew'])
+}
+
+const vitePlugins: PluginOption[] = []
 const sentryInit =
   !!process.env.SENTRY_DSN &&
   !!process.env.SENTRY_ORG &&
@@ -71,7 +77,7 @@ export default defineNuxtConfig({
           resolve:
             process.env.NODE_ENV === 'development'
               ? {
-                  'fs-extra': () => ({ platform: 'node' }),
+                  'fs-extra': { type: 'cjs' },
                 }
               : undefined,
         },
@@ -113,6 +119,11 @@ export default defineNuxtConfig({
       exclude: ['@stephen/sql.js'],
     },
     plugins: vitePlugins,
+  },
+  nitro: {
+    prerender: {
+      ignore: ignorePages,
+    },
   },
   runtimeConfig: {
     public: {
