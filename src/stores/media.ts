@@ -9,6 +9,7 @@ interface MediaStore {
   musicFadeOut: Dayjs | string
   meetings: Map<string, Map<number, MeetingFile[]>>
   progress: Map<string, Promise<string>>
+  downloadProgress: Map<string, { current: number; total: number }>
 }
 
 const defaultState: MediaStore = {
@@ -19,6 +20,7 @@ const defaultState: MediaStore = {
   fallbackLang: null, // The fallback language object
   meetings: new Map(), // A map of meetings and their media
   progress: new Map(), // A map with downloadIfRequired() calls. If a file is already downloading, it will be returned from the map
+  downloadProgress: new Map(),
 }
 
 export const useMediaStore = defineStore('media', {
@@ -41,6 +43,23 @@ export const useMediaStore = defineStore('media', {
     },
     setProgress({ key, promise }: { key: string; promise: Promise<string> }) {
       this.progress.set(key, promise)
+    },
+    setDownloadProgress(
+      key: string,
+      downloadProgress: { current: number; total: number }
+    ) {
+      this.downloadProgress.set(key, downloadProgress)
+      const progressArray = Array.from(useMediaStore().downloadProgress)
+      console.log(
+        'Download Progress',
+        progressArray,
+        progressArray.reduce((acc, [, value]) => {
+          return acc + value.current
+        }, 0),
+        progressArray.reduce((acc, [, value]) => {
+          return acc + value.total
+        }, 0)
+      )
     },
     addDate({ date, map }: { date: string; map: Map<number, MeetingFile[]> }) {
       this.meetings.set(date, map)

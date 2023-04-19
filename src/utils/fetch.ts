@@ -71,12 +71,11 @@ export async function fetchResource<T>(
 }
 
 function progress(progress: { url: string; loaded: any; total: any }) {
-  console.log(
-    progress.url,
-    progress.loaded,
-    progress.total,
-    Math.round((progress.loaded / progress.total) * 100) + '%'
-  )
+  const store = useMediaStore()
+  store.setDownloadProgress(progress.url, {
+    current: progress.loaded,
+    total: progress.total,
+  })
 }
 
 export const fetchPublication = async (options: any) => {

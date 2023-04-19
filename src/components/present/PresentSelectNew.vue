@@ -1,6 +1,12 @@
 <template>
   <!-- <loading-icon v-if="loading" /> -->
   <v-container class="calendar present-select pa-4 grow">
+    <v-progress-linear
+      v-model="globalDownloadProgress.percent"
+      color="primary"
+    ></v-progress-linear>
+    {{ globalDownloadProgress }}
+    {{ globalDownloadProgress.percent }}
     <v-row no-gutters>
       <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">
         <v-card :subtitle="day" variant="tonal" color="grey"></v-card>
@@ -67,12 +73,25 @@ export default {
           nonMeetingMedia: boolean | number
           inPast: boolean
           progress: number
+          urls: string[]
         }>
       >,
       today: this.$dayjs().startOf('day'),
     }
   },
-
+  computed: {
+    globalDownloadProgress() {
+      const progressArray = Array.from(useMediaStore().downloadProgress)
+      const current = progressArray.reduce((acc, [, value]) => {
+        return acc + value.current
+      }, 0)
+      const total = progressArray.reduce((acc, [, value]) => {
+        return acc + value.total
+      }, 0)
+      const percent = (current / total) * 100
+      return { current, total, percent }
+    },
+  },
   mounted() {
     const { $dayjs } = useNuxtApp()
 
@@ -120,6 +139,7 @@ export default {
               ).length,
             inPast: date.isBefore(todayDate),
             progress: 0,
+            urls: [],
           })
           currentDay = currentDay.add(1, 'day')
         }
@@ -127,7 +147,7 @@ export default {
       }
       const lastPage = useRouter().options.history.state.back?.toString()
       if (!lastPage || !lastPage.includes('present')) {
-        this.syncMedia(this.weeks.flat())
+        this.syncMedia(this.weeks)
         if (
           (todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
           (todayDate.day() + 6) % 7 === weDay
@@ -139,9 +159,10 @@ export default {
   },
   methods: {
     async syncMediaItem(date: string, item: MeetingFile) {
+      const day = this.weeks.find((w: any[]) => w.find((d) => d.date === date))
       if (item.filesize && (item.url || item.filepath)) {
         log.info(
-          `%c[jwOrg] [${date}] ${item.safeName}`,
+          `%c[jwOrg] [${day![0].date}] ${item.safeName}`,
           'background-color: #cce5ff; color: #004085;'
         )
         // Set markers for sign language videos
@@ -195,6 +216,7 @@ export default {
         } else if (item.url) {
           const newItem = JSON.parse(JSON.stringify(item))
           await downloadIfRequired(newItem)
+          day![0].urls.push(item.url)
         } else if (path && item.filepath && item.folder && item.safeName) {
           const dest = join(path, item.folder, item.safeName)
           if (
@@ -222,7 +244,7 @@ export default {
       }
     },
     async syncMedia(
-      datesToSync: {
+      weeks: {
         date: string
         dayOfMonth: string
         month: string
@@ -231,27 +253,27 @@ export default {
         nonMeetingMedia: number | boolean
         inPast: boolean
         progress: number
-      }[]
+        urls?: string[] | undefined
+      }[][]
     ) {
       const { client } = useCongStore()
       const congSync = computed(() => !!client)
       const { enableMp4Conversion, enableVlcPlaylistCreation } =
         getPrefs<MediaPrefs>('media')
-      for (const dateToSync of datesToSync) {
-        try {
-          if (congSync.value) getCongMediaByDate(dateToSync.date) // need to define this one
-          if (dateToSync.meetingType)
-            await this.syncJWMediaByDate(
-              dateToSync.date,
-              dateToSync.meetingType
-            )
-          await syncLocalRecurringMediaByDate(dateToSync.date)
-          await convertUnusableFilesByDate(dateToSync.date)
-          if (enableMp4Conversion) await convertToMP4ByDate(dateToSync.date)
-          if (enableVlcPlaylistCreation)
-            await convertToVLCByDate(dateToSync.date)
-        } catch (e) {
-          console.error(e)
+      for (const week of weeks) {
+        for (const day of week) {
+          try {
+            if (congSync.value) getCongMediaByDate(day.date) // need to define this one
+            if (day.meetingType)
+              await this.syncJWMediaByDate(day.date, day.meetingType)
+            await syncLocalRecurringMediaByDate(day.date)
+            await convertUnusableFilesByDate(day.date)
+            if (enableMp4Conversion) await convertToMP4ByDate(day.date)
+            if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
+          } catch (e) {
+            console.error(e)
+          }
+          console.log(day.urls)
         }
       }
     },
