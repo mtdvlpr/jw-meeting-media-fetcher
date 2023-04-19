@@ -166,9 +166,7 @@ export async function getSmallMediaFiles(
     }
 
     try {
-      result = await fetchPublication('', {
-        params,
-      })
+      result = await fetchPublication(params)
     } catch (e: any) {
       if (!silent && !fallbackLang) {
         log.error(e)
@@ -181,14 +179,12 @@ export async function getSmallMediaFiles(
         }
         log.debug('result1', result ?? e.message)
 
-        result = await fetchPublication('', {
-          params: {
-            pub: mediaItem.pubSymbol + 'm',
-            track: mediaItem.track,
-            issue: mediaItem.issue,
-            fileformat: mediaItem.format,
-            langwritten: mediaLang,
-          },
+        result = await fetchPublication({
+          pub: mediaItem.pubSymbol + 'm',
+          track: mediaItem.track,
+          issue: mediaItem.issue,
+          fileformat: mediaItem.format,
+          langwritten: mediaLang,
         })
       } catch (e: any) {
         log.debug('result2', result ?? e.message)
@@ -197,11 +193,9 @@ export async function getSmallMediaFiles(
             params.pub = fallbackObj?.isSignLanguage ? 'sjj' : 'sjjm'
           }
           try {
-            result = await fetchPublication('', {
-              params: {
-                ...params,
-                langwritten: fallbackLang,
-              },
+            result = await fetchPublication({
+              ...params,
+              langwritten: fallbackLang,
             })
           } catch (e: any) {
             if (!silent) {
@@ -215,14 +209,12 @@ export async function getSmallMediaFiles(
               }
               log.debug('result3', result ?? e.message)
 
-              result = await fetchPublication('', {
-                params: {
-                  pub: mediaItem.pubSymbol + 'm',
-                  track: mediaItem.track,
-                  issue: mediaItem.issue,
-                  fileformat: mediaItem.format,
-                  langwritten: fallbackLang,
-                },
+              result = await fetchPublication({
+                pub: mediaItem.pubSymbol + 'm',
+                track: mediaItem.track,
+                issue: mediaItem.issue,
+                fileformat: mediaItem.format,
+                langwritten: fallbackLang,
               })
             } catch (e: any) {
               log.debug('result4', result ?? e.message)

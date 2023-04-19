@@ -149,9 +149,7 @@ useIpcRendererOn('macUpdate', async (_e, version) => {
       downloadsPath,
       Buffer.from(
         new Uint8Array(
-          await $fetch<Iterable<number>>(macDownload.browser_download_url, {
-            responseType: 'arrayBuffer',
-          })
+          await fetchResource('arrayBuffer', macDownload.browser_download_url)
         )
       )
     )

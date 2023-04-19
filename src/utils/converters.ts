@@ -329,9 +329,10 @@ async function setupFFmpeg(
     target = 'osx-64'
   }
 
-  const result = await $fetch<Release>(
+  const result = (await fetchResource(
+    'json',
     'https://api.github.com/repos/vot/ffbinaries-prebuilt/releases/latest'
-  )
+  )) as Release
   const version = result.assets.filter(
     (a) => a.name.includes(target) && a.name.includes('ffmpeg')
   )[0]
@@ -346,10 +347,7 @@ async function setupFFmpeg(
       zipPath,
       Buffer.from(
         new Uint8Array(
-          await $fetch<Iterable<number>>(version.browser_download_url, {
-            responseType: 'arrayBuffer',
-            // onDownloadProgress: (e) => setProgress(e.loaded, e.total),
-          })
+          await fetchResource('arrayBuffer', version.browser_download_url)
         )
       )
     )

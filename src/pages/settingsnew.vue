@@ -144,11 +144,6 @@ const initialSettings = [
   'amet consectetur',
   'adipiscing elit',
   'sed do',
-  'eiusmod tempor',
-  'incididunt ut',
-  'labore et',
-  'dolore magna',
-  'aliqua. Ut',
 ]
 const currentInitialSetting = ref(0)
 const initialSettingsDone = ref(

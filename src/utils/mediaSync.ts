@@ -125,9 +125,7 @@ export async function downloadIfRequired(
 
   if (subtitlesEnabled && subsLang && file.subtitles) {
     try {
-      subtitle = $fetch<Iterable<number>>(file.subtitles.url, {
-        responseType: 'arrayBuffer',
-      })
+      subtitle = fetchResource('arrayBuffer', file.subtitles.url)
     } catch (e) {
       warn('errorDownloadSubs', { identifier: file.destFilename }, e)
     }
@@ -137,16 +135,7 @@ export async function downloadIfRequired(
   if (file.downloadRequired) {
     try {
       const downloadedFile = Buffer.from(
-        new Uint8Array(
-          await $fetch<Iterable<number>>(file.url, {
-            responseType: 'arrayBuffer',
-            /* onDownloadProgress: (progressEvent) => {
-              if (setProgress) {
-                setProgress(progressEvent.loaded, progressEvent.total)
-              }
-            }, */
-          })
-        )
+        new Uint8Array(await fetchResource('arrayBuffer', file.url))
       )
 
       if (extname(file.cacheFile) === '.jwpub') {

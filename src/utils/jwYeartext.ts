@@ -1,5 +1,5 @@
-// eslint-disable-next-line import/named
 import { readFile, stat, pathExists } from 'fs-extra'
+import { JsonObjectExpression } from 'typescript'
 import { WT_CLEARTEXT_FONT, JW_ICONS_FONT } from '~/constants/general'
 
 export async function getYearText(
@@ -17,15 +17,14 @@ export async function getYearText(
   if (force || !(await pathExists(path))) {
     log.debug('Fetching yeartext', wtlocale)
     try {
-      const result = await $fetch<{ content: string; message: string }>(
+      const result = await fetchResource(
+        'json',
         'https://wol.jw.org/wol/finder',
         {
-          params: {
-            docid: `110${new Date().getFullYear()}800`,
-            wtlocale,
-            format: 'json',
-            snip: 'yes',
-          },
+          docid: `110${new Date().getFullYear()}800`,
+          wtlocale,
+          format: 'json',
+          snip: 'yes',
         }
       )
 
@@ -77,10 +76,7 @@ async function getWtFont(font: string, force = false) {
 
   if (!force) {
     try {
-      const result = await $fetch.raw(font, {
-        method: 'HEAD',
-      })
-
+      const result = await fetchHead(font)
       size = +(result.headers.get('content-length') ?? 0)
     } catch (e) {
       log.error(e)
@@ -93,9 +89,7 @@ async function getWtFont(font: string, force = false) {
     (await stat(fontPath)).size !== size
   ) {
     try {
-      const result = await $fetch<ArrayBuffer | Uint8Array>(font, {
-        responseType: 'arrayBuffer',
-      })
+      const result = await fetchResource('arrayBuffer', font)
       if (result instanceof ArrayBuffer || result instanceof Uint8Array) {
         write(fontPath, Buffer.from(new Uint8Array(result)))
       } else {
