@@ -165,7 +165,7 @@ import { basename, changeExt, join } from 'upath'
 import type { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRenderer } from '@vueuse/electron'
 
-import { exists, readFile } from 'fs-extra'
+import { pathExists, readFile } from 'fs-extra'
 import { Marker, Times, TimeString, VideoFile } from '~~/types'
 import { PanzoomChangeEvent } from '~~/types/global'
 
@@ -184,7 +184,7 @@ onMounted(async () => {
 
   // Streaming song
   if (props.streamingFile) {
-    streamDownloaded.value = await exists(localStreamPath.value)
+    streamDownloaded.value = await pathExists(localStreamPath.value)
     if (!streamDownloaded.value) {
       downloadSong()
     }
@@ -274,7 +274,7 @@ const downloadSong = async () => {
   downloading.value = true
   await downloadIfRequired(props.streamingFile)
   downloading.value = false
-  streamDownloaded.value = await exists(localStreamPath.value)
+  streamDownloaded.value = await pathExists(localStreamPath.value)
 }
 
 // Play media
@@ -417,7 +417,7 @@ watch(
 // Get sign language video markers
 const markers = ref<Marker[]>([])
 const getMarkers = async () => {
-  if (isImage(props.src) || !(await exists(changeExt(props.src, 'json'))))
+  if (isImage(props.src) || !(await pathExists(changeExt(props.src, 'json'))))
     return
   const { $dayjs } = useNuxtApp()
   const markerArray = JSON.parse(

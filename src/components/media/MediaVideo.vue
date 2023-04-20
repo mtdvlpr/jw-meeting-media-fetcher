@@ -85,7 +85,7 @@
 import { pathToFileURL } from 'url'
 import { basename, changeExt } from 'upath'
 import type { Duration } from 'dayjs/plugin/duration'
-import { exists } from 'fs-extra'
+import { pathExists } from 'fs-extra'
 import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import { useRouteQuery } from '@vueuse/router'
 import { Time, Times, TimeString } from '~~/types'
@@ -223,7 +223,7 @@ const toggleSubtitles = (enabled: boolean, toggle = false) => {
 const setCCAvailable = async () => {
   ccAvailable.value =
     getPrefs<boolean>('media.enableSubtitles') &&
-    (await exists(changeExt(props.src, 'vtt')))
+    (await pathExists(changeExt(props.src, 'vtt')))
 }
 
 // Custom start/end times
