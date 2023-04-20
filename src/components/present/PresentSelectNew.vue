@@ -314,26 +314,39 @@ export default {
       const congSync = computed(() => !!client)
       const { enableMp4Conversion, enableVlcPlaylistCreation } =
         getPrefs<MediaPrefs>('media')
-      for (const week of weeks) {
-        for (const day of week) {
-          try {
-            console.log('getCongMediaByDate')
-            if (congSync.value) getCongMediaByDate(day.date) // need to define this one
-            console.log('syncJWMediaByDate')
-            if (day.meetingType)
-              await this.syncJWMediaByDate(day.date, day.meetingType)
-            console.log('syncLocalRecurringMediaByDate')
-            await syncLocalRecurringMediaByDate(day.date)
-            console.log('convertUnusableFilesByDate')
-            await convertUnusableFilesByDate(day.date)
-            if (enableMp4Conversion) await convertToMP4ByDate(day.date)
-            if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
-          } catch (e) {
-            console.error(e)
-          }
-          console.log(day.urls)
-        }
-      }
+      // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
+      // for (const week of weeks) {
+      //   await Promise.all(
+      //     week.map(async (day) => {
+      //       if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
+      //       if (day.meetingType)
+      //         await this.syncJWMediaByDate(day.date, day.meetingType)
+      //       await syncLocalRecurringMediaByDate(day.date)
+      //       await convertUnusableFilesByDate(day.date)
+      //       if (enableMp4Conversion) await convertToMP4ByDate(day.date)
+      //       if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
+      //     })
+      //   )
+      // }
+
+      // THIS IS IF WE WANT ALL WEEKS TO BE ASYNC
+      await Promise.all(
+        weeks.map(
+          async (week) =>
+            await Promise.all(
+              week.flatMap(async (day) => {
+                if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
+                if (day.meetingType)
+                  await this.syncJWMediaByDate(day.date, day.meetingType)
+                await syncLocalRecurringMediaByDate(day.date)
+                await convertUnusableFilesByDate(day.date)
+                if (enableMp4Conversion) await convertToMP4ByDate(day.date)
+                if (enableVlcPlaylistCreation)
+                  await convertToVLCByDate(day.date)
+              })
+            )
+        )
+      )
     },
     validDate(date: string) {
       return this.$dayjs(
