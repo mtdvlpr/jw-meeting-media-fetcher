@@ -302,13 +302,7 @@ async function syncMediaItem(
       })
       await store.progress.get(newItem.url)
     } else if (path && item.filepath && item.folder && item.safeName) {
-      const dest = join(path, item.folder, item.safeName)
-      if (
-        !(await pathExists(dest)) ||
-        (await stat(dest)).size !== item.filesize
-      ) {
-        copy(item.filepath, dest)
-      }
+      copy(item.filepath, join(path, item.folder, item.safeName))
     }
   } else {
     warn(
