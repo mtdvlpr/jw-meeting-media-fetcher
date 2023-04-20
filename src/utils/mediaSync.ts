@@ -126,11 +126,11 @@ export async function downloadIfRequired(
       if (extname(file.cacheFile) === '.jwpub') {
         await emptyDir(file.cacheDir)
       }
-      const filePath = mediaPath(file)
+      const filePath = file.folder ? mediaPath(file) : undefined
       const destinations = [file.cacheFile]
-      if (file.folder && filePath) destinations.push(filePath)
+      if (filePath) destinations.push(filePath)
       await fetchFile(file.url, destinations)
-      if (file.folder && filePath) {
+      if (filePath) {
         if (subtitlesEnabled && subsLang && file.subtitles) {
           try {
             await fetchFile(file.subtitles.url, changeExt(filePath, 'vtt'))

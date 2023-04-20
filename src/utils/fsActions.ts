@@ -1,7 +1,6 @@
 /* eslint-disable import/named */
 import {
   writeFileSync,
-  copyFileSync,
   existsSync,
   renameSync,
   readdirSync,
@@ -12,6 +11,8 @@ import {
   remove,
   stat,
   readdir,
+  ensureFile,
+  copyFile,
 } from 'fs-extra'
 import { sync, type Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
@@ -66,24 +67,23 @@ export function write(file: string, data: string | NodeJS.ArrayBufferView) {
   }
 }
 
-export function copy(src: string, dest: string) {
+export async function copy(src: string, dest: string) {
   try {
-    ensureFileSync(dest)
-    copyFileSync(src, dest)
-    // const srcSize = statSync(src).size
-    // const destSize = statSync(dest).size
-    // const store = useMediaStore()
-    // store.setDownloadProgress(dest, {
-    //   current: 0,
-    //   total: destSize,
-    // })
-    // if (srcSize === destSize) {
-    //   store.setDownloadProgress(dest, {
-    //     current: destSize,
-    //     total: destSize,
-    //   })
-    //   return
-    // }
+    await ensureFile(dest)
+    const srcSize = (await stat(src)).size
+    const destSize = (await stat(dest)).size
+    const store = useMediaStore()
+    store.setDownloadProgress(dest, {
+      current: 0,
+      total: destSize,
+    })
+    if (srcSize !== destSize) {
+      await copyFile(src, dest)
+    }
+    store.setDownloadProgress(dest, {
+      current: srcSize,
+      total: destSize,
+    })
     // const wstream = createWriteStream(dest)
     // const rstream = createReadStream(src)
     // let progress = 0

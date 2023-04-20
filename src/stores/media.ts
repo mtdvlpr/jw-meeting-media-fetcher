@@ -49,17 +49,6 @@ export const useMediaStore = defineStore('media', {
       downloadProgress: { current: number; total: number }
     ) {
       this.downloadProgress.set(key, downloadProgress)
-      const progressArray = Array.from(useMediaStore().downloadProgress)
-      console.log(
-        'Download Progress',
-        progressArray,
-        progressArray.reduce((acc, [, value]) => {
-          return acc + value.current
-        }, 0),
-        progressArray.reduce((acc, [, value]) => {
-          return acc + value.total
-        }, 0)
-      )
     },
     addDate({ date, map }: { date: string; map: Map<number, MeetingFile[]> }) {
       this.meetings.set(date, map)
