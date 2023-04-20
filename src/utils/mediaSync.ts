@@ -118,43 +118,27 @@ export async function downloadIfRequired(
   if (await pathExists(file.cacheFile)) {
     file.downloadRequired = file.filesize !== (await stat(file.cacheFile)).size
   }
-
   const subtitlesEnabled = getPrefs<boolean>('media.enableSubtitles')
   const subsLang = getPrefs<string>('media.langSubs')
-  let subtitle: Promise<Iterable<number>> | null = null
-
-  if (subtitlesEnabled && subsLang && file.subtitles) {
-    try {
-      subtitle = fetchResource('arrayBuffer', file.subtitles.url)
-    } catch (e) {
-      warn('errorDownloadSubs', { identifier: file.destFilename }, e)
-    }
-  }
-
   const statStore = useStatStore()
   if (file.downloadRequired) {
     try {
-      const downloadedFile = Buffer.from(
-        new Uint8Array(await fetchResource('arrayBuffer', file.url))
-      )
-
       if (extname(file.cacheFile) === '.jwpub') {
         await emptyDir(file.cacheDir)
       }
-      write(file.cacheFile, downloadedFile)
-
-      if (file.folder) {
-        const filePath = mediaPath(file)
-        if (filePath) {
-          write(filePath, downloadedFile)
-          if (subtitle) {
-            write(
-              changeExt(filePath, 'vtt'),
-              Buffer.from(new Uint8Array(await subtitle))
-            )
-          } else {
-            rm(changeExt(filePath, 'vtt'))
+      const filePath = mediaPath(file)
+      const destinations = [file.cacheFile]
+      if (file.folder && filePath) destinations.push(filePath)
+      await fetchFile(file.url, destinations)
+      if (file.folder && filePath) {
+        if (subtitlesEnabled && subsLang && file.subtitles) {
+          try {
+            await fetchFile(file.subtitles.url, changeExt(filePath, 'vtt'))
+          } catch (e) {
+            warn('errorDownloadSubs', { identifier: file.destFilename }, e)
           }
+        } else {
+          rm(changeExt(filePath, 'vtt'))
         }
       }
       statStore.setDownloads({
@@ -173,11 +157,12 @@ export async function downloadIfRequired(
       const filePath = mediaPath(file)
       if (filePath) {
         copy(file.cacheFile, filePath)
-        if (subtitle) {
-          write(
-            changeExt(filePath, 'vtt'),
-            Buffer.from(new Uint8Array(await subtitle))
-          )
+        if (subtitlesEnabled && subsLang && file.subtitles) {
+          try {
+            await fetchFile(file.subtitles.url, changeExt(filePath, 'vtt'))
+          } catch (e) {
+            warn('errorDownloadSubs', { identifier: file.destFilename }, e)
+          }
         } else {
           rm(changeExt(filePath, 'vtt'))
         }

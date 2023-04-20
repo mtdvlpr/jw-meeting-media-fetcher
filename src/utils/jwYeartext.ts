@@ -1,5 +1,4 @@
 import { readFile, stat, pathExists } from 'fs-extra'
-import { JsonObjectExpression } from 'typescript'
 import { WT_CLEARTEXT_FONT, JW_ICONS_FONT } from '~/constants/general'
 
 export async function getYearText(
@@ -17,8 +16,7 @@ export async function getYearText(
   if (force || !(await pathExists(path))) {
     log.debug('Fetching yeartext', wtlocale)
     try {
-      const result = await fetchResource(
-        'json',
+      const result: { content: any } = await fetchJson(
         'https://wol.jw.org/wol/finder',
         {
           docid: `110${new Date().getFullYear()}800`,
@@ -89,12 +87,7 @@ async function getWtFont(font: string, force = false) {
     (await stat(fontPath)).size !== size
   ) {
     try {
-      const result = await fetchResource('arrayBuffer', font)
-      if (result instanceof ArrayBuffer || result instanceof Uint8Array) {
-        write(fontPath, Buffer.from(new Uint8Array(result)))
-      } else {
-        log.error(result)
-      }
+      await fetchFile(font, fontPath)
     } catch (e) {
       log.error(e)
     }

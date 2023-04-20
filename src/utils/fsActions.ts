@@ -70,6 +70,34 @@ export function copy(src: string, dest: string) {
   try {
     ensureFileSync(dest)
     copyFileSync(src, dest)
+    // const srcSize = statSync(src).size
+    // const destSize = statSync(dest).size
+    // const store = useMediaStore()
+    // store.setDownloadProgress(dest, {
+    //   current: 0,
+    //   total: destSize,
+    // })
+    // if (srcSize === destSize) {
+    //   store.setDownloadProgress(dest, {
+    //     current: destSize,
+    //     total: destSize,
+    //   })
+    //   return
+    // }
+    // const wstream = createWriteStream(dest)
+    // const rstream = createReadStream(src)
+    // let progress = 0
+    // rstream.on('data', function (chunk) {
+    //   progress += chunk.length
+    //   store.setDownloadProgress(dest, {
+    //     current: progress,
+    //     total: destSize,
+    //   })
+    // })
+    // rstream.on('end', function () {
+    //   console.log('CHUNKER DONE')
+    // })
+    // rstream.pipe(wstream)
   } catch (e) {
     warn('errorSetVars', { identifier: dirname(dest) }, e)
   }

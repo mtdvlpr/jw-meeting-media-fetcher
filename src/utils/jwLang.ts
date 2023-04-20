@@ -12,11 +12,9 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
 
   if (forceReload || !(await pathExists(langPath)) || !recentlyUpdated) {
     try {
-      const result = await fetchResource<{ languages: JWLang[] }>(
-        'json',
+      const result = await fetchJson<{ languages: JWLang[] }>(
         'https://www.jw.org/en/languages'
       )
-
       if (result.languages) {
         const langs: ShortJWLang[] = result.languages
           .filter((lang) => lang.hasWebContent)
@@ -44,7 +42,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   }
 
   if (!(await pathExists(langPath))) {
-    return getJWLangs(true)
+    return await getJWLangs(true)
   }
 
   let langs: ShortJWLang[] = []

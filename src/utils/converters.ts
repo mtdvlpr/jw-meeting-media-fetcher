@@ -329,10 +329,9 @@ async function setupFFmpeg(
     target = 'osx-64'
   }
 
-  const result = (await fetchResource(
-    'json',
+  const result = await fetchJson<Release>(
     'https://api.github.com/repos/vot/ffbinaries-prebuilt/releases/latest'
-  )) as Release
+  )
   const version = result.assets.filter(
     (a) => a.name.includes(target) && a.name.includes('ffmpeg')
   )[0]
@@ -343,14 +342,7 @@ async function setupFFmpeg(
     (await stat(zipPath)).size !== version.size
   ) {
     rm(join(ffMpegPath, 'zip'))
-    write(
-      zipPath,
-      Buffer.from(
-        new Uint8Array(
-          await fetchResource('arrayBuffer', version.browser_download_url)
-        )
-      )
-    )
+    await fetchFile(version.browser_download_url, zipPath)
   }
 
   const { default: JSZip } = await import('jszip')

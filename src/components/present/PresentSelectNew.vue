@@ -4,9 +4,10 @@
     <v-progress-linear
       v-model="globalDownloadProgress.percent"
       color="primary"
+      stream
     ></v-progress-linear>
     {{ globalDownloadProgress }}
-    {{ globalDownloadProgress.percent }}
+    {{ daysDownloadProgress }}
     <v-row no-gutters>
       <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">
         <v-card :subtitle="day" variant="tonal" color="grey"></v-card>
@@ -40,6 +41,18 @@
           @click="day.inPast ? null : selectDate(day.date)"
         >
           <v-card-text></v-card-text>
+          <v-progress-linear
+            v-if="daysDownloadProgress[day.date]"
+            v-model="daysDownloadProgress[day.date].percent"
+            color="red"
+            stream
+          ></v-progress-linear>
+          <!-- <v-progress-linear
+            v-if="daysProgress[day.date]"
+            v-model="daysProgress[day.date].percent"
+            color="yellow"
+            stream
+          ></v-progress-linear> -->
           <progress-bar
             :current="0"
             :total="day.progress"
@@ -54,10 +67,16 @@
 <script lang="ts">
 import { basename, changeExt, extname, join } from 'upath'
 
-import { stat, exists } from 'fs-extra'
+import { stat } from 'fs-extra'
 import weekday from 'dayjs/plugin/weekday'
 import { MediaPrefs, MeetingFile, DateFormat } from '~~/types'
-
+type ProgressObject = {
+  [key: string]: {
+    current: number
+    total: number
+    percent: number
+  }
+}
 export default {
   data() {
     return {
@@ -81,15 +100,41 @@ export default {
   },
   computed: {
     globalDownloadProgress() {
-      const progressArray = Array.from(useMediaStore().downloadProgress)
+      const progressArray = Array.from(
+        useMediaStore().downloadProgress
+      ) /* .filter(
+        ([, d]) => d.current !== d.total
+      ) */
       const current = progressArray.reduce((acc, [, value]) => {
         return acc + value.current
       }, 0)
       const total = progressArray.reduce((acc, [, value]) => {
         return acc + value.total
       }, 0)
-      const percent = (current / total) * 100
+      const percent = (current / total) * 100 || 0
       return { current, total, percent }
+    },
+    daysDownloadProgress(): ProgressObject {
+      const progressArray = Array.from(useMediaStore().downloadProgress)
+      const daysObject: ProgressObject = this.weeks
+        .flat()
+        .filter((d: { date: string; urls: any[] }) => d.urls.length > 0)
+        .reduce((acc: ProgressObject, d) => {
+          const filteredProgressArray = progressArray.filter((el) =>
+            d.urls.includes(el[0])
+          )
+          const current = filteredProgressArray.reduce((acc, [, value]) => {
+            return acc + value.current
+          }, 0)
+          const total = filteredProgressArray.reduce((acc, [, value]) => {
+            return acc + value.total
+          }, 0)
+          const percent = (current / total) * 100 || 0
+          acc[d.date] = { current, total, percent }
+          return acc
+        }, {})
+
+      return daysObject
     },
   },
   mounted() {
@@ -159,10 +204,23 @@ export default {
   },
   methods: {
     async syncMediaItem(date: string, item: MeetingFile) {
-      const day = this.weeks.find((w: any[]) => w.find((d) => d.date === date))
+      let day = null
+      for (let i = 0; i < this.weeks.length; i++) {
+        const week = this.weeks[i]
+        for (let j = 0; j < week.length; j++) {
+          const currentDay = week[j]
+          if (currentDay.date === date) {
+            day = currentDay
+            break
+          }
+        }
+        if (day!) {
+          break
+        }
+      }
       if (item.filesize && (item.url || item.filepath)) {
         log.info(
-          `%c[jwOrg] [${day![0].date}] ${item.safeName}`,
+          `%c[jwOrg] [${day!.date}] ${item.safeName}`,
           'background-color: #cce5ff; color: #004085;'
         )
         // Set markers for sign language videos
@@ -215,16 +273,12 @@ export default {
           )
         } else if (item.url) {
           const newItem = JSON.parse(JSON.stringify(item))
+          day!.urls.push(item.url)
           await downloadIfRequired(newItem)
-          day![0].urls.push(item.url)
         } else if (path && item.filepath && item.folder && item.safeName) {
           const dest = join(path, item.folder, item.safeName)
-          if (
-            !(await exists(dest)) ||
-            (await stat(dest)).size !== item.filesize
-          ) {
-            copy(item.filepath, dest)
-          }
+          day!.urls.push(dest)
+          copy(item.filepath, dest)
         }
       } else {
         warn(
@@ -263,10 +317,14 @@ export default {
       for (const week of weeks) {
         for (const day of week) {
           try {
+            console.log('getCongMediaByDate')
             if (congSync.value) getCongMediaByDate(day.date) // need to define this one
+            console.log('syncJWMediaByDate')
             if (day.meetingType)
               await this.syncJWMediaByDate(day.date, day.meetingType)
+            console.log('syncLocalRecurringMediaByDate')
             await syncLocalRecurringMediaByDate(day.date)
+            console.log('convertUnusableFilesByDate')
             await convertUnusableFilesByDate(day.date)
             if (enableMp4Conversion) await convertToMP4ByDate(day.date)
             if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
@@ -274,20 +332,6 @@ export default {
             console.error(e)
           }
           console.log(day.urls)
-        }
-      }
-    },
-    setProgress(date: string, current: number, total: number) {
-      const weekIndex = this.weeks.findIndex((week: any) => {
-        return week.some((day: any) => day.date === date)
-      })
-
-      if (weekIndex > -1) {
-        const dayIndex = this.weeks[weekIndex].findIndex(
-          (day: any) => day.date === date
-        )
-        if (dayIndex > -1) {
-          this.weeks[weekIndex][dayIndex].progress = (current / total) * 100
         }
       }
     },
@@ -306,11 +350,14 @@ export default {
       })
     },
     async syncJWMediaByDate(date: string, meetingType: string | undefined) {
+      console.log('PROGRESS GET MEDIA START')
       if (meetingType === 'mw') {
         await getMwMedia(date)
       } else if (meetingType === 'we') {
         await getWeMedia(date)
       }
+      console.log('PROGRESS GET MEDIA END')
+
       createMediaNames()
       const meetingMedia = Object.fromEntries(
         Array.from(useMediaStore().meetings)
@@ -330,28 +377,15 @@ export default {
             ),
           ])
       )
-      const totalItems = Object.entries(meetingMedia).reduce(
-        (sum, [, parts]) => {
-          return (
-            sum +
-            Object.entries(parts).reduce((partSum, [, media]) => {
-              return partSum + media.length
-            }, 0)
-          )
-        },
-        0
-      )
+      console.log('PROGRESS syncMediaItem START')
       for (const [date, parts] of Object.entries(meetingMedia)) {
-        let currentItem = 1
-        // this.setProgress(date)
         for (const [, media] of Object.entries(parts)) {
           for (const item of media) {
             await this.syncMediaItem(date, item)
-            currentItem++
-            this.setProgress(date, currentItem, totalItems)
           }
         }
       }
+      console.log('PROGRESS syncMediaItem END')
     },
   },
 }
