@@ -37,6 +37,65 @@ export async function syncLocalRecurringMediaByDate(date: string) {
   })
 }
 
+export function createMediaNamesByDate(date: string) {
+  const statStore = useStatStore()
+  const mediaStore = useMediaStore()
+  const { $dayjs } = useNuxtApp()
+  statStore.startPerf({
+    func: 'createMediaNamesByDate',
+    start: performance.now(),
+  })
+
+  const day = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
+  const isWeDay = isMeetingDay(day) === 'we'
+  let heading = '01'
+  let i = 1
+  const parts = mediaStore.meetings.get(date)
+  if (parts) {
+    for (const [par, media] of [...parts.entries()].sort(
+      (a, b) => a[0] - b[0]
+    )) {
+      if (heading === '01' && par > BIBLE_READING_PAR_NR) {
+        heading = '02'
+        i = 1
+      }
+      let j = 1
+      for (const item of media.filter((m) => !m.safeName)) {
+        if (heading === '02' && item.pub?.includes('sjj')) {
+          heading = '03'
+          i = 1
+        }
+        item.safeName = `${isWeDay ? '' : heading + '-'}${(isWeDay ? i + 2 : i)
+          .toString()
+          .padStart(2, '0')}-${(j + 1).toString().padStart(2, '0')} -`
+        if (!item.congSpecific) {
+          if (item.queryInfo?.TargetParagraphNumberLabel) {
+            item.safeName += ` ${translate('paragraph')} ${
+              item.queryInfo?.TargetParagraphNumberLabel
+            } -`
+          }
+          if (item.pub?.includes('sjj')) {
+            item.safeName += ` ${translate('song')}`
+          }
+          item.safeName = sanitize(
+            `${item.safeName} ${item.title || ''}${extname(
+              item.url || item.filepath || ''
+            )}`,
+            true
+          )
+        }
+        j++
+      }
+      i++
+    }
+    log.debug('meeting', parts)
+    statStore.stopPerf({
+      func: 'createMediaNamesByDate',
+      stop: performance.now(),
+    })
+  }
+}
+
 export function createMediaNames() {
   const statStore = useStatStore()
   const mediaStore = useMediaStore()

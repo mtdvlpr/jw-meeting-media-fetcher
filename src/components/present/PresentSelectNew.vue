@@ -348,12 +348,6 @@ export default {
         )
       )
     },
-    validDate(date: string) {
-      return this.$dayjs(
-        date,
-        getPrefs<DateFormat>('app.outputFolderDateFormat')
-      ).isValid()
-    },
     selectDate(date: string) {
       useRouter().push({
         query: {
@@ -371,12 +365,10 @@ export default {
       }
       console.log('PROGRESS GET MEDIA END')
 
-      createMediaNames()
+      createMediaNamesByDate(date)
       const meetingMedia = Object.fromEntries(
         Array.from(useMediaStore().meetings)
-          .filter(([meetingMediaDate]) => {
-            return meetingMediaDate === date
-          })
+          .filter(([meetingMediaDate]) => meetingMediaDate === date)
           .map(([date, parts]) => [
             date,
             Object.fromEntries(
