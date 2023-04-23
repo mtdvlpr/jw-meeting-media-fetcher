@@ -36,7 +36,7 @@ import { DateFormat } from '~~/types'
 const props = defineProps<{
   baseDate: Dayjs
   recurringColor: string
-  dayColors: { [key: number]: string }
+  dayColors: Record<number, string>
 }>()
 
 // Open manage page for specific day

@@ -228,8 +228,9 @@ const setShuffleMusicCached = async () => {
     const langDir = isSign ? props.prefs.media.lang : 'E'
     const pubCode = isSign ? 'sjj' : 'sjjm'
     const ext = isSign ? '.mp4' : '.mp3'
-    await ensureDir(join(pPath, '..', langDir, pubCode))
-    const folders = await readdir(join(pPath, '..', langDir, pubCode))
+    const shuffleCacheDir = join(pPath, '..', langDir, pubCode)
+    await ensureDir(shuffleCacheDir)
+    const folders = await readdir(shuffleCacheDir)
     matchingFiles = folders.filter((file) => file.endsWith(ext)).length
   } catch (e) {
     log.error(e)

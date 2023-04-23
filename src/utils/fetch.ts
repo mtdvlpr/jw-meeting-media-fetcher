@@ -33,8 +33,7 @@ export async function fetchFile(url: string, dest: string | string[]) {
         })
       },
     })
-    const body = await response.body
-    await body.pipeTo(stream).finally(function () {
+    await response.body.pipeTo(stream).finally(function () {
       for (const downloadWriteStream of downloadWriteStreams) {
         downloadWriteStream.close()
       }
@@ -76,7 +75,10 @@ export async function fetchHead(baseUrl: string) {
 //   }
 // }
 
-export async function fetchJson<T>(baseUrl: string, options?: any): Promise<T> {
+export async function fetchJson<T>(
+  baseUrl: string,
+  options?: Record<string, any>
+): Promise<T> {
   const url = new URL(baseUrl)
   if (options) {
     for (const param in options) {
@@ -97,23 +99,26 @@ export async function fetchJson<T>(baseUrl: string, options?: any): Promise<T> {
   return (await response.json()) as T
 }
 
-export const fetchPublication = async (options: any) => {
+export const fetchPublication = async (options: Record<string, any>) => {
   return await fetchJson<Publication>(
     'https://b.jw-cdn.org/apis/pub-media/GETPUBMEDIALINKS',
     options
   )
 }
 
-export const fetchMedia = async (appendToPath: string) => {
+export const fetchMedia = async (
+  appendToPath: string,
+  options?: Record<string, any>
+) => {
   return await fetchJson<MediaItemResult>(
-    'json',
-    'https://b.jw-cdn.org/apis/mediator/v1/media-items/' + appendToPath
+    'https://b.jw-cdn.org/apis/mediator/v1/media-items/' + appendToPath,
+    options
   )
 }
 
 export const fetchMediaCategories = async (
   appendToPath: string,
-  options: any
+  options?: Record<string, any>
 ) => {
   return await fetchJson<MediaCategoryResult>(
     'https://b.jw-cdn.org/apis/mediator/v1/categories/' + appendToPath,

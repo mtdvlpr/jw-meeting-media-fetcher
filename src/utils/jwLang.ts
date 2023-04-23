@@ -42,7 +42,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   }
 
   if (!(await pathExists(langPath))) {
-    return await getJWLangs(true)
+    return getJWLangs(true)
   }
 
   let langs: ShortJWLang[] = []

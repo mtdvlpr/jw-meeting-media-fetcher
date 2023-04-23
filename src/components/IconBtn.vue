@@ -111,11 +111,7 @@ interface Style {
   icons: (string | { text: string; props?: Record<string, any> })[]
 }
 
-interface Styles {
-  [key: string]: Style
-}
-
-const styles: Styles = {
+const styles: Record<string, Style> = {
   home: {
     to: '/home',
     props: {

@@ -18,7 +18,7 @@ interface TreeObj {
   [key: string]: {
     text: string
     dir: boolean
-    state: { [key: string]: boolean }
+    state: Record<string, boolean>
     children: string[]
   }
 }

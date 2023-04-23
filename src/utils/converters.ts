@@ -304,7 +304,7 @@ async function convertPdfPage(
 
 async function setupFFmpeg(
   ffmpeg: any,
-  _setProgress: (loaded: number, total: number, global?: boolean) => void
+  _setProgress?: (loaded: number, total: number, global?: boolean) => void
 ): Promise<void> {
   const store = useMediaStore()
   if (store.ffMpeg) return
@@ -388,7 +388,7 @@ function createVideo(
       // If mp3, just add audio to empty video
       if (extname(file).includes('mp3')) {
         import('fluent-ffmpeg').then(({ default: ffmpeg }) => {
-          setupFFmpeg(ffmpeg, setProgress!)
+          setupFFmpeg(ffmpeg, setProgress)
             .then(() => {
               ffmpeg(file)
                 .noVideo()
@@ -396,7 +396,7 @@ function createVideo(
                 .on('end', () => {
                   if (!getPrefs<boolean>('media.keepOriginalsAfterConversion'))
                     rm(file)
-                  increaseProgress(setProgress!)
+                  if (setProgress) increaseProgress(setProgress)
                   return resolve()
                 })
             })

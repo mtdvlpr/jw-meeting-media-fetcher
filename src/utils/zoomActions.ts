@@ -207,7 +207,7 @@ export function toggleSpotlight(
 
 function sendToWebSocket(
   socket: WebSocket | null,
-  msg: { evt: number; body: { [key: string]: any }; seq?: number },
+  msg: { evt: number; body: Record<string, any>; seq?: number },
   withUser = false,
   userID?: number
 ) {

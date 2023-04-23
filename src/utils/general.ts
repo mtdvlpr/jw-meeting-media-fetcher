@@ -4,7 +4,7 @@ import { pathExists } from 'fs-extra'
 import { join } from 'upath'
 import { JW_ICONS_FONT } from '~/constants/general'
 
-const intervals: { [key: string]: NodeJS.Timer } = {}
+const intervals: Record<string, NodeJS.Timer> = {}
 
 export const parseRes = (res?: string) => {
   if (!res) return 0

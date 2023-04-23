@@ -4,13 +4,13 @@ import { join, extname } from 'upath'
 export async function extractAllTo(zip: string, dest: string) {
   try {
     const store = useMediaStore()
-    const { default: JSZip } = await import('jszip')
     const zipSize = (await stat(zip)).size
     store.setDownloadProgress(zip, {
       current: 0,
       total: zipSize,
     })
     const zipFile = await readFile(zip)
+    const { default: JSZip } = await import('jszip')
     const zipContents = await JSZip.loadAsync(zipFile)
     const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
     store.setDownloadProgress(zip, {
@@ -24,6 +24,9 @@ export async function extractAllTo(zip: string, dest: string) {
     if (!fileBuffer) throw new Error('Could not extract files from zip')
     const contents = await JSZip.loadAsync(fileBuffer)
     const contentsTotal = Object.keys(contents.files).reduce((acc, key) => {
+      // @ts-expect-error
+      console.log('data', contents.files[key]._data)
+      // @ts-expect-error
       return acc + contents.files[key]._data.uncompressedSize
     }, 0)
     let current = 0
@@ -37,6 +40,7 @@ export async function extractAllTo(zip: string, dest: string) {
           join(dest, filename),
           await fileObject.async('nodebuffer')
         )
+        // @ts-expect-error
         current = current + fileObject._data.uncompressedSize
         store.setDownloadProgress(dest, {
           current,

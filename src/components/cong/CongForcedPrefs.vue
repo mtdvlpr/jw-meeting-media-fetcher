@@ -53,7 +53,7 @@
 import { join } from 'upath'
 
 const flattenObject = (ob: any) => {
-  const toReturn = {} as { [key: string]: any }
+  const toReturn: Record<string, any> = {}
 
   for (const i in ob) {
     if (ob[i] === undefined) continue

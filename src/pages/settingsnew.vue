@@ -15,7 +15,7 @@
         />
       </template>
     </v-toolbar>
-    <v-dialog v-model="isNew" fullscreen transition="fade-transition">
+    <v-dialog :model-value="!!isNew" fullscreen transition="fade-transition">
       <template #activator="{ props }">
         <v-btn
           color="primary"
@@ -57,7 +57,7 @@
                     class="ma-3"
                     @click="
                       initialSettingsDone
-                        ? (isNew = false)
+                        ? (isNew = '')
                         : currentInitialSetting++
                     "
                   >
@@ -66,7 +66,7 @@
                   <v-btn
                     v-if="initialSettingsDone"
                     class="ma-3"
-                    @click="isNew = false"
+                    @click="isNew = ''"
                   >
                     Go to media calendar
                   </v-btn>
@@ -124,6 +124,7 @@ import { ipcRenderer } from 'electron'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { extname, join } from 'upath'
 import { readFile } from 'fs-extra'
+import { useRouteQuery } from '@vueuse/router'
 import {
   Action,
   Group,
@@ -135,23 +136,11 @@ import {
   VFormRef,
   VideoFile,
 } from '~~/types'
-const { $i18n, $dayjs } = useNuxtApp()
-const locales = $i18n.locales.value as LocaleObject[]
-const isNew = ref(true) // eventually, actually get the real value here
-const initialSettings = [
-  'Lorem ipsum',
-  'dolor sit',
-  'amet consectetur',
-  'adipiscing elit',
-  'sed do',
-]
-const currentInitialSetting = ref(0)
-const initialSettingsDone = ref(
-  computed(() => currentInitialSetting.value === initialSettings.length - 1)
-)
+
 useHead({ title: 'Settings' })
 const { setTheme } = useTheme()
 const { online } = useOnline()
+const { $i18n, $dayjs } = useNuxtApp()
 const { currentProgress, totalProgress, setProgress } = useProgress()
 provide(setProgressKey, setProgress)
 
@@ -249,6 +238,20 @@ onMounted(() => {
   getLangs()
   form.value?.validate()
 })
+
+const locales = $i18n.locales.value as LocaleObject[]
+const isNew = useRouteQuery<string>('new', '')
+const initialSettings = [
+  'Lorem ipsum',
+  'dolor sit',
+  'amet consectetur',
+  'adipiscing elit',
+  'sed do',
+]
+const currentInitialSetting = ref(0)
+const initialSettingsDone = computed(
+  () => currentInitialSetting.value === initialSettings.length - 1
+)
 
 // Prefs
 const filter = ref('')

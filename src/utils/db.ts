@@ -2,7 +2,7 @@ import { readFile } from 'fs-extra'
 import type { Database } from '@stephen/sql.js'
 import { join } from 'upath'
 
-export function executeQuery<T extends { [key: string]: any }>(
+export function executeQuery<T extends Record<string, any>>(
   db: Database,
   query: string
 ) {

@@ -168,7 +168,7 @@ const jwSyncColor = ref(defaultColor)
 const congSyncColor = ref(defaultColor)
 const recurringColor = ref(defaultColor)
 const mp4Color = ref(defaultColor)
-const dayColors = ref<{ [key: number]: string }>({
+const dayColors = ref<Record<number, string>>({
   0: defaultDayColor,
   1: defaultDayColor,
   2: defaultDayColor,

@@ -91,16 +91,19 @@ type MediaItem = {
 }
 const mPath = mediaPath()
 const items = reactive(ref<MediaItem[]>([]))
-
+const watcher = ref<fileWatcher.FSWatcher | null>(null)
+onBeforeUnmount(() => {
+  watcher.value?.close()
+})
 onMounted(() => {
-  fileWatcher
+  watcher.value = fileWatcher
     .watch(join(mPath, date.value), {
       awaitWriteFinish: true,
       depth: 1,
       alwaysStat: true,
       ignorePermissionErrors: true,
     })
-    .on('add', (path: string, stats: any) => {
+    .on('add', (path) => {
       if (isImage(path) || isVideo(path) || isAudio(path)) {
         const cleanName = sanitize(basename(path), true)
         const filename = basename(path)
@@ -114,15 +117,27 @@ onMounted(() => {
           stop: false,
           deactivate: false,
         })
-        items.value = items.value.sort((a, b): any => a.id.localeCompare(b.id))
+        items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
       }
     })
-    .on('change', (path: string, stats: any) => {
-      console.log('file was changed', path)
-      if (stats) console.log(stats)
+    .on('change', (path) => {
+      const cleanName = sanitize(basename(path), true)
+      const index = items.value.findIndex((item) => {
+        return item.id === strip(`mediaitem-${cleanName}`)
+      })
+      if (index !== -1) {
+        items.value.splice(index, 1, {
+          id: strip('mediaitem-' + cleanName),
+          path: join(dirname(path), cleanName),
+          play: false,
+          stop: false,
+          deactivate: false,
+        })
+        items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
+      }
     })
-    .on('unlink', (path: string) => {
-      const index = items.value.findIndex((item): boolean => {
+    .on('unlink', (path) => {
+      const index = items.value.findIndex((item) => {
         return item.id === strip(`mediaitem-${sanitize(basename(path), true)}`)
       })
       if (index !== -1) {
@@ -191,9 +206,6 @@ watch(mediaActive, (val) => {
     useIpcRenderer().send('toggleMediaWindowFocus')
   }
 })
-
-// TODO: need to run this when leaving page to avoid many simultaneous watchers!
-// watcher.close().then(() => console.log('closed'));
 
 // File prefix
 const showPrefix = ref(false)

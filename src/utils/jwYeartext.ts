@@ -16,7 +16,7 @@ export async function getYearText(
   if (force || !(await pathExists(path))) {
     log.debug('Fetching yeartext', wtlocale)
     try {
-      const result: { content: any } = await fetchJson(
+      const result = await fetchJson<{ content: string; message: string }>(
         'https://wol.jw.org/wol/finder',
         {
           docid: `110${new Date().getFullYear()}800`,
