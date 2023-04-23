@@ -178,17 +178,12 @@ const props = defineProps<{
   streamingFile?: VideoFile
 }>()
 
-onMounted(async () => {
+onMounted(() => {
   // Sign language markers
   getMarkers()
 
   // Streaming song
-  if (props.streamingFile) {
-    streamDownloaded.value = await pathExists(localStreamPath.value)
-    if (!streamDownloaded.value) {
-      downloadSong()
-    }
-  }
+  downloadSong()
 
   // Panzoom
   if (isImage(props.src)) initPanzoom()
