@@ -44,10 +44,13 @@ export const useMediaStore = defineStore('media', {
     setProgress({ key, promise }: { key: string; promise: Promise<string> }) {
       this.progress.set(key, promise)
     },
-    setDownloadProgress(
-      key: string,
+    setDownloadProgress({
+      key,
+      downloadProgress,
+    }: {
+      key: string
       downloadProgress: { current: number; total: number }
-    ) {
+    }) {
       this.downloadProgress.set(key, downloadProgress)
     },
     addDate({ date, map }: { date: string; map: Map<number, MeetingFile[]> }) {

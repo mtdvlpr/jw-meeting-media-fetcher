@@ -5,34 +5,46 @@ export async function extractAllTo(zip: string, dest: string) {
   try {
     const store = useMediaStore()
     const zipSize = (await stat(zip)).size
-    store.setDownloadProgress(zip, {
-      current: 0,
-      total: zipSize,
+    store.setDownloadProgress({
+      key: zip,
+      downloadProgress: {
+        current: 0,
+        total: zipSize,
+      },
     })
     const zipFile = await readFile(zip)
     const { default: JSZip } = await import('jszip')
     const zipContents = await JSZip.loadAsync(zipFile)
     const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
-    store.setDownloadProgress(zip, {
-      current: zipSize,
-      total: zipSize,
+    store.setDownloadProgress({
+      key: zip,
+      downloadProgress: {
+        current: zipSize,
+        total: zipSize,
+      },
     })
-    store.setDownloadProgress(dest, {
-      current: 0,
-      total: zipSize,
+    store.setDownloadProgress({
+      key: zip,
+      downloadProgress: {
+        current: 0,
+        total: zipSize,
+      },
     })
     if (!fileBuffer) throw new Error('Could not extract files from zip')
     const contents = await JSZip.loadAsync(fileBuffer)
     const contentsTotal = Object.keys(contents.files).reduce((acc, key) => {
       // @ts-expect-error
-      console.log('data', contents.files[key]._data)
+      console.log('zip contents', contents.files[key]._data)
       // @ts-expect-error
       return acc + contents.files[key]._data.uncompressedSize
     }, 0)
     let current = 0
-    store.setDownloadProgress(dest, {
-      current: 0,
-      total: contentsTotal,
+    store.setDownloadProgress({
+      key: dest,
+      downloadProgress: {
+        current: 0,
+        total: contentsTotal,
+      },
     })
     await Promise.allSettled(
       Object.entries(contents.files).map(async ([filename, fileObject]) => {
@@ -42,9 +54,12 @@ export async function extractAllTo(zip: string, dest: string) {
         )
         // @ts-expect-error
         current = current + fileObject._data.uncompressedSize
-        store.setDownloadProgress(dest, {
-          current,
-          total: contentsTotal,
+        store.setDownloadProgress({
+          key: dest,
+          downloadProgress: {
+            current,
+            total: contentsTotal,
+          },
         })
       })
     )
