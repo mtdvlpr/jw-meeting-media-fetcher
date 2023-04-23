@@ -14,7 +14,7 @@
         :key="m.day"
         v-model="meeting[m.day]"
         field="btn-group"
-        :group-label="$t(`${m.day.slice(0, 2)}Day`)"
+        :group-label="`${m.day.slice(0, 2)}Day`"
         :group-items="localeDays"
         :locked="isLocked(`meeting.${m.day}`)"
         height="56px"

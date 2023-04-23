@@ -31,7 +31,7 @@
       id="media.maxRes"
       v-model="media.maxRes"
       field="btn-group"
-      :group-label="$t('maxRes')"
+      group-label="maxRes"
       :locked="isLocked('media.maxRes')"
       :group-items="resolutions"
       mandatory
