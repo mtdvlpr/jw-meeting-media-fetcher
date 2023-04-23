@@ -94,8 +94,13 @@ const items = reactive(ref<MediaItem[]>([]))
 
 onMounted(() => {
   fileWatcher
-    .watch(join(mPath, date.value))
-    .on('add', (path: any) => {
+    .watch(join(mPath, date.value), {
+      awaitWriteFinish: true,
+      depth: 1,
+      alwaysStat: true,
+      ignorePermissionErrors: true,
+    })
+    .on('add', (path: string, stats: any) => {
       if (isImage(path) || isVideo(path) || isAudio(path)) {
         const cleanName = sanitize(basename(path), true)
         const filename = basename(path)
@@ -112,11 +117,11 @@ onMounted(() => {
         items.value = items.value.sort((a, b): any => a.id.localeCompare(b.id))
       }
     })
-    .on('change', (path: any, stats: any) => {
+    .on('change', (path: string, stats: any) => {
       console.log('file was changed', path)
       if (stats) console.log(stats)
     })
-    .on('unlink', (path: any) => {
+    .on('unlink', (path: string) => {
       const index = items.value.findIndex((item): boolean => {
         return item.id === strip(`mediaitem-${sanitize(basename(path), true)}`)
       })

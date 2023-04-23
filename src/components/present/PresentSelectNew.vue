@@ -65,9 +65,7 @@
 </template>
 
 <script lang="ts">
-import { basename, changeExt, extname, join } from 'upath'
-
-import { stat } from 'fs-extra'
+import { changeExt, join } from 'upath'
 import weekday from 'dayjs/plugin/weekday'
 import { MediaPrefs, MeetingFile, DateFormat } from '~~/types'
 type ProgressObject = {
@@ -246,20 +244,20 @@ export default {
         }
 
         // Prevent duplicates
-        const duplicate = path
-          ? findOne(
-              join(
-                path,
-                item.folder,
-                '*' +
-                  item.safeName
-                    ?.substring(MAX_PREFIX_LENGTH)
-                    .replace('.svg', '.png')
-              )
-            )
-          : null
+        // const duplicate = path
+        //   ? findOne(
+        //       join(
+        //         path,
+        //         item.folder,
+        //         '*' +
+        //           item.safeName
+        //             ?.substring(MAX_PREFIX_LENGTH)
+        //             .replace('.svg', '.png')
+        //       )
+        //     )
+        //   : null
 
-        if (
+        /* if (
           duplicate &&
           item.safeName &&
           basename(duplicate) !== item.safeName &&
@@ -271,14 +269,14 @@ export default {
             basename(duplicate),
             item.safeName.replace('.svg', '.png')
           )
-        } else if (item.url) {
+        } else */ if (item.url) {
           const newItem = JSON.parse(JSON.stringify(item))
           day!.urls.push(item.url)
           await downloadIfRequired(newItem)
         } else if (path && item.filepath && item.folder && item.safeName) {
           const dest = join(path, item.folder, item.safeName)
           day!.urls.push(dest)
-          copy(item.filepath, dest)
+          await copy(item.filepath, dest)
         }
       } else {
         warn(

@@ -81,7 +81,6 @@ export async function convertUnusableFiles(
   })
 
   if (setProgress) initProgress(pdfFiles.length + svgFiles.length)
-  console.log('convertUnusableFiles total', pdfFiles.length + svgFiles.length)
   pdfFiles.forEach((pdf) => {
     promises.push(convertPdf(pdf, setProgress))
   })
@@ -97,17 +96,12 @@ export async function convertUnusableFiles(
 export async function convertUnusableFilesByDate(date: string) {
   const mPath = mediaPath()
   if (!mPath) return
-  const promises: Promise<void>[] = []
   const pdfFiles = findAll(join(mPath, date, '*pdf'))
   const svgFiles = findAll(join(mPath, date, '*svg'))
-  console.log('convertUnusableFiles total', pdfFiles.length + svgFiles.length)
-  pdfFiles.forEach((pdf) => {
-    promises.push(convertPdf(pdf))
-  })
-  svgFiles.forEach((svg) => {
-    convertSvg(svg)
-  })
-  await Promise.allSettled(promises)
+  for (const svg of svgFiles) {
+    await convertSvg(svg)
+  }
+  await Promise.all(pdfFiles.map((pdf) => convertPdf(pdf)))
 }
 
 export async function convertToVLC() {
@@ -175,20 +169,20 @@ export async function convertToVLCByDate(date: string) {
   )
 }
 
-function convertSvg(mediaFile: string): void {
+function convertSvg(src: string) {
   const div = document.createElement('div')
-  const image = document.createElement('img')
   const canvas = document.createElement('canvas')
   div.style.display = 'none'
-  div.style.height = (FULL_HD[1] * 2).toString() + 'px'
-  div.append(image, canvas)
-  document.body.appendChild(div)
+  div.append(canvas)
+  // document.body.appendChild(div)
 
-  image.onload = () => {
-    image.height = FULL_HD[1] * 2
-    image.width = FULL_HD[0] * 2
-    canvas.height = image.height
-    canvas.width = image.width
+  const svg = new Image()
+  svg.onload = () => {
+    const aspectRatio = svg.width / svg.height
+    const height = FULL_HD[1] * 2
+    const width = Math.round(height * aspectRatio)
+    canvas.height = height
+    canvas.width = width
 
     // Draw the image onto the canvas
     const canvasContext = canvas.getContext('2d')!
@@ -196,28 +190,21 @@ function convertSvg(mediaFile: string): void {
     canvasContext.fillRect(0, 0, canvas.width, canvas.height)
     canvasContext.imageSmoothingEnabled = true
     canvasContext.imageSmoothingQuality = 'high'
-    canvasContext.drawImage(image, 0, 0)
-
+    canvasContext.drawImage(svg, 0, 0, width, height)
     write(
-      join(
-        dirname(mediaFile),
-        basename(mediaFile, extname(mediaFile)) + '.png'
-      ),
+      join(dirname(src), basename(src, extname(src)) + '.png'),
       Buffer.from(
         canvas.toDataURL().replace(/^data:image\/\w+;base64,/, ''),
         'base64'
       )
     )
-
-    rm(mediaFile)
+    rm(src)
     div.remove()
   }
-
-  image.onerror = (e) => {
-    warn('warnSvgConversionFailure', { identifier: basename(mediaFile) }, e)
+  svg.onerror = (e) => {
+    warn('warnSvgConversionFailure', { identifier: basename(src) }, e)
   }
-
-  image.src = pathToFileURL(mediaFile).href
+  svg.src = pathToFileURL(src).href
 }
 
 async function convertPdf(
