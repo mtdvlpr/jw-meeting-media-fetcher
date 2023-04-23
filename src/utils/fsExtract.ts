@@ -34,8 +34,6 @@ export async function extractAllTo(zip: string, dest: string) {
     const contents = await JSZip.loadAsync(fileBuffer)
     const contentsTotal = Object.keys(contents.files).reduce((acc, key) => {
       // @ts-expect-error
-      console.log('zip contents', contents.files[key]._data)
-      // @ts-expect-error
       return acc + contents.files[key]._data.uncompressedSize
     }, 0)
     let current = 0

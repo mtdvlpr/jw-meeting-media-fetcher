@@ -162,7 +162,6 @@ const getPreview = (item: MeetingFile | LocalFile) => {
   }
   loading.value = false
   previewName.value = item.safeName!
-  console.log('preview', preview.value)
   return preview.value
 }
 
