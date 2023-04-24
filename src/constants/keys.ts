@@ -26,4 +26,4 @@ export const videoActiveKey = Symbol('videoActive') as InjectionKey<
 // Provided by media controls
 export const ccEnableKey = Symbol('ccEnable') as InjectionKey<Ref<boolean>>
 export const showPrefixKey = Symbol('showPrefix') as InjectionKey<Ref<boolean>>
-export const sortableKey = Symbol('sortable') as InjectionKey<Ref<boolean>>
+// export const sortableKey = Symbol('sortable') as InjectionKey<Ref<boolean>>

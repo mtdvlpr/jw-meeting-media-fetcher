@@ -17,12 +17,10 @@
       :current-index="currentIndex"
       :media-count="items.length"
       :cc-enable="ccEnable"
-      :sortable="sortable"
       @song="addSong = !addSong"
       @cc="ccEnable = !ccEnable"
       @previous="previous()"
       @next="next()"
-      @sortable="sortable = !sortable"
       @show-prefix="togglePrefix()"
       @manage-media="managingMedia = true"
     />
@@ -33,7 +31,6 @@
       :items="items"
       :media-active="mediaActive"
       :zoom-part="zoomPart"
-      :sortable="sortable"
       :cc-enable="ccEnable"
       :add-song="addSong"
       @index="setIndex"
@@ -57,10 +54,6 @@ watch(addSong, () => {
 
 // Current meeting date
 const date = useRouteQuery<string>('date', '')
-
-// Sorting
-const sortable = ref(false)
-provide(sortableKey, sortable)
 
 // Subtitles
 const ccEnable = ref(true)

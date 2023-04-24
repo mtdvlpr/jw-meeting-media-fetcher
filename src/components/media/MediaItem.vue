@@ -92,14 +92,6 @@
             :disabled="videoActive"
             @click="play()"
           />
-          <v-btn
-            v-if="sortable"
-            color="info"
-            class="sort-btn ml-2"
-            aria-label="Sort items"
-          >
-            <v-icon icon="fa-sort" />
-          </v-btn>
         </v-list-item-action>
       </template>
       <template v-if="!isImage(src)">
@@ -237,7 +229,6 @@ const { currentScene: scene } = storeToRefs(useObsStore())
 // Media properties
 const id = computed(() => strip('mediaitem-' + basename(props.src)))
 const url = computed(() => pathToFileURL(props.src).href)
-const sortable = inject(sortableKey, ref(false))
 const current = ref(false)
 const played = ref(false)
 const videoStarted = ref(false)

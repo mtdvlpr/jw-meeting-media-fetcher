@@ -89,31 +89,6 @@
           <v-icon icon="fa-forward" size="small" />
         </v-btn>
       </template>
-      <v-btn
-        v-if="sortable"
-        id="btn-order-save"
-        aria-label="Save order"
-        icon
-        @click="emit('sortable')"
-      >
-        <v-tooltip activator="parent" location="bottom">
-          {{ $t('sortSave') }}
-        </v-tooltip>
-        <v-icon icon="fa-arrow-down-up-lock" size="small" />
-      </v-btn>
-      <v-btn
-        v-else
-        id="btn-order-change"
-        icon
-        aria-label="Sort items"
-        :disabled="mediaActive"
-        @click="emit('sortable')"
-      >
-        <v-tooltip activator="parent" location="bottom">
-          {{ $t('sortMedia') }}
-        </v-tooltip>
-        <v-icon icon="fa-arrow-down-up-across-line" size="small" />
-      </v-btn>
     </v-col>
   </v-toolbar>
 </template>
@@ -132,13 +107,11 @@ const emit = defineEmits([
   'cc',
   'previous',
   'next',
-  'sortable',
   'manageMedia',
   'showPrefix',
 ])
 
 const { $i18n } = useNuxtApp()
-const sortable = inject(sortableKey, ref(false))
 const mediaActive = inject(mediaActiveKey, ref(false))
 
 const date = useRouteQuery<string>('date', '')
