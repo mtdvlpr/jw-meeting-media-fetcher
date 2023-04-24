@@ -10,9 +10,6 @@
     {{ globalDownloadProgress }}
     <h1>DAYS</h1>
     {{ daysDownloadProgress }}
-    <h1>DAYS 2</h1>
-
-    {{ weirdProgress }}
     <v-row no-gutters>
       <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">
         <v-card :subtitle="day" variant="tonal" color="grey"></v-card>
@@ -45,11 +42,17 @@
           }"
           @click="day.inPast ? null : selectDate(day.date)"
         >
-          <v-card-text></v-card-text>
+          <v-card-text> </v-card-text>
           <v-progress-linear
-            v-if="daysDownloadProgress[day.date]"
-            v-model="daysDownloadProgress[day.date].percent"
+            v-if="daysDownloadProgress.get(day.date)?.percent < 100"
+            v-model="daysDownloadProgress.get(day.date).percent"
             color="red"
+            stream
+          ></v-progress-linear>
+          <v-progress-linear
+            v-if="day.progress.total > 0"
+            v-model="day.progress.percent"
+            color="orange"
             stream
           ></v-progress-linear>
           <!-- <v-progress-linear
@@ -58,11 +61,11 @@
             color="yellow"
             stream
           ></v-progress-linear> -->
-          <progress-bar
+          <!-- <progress-bar
             :current="0"
             :total="day.progress"
             color="blue-lighten-3"
-          />
+          /> -->
         </v-card>
       </v-col>
     </v-row>
@@ -87,7 +90,7 @@ export default {
           currentMonth: boolean
           nonMeetingMedia: boolean | number
           inPast: boolean
-          progress: number
+          progress: { current: number; total: number; percent: number }
         }>
       >,
       today: this.$dayjs().startOf('day'),
@@ -131,12 +134,6 @@ export default {
         progressByDate.set(date, updatedProgress)
       }
       return progressByDate
-    },
-    weirdProgress() {
-      const downloadProgress = useMediaStore().downloadProgress
-      return Array.from(downloadProgress.entries()).filter(
-        ([, { current, total }]) => current !== total
-      )
     },
   },
   mounted() {
@@ -185,7 +182,7 @@ export default {
                 (f) => isAudio(f) || isVideo(f) || isImage(f)
               ).length,
             inPast: date.isBefore(todayDate),
-            progress: 0,
+            progress: { current: 0, total: 0, percent: 0 },
           })
           currentDay = currentDay.add(1, 'day')
         }
@@ -305,7 +302,7 @@ export default {
         currentMonth: boolean
         nonMeetingMedia: number | boolean
         inPast: boolean
-        progress: number
+        progress: { current: number; total: number; percent: number }
       }[][]
     ) {
       const { client } = useCongStore()
@@ -333,14 +330,35 @@ export default {
           async (week) =>
             await Promise.all(
               week.flatMap(async (day) => {
-                if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
-                if (day.meetingType)
-                  await this.syncJWMediaByDate(day.date, day.meetingType)
-                await syncLocalRecurringMediaByDate(day.date)
-                await convertUnusableFilesByDate(day.date)
-                if (enableMp4Conversion) await convertToMP4ByDate(day.date)
-                if (enableVlcPlaylistCreation)
-                  await convertToVLCByDate(day.date)
+                if (!day.inPast) {
+                  const dayTotalSteps = [
+                    congSync.value,
+                    day.meetingType,
+                    true,
+                    true,
+                    enableMp4Conversion,
+                    enableVlcPlaylistCreation,
+                  ].filter(Boolean).length
+                  day.progress.total = dayTotalSteps
+                  if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
+                  if (day.meetingType) {
+                    await this.syncJWMediaByDate(day.date, day.meetingType)
+                    day.progress.current++
+                    day.progress.percent =
+                      (day.progress.current / day.progress.total) * 100
+                  }
+                  await syncLocalRecurringMediaByDate(day.date)
+                  day.progress.current++
+                  day.progress.percent =
+                    (day.progress.current / day.progress.total) * 100
+                  await convertUnusableFilesByDate(day.date)
+                  day.progress.current++
+                  day.progress.percent =
+                    (day.progress.current / day.progress.total) * 100
+                  if (enableMp4Conversion) await convertToMP4ByDate(day.date)
+                  if (enableVlcPlaylistCreation)
+                    await convertToVLCByDate(day.date)
+                }
               })
             )
         )
