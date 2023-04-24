@@ -57,7 +57,7 @@
         </v-btn>
       </v-col>
     </v-row>
-    <v-footer
+    <!-- <v-footer
       v-if="shuffleEnabled || presentModeEnabled"
       class="justify-end home-footer"
     >
@@ -65,7 +65,7 @@
         <shuffle-btn v-if="shuffleEnabled" />
         <toggle-screen-btn v-if="presentModeEnabled" class="mx-2" />
       </v-col>
-    </v-footer>
+    </v-footer> -->
   </div>
 </template>
 <script setup lang="ts">
@@ -80,8 +80,8 @@ useHead({ title: 'Home' })
 const { $dayjs } = useNuxtApp()
 const { isDev } = useRuntimeConfig().public
 const { online } = useOnline()
-const shuffleEnabled = getPrefs<boolean>('meeting.enableMusicButton')
-const presentModeEnabled = getPrefs<boolean>('media.enableMediaDisplayButton')
+// const shuffleEnabled = getPrefs<boolean>('meeting.enableMusicButton')
+// const presentModeEnabled = getPrefs<boolean>('media.enableMediaDisplayButton')
 
 const statStore = useStatStore()
 const { initialLoad } = storeToRefs(statStore)

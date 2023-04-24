@@ -48,10 +48,10 @@
         hide-details="auto"
       />
     </v-col>
-    <v-col class="text-right" cols="auto">
+    <!-- <v-col class="text-right" cols="auto">
       <shuffle-btn v-if="getPrefs('meeting.enableMusicButton')" />
       <toggle-screen-btn class="mx-2" />
-    </v-col>
+    </v-col> -->
   </v-footer>
 </template>
 <script setup lang="ts">

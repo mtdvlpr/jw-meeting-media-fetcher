@@ -36,11 +36,55 @@
         </v-tooltip>
       </v-list-item>
     </v-list>
+
+    <template #append>
+      <v-list nav>
+        <v-list-item
+          v-if="getPrefs('meeting.enableMusicButton')"
+          :title="`Music is ${
+            musicStopped
+              ? pleaseWait
+                ? 'loading'
+                : 'stopped'
+              : pleaseWait
+              ? 'stopping'
+              : 'playing'
+          }`"
+          @click="toggleMusic()"
+        >
+          <template #prepend>
+            <v-icon v-if="musicFadeOut" icon="far fa-circle-stop"></v-icon>
+            <v-icon v-else icon="fa-music"></v-icon>
+          </template>
+          <template v-if="musicFadeOut" #append
+            ><v-chip variant="plain" density="compact">{{
+              timeRemaining
+            }}</v-chip></template
+          >
+          <!-- <v-tooltip
+            v-if="clickedOnce"
+            activator="parent"
+            model-value
+            location="top"
+            @update:model-value="() => {}"
+          >
+            {{ $t('clickAgain') }}
+          </v-tooltip> -->
+        </v-list-item>
+        <v-list-item
+          v-if="getPrefs('media.enableMediaDisplayButton')"
+          :class="{ 'pulse-danger': !mediaVisible }"
+          prepend-icon="fab fa-chromecast"
+          :title="`Media display is ${mediaVisible ? 'enabled' : 'disabled'}`"
+          @click="toggleScreen()"
+        ></v-list-item>
+      </v-list>
+    </template>
   </v-navigation-drawer>
 </template>
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
-
+import { useIpcRenderer } from '@vueuse/electron'
 const { $i18n } = useNuxtApp()
 const localePath = useLocalePath()
 const cong = useRouteQuery<string>('cong', '')
@@ -91,4 +135,44 @@ const navItems = computed(() => {
   }
   return items
 })
+const pleaseWait = ref(false)
+let timeRemaining = ref('')
+const musicStopped = ref(true)
+watch(
+  musicFadeOut,
+  (val) => {
+    // playing.value = !!val
+    if (musicStopped.value) pleaseWait.value = !/\d/.test(val as string)
+    if (!val) return
+    if (typeof val === 'string') {
+      timeRemaining.value = val
+    } else {
+      const { formatted } = useTimeRemaining(val, async () => {
+        // playing.value = false
+        await shuffleMusic(true)
+        // loading.value = false
+      })
+      timeRemaining = formatted
+    }
+  },
+  { immediate: true }
+)
+// const { atClick, clickedOnce } = useClickTwice(async () => {
+//   playing.value = false
+//   await shuffleMusic(!!musicFadeOut.value)
+//   playing.value = true
+//   // setTimeout(() => (loading.value = false), MS_IN_SEC)
+// })
+const toggleMusic = async () => {
+  pleaseWait.value = true
+  console.log(musicFadeOut, !!musicFadeOut)
+  await shuffleMusic(!musicStopped.value)
+  musicStopped.value = !musicStopped.value
+  pleaseWait.value = false
+}
+const presentStore = usePresentStore()
+const { mediaScreenVisible: mediaVisible } = storeToRefs(presentStore)
+const toggleScreen = () => {
+  useIpcRenderer().send('toggleMediaWindowFocus')
+}
 </script>

@@ -4,6 +4,7 @@ import { library, config } from '@fortawesome/fontawesome-svg-core'
 import {
   faClosedCaptioning as farClosedCaptioning,
   faCircle as farCircle,
+  faCircleStop as farCircleStop,
 } from '@fortawesome/free-regular-svg-icons'
 import { faChromecast as fabChromecast } from '@fortawesome/free-brands-svg-icons'
 import {
@@ -120,6 +121,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     faCircleCheck,
     faCircleExclamation,
     faCircleQuestion,
+    farCircleStop,
     faClock,
     faClosedCaptioning,
     faCloud,

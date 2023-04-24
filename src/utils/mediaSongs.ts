@@ -238,7 +238,7 @@ async function createAudioElement(
   audio.oncanplay = () => {
     audio.volume = getPrefs<number>('meeting.musicVolume') / 100
     if (!fadeOut) {
-      store.setMusicFadeOut('00:00')
+      store.setMusicFadeOut('..:..')
     }
   }
   audio.ontimeupdate = () => {
