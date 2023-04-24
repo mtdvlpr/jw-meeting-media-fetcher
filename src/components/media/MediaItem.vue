@@ -332,6 +332,7 @@ const enableMediaScene = () => {
 const stop = () => {
   active.value = false
   if (isImage(props.src)) {
+    resetZoom()
     useIpcRenderer().send('showMedia', null)
   } else {
     useIpcRenderer().send('hideMedia')

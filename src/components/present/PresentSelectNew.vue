@@ -373,13 +373,11 @@ export default {
       })
     },
     async syncJWMediaByDate(date: string, meetingType: string | undefined) {
-      console.log('PROGRESS GET MEDIA START')
       if (meetingType === 'mw') {
         await getMwMedia(date)
       } else if (meetingType === 'we') {
         await getWeMedia(date)
       }
-      console.log('PROGRESS GET MEDIA END')
 
       createMediaNamesByDate(date)
       const meetingMedia = Object.fromEntries(
@@ -398,7 +396,6 @@ export default {
             ),
           ])
       )
-      console.log('PROGRESS syncMediaItem START')
       for (const [date, parts] of Object.entries(meetingMedia)) {
         for (const [, media] of Object.entries(parts)) {
           for (const item of media) {
@@ -406,7 +403,6 @@ export default {
           }
         }
       }
-      console.log('PROGRESS syncMediaItem END')
     },
   },
 }
