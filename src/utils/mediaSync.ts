@@ -160,10 +160,15 @@ export function createMediaNames() {
   })
 }
 
-export async function downloadIfRequired(
-  file: VideoFile,
+export async function downloadIfRequired({
+  file,
+  _setProgress,
+  date,
+}: {
+  file: VideoFile
   _setProgress?: (loaded: number, total: number, global?: boolean) => void
-): Promise<string> {
+  date?: string
+}): Promise<string> {
   const progressMap = useMediaStore().progress
   const downloadInProgress = progressMap.get(file.url)
   if (downloadInProgress) await downloadInProgress
@@ -188,11 +193,15 @@ export async function downloadIfRequired(
       const filePath = file.folder ? mediaPath(file) : undefined
       const destinations = [file.cacheFile]
       if (filePath) destinations.push(filePath)
-      await fetchFile(file.url, destinations)
+      await fetchFile({ url: file.url, dest: destinations, date })
       if (filePath) {
         if (subtitlesEnabled && subsLang && file.subtitles) {
           try {
-            await fetchFile(file.subtitles.url, changeExt(filePath, 'vtt'))
+            await fetchFile({
+              url: file.subtitles.url,
+              dest: changeExt(filePath, 'vtt'),
+              date,
+            })
           } catch (e) {
             warn('errorDownloadSubs', { identifier: file.destFilename }, e)
           }
@@ -206,7 +215,7 @@ export async function downloadIfRequired(
         file,
       })
       if (extname(file.cacheFile) === '.jwpub') {
-        await extractAllTo(file.cacheFile, file.cacheDir)
+        await extractAllTo(file.cacheFile, file.cacheDir, date)
       }
     } catch (e) {
       warn('errorDownload', { identifier: file.destFilename }, e)
@@ -218,7 +227,10 @@ export async function downloadIfRequired(
         copy(file.cacheFile, filePath)
         if (subtitlesEnabled && subsLang && file.subtitles) {
           try {
-            await fetchFile(file.subtitles.url, changeExt(filePath, 'vtt'))
+            await fetchFile({
+              url: file.subtitles.url,
+              dest: changeExt(filePath, 'vtt'),
+            })
           } catch (e) {
             warn('errorDownloadSubs', { identifier: file.destFilename }, e)
           }
@@ -231,7 +243,7 @@ export async function downloadIfRequired(
       extname(file.cacheFile) === '.jwpub' &&
       !findOne(join(file.cacheDir, '*.db'))
     ) {
-      await extractAllTo(file.cacheFile, file.cacheDir)
+      await extractAllTo(file.cacheFile, file.cacheDir, date)
     }
     statStore.setDownloads({
       origin: 'jwOrg',
@@ -357,7 +369,11 @@ async function syncMediaItem(
       const newItem = <SmallMediaFile>JSON.parse(JSON.stringify(item))
       store.setProgress({
         key: newItem.url,
-        promise: downloadIfRequired(newItem, setProgress),
+        promise: downloadIfRequired({
+          file: newItem,
+          _setProgress: setProgress,
+          date,
+        }),
       })
       await store.progress.get(newItem.url)
     } else if (path && item.filepath && item.folder && item.safeName) {

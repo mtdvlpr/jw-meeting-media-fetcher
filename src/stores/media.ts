@@ -9,7 +9,10 @@ interface MediaStore {
   musicFadeOut: Dayjs | string
   meetings: Map<string, Map<number, MeetingFile[]>>
   progress: Map<string, Promise<string>>
-  downloadProgress: Map<string, { current: number; total: number }>
+  downloadProgress: Map<
+    string,
+    { current: number; total: number; date?: string }
+  >
 }
 
 const defaultState: MediaStore = {
@@ -49,7 +52,7 @@ export const useMediaStore = defineStore('media', {
       downloadProgress,
     }: {
       key: string
-      downloadProgress: { current: number; total: number }
+      downloadProgress: { current: number; total: number; date?: string }
     }) {
       this.downloadProgress.set(key, downloadProgress)
     },

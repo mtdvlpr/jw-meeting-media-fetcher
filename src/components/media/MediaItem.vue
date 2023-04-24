@@ -258,7 +258,7 @@ const localStreamPath = computed(() => {
 const downloadSong = async () => {
   if (!props.streamingFile) return
   downloading.value = true
-  await downloadIfRequired(props.streamingFile)
+  await downloadIfRequired({ file: props.streamingFile })
   downloading.value = false
   streamDownloaded.value = await pathExists(localStreamPath.value)
 }

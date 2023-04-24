@@ -16,7 +16,7 @@ export async function getMwMedia(
   }
 
   // Get document id of this weeks mwb issue
-  const db = await getDbFromJWPUB('mwb', issue, setProgress)
+  const db = await getDbFromJWPUB({ pub: 'mwb', issue, setProgress, date })
   if (!db) throw new Error(`No MW media data found for ${date}!`)
   const docId = executeQuery<{ DocumentId: number }>(
     db,
@@ -70,7 +70,13 @@ export async function getMwMedia(
   })
 
   // Get document extracts and add them to the media list
-  const extracts = await getDocumentExtract(db, docId, baseDate, setProgress)
+  const extracts = await getDocumentExtract({
+    db,
+    docId,
+    baseDate,
+    setProgress,
+    date,
+  })
 
   extracts.forEach((extract) => {
     addMediaItemToPart(

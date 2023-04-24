@@ -1,7 +1,7 @@
 import { readFile, stat, writeFile } from 'fs-extra'
 import { join, extname } from 'upath'
 
-export async function extractAllTo(zip: string, dest: string) {
+export async function extractAllTo(zip: string, dest: string, date?: string) {
   try {
     const store = useMediaStore()
     const zipSize = (await stat(zip)).size
@@ -10,6 +10,7 @@ export async function extractAllTo(zip: string, dest: string) {
       downloadProgress: {
         current: 0,
         total: zipSize,
+        date,
       },
     })
     const zipFile = await readFile(zip)
@@ -21,13 +22,7 @@ export async function extractAllTo(zip: string, dest: string) {
       downloadProgress: {
         current: zipSize,
         total: zipSize,
-      },
-    })
-    store.setDownloadProgress({
-      key: zip,
-      downloadProgress: {
-        current: 0,
-        total: zipSize,
+        date,
       },
     })
     if (!fileBuffer) throw new Error('Could not extract files from zip')
@@ -42,6 +37,7 @@ export async function extractAllTo(zip: string, dest: string) {
       downloadProgress: {
         current: 0,
         total: contentsTotal,
+        date,
       },
     })
     await Promise.allSettled(
@@ -57,6 +53,7 @@ export async function extractAllTo(zip: string, dest: string) {
           downloadProgress: {
             current,
             total: contentsTotal,
+            date,
           },
         })
       })

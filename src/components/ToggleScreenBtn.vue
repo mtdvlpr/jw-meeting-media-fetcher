@@ -5,6 +5,8 @@
     :color="mediaVisible ? 'warning' : 'primary'"
     v-bind="$attrs"
     :class="{ 'pulse-danger': !mediaVisible }"
+    size="small"
+    style="min-width: auto"
     :title="title"
     @click="toggleScreen"
   >

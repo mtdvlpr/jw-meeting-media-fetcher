@@ -72,24 +72,26 @@ export async function copy(src: string, dest: string) {
     await ensureFile(dest)
     const srcSize = (await stat(src)).size
     const destSize = (await stat(dest)).size
-    const store = useMediaStore()
-    store.setDownloadProgress({
-      key: dest,
-      downloadProgress: {
-        current: 0,
-        total: destSize,
-      },
-    })
     if (srcSize !== destSize) {
+      const store = useMediaStore()
+      store.setDownloadProgress({
+        key: dest,
+        downloadProgress: {
+          current: 0,
+          total: destSize,
+          date: basename(dirname(dest)),
+        },
+      })
       await copyFile(src, dest)
+      store.setDownloadProgress({
+        key: dest,
+        downloadProgress: {
+          current: srcSize,
+          total: srcSize,
+          date: basename(dirname(dest)),
+        },
+      })
     }
-    store.setDownloadProgress({
-      key: dest,
-      downloadProgress: {
-        current: srcSize,
-        total: destSize,
-      },
-    })
     // const wstream = createWriteStream(dest)
     // const rstream = createReadStream(src)
     // let progress = 0

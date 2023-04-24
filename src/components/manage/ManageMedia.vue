@@ -266,7 +266,10 @@ const processFile = async (file: LocalFile | VideoFile) => {
   // External file from jw.org
   else if (file.safeName) {
     file.folder = date.value
-    await downloadIfRequired(file as VideoFile, setProgress)
+    await downloadIfRequired({
+      file: file as VideoFile,
+      _setProgress: setProgress,
+    })
 
     if ((file as VideoFile).subtitles) {
       congPromises.push(uploadFile(changeExt(path, 'vtt')))

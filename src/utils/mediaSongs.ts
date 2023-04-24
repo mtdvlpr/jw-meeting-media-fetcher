@@ -195,7 +195,7 @@ async function playSignLanguageSong(
   const store = useMediaStore()
 
   const path = isOnline
-    ? await downloadIfRequired(songs[index] as VideoFile)
+    ? await downloadIfRequired({ file: songs[index] as VideoFile })
     : (songs[index] as LocalSong)?.path
 
   ipcRenderer.send('showMedia', { src: path })
@@ -256,7 +256,7 @@ async function createAudioElement(
   source.type = 'audio/mpeg'
   if (isOnline) {
     source.src = pathToFileURL(
-      await downloadIfRequired(songs[index] as VideoFile)
+      await downloadIfRequired({ file: songs[index] as VideoFile })
     ).href
   } else {
     source.src = pathToFileURL((songs[index] as LocalSong)?.path ?? '').href

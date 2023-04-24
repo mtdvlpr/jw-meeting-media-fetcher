@@ -20,13 +20,21 @@ export function executeQuery<T extends Record<string, any>>(
   return results
 }
 
-export async function getDbFromJWPUB(
-  pub?: string,
-  issue?: string,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void,
-  lang?: string,
-  localPath = ''
-) {
+export async function getDbFromJWPUB({
+  pub,
+  issue,
+  setProgress,
+  lang,
+  localPath = '',
+  date,
+}: {
+  pub?: string
+  issue?: string
+  setProgress?: (loaded: number, total: number, global?: boolean) => void
+  lang?: string
+  localPath?: string
+  date?: string
+} = {}) {
   let db: Database | null
   try {
     // Extract db from local JWPUB file
@@ -72,7 +80,11 @@ export async function getDbFromJWPUB(
 
       store.setProgress({
         key: jwpub.url,
-        promise: downloadIfRequired(jwpub, setProgress),
+        promise: downloadIfRequired({
+          file: jwpub,
+          _setProgress: setProgress,
+          date,
+        }),
       })
       await store.progress.get(jwpub.url)
       const path = pubPath(jwpub)

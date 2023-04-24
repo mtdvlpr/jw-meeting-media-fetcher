@@ -5,6 +5,8 @@
     v-click-outside="() => (clickedOnce = false)"
     aria-label="shuffle"
     :color="musicFadeOut ? 'error' : 'warning'"
+    size="small"
+    style="min-width: auto"
     @click="atClick()"
   >
     <v-tooltip
@@ -35,6 +37,8 @@
     :color="musicFadeOut || loading ? 'warning' : 'info'"
     :title="getPrefs('meeting.shuffleShortcut')"
     :loading="loading"
+    size="small"
+    style="min-width: auto"
     @click="atClick()"
   >
     <v-icon v-if="musicFadeOut" start icon="fa-stop" size="small" />
@@ -46,13 +50,16 @@
         :start="i == 0"
         :end="i == 1"
         color="regular"
+        size="x-small"
       />
+      <!-- <v-icon :icon="icons[0]" size="x-small" />
+      <v-icon :icon="icons[1]" size="x-large" style="position: absolute" /> -->
     </template>
     <template v-if="musicFadeOut">{{ timeRemaining }}</template>
   </v-btn>
 </template>
 <script setup lang="ts">
-const icons = ['fa-music', 'fa-shuffle']
+const icons = ['fa-music', 'far fa-circle']
 const store = useMediaStore()
 const { musicFadeOut } = storeToRefs(store)
 const loading = ref(false)

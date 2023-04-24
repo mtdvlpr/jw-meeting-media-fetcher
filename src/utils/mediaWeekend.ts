@@ -1,4 +1,3 @@
-/* eslint-disable import/named */
 import { pathExists, stat } from 'fs-extra'
 import { join } from 'upath'
 import type { Database } from '@stephen/sql.js'
@@ -35,12 +34,12 @@ export async function getWeMedia(
   }
 
   let issue = baseDate.subtract(8, 'weeks').format('YYYYMM') + '00'
-  let db = await getDbFromJWPUB('w', issue, setProgress)
+  let db = await getDbFromJWPUB({ pub: 'w', issue, setProgress, date })
   let weekNr = getWeekNr(db)
 
   if (weekNr < 0) {
     issue = baseDate.subtract(9, 'weeks').format('YYYYMM') + '00'
-    db = await getDbFromJWPUB('w', issue, setProgress)
+    db = await getDbFromJWPUB({ pub: 'w', issue, setProgress, date })
     weekNr = getWeekNr(db)
   }
   if (!db || weekNr < 0) {

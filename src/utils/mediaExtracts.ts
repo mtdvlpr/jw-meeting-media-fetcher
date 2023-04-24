@@ -2,12 +2,19 @@ import type { Dayjs } from 'dayjs'
 import type { Database } from '@stephen/sql.js'
 import { MeetingFile, MultiMediaExtract } from '~~/types'
 
-export async function getDocumentExtract(
-  db: Database,
-  docId: number,
-  baseDate: Dayjs,
+export async function getDocumentExtract({
+  db,
+  docId,
+  baseDate,
+  setProgress,
+  date,
+}: {
+  db: Database
+  docId: number
+  baseDate: Dayjs
   setProgress?: (loaded: number, total: number, global?: boolean) => void
-) {
+  date?: string
+}) {
   const songPub = useMediaStore().songPub
   const excludeTh = getPrefs<boolean>('media.excludeTh')
   let extractMultimediaItems: MeetingFile[] = []
@@ -50,7 +57,9 @@ export async function getDocumentExtract(
       isCoWeek(baseDate) && extract.UniqueEnglishSymbol === 'lff' && !imagesOnly
 
     if (!skipCBS && (!imagesOnly || !excludeLffImages)) {
-      promises.push(extractMediaItems(extract, setProgress, imagesOnly))
+      promises.push(
+        extractMediaItems({ extract, setProgress, imagesOnly, date })
+      )
     }
   })
 
@@ -65,11 +74,17 @@ export async function getDocumentExtract(
   return extractMultimediaItems
 }
 
-async function extractMediaItems(
-  extract: MultiMediaExtract,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void,
-  imagesOnly = false
-) {
+async function extractMediaItems({
+  extract,
+  setProgress,
+  imagesOnly = false,
+  date,
+}: {
+  extract: MultiMediaExtract
+  setProgress?: (loaded: number, total: number, global?: boolean) => void
+  imagesOnly?: boolean
+  date?: string
+}) {
   extract.Lang = getPrefs<string>('media.lang')
   if (extract.Link) {
     try {
@@ -89,20 +104,25 @@ async function extractMediaItems(
   const mediaLang = getPrefs<string>('media.lang')
   const fallbackLang = getPrefs<string>('media.langFallback')
 
-  let extractDb = await getDbFromJWPUB(
-    symbol,
-    extract.IssueTagNumber,
+  let extractDb = await getDbFromJWPUB({
+    pub: symbol,
+    issue: extract.IssueTagNumber,
     setProgress,
-    fallbackLang ? mediaLang : extract.Lang
-  )
+    lang: fallbackLang ? mediaLang : extract.Lang,
+    date,
+  })
 
   if (!extractDb && fallbackLang) {
-    extractDb = await getDbFromJWPUB(
-      symbol,
-      extract.IssueTagNumber,
+    extractDb = await getDbFromJWPUB({
+      pub: symbol,
+      issue: extract.IssueTagNumber,
+      lang:
+        extract.Lang === mediaLang
+          ? fallbackLang
+          : extract.Lang ?? fallbackLang,
       setProgress,
-      extract.Lang === mediaLang ? fallbackLang : extract.Lang ?? fallbackLang
-    )
+      date,
+    })
   }
 
   if (!extractDb) return []

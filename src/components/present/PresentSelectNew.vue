@@ -6,8 +6,13 @@
       color="primary"
       stream
     ></v-progress-linear>
+    <h1>GLOBAL</h1>
     {{ globalDownloadProgress }}
+    <h1>DAYS</h1>
     {{ daysDownloadProgress }}
+    <h1>DAYS 2</h1>
+
+    {{ weirdProgress }}
     <v-row no-gutters>
       <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">
         <v-card :subtitle="day" variant="tonal" color="grey"></v-card>
@@ -68,13 +73,6 @@
 import { changeExt, join } from 'upath'
 import weekday from 'dayjs/plugin/weekday'
 import { MediaPrefs, MeetingFile, DateFormat } from '~~/types'
-type ProgressObject = {
-  [key: string]: {
-    current: number
-    total: number
-    percent: number
-  }
-}
 export default {
   data() {
     return {
@@ -90,7 +88,6 @@ export default {
           nonMeetingMedia: boolean | number
           inPast: boolean
           progress: number
-          urls: string[]
         }>
       >,
       today: this.$dayjs().startOf('day'),
@@ -112,27 +109,34 @@ export default {
       const percent = (current / total) * 100 || 0
       return { current, total, percent }
     },
-    daysDownloadProgress(): ProgressObject {
+    daysDownloadProgress() {
       const progressArray = Array.from(useMediaStore().downloadProgress)
-      const daysObject: ProgressObject = this.weeks
-        .flat()
-        .filter((d: { date: string; urls: any[] }) => d.urls.length > 0)
-        .reduce((acc: ProgressObject, d) => {
-          const filteredProgressArray = progressArray.filter((el) =>
-            d.urls.includes(el[0])
-          )
-          const current = filteredProgressArray.reduce((acc, [, value]) => {
-            return acc + value.current
-          }, 0)
-          const total = filteredProgressArray.reduce((acc, [, value]) => {
-            return acc + value.total
-          }, 0)
-          const percent = (current / total) * 100 || 0
-          acc[d.date] = { current, total, percent }
-          return acc
-        }, {})
-
-      return daysObject
+      const progressByDate = new Map()
+      for (const [, progress] of progressArray) {
+        const { current, total, date } = progress
+        if (!date) continue
+        const existingProgress = progressByDate.get(date) ?? {
+          current: 0,
+          total: 0,
+          percent: 0,
+        }
+        const updatedProgress = {
+          current: existingProgress.current + current,
+          total: existingProgress.total + total,
+          percent:
+            ((existingProgress.current + current) /
+              (existingProgress.total + total)) *
+            100,
+        }
+        progressByDate.set(date, updatedProgress)
+      }
+      return progressByDate
+    },
+    weirdProgress() {
+      const downloadProgress = useMediaStore().downloadProgress
+      return Array.from(downloadProgress.entries()).filter(
+        ([, { current, total }]) => current !== total
+      )
     },
   },
   mounted() {
@@ -182,7 +186,6 @@ export default {
               ).length,
             inPast: date.isBefore(todayDate),
             progress: 0,
-            urls: [],
           })
           currentDay = currentDay.add(1, 'day')
         }
@@ -271,11 +274,9 @@ export default {
           )
         } else */ if (item.url) {
           const newItem = JSON.parse(JSON.stringify(item))
-          day!.urls.push(item.url)
-          await downloadIfRequired(newItem)
+          await downloadIfRequired({ file: newItem, date })
         } else if (path && item.filepath && item.folder && item.safeName) {
           const dest = join(path, item.folder, item.safeName)
-          day!.urls.push(dest)
           await copy(item.filepath, dest)
         }
       } else {
@@ -305,7 +306,6 @@ export default {
         nonMeetingMedia: number | boolean
         inPast: boolean
         progress: number
-        urls?: string[] | undefined
       }[][]
     ) {
       const { client } = useCongStore()

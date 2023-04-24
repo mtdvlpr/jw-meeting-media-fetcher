@@ -329,7 +329,7 @@ async function setupFFmpeg(
     (await stat(zipPath)).size !== version.size
   ) {
     rm(join(ffMpegPath, 'zip'))
-    await fetchFile(version.browser_download_url, zipPath)
+    await fetchFile({ url: version.browser_download_url, dest: zipPath })
   }
 
   const { default: JSZip } = await import('jszip')

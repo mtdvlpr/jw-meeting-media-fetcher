@@ -8,7 +8,15 @@ import {
   MediaCategoryResult,
 } from '~~/types'
 
-export async function fetchFile(url: string, dest: string | string[]) {
+export async function fetchFile({
+  url,
+  dest,
+  date,
+}: {
+  url: string
+  dest: string | string[]
+  date?: string
+}) {
   const response = await fetch(url)
   const contentLength = response.headers.get('content-length')
   if (response.ok && response.body && contentLength) {
@@ -32,6 +40,7 @@ export async function fetchFile(url: string, dest: string | string[]) {
           downloadProgress: {
             current,
             total,
+            date,
           },
         })
       },

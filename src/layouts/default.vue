@@ -145,7 +145,10 @@ useIpcRendererOn('macUpdate', async (_e, version) => {
     )
 
     // Download the latest release
-    await fetchFile(macDownload.browser_download_url, downloadsPath)
+    await fetchFile({
+      url: macDownload.browser_download_url,
+      dest: downloadsPath,
+    })
 
     // Open the downloaded file
     ipcRenderer.send(

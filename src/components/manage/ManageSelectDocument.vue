@@ -78,13 +78,10 @@ const db = ref<Database | null>(null)
 const items = ref<{ DocumentId: number; Title: string }[]>([])
 const getDocuments = async () => {
   loading.value = true
-  const database = await getDbFromJWPUB(
-    undefined,
-    undefined,
-    props.setProgress,
-    undefined,
-    props.file
-  )
+  const database = await getDbFromJWPUB({
+    setProgress: props.setProgress,
+    localPath: props.file,
+  })
   if (!database) return
   db.value = database
 

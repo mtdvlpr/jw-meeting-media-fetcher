@@ -87,7 +87,7 @@ async function getWtFont(font: string, force = false) {
     (await stat(fontPath)).size !== size
   ) {
     try {
-      await fetchFile(font, fontPath)
+      await fetchFile({ url: font, dest: fontPath })
     } catch (e) {
       log.error(e)
     }

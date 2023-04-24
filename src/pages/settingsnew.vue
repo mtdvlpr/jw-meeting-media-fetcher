@@ -200,7 +200,7 @@ const dateFormats = [
 
 const processed = ref(0)
 const downloadSong = async (song: VideoFile) => {
-  await downloadIfRequired(song, setProgress)
+  await downloadIfRequired({ file: song, _setProgress: setProgress })
   setProgress(++processed.value, NR_OF_KINGDOM_SONGS, true)
 }
 
