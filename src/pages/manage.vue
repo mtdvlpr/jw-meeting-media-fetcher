@@ -17,8 +17,8 @@ useHead({
   title: computed(() => (date.value ? `Manage ${date.value}` : 'Manage Media')),
 })
 
-const { height } = useWindowSize()
-provide(windowHeightKey, height)
+// const { height } = useWindowSize()
+// provide(windowHeightKey, height)
 
 const now = getNow()
 const loading = ref(true)

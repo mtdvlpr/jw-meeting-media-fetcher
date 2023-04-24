@@ -1,10 +1,5 @@
 <template>
-  <v-card
-    v-if="dropping"
-    :height="listHeight - 32"
-    class="d-flex ma-4"
-    style="border: 1px dashed"
-  >
+  <v-card v-if="dropping" class="d-flex ma-4" style="border: 1px dashed">
     <v-card-text class="d-flex flex-column justify-center align-center">
       {{ $t('dropFiles') }}
       <v-icon icon="fa-download" size="x-large" class="mt-4" />
@@ -13,7 +8,7 @@
   <v-list
     v-else-if="mediaList.length > 0"
     density="compact"
-    :style="`position: static;overflow-y: auto;max-height: ${listHeight}px`"
+    style="position: static; overflow-y: auto"
   >
     <v-dialog
       v-if="edit"
@@ -47,7 +42,7 @@
       @refresh="atRefresh(item)"
     />
   </v-list>
-  <p v-else class="px-4 text-center" :style="`height: ${listHeight}px`">
+  <p v-else class="px-4 text-center">
     {{ $t('noMedia') }}
   </p>
 </template>
@@ -220,20 +215,20 @@ const removeItem = async (item: MeetingFile | LocalFile) => {
 }
 
 // Available list height
-const windowHeight = inject(windowHeightKey, ref(0))
-const listHeight = computed(() => {
-  const TOOLBAR = 112
-  const INPUT = 56
-  const PREFIX = 56
-  const EL_PADDING = 12
-  const FOOTER = 72
-  let otherElements = FOOTER + TOOLBAR + EL_PADDING
-  if (props.showInput) {
-    otherElements += INPUT
-  }
-  if (props.showPrefix) {
-    otherElements += PREFIX
-  }
-  return windowHeight.value - otherElements
-})
+// const windowHeight = inject(windowHeightKey, ref(0))
+// const listHeight = computed(() => {
+//   const TOOLBAR = 112
+//   const INPUT = 56
+//   const PREFIX = 56
+//   const EL_PADDING = 12
+//   const FOOTER = 72
+//   let otherElements = FOOTER + TOOLBAR + EL_PADDING
+//   if (props.showInput) {
+//     otherElements += INPUT
+//   }
+//   if (props.showPrefix) {
+//     otherElements += PREFIX
+//   }
+//   return windowHeight.value - otherElements
+// })
 </script>

@@ -19,9 +19,9 @@ export const videoActiveKey = Symbol('videoActive') as InjectionKey<
 >
 
 // Provided by manage and present page
-export const windowHeightKey = Symbol('windowHeight') as InjectionKey<
-  Ref<number>
->
+// export const windowHeightKey = Symbol('windowHeight') as InjectionKey<
+//   Ref<number>
+// >
 
 // Provided by media controls
 export const ccEnableKey = Symbol('ccEnable') as InjectionKey<Ref<boolean>>

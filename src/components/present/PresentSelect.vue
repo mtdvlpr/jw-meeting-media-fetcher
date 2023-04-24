@@ -4,11 +4,7 @@
       <loading-icon v-if="loading" />
       <v-list
         v-else-if="dates.length > 0"
-        :style="`
-        width: 100%;
-        overflow-y: auto;
-        ${listHeight}
-      `"
+        style="width: 100%; overflow-y: auto"
       >
         <template v-for="(date, i) in dates" :key="date">
           <v-list-item class="text-center" @click="selectDate(date)">
@@ -86,11 +82,11 @@ const getDates = () => {
 }
 
 // Computed list height
-const windowHeight = inject(windowHeightKey, ref(0))
-const listHeight = computed(() => {
-  const OTHER_ELEMENTS = 181
-  return `max-height: ${windowHeight.value - OTHER_ELEMENTS}px`
-})
+// const windowHeight = inject(windowHeightKey, ref(0))
+// const listHeight = computed(() => {
+//   const OTHER_ELEMENTS = 181
+//   return `max-height: ${windowHeight.value - OTHER_ELEMENTS}px`
+// })
 </script>
 <style lang="scss" scoped>
 .present-select {

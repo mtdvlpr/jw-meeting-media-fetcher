@@ -1,5 +1,8 @@
 <template>
-  <v-footer class="justify-end present-footer">
+  <v-footer
+    v-if="date && (obsEnabled || obsEnabled)"
+    class="justify-end present-footer"
+  >
     <v-col v-if="date && scene && zoomScene" cols="auto">
       <v-btn icon variant="text" size="medium" @click="emit('zoomPart')">
         <v-icon

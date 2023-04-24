@@ -53,8 +53,8 @@ watch(date, (val) => {
     firstChoice.value = false
   }
 })
-const { height, width } = useWindowSize()
-provide(windowHeightKey, height)
+const { width } = useWindowSize()
+// provide(windowHeightKey, height)
 const mediaActive = ref(false)
 provide(mediaActiveKey, mediaActive)
 const videoActive = ref(false)
