@@ -100,6 +100,7 @@
   <v-progress-linear
     v-model="dayDownloadProgress.percent"
     color="primary"
+    stream
   ></v-progress-linear>
 </template>
 <script setup lang="ts">
@@ -159,7 +160,9 @@ const dayDownloadProgress = computed(() => {
     }
     progressByDate.set(date, updatedProgress)
   }
-  return progressByDate.get(date.value) ?? { current: 0, total: 0, percent: 0 }
+  return (
+    progressByDate.get(date.value) ?? { current: 0, total: 0, percent: 100 }
+  )
 })
 
 console.log('dayDownloadProgress', dayDownloadProgress.value, date.value)
