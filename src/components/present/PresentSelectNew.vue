@@ -88,6 +88,7 @@ export default {
           month: string
           meetingType: string | undefined
           currentMonth: boolean
+          isToday: boolean
           nonMeetingMedia: boolean | number
           inPast: boolean
           progress: { current: number; total: number; percent: number }
@@ -161,6 +162,7 @@ export default {
         for (let i = 0; i < 7; i++) {
           const date = currentDay
           const weekDay = (date.day() + 6) % 7
+          const isToday = date.isSame(todayDate)
           const isTodayOrAfter = !date.isBefore(todayDate)
           const isMwDay = weekDay === getMwDay(date)
           const isWeDay = weekDay === weDay
@@ -175,6 +177,7 @@ export default {
             dayOfMonth: date.format('D'),
             month: date.format('MMM'),
             meetingType,
+            isToday,
             currentMonth: date.isSame(todayDate, 'month'),
             nonMeetingMedia:
               !meetingType &&
@@ -301,14 +304,11 @@ export default {
         meetingType: string | undefined
         currentMonth: boolean
         nonMeetingMedia: number | boolean
+        isToday: boolean
         inPast: boolean
         progress: { current: number; total: number; percent: number }
       }[][]
     ) {
-      const { client } = useCongStore()
-      const congSync = computed(() => !!client)
-      const { enableMp4Conversion, enableVlcPlaylistCreation } =
-        getPrefs<MediaPrefs>('media')
       // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
       // for (const week of weeks) {
       //   await Promise.all(
@@ -325,44 +325,58 @@ export default {
       // }
 
       // THIS IS IF WE WANT ALL WEEKS TO BE ASYNC
+      const meetingToday = weeks
+        .flat()
+        .flat()
+        .find((day) => day.isToday && !!day.meetingType)
+      if (meetingToday) await this.processDay(meetingToday)
       await Promise.all(
-        weeks.map(
-          async (week) =>
-            await Promise.all(
-              week.flatMap(async (day) => {
-                if (!day.inPast) {
-                  const dayTotalSteps = [
-                    congSync.value,
-                    day.meetingType,
-                    true,
-                    true,
-                    enableMp4Conversion,
-                    enableVlcPlaylistCreation,
-                  ].filter(Boolean).length
-                  day.progress.total = dayTotalSteps
-                  if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
-                  if (day.meetingType) {
-                    await this.syncJWMediaByDate(day.date, day.meetingType)
-                    day.progress.current++
-                    day.progress.percent =
-                      (day.progress.current / day.progress.total) * 100
-                  }
-                  await syncLocalRecurringMediaByDate(day.date)
-                  day.progress.current++
-                  day.progress.percent =
-                    (day.progress.current / day.progress.total) * 100
-                  await convertUnusableFilesByDate(day.date)
-                  day.progress.current++
-                  day.progress.percent =
-                    (day.progress.current / day.progress.total) * 100
-                  if (enableMp4Conversion) await convertToMP4ByDate(day.date)
-                  if (enableVlcPlaylistCreation)
-                    await convertToVLCByDate(day.date)
-                }
-              })
-            )
-        )
+        weeks.map(async (week) => {
+          await Promise.all(
+            week.flatMap(async (day) => {
+              if (!(day.isToday && !!day.meetingType))
+                await this.processDay(day)
+            })
+          )
+        })
       )
+    },
+    async processDay(day: {
+      inPast: boolean
+      meetingType: string | undefined
+      progress: { total: number; current: number; percent: number }
+      date: string
+    }) {
+      const { client } = useCongStore()
+      const congSync = computed(() => !!client)
+      const { enableMp4Conversion, enableVlcPlaylistCreation } =
+        getPrefs<MediaPrefs>('media')
+      if (!day.inPast) {
+        const dayTotalSteps = [
+          congSync.value,
+          day.meetingType,
+          true,
+          true,
+          enableMp4Conversion,
+          enableVlcPlaylistCreation,
+        ].filter(Boolean).length
+        day.progress.total = dayTotalSteps
+        if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
+        if (day.meetingType) {
+          await this.syncJWMediaByDate(day.date, day.meetingType)
+          day.progress.current++
+          day.progress.percent =
+            (day.progress.current / day.progress.total) * 100
+        }
+        await syncLocalRecurringMediaByDate(day.date)
+        day.progress.current++
+        day.progress.percent = (day.progress.current / day.progress.total) * 100
+        await convertUnusableFilesByDate(day.date)
+        day.progress.current++
+        day.progress.percent = (day.progress.current / day.progress.total) * 100
+        if (enableMp4Conversion) await convertToMP4ByDate(day.date)
+        if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
+      }
     },
     selectDate(date: string) {
       useRouter().push({
