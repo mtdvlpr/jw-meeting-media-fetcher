@@ -1,12 +1,12 @@
 <!-- Select a congregation on startup -->
 <template>
   <div class="cong-select">
-    <v-toolbar>
-      <v-toolbar-title>
+    <v-app-bar color="grey-lighten-3">
+      <v-app-bar-title>
         <v-icon icon="fa-building-user" size="x-large" />
         {{ $t('selectCong') }}
-      </v-toolbar-title>
-    </v-toolbar>
+      </v-app-bar-title>
+    </v-app-bar>
     <v-row justify="start" align="start" class="pa-4">
       <v-col cols="12">
         <loading-icon v-if="loading" />
@@ -41,7 +41,6 @@
 import { platform, userInfo } from 'os'
 import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { basename, join } from 'upath'
-// eslint-disable-next-line import/named
 import { pathExists } from 'fs-extra'
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'

@@ -1,8 +1,14 @@
 <template>
   <div class="present-page">
-    <v-toolbar v-if="!date">
-      <v-toolbar-title>{{ $t('selectDate') }}</v-toolbar-title>
-    </v-toolbar>
+    <v-app-bar v-if="!date" color="grey-lighten-3">
+      <v-app-bar-title>
+        <v-breadcrumbs>
+          <v-breadcrumbs-item>
+            {{ $t('selectDate') }}
+          </v-breadcrumbs-item>
+        </v-breadcrumbs>
+      </v-app-bar-title>
+    </v-app-bar>
     <confirm-dialog
       v-model="dialog"
       description="obsZoomSceneActivate"

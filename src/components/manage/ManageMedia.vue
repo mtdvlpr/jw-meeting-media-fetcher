@@ -1,7 +1,7 @@
 <template>
   <div class="manage-media">
-    <v-toolbar>
-      <v-toolbar-title>{{ $t('plannedMedia') }}: {{ title }}</v-toolbar-title>
+    <v-app-bar color="grey-lighten-3">
+      <v-app-bar-title>{{ $t('plannedMedia') }}: {{ title }}</v-app-bar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
         <v-tabs v-model="type" grow>
@@ -10,7 +10,7 @@
           </v-tab>
         </v-tabs>
       </template>
-    </v-toolbar>
+    </v-app-bar>
     <manage-select-video
       :active="type === 'jwOrg' && !jwFile"
       @cancel="type = 'custom'"

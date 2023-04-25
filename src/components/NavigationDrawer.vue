@@ -1,5 +1,11 @@
 <template>
-  <v-navigation-drawer v-if="cong" rail expand-on-hover permanent>
+  <v-navigation-drawer
+    v-if="cong"
+    color="secondary"
+    rail
+    expand-on-hover
+    permanent
+  >
     <v-list>
       <v-list-item title="M³">
         <template #subtitle>
@@ -165,7 +171,6 @@ watch(
 // })
 const toggleMusic = async () => {
   pleaseWait.value = true
-  console.log(musicFadeOut, !!musicFadeOut)
   await shuffleMusic(!musicStopped.value)
   musicStopped.value = !musicStopped.value
   pleaseWait.value = false

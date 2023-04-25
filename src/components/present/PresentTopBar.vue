@@ -1,19 +1,29 @@
 <template>
-  <v-toolbar class="present-top-bar">
-    <v-col class="text-center" style="position: absolute">
-      <v-btn
-        id="btn-toggle-meeting-date"
-        class="px-3"
-        variant="outlined"
-        :disabled="mediaActive"
-        size="large"
-        @click="clearDate()"
-      >
-        {{ date }}
-      </v-btn>
-    </v-col>
+  <v-app-bar color="grey-lighten-3" class="present-top-bar">
+    <v-app-bar-title>
+      <v-breadcrumbs>
+        <v-breadcrumbs-item
+          v-for="breadcrumb in [
+            {
+              title: $t('selectDate'),
+              disabled: false,
+              click: clearDate,
+            },
+            {
+              title: date,
+              disabled: true,
+            },
+          ]"
+          :key="breadcrumb.title"
+          :disabled="breadcrumb.disabled"
+          @click="breadcrumb.click"
+        >
+          {{ breadcrumb.title }}
+        </v-breadcrumbs-item>
+      </v-breadcrumbs>
+    </v-app-bar-title>
 
-    <v-col class="text-left" cols="auto">
+    <template #append>
       <v-menu location="bottom">
         <template #activator="{ props }">
           <v-btn
@@ -39,28 +49,20 @@
           </v-list-item>
         </v-list>
       </v-menu>
-      <v-btn icon aria-label="Add song" @click="emit('song')">
-        <v-icon icon="fa-music" size="small" />
-        <v-icon icon="fa-plus" size="small" />
-        <v-tooltip activator="parent" location="bottom">
-          {{ $t('lastMinuteSong') }}
-        </v-tooltip>
-      </v-btn>
-      <v-btn
-        v-if="getPrefs('media.enableSubtitles') && ccAvailable"
-        icon
-        aria-label="Toggle subtitles"
-        :color="ccEnable ? 'primary' : undefined"
-        @click="emit('cc')"
-      >
-        <v-icon :icon="`${ccIcon}fa-closed-captioning`" size="small" />
-        <v-tooltip activator="parent" location="bottom">
-          {{ $t('toggleSubtitles') }}
-        </v-tooltip>
-      </v-btn>
-    </v-col>
+    </template>
 
-    <v-spacer />
+    <v-btn
+      v-if="getPrefs('media.enableSubtitles') && ccAvailable"
+      icon
+      aria-label="Toggle subtitles"
+      :color="ccEnable ? 'primary' : undefined"
+      @click="emit('cc')"
+    >
+      <v-icon :icon="`${ccIcon}fa-closed-captioning`" size="small" />
+      <v-tooltip activator="parent" location="bottom">
+        {{ $t('toggleSubtitles') }}
+      </v-tooltip>
+    </v-btn>
 
     <v-col class="text-right" cols="auto">
       <template v-if="getPrefs('media.enablePp')">
@@ -90,7 +92,7 @@
         </v-btn>
       </template>
     </v-col>
-  </v-toolbar>
+  </v-app-bar>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'

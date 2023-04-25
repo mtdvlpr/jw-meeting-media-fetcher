@@ -1,7 +1,7 @@
 <template>
   <div>
-    <v-toolbar>
-      <v-toolbar-title>{{ $t('plannedMedia') }}</v-toolbar-title>
+    <v-app-bar color="grey-lighten-3">
+      <v-app-bar-title>{{ $t('plannedMedia') }}</v-app-bar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
         <v-tabs v-model="currentWeek" grow>
@@ -10,7 +10,7 @@
           </v-tab>
         </v-tabs>
       </template>
-    </v-toolbar>
+    </v-app-bar>
     <action-preview
       v-if="action"
       :text="text(action)"

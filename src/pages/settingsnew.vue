@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-toolbar>
-      <v-toolbar-title :class="{ 'text-error': !valid }">
+    <v-app-bar color="grey-lighten-3">
+      <v-app-bar-title :class="{ 'text-error': !valid }">
         {{ $t('settings') }}
-      </v-toolbar-title>
+      </v-app-bar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
         <v-text-field
@@ -14,7 +14,7 @@
           clearable
         />
       </template>
-    </v-toolbar>
+    </v-app-bar>
     <v-dialog :model-value="!!isNew" fullscreen transition="fade-transition">
       <template #activator="{ props }">
         <v-btn
@@ -150,12 +150,12 @@ const { client } = storeToRefs(useCongStore())
 const { screens, mediaScreenInit } = storeToRefs(usePresentStore())
 
 // Height
-const { height } = useWindowSize()
-const contentHeight = computed(() => {
-  const TOOLBAR_HEIGHT = 112
-  const FOOTER_HEIGHT = 76
-  return height.value - TOOLBAR_HEIGHT - FOOTER_HEIGHT
-})
+// const { height } = useWindowSize()
+// const contentHeight = computed(() => {
+//   const TOOLBAR_HEIGHT = 112
+//   const FOOTER_HEIGHT = 76
+//   return height.value - TOOLBAR_HEIGHT - FOOTER_HEIGHT
+// })
 
 // Control cache
 const cache = ref(0)
