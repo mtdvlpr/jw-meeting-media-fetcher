@@ -1,5 +1,9 @@
 <template>
-  <v-app-bar color="grey-lighten-3" class="present-top-bar">
+  <v-app-bar
+    color="grey-lighten-3"
+    style="z-index: 1000"
+    class="present-top-bar"
+  >
     <v-app-bar-title>
       <v-breadcrumbs>
         <v-breadcrumbs-item
@@ -93,6 +97,10 @@
       </template>
     </v-col>
   </v-app-bar>
+  <v-progress-linear
+    v-model="dayDownloadProgress.percent"
+    color="primary"
+  ></v-progress-linear>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
@@ -129,6 +137,32 @@ const setCcAvailable = () => {
 onMounted(() => {
   setCcAvailable()
 })
+
+const dayDownloadProgress = computed(() => {
+  const { downloadProgress } = useMediaStore()
+  const progressByDate = new Map()
+  for (const [, progress] of downloadProgress) {
+    const { current, total, date } = progress
+    if (!date) continue
+    const existingProgress = progressByDate.get(date) ?? {
+      current: 0,
+      total: 0,
+      percent: 0,
+    }
+    const updatedProgress = {
+      current: existingProgress.current + current,
+      total: existingProgress.total + total,
+      percent:
+        ((existingProgress.current + current) /
+          (existingProgress.total + total)) *
+        100,
+    }
+    progressByDate.set(date, updatedProgress)
+  }
+  return progressByDate.get(date.value) ?? { current: 0, total: 0, percent: 0 }
+})
+
+console.log('dayDownloadProgress', dayDownloadProgress.value, date.value)
 
 // Change meeting date
 const clearDate = () => {

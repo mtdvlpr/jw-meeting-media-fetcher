@@ -1,6 +1,6 @@
 <template>
   <div class="present-page">
-    <v-app-bar v-if="!date">
+    <v-app-bar v-if="!date" style="z-index: 1000">
       <v-app-bar-title>{{ $t('selectDate') }}</v-app-bar-title>
     </v-app-bar>
     <confirm-dialog

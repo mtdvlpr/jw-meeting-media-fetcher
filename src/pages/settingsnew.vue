@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar color="grey-lighten-3">
+    <v-app-bar color="grey-lighten-3" style="z-index: 1000">
       <v-app-bar-title :class="{ 'text-error': !valid }">
         {{ $t('settings') }}
       </v-app-bar-title>

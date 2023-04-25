@@ -1,6 +1,6 @@
 <template>
   <div class="present-page">
-    <v-app-bar v-if="!date" color="grey-lighten-3">
+    <v-app-bar v-if="!date" color="grey-lighten-3" style="z-index: 1000">
       <v-app-bar-title>
         <v-breadcrumbs>
           <v-breadcrumbs-item>

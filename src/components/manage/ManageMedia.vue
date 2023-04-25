@@ -1,6 +1,6 @@
 <template>
   <div class="manage-media">
-    <v-app-bar color="grey-lighten-3">
+    <v-app-bar color="grey-lighten-3" style="z-index: 1000">
       <v-app-bar-title>{{ $t('plannedMedia') }}: {{ title }}</v-app-bar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
