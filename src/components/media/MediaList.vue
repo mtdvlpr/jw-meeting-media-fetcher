@@ -1,6 +1,6 @@
 <template>
   <div id="media-list-container" style="width: 100%; overflow-y: auto">
-    <v-slide-y-transition>
+    <v-expand-transition>
       <song-picker
         v-if="addSong"
         ref="songPicker"
@@ -8,8 +8,8 @@
         class="ma-4"
         clearable
       />
-    </v-slide-y-transition>
-    <v-slide-y-transition>
+    </v-expand-transition>
+    <v-expand-transition>
       <v-list v-if="song" class="ma-4">
         <media-item
           :key="song.url"
@@ -22,8 +22,8 @@
           @deactivated="deactivateSong"
         />
       </v-list>
-    </v-slide-y-transition>
-    <v-slide-y-transition>
+    </v-expand-transition>
+    <v-expand-transition>
       <div v-if="isMwDay">
         <v-divider class="mx-4 mt-4 text-treasures" />
         <v-list-item-title class="mx-4 my-2 text-treasures text-overline">
@@ -176,7 +176,7 @@
           </template>
         </draggable>
       </v-list>
-    </v-slide-y-transition>
+    </v-expand-transition>
   </div>
 </template>
 <script setup lang="ts">

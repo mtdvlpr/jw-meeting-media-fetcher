@@ -347,13 +347,21 @@ export default {
       progress: { total: number; current: number; percent: number }
       date: string
     }) {
+      const increaseProgress = (day: {
+        progress: { current: number; percent: number; total: number }
+      }) => {
+        day.progress.current++
+        day.progress.percent = (day.progress.current / day.progress.total) * 100
+      }
       const { client } = useCongStore()
       const congSync = computed(() => !!client)
       const { enableMp4Conversion, enableVlcPlaylistCreation } =
         getPrefs<MediaPrefs>('media')
       if (!day.inPast) {
+        // progress steps to be displayed here eventually, as a percent of current divided total steps
+        // progress step calculation and incrementing should ideally be integrated into each function
         const dayTotalSteps = [
-          congSync.value,
+          congSync.value ? 2 : 0,
           day.meetingType,
           true,
           true,
@@ -361,21 +369,28 @@ export default {
           enableVlcPlaylistCreation,
         ].filter(Boolean).length
         day.progress.total = dayTotalSteps
-        if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
-        if (day.meetingType) {
-          await this.syncJWMediaByDate(day.date, day.meetingType)
-          day.progress.current++
-          day.progress.percent =
-            (day.progress.current / day.progress.total) * 100
+        if (congSync.value) {
+          await getCongMediaByDate(day.date, !!day.meetingType)
+          increaseProgress(day)
         }
-        await syncLocalRecurringMediaByDate(day.date)
-        day.progress.current++
-        day.progress.percent = (day.progress.current / day.progress.total) * 100
+        await Promise.allSettled([
+          day.meetingType && this.syncJWMediaByDate(day.date, day.meetingType),
+          congSync.value && syncCongMediaByDate(day.date),
+          syncLocalRecurringMediaByDate(day.date),
+        ])
+        day.meetingType && increaseProgress(day)
+        congSync.value && increaseProgress(day)
+        increaseProgress(day)
         await convertUnusableFilesByDate(day.date)
-        day.progress.current++
-        day.progress.percent = (day.progress.current / day.progress.total) * 100
-        if (enableMp4Conversion) await convertToMP4ByDate(day.date)
-        if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
+        increaseProgress(day)
+        if (enableMp4Conversion) {
+          await convertToMP4ByDate(day.date)
+          increaseProgress(day)
+        }
+        if (enableVlcPlaylistCreation) {
+          await convertToVLCByDate(day.date)
+          increaseProgress(day)
+        }
       }
     },
     selectDate(date: string) {
