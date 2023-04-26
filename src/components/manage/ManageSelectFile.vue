@@ -12,15 +12,18 @@
       </v-btn>
     </v-col>
     <v-col class="pl-0">
-      <form-input :model-value="path" readonly hide-details="auto" />
+      <v-chip v-for="file in files" :key="file.filepath" class="ml-2 my-1">
+        {{ file.safeName }}
+      </v-chip>
     </v-col>
   </v-row>
 </template>
 <script setup lang="ts">
+import { LocalFile, VideoFile } from '~~/types'
 const emit = defineEmits(['click'])
 defineProps<{
   type: string
-  path: string
+  files: (LocalFile | VideoFile)[]
   loading?: boolean
 }>()
 </script>

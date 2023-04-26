@@ -47,11 +47,11 @@
 import { ipcRenderer } from 'electron'
 import type { Database } from '@stephen/sql.js'
 import { extname, trimExt } from 'upath'
-import { LocalFile } from '~~/types'
+import { LocalFile, VideoFile } from '~~/types'
 
 const props = defineProps<{
-  file: string
-  setProgress: (loaded: number, total: number, global?: boolean) => void
+  file: LocalFile | VideoFile
+  setProgress?: (loaded: number, total: number, global?: boolean) => void
 }>()
 
 const emit = defineEmits<{
@@ -80,7 +80,7 @@ const getDocuments = async () => {
   loading.value = true
   const database = await getDbFromJWPUB({
     setProgress: props.setProgress,
-    localPath: props.file,
+    localPath: props.file.filepath,
   })
   if (!database) return
   db.value = database
@@ -143,7 +143,7 @@ const selectDoc = async (id: number) => {
       true
     )
     for (const [i, mm] of mmItems.entries()) {
-      props.setProgress(i + 1, mmItems.length)
+      if (props.setProgress) props.setProgress(i + 1, mmItems.length)
       const {
         Label,
         Caption,
@@ -179,7 +179,8 @@ const selectDoc = async (id: number) => {
 
       if (FilePath && CategoryType && CategoryType !== -1) {
         tempMedia.contents =
-          (await getZipContentsByName(props.file, FilePath)) ?? undefined
+          (await getZipContentsByName(props.file.filepath!, FilePath)) ??
+          undefined
       } else if (mm.url) {
         Object.assign(tempMedia, mm)
       } else {

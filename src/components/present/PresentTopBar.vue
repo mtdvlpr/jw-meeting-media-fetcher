@@ -55,19 +55,6 @@
       </v-menu>
     </template>
 
-    <v-btn
-      v-if="getPrefs('media.enableSubtitles') && ccAvailable"
-      icon
-      aria-label="Toggle subtitles"
-      :color="ccEnable ? 'primary' : undefined"
-      @click="emit('cc')"
-    >
-      <v-icon :icon="`${ccIcon}fa-closed-captioning`" size="small" />
-      <v-tooltip activator="parent" location="bottom">
-        {{ $t('toggleSubtitles') }}
-      </v-tooltip>
-    </v-btn>
-
     <v-col class="text-right" cols="auto">
       <template v-if="getPrefs('media.enablePp')">
         <v-btn
@@ -128,16 +115,16 @@ const mediaActive = inject(mediaActiveKey, ref(false))
 const date = useRouteQuery<string>('date', '')
 
 // Subtitles
-const ccAvailable = ref(false)
-const ccEnable = inject(ccEnableKey, ref(false))
-const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
-const setCcAvailable = () => {
-  ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
-}
+// const ccAvailable = ref(false)
+// const ccEnable = inject(ccEnableKey, ref(false))
+// const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
+// const setCcAvailable = () => {
+//   ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
+// }
 
-onMounted(() => {
-  setCcAvailable()
-})
+// onMounted(() => {
+//   setCcAvailable()
+// })
 
 const dayDownloadProgress = computed(() => {
   const { downloadProgress } = useMediaStore()
@@ -164,8 +151,6 @@ const dayDownloadProgress = computed(() => {
     progressByDate.get(date.value) ?? { current: 0, total: 0, percent: 100 }
   )
 })
-
-console.log('dayDownloadProgress', dayDownloadProgress.value, date.value)
 
 // Change meeting date
 const clearDate = () => {

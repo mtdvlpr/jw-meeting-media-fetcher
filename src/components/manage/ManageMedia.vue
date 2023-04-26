@@ -1,29 +1,26 @@
 <template>
   <div class="manage-media">
-    <v-app-bar color="grey-lighten-3" style="z-index: 1000">
-      <v-app-bar-title>{{ $t('plannedMedia') }}: {{ title }}</v-app-bar-title>
-      <progress-bar :current="currentProgress" :total="totalProgress" />
-      <template #extension>
-        <v-tabs v-model="type" grow>
-          <v-tab v-for="t in types" :key="t.value" :value="t.value">
-            {{ t.label }}
-          </v-tab>
-        </v-tabs>
-      </template>
-    </v-app-bar>
+    <v-tabs v-model="type" grow>
+      <v-tab v-for="t in types" :key="t.value" :value="t.value">
+        {{ t.label }}
+      </v-tab>
+    </v-tabs>
     <manage-select-video
       :active="type === 'jwOrg' && !jwFile"
       @cancel="type = 'custom'"
       @select="selectVideo"
     />
     <v-dialog
-      v-if="fileString && type === 'jwpub'"
+      v-if="
+        files.length == 1 &&
+        extname((files[0].filename || files[0].safeName)!).toLowerCase() === '.jwpub'
+      "
       persistent
       :model-value="selectDoc"
     >
+      <!-- :set-progress="setProgress" -->
       <manage-select-document
-        :file="fileString"
-        :set-progress="setProgress"
+        :file="files[0]"
         @select="addMedia($event)"
         @empty="reset()"
       />
@@ -33,45 +30,72 @@
         <v-icon icon="fa-file-export" />
       </v-col>
       <v-col cols="11">
-        <song-picker
-          v-if="type === 'song'"
-          v-model="jwFile"
-          :disabled="loading || saving"
-        />
-        <manage-select-file
-          v-else
-          :type="type"
-          :path="fileString"
-          :loading="loading || saving"
-          @click="
-            type == 'custom' ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')
-          "
-        />
+        <v-expand-transition>
+          <song-picker
+            v-if="type === 'song'"
+            v-model="jwFile"
+            :disabled="loading || saving"
+          />
+          <manage-select-file
+            v-else
+            :type="type"
+            :files="files"
+            :loading="loading || saving"
+            @click="
+              type == 'custom' ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')
+            "
+          />
+        </v-expand-transition>
       </v-col>
     </v-row>
-    <manage-media-prefix v-if="jwFile || files.length > 0" v-model="prefix" />
-    <v-col
+    <v-expand-transition>
+      <manage-media-prefix v-if="jwFile || files.length > 0" v-model="prefix" />
+    </v-expand-transition>
+    <!-- <v-col
       ref="dropzone"
       cols="12"
       class="px-0 pb-0"
       style="position: relative"
-    >
-      <loading-icon v-if="loading || saving" />
-      <template v-else>
-        <manage-media-list
-          :date="date"
-          :new-file="jwFile"
-          :new-files="files"
-          :prefix="prefix"
-          :media="media"
-          :dropping="isOverDropZone"
-          :show-input="!!type && type !== 'jwOrg'"
-          :show-prefix="!!jwFile || files.length > 0"
-          @refresh="emit('refresh')"
-        />
-      </template>
-    </v-col>
-    <v-footer class="manage-footer" :style="footerStyle">
+    > -->
+    <!-- <drop @drop="onDrop(myArg, transferData, nativeEvent)">Hello!</drop> -->
+
+    <loading-icon v-if="loading || saving" />
+    <template v-else>
+      <!-- :dropping="isOverDropZone" -->
+      <manage-media-list
+        :date="date"
+        :new-file="jwFile"
+        :new-files="files"
+        :prefix="prefix"
+        :media="media"
+        :show-input="!!type && type !== 'jwOrg'"
+        :show-prefix="!!jwFile || files.length > 0"
+        @refresh="emit('refresh')"
+      />
+    </template>
+    <!-- </v-col> -->
+    <v-bottom-navigation>
+      <v-btn
+        v-if="jwFile || files.length > 0 || dialog"
+        :disabled="loading || saving"
+        click-twice
+        @click="cancel()"
+      >
+        <v-icon icon="fa-cancel"></v-icon>
+        {{ $t('cancel') }}
+      </v-btn>
+      <v-btn
+        v-if="jwFile || files.length > 0"
+        color="primary"
+        min-width="32px"
+        :loading="loading || saving"
+        @click="saveFiles()"
+      >
+        <v-icon icon="fa-save"></v-icon>
+        {{ $t('save') }}
+      </v-btn>
+    </v-bottom-navigation>
+    <!-- <v-footer class="manage-footer" :style="footerStyle">
       <v-col class="text-left">
         <icon-btn
           v-if="jwFile || files.length > 0"
@@ -102,7 +126,7 @@
         <icon-btn v-else variant="home" :disabled="loading || saving" />
       </v-col>
       <v-col />
-    </v-footer>
+    </v-footer> -->
   </div>
 </template>
 <script setup lang="ts">
@@ -125,9 +149,9 @@ const props = defineProps<{
 const prefix = ref('')
 
 const { $i18n } = useNuxtApp()
-const title = computed(() =>
-  date.value === 'Recurring' ? $i18n.t('recurring') : date.value
-)
+// const title = computed(() =>
+//   date.value === 'Recurring' ? $i18n.t('recurring') : date.value
+// )
 
 // Type of media to add
 const types = [
@@ -168,8 +192,10 @@ const addMedia = (media: LocalFile[]) => {
 }
 
 // Add local files
-const fileString = ref('')
-watch(fileString, (val) => (prefix.value = val ? prefix.value : ''))
+// const fileString = ref('')
+// const fileArray = ref([])
+// watch(fileString, (val) => (prefix.value = val ? prefix.value : ''))
+watch(files, (val) => (prefix.value = val.length > 0 ? prefix.value : ''))
 const addFiles = async (multi = true, ...exts: string[]) => {
   if (exts.length === 0) {
     exts.push('*')
@@ -188,7 +214,6 @@ const addFiles = async (multi = true, ...exts: string[]) => {
       safeName: '- ' + sanitize(basename(file), true),
       filepath: file,
     }))
-    fileString.value = result.filePaths.join(';')
   }
 }
 
@@ -230,12 +255,16 @@ const saveFiles = async () => {
 
     const localMediaPath = mediaPath()
     if (localMediaPath) {
-      await convertUnusableFiles(localMediaPath, setProgress)
+      await convertUnusableFiles(localMediaPath /*, setProgress */)
     }
     if (client.value && props.uploadMedia) await updateContent()
     emit('refresh')
   } catch (e: unknown) {
-    error('errorAdditionalMedia', e, fileString.value)
+    error(
+      'errorAdditionalMedia',
+      e,
+      files.value.map((f) => f.filepath || f.filename || f.safeName).join(', ')
+    )
   } finally {
     reset()
     saving.value = false
@@ -245,7 +274,7 @@ const saveFiles = async () => {
 // Process single file
 const processFile = async (file: LocalFile | VideoFile) => {
   if (!file?.safeName || file.ignored) {
-    increaseProgress()
+    // increaseProgress()
     return
   }
   if (prefix.value) {
@@ -268,7 +297,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
     file.folder = date.value
     await downloadIfRequired({
       file: file as VideoFile,
-      _setProgress: setProgress,
+      // _setProgress: setProgress,
     })
 
     if ((file as VideoFile).subtitles) {
@@ -321,7 +350,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
     perf.dir = 'up'
     log.debug('perf', perf)
   }
-  increaseProgress()
+  // increaseProgress()
 }
 
 // Upload file to cong server
@@ -356,7 +385,6 @@ const uploadFile = async (path: string) => {
 const reset = (resetType = true) => {
   jwFile.value = null
   files.value = []
-  fileString.value = ''
   if (resetType) type.value = 'custom'
   selectDoc.value = false
   processedFiles.value = 0
@@ -372,47 +400,83 @@ const cancel = () => {
 // Show progress
 const processedFiles = ref(0)
 const totalFiles = ref(0)
-const { currentProgress, totalProgress, setProgress } = useProgress()
-const increaseProgress = () => {
-  processedFiles.value++
-  setProgress(processedFiles.value, totalFiles.value, true)
-}
+// const { currentProgress, totalProgress, setProgress } = useProgress()
+// const increaseProgress = () => {
+//   processedFiles.value++
+//   setProgress(processedFiles.value, totalFiles.value, true)
+// }
 
 // Drag and drop
-const onDrop = (dropped: File[] | null) => {
-  if (!dropped) return
-  files.value = dropped.map((f) => {
-    return {
-      safeName: '- ' + sanitize(f.name, true),
-      filepath: f.path,
-    }
+document.addEventListener('dragover', (e) => {
+  e.preventDefault()
+  e.stopPropagation()
+  console.log(
+    e,
+    e.dataTransfer,
+    e.dataTransfer?.types,
+    e.dataTransfer?.getData('text/plain')
+  )
+})
+document.addEventListener('drop', (event) => {
+  event.preventDefault()
+  event.stopPropagation()
+
+  const pathArr = []
+  console.log(
+    event,
+    event.dataTransfer?.files,
+    event.dataTransfer?.items,
+    event.dataTransfer?.types
+  )
+  event.dataTransfer?.types.forEach((type) =>
+    console.log(event.dataTransfer?.getData(type))
+  )
+
+  event.dataTransfer?.files.forEach((item: File) => {
+    console.log(item)
+    const fileUrl = URL.createObjectURL(item)
+    console.log(fileUrl)
+    const a = document.createElement('a')
+    a.href = fileUrl
+    a.download = 'example.png'
+    a.click()
   })
 
-  log.debug('Dropped files', dropped)
-
-  if (dropped.length === 1 && extname(dropped[0].name) === '.jwpub') {
-    type.value = 'jwpub'
-  } else {
-    type.value = 'custom'
-  }
-
-  fileString.value = dropped.map((f) => f.path).join(';')
-}
-const dropzone = ref<HTMLElement>()
-const { isOverDropZone } = useDropZone(dropzone, onDrop)
-
-const footerStyle = computed(() => {
-  if (props.dialog) return { width: '100%' }
-  return { width: 'calc(100% - 56px)' }
+  if (event.dataTransfer?.files)
+    for (const f of event.dataTransfer.files) {
+      // Using the path attribute to get absolute file path
+      console.log('File Path of dragged files: ', f.path)
+      pathArr.push(f.path) // assemble array for main.js
+    }
+  console.log(pathArr)
 })
+// const onDrop = (myArg, transferData, nativeEvent) => {
+//   console.log(myArg, transferData, nativeEvent)
+// }
+// const onDrop = (dropped: File[] | null) => {
+//   if (!dropped) return
+//   files.value = dropped.map((f) => {
+//     return {
+//       safeName: '- ' + sanitize(f.name, true),
+//       filepath: f.path,
+//     }
+//   })
+
+//   log.debug('Dropped files', dropped)
+
+//   if (dropped.length === 1 && extname(dropped[0].name) === '.jwpub') {
+//     type.value = 'jwpub'
+//   } else {
+//     type.value = 'custom'
+//   }
+
+//   fileString.value = dropped.map((f) => f.path).join(';')
+// }
+// const dropzone = ref<HTMLElement>()
+// const { isOverDropZone } = useDropZone(dropzone, onDrop)
+
+// const footerStyle = computed(() => {
+//   if (props.dialog) return { width: '100%' }
+//   return { width: 'calc(100% - 56px)' }
+// })
 </script>
-<style lang="scss" scoped>
-.manage-media {
-  height: 100%;
-  .manage-footer {
-    position: fixed;
-    bottom: 0;
-    right: 0;
-  }
-}
-</style>

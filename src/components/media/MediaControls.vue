@@ -1,17 +1,10 @@
 <template>
   <v-row no-gutters class="media-controls">
-    <v-dialog :model-value="managingMedia" fullscreen persistent>
-      <v-sheet color="bg" class="fill-height">
-        <v-container class="fill-height pa-0" fluid>
-          <manage-media
-            :media="localMedia"
-            :loading="loading"
-            dialog
-            @cancel="managingMedia = false"
-          />
-        </v-container>
-      </v-sheet>
-    </v-dialog>
+    <!-- <v-dialog :model-value="managingMedia" fullscreen persistent>
+      <v-container>
+        
+      </v-container>
+    </v-dialog> -->
     <present-top-bar
       :media-active="mediaActive"
       :current-index="currentIndex"
@@ -25,18 +18,59 @@
       @manage-media="managingMedia = true"
     />
     <present-zoom-bar v-if="zoomIntegration" />
-    <loading-icon v-if="loading" />
-    <media-list
-      v-else
-      :items="items"
-      :media-active="mediaActive"
-      :zoom-part="zoomPart"
-      :cc-enable="ccEnable"
-      :add-song="addSong"
-      @index="setIndex"
-      @deactivate="resetDeactivate"
-      @song="addSong = false"
-    />
+    <v-expand-transition>
+      <loading-icon v-if="loading" />
+      <manage-media
+        v-else-if="managingMedia"
+        :media="localMedia"
+        :loading="loading"
+        dialog
+        @cancel="managingMedia = false"
+      />
+      <media-list
+        v-else
+        :items="items"
+        :media-active="mediaActive"
+        :zoom-part="zoomPart"
+        :cc-enable="ccEnable"
+        :add-song="addSong"
+        @index="setIndex"
+        @deactivate="resetDeactivate"
+        @song="addSong = false"
+      />
+    </v-expand-transition>
+    <!-- <v-btn
+        v-if="getPrefs('media.enableSubtitles') && ccAvailable"
+        icon
+        aria-label="Toggle subtitles"
+        :color="ccEnable ? 'primary' : undefined"
+        @click=""
+      >
+        <v-icon :icon="`${ccIcon}fa-closed-captioning`" size="small" />
+        <v-tooltip activator="parent" location="bottom">
+          {{ $t('toggleSubtitles') }}
+        </v-tooltip>
+      </v-btn> -->
+    <v-bottom-navigation v-if="!managingMedia">
+      <v-btn @click="emit('manageMedia')">
+        <v-icon icon="fa-edit"></v-icon>
+        {{ $t('manageMedia') }}
+      </v-btn>
+      <v-btn v-model="addSong" :active="addSong" @click="addSong = !addSong">
+        <v-icon icon="fa-music"></v-icon>
+
+        {{ $t('lastMinuteSong') }}
+      </v-btn>
+      <v-btn
+        v-if="getPrefs('media.enableSubtitles') && ccAvailable"
+        v-model="ccEnable"
+        :active="ccEnable"
+        @click="ccEnable = !ccEnable"
+      >
+        <v-icon icon="fa-closed-captioning"></v-icon>
+        {{ $t('toggleSubtitles') }}
+      </v-btn>
+    </v-bottom-navigation>
   </v-row>
 </template>
 <script setup lang="ts">
@@ -51,13 +85,18 @@ const addSong = ref(false)
 watch(addSong, () => {
   scrollToItem(0)
 })
+const emit = defineEmits(['manageMedia'])
 
 // Current meeting date
 const date = useRouteQuery<string>('date', '')
 
 // Subtitles
-const ccEnable = ref(true)
-provide(ccEnableKey, ccEnable)
+const ccAvailable = ref(false)
+const ccEnable = inject(ccEnableKey, ref(false))
+// const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
+const setCcAvailable = () => {
+  ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
+}
 
 // Manage media dialog
 const managingMedia = ref(false)
@@ -151,6 +190,7 @@ onMounted(() => {
       }
     )
   }
+  setCcAvailable()
 })
 
 // Media active state
