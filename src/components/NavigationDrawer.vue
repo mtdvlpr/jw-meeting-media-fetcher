@@ -10,6 +10,7 @@
       <v-list-item title="M³">
         <template #subtitle>
           <v-btn
+            v-if="getPrefs('app.congregationName')"
             :to="localePath('/')"
             size="x-small"
             variant="tonal"
