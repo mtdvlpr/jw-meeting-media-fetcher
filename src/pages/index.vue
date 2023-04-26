@@ -72,6 +72,7 @@ const loadCongs = async () => {
 }
 
 onMounted(() => {
+  useStatStore().setNavDisabled(true)
   if (!cong.value) {
     setTheme(prefersDark.value ? 'dark' : 'light')
   }
@@ -137,6 +138,8 @@ const initPrefs = async (name: string, isNew = false) => {
       new: isNew ? 'true' : undefined,
     },
   })
+
+  useStatStore().setNavDisabled(false)
 
   const locales = $i18n.locales.value as LocaleObject[]
   const locale = locales.find((l) => l.code === lang)
