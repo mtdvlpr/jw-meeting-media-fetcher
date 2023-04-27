@@ -1,64 +1,57 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <div class="notifications">
-    <v-snackbar
-      v-for="(m, i) in notifications"
-      :id="`msg-${m.timestamp}-${m.message}-${m.identifier}`"
-      :key="`${m.timestamp}-${m.message}-${m.identifier}`"
-      location="top right"
-      rounded
-      color="bg"
-      vertical
-      :model-value="true"
-      min-width="350px"
-      width="30%"
-      class="elevation-24"
-      :timeout="m.persistent ? -1 : 10000"
-      content-class="message-content"
-      :style="`z-index: 1005; top: ${combinedHeight(i)}px`"
-      @update:model-value="store.dismiss(i)"
-    >
-      <v-row justify="space-between">
-        <v-col cols="auto" class="d-flex align-center">
-          <v-icon
-            :icon="icon(m.type)"
-            :color="iconColor(m.type)"
-            class="mr-1"
-          />
-          {{ $t(m.type) }}
-        </v-col>
-        <v-col cols="auto" class="pa-2">
-          <v-btn
-            v-if="m.persistent || m.dismiss"
-            icon="fa-xmark"
-            size="x-small"
-            variant="text"
-            class="align-right"
-            @click="store.dismiss(i)"
-          />
-        </v-col>
-      </v-row>
-      <v-divider class="mt-2" />
-      <p class="pa-2" v-html="$t(m.message)" />
-      <code v-if="m.identifier">{{ m.identifier }}</code>
-      <v-divider v-if="m.action" class="mt-2" />
-      <template v-if="m.action" #actions>
+  <v-snackbar
+    v-for="(m, i) in notifications"
+    :id="`msg-${m.timestamp}-${m.message}-${m.identifier}`"
+    :key="`${m.timestamp}-${m.message}-${m.identifier}`"
+    location="top right"
+    rounded
+    color="bg"
+    vertical
+    :model-value="true"
+    min-width="350px"
+    width="30%"
+    :timeout="m.persistent ? -1 : 10000"
+    content-class="message-content"
+    :style="`z-index: 1005; top: ${combinedHeight(i)}px`"
+    @update:model-value="store.dismiss(i)"
+  >
+    <v-row justify="space-between">
+      <v-col cols="auto" class="d-flex align-center">
+        <v-icon :icon="icon(m.type)" :color="iconColor(m.type)" class="mr-1" />
+        {{ $t(m.type) }}
+      </v-col>
+      <v-col cols="auto" class="pa-2">
         <v-btn
-          size="small"
-          color="primary"
-          variant="elevated"
-          @click="executeAction(m.action)"
-        >
-          {{ $t(m.action!.label) }}
-        </v-btn>
-      </template>
-      <template v-else-if="m.message === 'updateDownloaded'" #actions>
-        <v-btn size="small" color="primary" variant="elevated" @click="install">
-          {{ $t('installNow') }}
-        </v-btn>
-      </template>
-    </v-snackbar>
-  </div>
+          v-if="m.persistent || m.dismiss"
+          icon="fa-xmark"
+          size="x-small"
+          variant="text"
+          class="align-right"
+          @click="store.dismiss(i)"
+        />
+      </v-col>
+    </v-row>
+    <v-divider class="mt-2" />
+    <p class="pa-2" v-html="$t(m.message)" />
+    <code v-if="m.identifier">{{ m.identifier }}</code>
+    <v-divider v-if="m.action" class="mt-2" />
+    <template v-if="m.action" #actions>
+      <v-btn
+        size="small"
+        color="primary"
+        variant="elevated"
+        @click="executeAction(m.action)"
+      >
+        {{ $t(m.action!.label) }}
+      </v-btn>
+    </template>
+    <template v-else-if="m.message === 'updateDownloaded'" #actions>
+      <v-btn size="small" color="primary" variant="elevated" @click="install">
+        {{ $t('installNow') }}
+      </v-btn>
+    </template>
+  </v-snackbar>
 </template>
 <script setup lang="ts">
 import { ipcRenderer } from 'electron'

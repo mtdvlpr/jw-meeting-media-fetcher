@@ -90,7 +90,7 @@
     <v-card-actions>
       <v-btn
         :disabled="loading || saving"
-        color="red-darken-1"
+        color="error"
         variant="text"
         @click="cancel()"
       >
@@ -99,7 +99,7 @@
       <v-btn
         v-if="jwFile || files.length > 0"
         :loading="loading || saving"
-        color="blue-darken-1"
+        color="success"
         variant="text"
         @click="saveFiles()"
       >

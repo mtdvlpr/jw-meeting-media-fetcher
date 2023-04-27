@@ -1,112 +1,113 @@
 <template>
-  <v-list-item
-    density="compact"
-    class="manage-media-item"
-    :disabled="item.loading"
-    @mouseover="hovering = true"
-    @mouseleave="hovering = false"
-  >
-    <template #prepend>
-      <v-list-item-action v-if="item.loading" class="my-0">
-        <v-progress-circular indeterminate size="16" width="2" />
-      </v-list-item-action>
-      <v-list-item-action
-        v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
-        class="my-0"
+  <v-hover>
+    <template #default="{ isHovering, props: propsListItem }">
+      <v-list-item
+        v-bind="propsListItem"
+        density="compact"
+        class="px-0"
+        :disabled="item.loading"
       >
-        <v-tooltip
-          v-if="clickedOnce"
-          model-value
-          @update:model-value="() => {}"
-        >
-          {{ $t('clickAgain') }}
-          <template #activator="{ props: attrs }">
+        <template #prepend>
+          <v-hover>
+            <template
+              #default="{ isHovering: isHoveringOverIcon, props: propsIcon }"
+            >
+              <v-avatar
+                v-bind="propsIcon"
+                :color="
+                  getPreview(item)
+                    ? isHovering
+                      ? 'primary'
+                      : 'blue-lighten-3'
+                    : 'teal-lighten-3'
+                "
+              >
+                <v-icon color="white">{{ typeIcon(item.safeName) }}</v-icon>
+              </v-avatar>
+              <v-img
+                v-if="getPreview(item) && isHoveringOverIcon"
+                :src="preview"
+                :alt="loading ? 'Loading...' : item.safeName"
+                class="tooltip-img elevation-10"
+              />
+            </template>
+          </v-hover>
+        </template>
+        <template #append>
+          <v-icon v-if="item.recurring" icon="fa-sync-alt" color="info" />
+          <v-btn
+            v-else-if="
+              isHovering && (item.congSpecific || item.isLocal) && !item.hidden
+            "
+            icon="fa-pen"
+            size="x-small"
+            variant="text"
+            aria-label="rename file"
+            @click="emit('edit')"
+          />
+          <v-progress-circular v-if="item.loading" indeterminate width="2" />
+          <template
+            v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
+          >
+            <v-tooltip
+              v-if="clickedOnce"
+              model-value
+              @update:model-value="() => {}"
+            >
+              {{ $t('clickAgain') }}
+              <template #activator="{ props: attrs }">
+                <v-btn
+                  color="red-lighten-1"
+                  icon="fa-circle-xmark"
+                  variant="text"
+                  v-bind="attrs"
+                  @click="atClick(item)"
+                ></v-btn>
+              </template>
+            </v-tooltip>
             <v-btn
-              icon="fa-square-minus"
-              size="x-small"
+              v-else
+              color="red-lighten-1"
+              icon="fa-circle-xmark"
               variant="text"
-              color="error"
-              v-bind="attrs"
-              @click="atClick()"
-            />
+              @click="atClick(item)"
+            ></v-btn>
           </template>
-        </v-tooltip>
-        <v-btn
-          v-else
-          icon="fa-square-minus"
-          size="x-small"
-          variant="text"
-          color="warning"
-          @click="atClick(item)"
-        />
-      </v-list-item-action>
-      <v-list-item-action v-else class="my-0">
-        <v-btn
-          size="x-small"
-          variant="text"
-          :icon="
-            'fa-square' +
-            (item.isLocal === undefined ? '-plus' : item.hidden ? '' : '-check')
-          "
-          @click="atClick(item)"
-        />
-      </v-list-item-action>
-    </template>
-    <v-img
-      v-if="getPreview(item) && hovering"
-      :src="preview"
-      :alt="loading ? 'Loading...' : item.safeName"
-      class="tooltip-img"
-    />
+          <v-btn
+            v-else
+            variant="text"
+            color="success"
+            :icon="
+              'fa-circle' +
+              (item.isLocal === undefined
+                ? '-plus'
+                : item.hidden
+                ? ''
+                : '-check')
+            "
+            @click="atClick(item)"
+          />
+        </template>
 
-    <v-list-item-title
-      v-if="item.isLocal === undefined"
-      :class="{
-        'text-decoration-line-through': item.ignored,
-      }"
-    >
-      {{ prefix + ' ' + item.safeName }}
-    </v-list-item-title>
-    <v-list-item-title
-      v-else
-      :class="{
-        'text-decoration-line-through': item.hidden,
-      }"
-    >
-      {{ item.safeName }}
-    </v-list-item-title>
-    <template #append>
-      <v-list-item-action class="my-0">
-        <v-icon v-if="item.recurring" icon="fa-sync-alt" color="info" />
-        <v-btn
-          v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
-          icon="fa-pen"
-          size="x-small"
-          variant="text"
-          aria-label="rename file"
-          @click="emit('edit')"
-        />
-      </v-list-item-action>
-      <v-list-item-action>
-        <v-icon :icon="typeIcon(item.safeName)" size="x-small" />
-      </v-list-item-action>
-      <v-list-item-action class="ms-2">
-        <v-icon
-          v-if="item.congSpecific"
-          icon="fa-cloud"
-          color="info"
-          size="x-small"
-        />
-        <v-icon v-else-if="item.isLocal" icon="fa-folder-open" size="x-small" />
-        <v-icon
+        <v-list-item-title
+          v-if="item.isLocal === undefined"
+          :class="{
+            'text-decoration-line-through': item.ignored,
+          }"
+        >
+          {{ prefix + ' ' + item.safeName }}
+        </v-list-item-title>
+        <v-list-item-title
           v-else
-          icon="fa-globe-americas"
-          color="primary"
-          size="x-small"
-        />
-      </v-list-item-action>
-    </template>
-  </v-list-item>
+          :class="{
+            'text-decoration-line-through': item.hidden,
+          }"
+        >
+          {{ item.safeName }}
+        </v-list-item-title>
+      </v-list-item></template
+    >
+  </v-hover>
 </template>
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
@@ -128,7 +129,6 @@ const props = defineProps<{
 // Get media preview
 const loading = ref(false)
 const preview = ref('')
-const hovering = ref(false)
 const { online } = useOnline()
 const previewName = ref('')
 const { client, contents } = storeToRefs(useCongStore())
@@ -248,17 +248,13 @@ const typeIcon = (filename?: string) => {
 }
 </script>
 <style lang="scss" scoped>
-.manage-media-item {
-  position: static;
-
-  .tooltip-img {
-    content: ' ';
-    position: absolute;
-    min-height: 100px;
-    min-width: 200px;
-    bottom: calc(100% - 25px);
-    left: 50%;
-    transform: translate(-50%, 0);
-  }
+.tooltip-img {
+  content: '';
+  position: absolute;
+  min-height: 100px;
+  min-width: 200px;
+  top: 50%;
+  right: 10em;
+  transform: translateY(-50%);
 }
 </style>

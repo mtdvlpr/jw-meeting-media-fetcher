@@ -17,17 +17,20 @@
       @click:outside="edit = null"
     >
       <v-card>
-        <v-col class="text-right">
+        <v-card-text>
           <form-input v-model="edit.newName" :suffix="edit.ext" />
+        </v-card-text>
+        <v-card-actions>
           <v-btn
-            color="primary"
             :loading="renaming"
+            color="blue-darken-1"
+            variant="text"
             aria-label="save"
             @click="saveNewName()"
           >
-            <v-icon icon="fa-check" />
+            Save
           </v-btn>
-        </v-col>
+        </v-card-actions>
       </v-card>
     </v-dialog>
     <manage-media-item
