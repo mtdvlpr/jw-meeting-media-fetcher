@@ -1,10 +1,5 @@
 <template>
   <v-row no-gutters class="media-controls">
-    <!-- <v-dialog :model-value="managingMedia" fullscreen persistent>
-      <v-container>
-        
-      </v-container>
-    </v-dialog> -->
     <present-top-bar
       :media-active="mediaActive"
       :current-index="currentIndex"
@@ -15,18 +10,18 @@
       @previous="previous()"
       @next="next()"
       @show-prefix="togglePrefix()"
-      @manage-media="managingMedia = true"
     />
     <present-zoom-bar v-if="zoomIntegration" />
-    <v-expand-transition>
-      <loading-icon v-if="loading" />
+    <v-dialog v-model="managingMedia" persistent scrollable width="auto">
       <manage-media
-        v-else-if="managingMedia"
         :media="localMedia"
         :loading="loading"
         dialog
         @cancel="managingMedia = false"
       />
+    </v-dialog>
+    <v-expand-transition>
+      <loading-icon v-if="loading" />
       <media-list
         v-else
         :items="items"
@@ -39,27 +34,10 @@
         @song="addSong = false"
       />
     </v-expand-transition>
-    <!-- <v-btn
-        v-if="getPrefs('media.enableSubtitles') && ccAvailable"
-        icon
-        aria-label="Toggle subtitles"
-        :color="ccEnable ? 'primary' : undefined"
-        @click=""
-      >
-        <v-icon :icon="`${ccIcon}fa-closed-captioning`" size="small" />
-        <v-tooltip activator="parent" location="bottom">
-          {{ $t('toggleSubtitles') }}
-        </v-tooltip>
-      </v-btn> -->
-    <v-bottom-navigation v-if="!managingMedia">
-      <v-btn @click="emit('manageMedia')">
-        <v-icon icon="fa-edit"></v-icon>
-        {{ $t('manageMedia') }}
-      </v-btn>
+    <v-bottom-navigation>
+      <v-btn @click="managingMedia = true"> Add and remove media files </v-btn>
       <v-btn v-model="addSong" :active="addSong" @click="addSong = !addSong">
-        <v-icon icon="fa-music"></v-icon>
-
-        {{ $t('lastMinuteSong') }}
+        Quickly add a song
       </v-btn>
       <v-btn
         v-if="getPrefs('media.enableSubtitles') && ccAvailable"
@@ -67,8 +45,7 @@
         :active="ccEnable"
         @click="ccEnable = !ccEnable"
       >
-        <v-icon icon="fa-closed-captioning"></v-icon>
-        {{ $t('toggleSubtitles') }}
+        Subtitles are enabled
       </v-btn>
     </v-bottom-navigation>
   </v-row>
@@ -85,7 +62,6 @@ const addSong = ref(false)
 watch(addSong, () => {
   scrollToItem(0)
 })
-const emit = defineEmits(['manageMedia'])
 
 // Current meeting date
 const date = useRouteQuery<string>('date', '')

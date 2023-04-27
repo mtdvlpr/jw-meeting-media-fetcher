@@ -114,18 +114,6 @@ const mediaActive = inject(mediaActiveKey, ref(false))
 
 const date = useRouteQuery<string>('date', '')
 
-// Subtitles
-// const ccAvailable = ref(false)
-// const ccEnable = inject(ccEnableKey, ref(false))
-// const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
-// const setCcAvailable = () => {
-//   ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
-// }
-
-// onMounted(() => {
-//   setCcAvailable()
-// })
-
 const dayDownloadProgress = computed(() => {
   const { downloadProgress } = useMediaStore()
   const progressByDate = new Map()
@@ -189,11 +177,6 @@ const openWebsite = () => {
 
 // More actions
 const actions = [
-  {
-    title: $i18n.t('manageMedia'),
-    icon: 'fa-folder-plus',
-    action: () => emit('manageMedia'),
-  },
   {
     title: $i18n.t('openFolder'),
     icon: 'fa-folder-open',
