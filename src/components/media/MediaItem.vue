@@ -39,19 +39,20 @@
           <v-chip
             v-if="titleParts[3]"
             color="song"
-            class="mr-3"
-            prepend-icon="fa-music"
+            class="mr-3 font-weight-bold text-subtitle-1"
             :title="`${translate('song')} ${cleanTitle(titleParts[3])}`"
           >
+            <v-icon size="x-small" class="me-2">fa-music</v-icon>
+
             {{ titleParts[3] }}
           </v-chip>
           <v-chip
             v-if="titleParts[5]"
             color="paragraph"
-            class="mr-3"
-            prepend-icon="fa-paragraph"
+            class="mr-3 font-weight-bold text-subtitle-1"
             :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
           >
+            <v-icon size="x-small" class="me-2">fa-paragraph</v-icon>
             {{ titleParts[5] }}
           </v-chip>
           <div

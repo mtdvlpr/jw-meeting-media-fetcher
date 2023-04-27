@@ -1,10 +1,9 @@
 <template>
   <v-row no-gutters class="media-controls">
+    <!-- :media-active="mediaActive" -->
     <present-top-bar
-      :media-active="mediaActive"
       :current-index="currentIndex"
       :media-count="items.length"
-      :cc-enable="ccEnable"
       @song="addSong = !addSong"
       @cc="ccEnable = !ccEnable"
       @previous="previous()"
