@@ -67,7 +67,8 @@ const getVideos = async () => {
 }
 
 const getVideoImg = (images: Images) => {
-  return images.lss?.lg ?? images.sqr?.lg ?? ''
+  const { lss, lsr, sqr } = images
+  return lss?.lg ?? lsr?.lg ?? lss?.xl ?? lsr?.xl ?? sqr?.lg ?? sqr?.xl ?? ''
 }
 
 const selectVideo = (video: MediaItem) => {

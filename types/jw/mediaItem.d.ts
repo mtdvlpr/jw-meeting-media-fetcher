@@ -25,6 +25,7 @@ export interface Image {
   xs: string
   lg: string
   md: string
+  xl: string
 }
 
 export interface Images {
