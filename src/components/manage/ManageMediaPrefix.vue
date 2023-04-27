@@ -1,12 +1,10 @@
 <template>
-  <v-row no-gutters class="mt-4 px-2">
-    <v-col cols="1" class="text-center" align-self="center">
-      <v-icon icon="fa-arrow-down-1-9" />
-    </v-col>
-    <v-col cols="11" class="d-flex" align-self="center">
-      <form-input v-model="value" hide-details="auto" />
-    </v-col>
-  </v-row>
+  <v-col cols="1" class="text-center" align-self="center">
+    <v-icon icon="fa-arrow-down-1-9" />
+  </v-col>
+  <v-col cols="11" class="d-flex" align-self="center">
+    <form-input v-model="value" hide-details="auto" />
+  </v-col>
 </template>
 <script setup lang="ts">
 const emit = defineEmits(['update:modelValue'])

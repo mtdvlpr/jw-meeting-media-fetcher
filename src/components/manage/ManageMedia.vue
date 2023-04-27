@@ -4,55 +4,56 @@
     @cancel="type = 'custom'"
     @select="selectVideo"
   />
-  <v-card>
-    <v-card-title class="px-0">
-      <v-tabs v-model="type" grow>
+  <v-card v-bind="props">
+    <v-card-title class="pa-0">
+      <v-overlay :model-value="dropping" class="align-center justify-center">
+        <v-chip variant="flat">Drop one or more files here!</v-chip>
+      </v-overlay>
+      <v-tabs
+        v-model="type"
+        color="primary"
+        bg-color="grey-lighten-3"
+        grow
+        @update:model-value="reset()"
+      >
         <v-tab v-for="t in types" :key="t.value" :value="t.value">
           {{ t.label }}
         </v-tab>
       </v-tabs>
-      <v-row v-if="type && type !== 'jwOrg'" no-gutters class="mt-4 px-2">
-        <v-col cols="1" class="text-center" align-self="center">
-          <v-icon icon="fa-file-export" />
-        </v-col>
-        <v-col cols="11">
-          <v-expand-transition>
-            <song-picker
-              v-if="type === 'song'"
-              v-model="jwFile"
-              :disabled="loading || saving"
-            />
-            <manage-select-file
-              v-else
-              :type="type"
-              :files="files"
-              :loading="loading || saving"
-              @click="
-                type == 'custom'
-                  ? addFiles()
-                  : addFiles(false, 'JWPUB', 'jwpub')
-              "
-            />
-          </v-expand-transition>
-        </v-col>
-      </v-row>
-      <v-expand-transition>
-        <manage-media-prefix
-          v-if="jwFile || files.length > 0"
-          v-model="prefix"
+      <v-row
+        v-if="type && type !== 'jwOrg'"
+        no-gutters
+        class="pa-4 align-center"
+      >
+        <song-picker
+          v-if="type === 'song'"
+          v-model="jwFile"
+          :disabled="loading || saving"
         />
-      </v-expand-transition>
+        <manage-select-file
+          v-else
+          :type="type"
+          :files="files"
+          :loading="loading || saving"
+          @reset="reset()"
+          @click="!isLoneJwpub ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')"
+        />
+      </v-row>
+      <v-row
+        v-if="jwFile || files.length > 0"
+        no-gutters
+        class="pa-4 align-center"
+      >
+        <manage-media-prefix v-model="prefix" />
+      </v-row>
     </v-card-title>
     <v-divider></v-divider>
     <v-card-text class="h-auto">
       <div class="manage-media">
         <v-dialog
-          v-if="
-        files.length == 1 &&
-        extname((files[0].filename || files[0].safeName)!).toLowerCase() === '.jwpub'
-      "
+          v-if="files.length === 1"
           width="auto"
-          :model-value="selectDoc"
+          :model-value="isLoneJwpub"
         >
           <!-- :set-progress="setProgress" -->
           <manage-select-document
@@ -135,27 +136,19 @@ const { $i18n } = useNuxtApp()
 // Type of media to add
 const types = [
   {
-    label: $i18n.t('song'),
-    value: 'song',
-  },
-  {
     label: $i18n.t('custom'),
     value: 'custom',
   },
   {
-    label: $i18n.t('jwpub'),
-    value: 'jwpub',
+    label: $i18n.t('song'),
+    value: 'song',
   },
   {
-    label: 'JW.org',
+    label: $i18n.t('selectVideo'),
     value: 'jwOrg',
   },
 ]
 const type = ref('custom')
-watch(type, (val) => {
-  reset(false)
-  selectDoc.value = val === 'jwpub'
-})
 
 // Add video from JW.org
 const jwFile = ref<VideoFile | null>(null)
@@ -163,11 +156,18 @@ watch(jwFile, (val) => (prefix.value = val ? '00-00' : prefix.value))
 const selectVideo = (video: VideoFile) => (jwFile.value = video)
 
 // Add media from JWPUB
-const selectDoc = ref(false)
 const files = ref<(LocalFile | VideoFile)[]>([])
+const isLoneJwpub = computed(
+  () =>
+    files.value.length === 1 &&
+    extname(
+      (files.value[0]?.filename ||
+        files.value[0]?.filepath ||
+        files.value[0]?.safeName)!
+    ).toLowerCase() === '.jwpub'
+)
 const addMedia = (media: LocalFile[]) => {
   files.value = media
-  selectDoc.value = false
 }
 
 // Add local files
@@ -204,7 +204,7 @@ const saveFiles = async () => {
     const promises: Promise<void>[] = []
     const fileArray = [...files.value]
     if (jwFile.value) fileArray.push(jwFile.value)
-    totalFiles.value = fileArray.length
+    // totalFiles.value = fileArray.length
 
     if (client.value && online.value && props.uploadMedia) {
       const mPath = join(getPrefs<string>('cong.dir'), 'Media')
@@ -267,6 +267,10 @@ const processFile = async (file: LocalFile | VideoFile) => {
   // Local file
   else if (file.filepath) {
     copy(file.filepath, path)
+  }
+  // Dropped file object (from web browser for example)
+  else if (file.fileObjectUrl) {
+    await fetchFile({ url: file.fileObjectUrl, dest: path })
   }
   // External file from jw.org
   else if (file.safeName) {
@@ -358,101 +362,55 @@ const uploadFile = async (path: string) => {
 }
 
 // Reset values
-const reset = (resetType = true) => {
+const reset = (resetTypeToo?: boolean) => {
   jwFile.value = null
   files.value = []
-  if (resetType) type.value = 'custom'
-  selectDoc.value = false
-  processedFiles.value = 0
-  totalFiles.value = 0
+  if (resetTypeToo) type.value = 'custom'
+  // processedFiles.value = 0
+  // totalFiles.value = 0
 }
 
 // Cancel adding media from manage dialog
 const cancel = () => {
   emit('cancel')
-  reset()
+  reset(true)
 }
 
-// Show progress
-const processedFiles = ref(0)
-const totalFiles = ref(0)
-// const { currentProgress, totalProgress, setProgress } = useProgress()
-// const increaseProgress = () => {
-//   processedFiles.value++
-//   setProgress(processedFiles.value, totalFiles.value, true)
-// }
+// // Show progress
+// const processedFiles = ref(0)
+// const totalFiles = ref(0)
+// // const { currentProgress, totalProgress, setProgress } = useProgress()
+// // const increaseProgress = () => {
+// //   processedFiles.value++
+// //   setProgress(processedFiles.value, totalFiles.value, true)
+// // }
 
 // Drag and drop
+const dropping = ref(false)
 document.addEventListener('dragover', (e) => {
   e.preventDefault()
   e.stopPropagation()
-  console.log(
-    e,
-    e.dataTransfer,
-    e.dataTransfer?.types,
-    e.dataTransfer?.getData('text/plain')
-  )
+  dropping.value = true
+  reset(true)
+})
+document.addEventListener('dragleave', (e) => {
+  e.preventDefault()
+  e.stopPropagation()
+  dropping.value = false
 })
 document.addEventListener('drop', (event) => {
   event.preventDefault()
   event.stopPropagation()
-
-  const pathArr = []
-  console.log(
-    event,
-    event.dataTransfer?.files,
-    event.dataTransfer?.items,
-    event.dataTransfer?.types
-  )
-  event.dataTransfer?.types.forEach((type) =>
-    console.log(event.dataTransfer?.getData(type))
-  )
-
-  event.dataTransfer?.files.forEach((item: File) => {
-    console.log(item)
-    const fileUrl = URL.createObjectURL(item)
-    console.log(fileUrl)
-    const a = document.createElement('a')
-    a.href = fileUrl
-    a.download = 'example.png'
-    a.click()
-  })
-
-  if (event.dataTransfer?.files)
-    for (const f of event.dataTransfer.files) {
-      // Using the path attribute to get absolute file path
-      console.log('File Path of dragged files: ', f.path)
-      pathArr.push(f.path) // assemble array for main.js
-    }
-  console.log(pathArr)
+  if (event.dataTransfer?.files) {
+    files.value = []
+    files.value = Array.from(event.dataTransfer.files).map((item) => {
+      return {
+        safeName: '- ' + sanitize(basename(item.name), true),
+        fileObjectUrl: URL.createObjectURL(item),
+        filepath: item.path,
+      }
+    })
+  }
+  dropping.value = false
 })
-// const onDrop = (myArg, transferData, nativeEvent) => {
-//   console.log(myArg, transferData, nativeEvent)
-// }
-// const onDrop = (dropped: File[] | null) => {
-//   if (!dropped) return
-//   files.value = dropped.map((f) => {
-//     return {
-//       safeName: '- ' + sanitize(f.name, true),
-//       filepath: f.path,
-//     }
-//   })
-
-//   log.debug('Dropped files', dropped)
-
-//   if (dropped.length === 1 && extname(dropped[0].name) === '.jwpub') {
-//     type.value = 'jwpub'
-//   } else {
-//     type.value = 'custom'
-//   }
-
-//   fileString.value = dropped.map((f) => f.path).join(';')
-// }
-// const dropzone = ref<HTMLElement>()
-// const { isOverDropZone } = useDropZone(dropzone, onDrop)
-
-// const footerStyle = computed(() => {
-//   if (props.dialog) return { width: '100%' }
-//   return { width: 'calc(100% - 56px)' }
-// })
 </script>

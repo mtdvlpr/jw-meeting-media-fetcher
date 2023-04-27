@@ -2,6 +2,8 @@
   <v-hover>
     <template #default="{ isHovering, props: propsListItem }">
       <v-list-item
+        :active="!item.isLocal && !item.congSpecific"
+        active-color="success"
         v-bind="propsListItem"
         density="compact"
         class="px-0"

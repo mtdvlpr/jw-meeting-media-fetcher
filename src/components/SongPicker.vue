@@ -13,6 +13,7 @@
     v-bind="$attrs"
     :clearable="!!$attrs.clearable"
     :disabled="!!$attrs.disabled"
+    class="py-0"
   />
 </template>
 <script setup lang="ts">
