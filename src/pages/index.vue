@@ -1,7 +1,7 @@
 <!-- Select a congregation on startup -->
 <template>
   <div class="cong-select">
-    <v-app-bar color="grey-lighten-3" style="z-index: 1000">
+    <v-app-bar style="z-index: 1000">
       <v-app-bar-title>
         <v-icon icon="fa-building-user" size="x-large" />
         {{ $t('selectCong') }}

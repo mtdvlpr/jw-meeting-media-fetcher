@@ -1,9 +1,5 @@
 <template>
-  <v-app-bar
-    color="grey-lighten-3"
-    style="z-index: 1000"
-    class="present-top-bar"
-  >
+  <v-app-bar style="z-index: 1000" class="present-top-bar">
     <v-app-bar-title>
       <v-breadcrumbs>
         <v-breadcrumbs-item
