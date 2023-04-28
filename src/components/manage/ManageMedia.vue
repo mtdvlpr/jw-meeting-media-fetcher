@@ -402,7 +402,7 @@ document.addEventListener('drop', (event) => {
   event.preventDefault()
   event.stopPropagation()
   if (event.dataTransfer?.files) {
-    files.value = []
+    console.log(Array.from(event.dataTransfer.files))
     files.value = Array.from(event.dataTransfer.files).map((item) => {
       return {
         safeName: '- ' + sanitize(basename(item.name), true),

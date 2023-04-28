@@ -15,31 +15,25 @@
         />
       </template>
     </v-app-bar>
-    <v-dialog :model-value="!!isNew" fullscreen transition="fade-transition">
-      <template #activator="{ props }">
-        <v-btn
-          color="primary"
-          v-bind="props"
-          @click="currentInitialSetting = 0"
-        >
-          Open First Time Wizard
-        </v-btn>
-      </template>
+    <v-btn color="primary" @click="launchFirstRun()">
+      Open First Time Wizard
+    </v-btn>
+    <v-dialog :model-value="isNew" fullscreen transition="fade-transition">
       <v-card class="h-100">
-        <v-carousel cycle :show-arrows="false" hide-delimiters height="100%">
+        <!-- <v-carousel cycle :show-arrows="false" hide-delimiters height="100%">
           <v-carousel-item v-for="(language, index) in locales" :key="index">
             <v-sheet color="blue-grey-lighten-5" height="100%">
               <div
                 class="d-flex fill-height justify-center align-center text-h2 pa-5"
               >
                 <div>
-                  <!-- eventually show "Welcome" in every language }} -->
+                  !-- eventually show "Welcome" in every language }} --
                   {{ language.name }}
                 </div>
               </div>
             </v-sheet>
           </v-carousel-item>
-        </v-carousel>
+        </v-carousel> -->
         <v-carousel
           v-model="currentInitialSetting"
           progress="primary"
@@ -48,8 +42,78 @@
           hide-delimiters
           delimiter-icon="square"
         >
-          <v-carousel-item v-for="setting in initialSettings" :key="setting">
-            <v-sheet height="100%">
+          <v-carousel-item
+            v-for="setting in firstRunSteps"
+            :key="setting.title"
+          >
+            <v-card class="mx-auto">
+              <v-card-title>{{ setting.title }}</v-card-title>
+              <v-card-subtitle>{{ setting.subtitle }}</v-card-subtitle>
+              <v-card-text>
+                <div>
+                  {{ firstRunParams }}
+                </div>
+                <template v-for="pref in setting.settings" :key="pref">
+                  <v-text-field
+                    v-if="pref.type == 'input'"
+                    :id="pref.name"
+                    v-model="
+                      prefs[pref.name.split('.')[0]][pref.name.split('.')[1]]
+                    "
+                    field="text"
+                    required
+                  />
+                  <form-input
+                    v-else-if="pref.type == 'autocomplete' && pref.items"
+                    :id="pref.name"
+                    v-model="
+                      prefs[pref.name.split('.')[0]][pref.name.split('.')[1]]
+                    "
+                    field="autocomplete"
+                    :items="pref.items"
+                    item-title="name"
+                    item-value="code"
+                    required
+                    auto-select-first
+                  />
+                </template>
+              </v-card-text>
+              <v-card-actions>
+                <!-- <v-btn variant="text" color="deep-purple-accent-4">
+                  Learn More
+                </v-btn> -->
+                <v-template v-if="setting.firstRunParam">
+                  <v-btn @click="setFirstRunParam(setting.firstRunParam, true)">
+                    Yes
+                  </v-btn>
+                  <v-btn
+                    @click="setFirstRunParam(setting.firstRunParam, false)"
+                  >
+                    No
+                  </v-btn>
+                </v-template>
+                <template v-else>
+                  <v-btn
+                    variant="text"
+                    color="primary"
+                    @click="nextStep(setting.actions)"
+                  >
+                    {{ initialSettingsDone ? 'Explore more settings' : 'Next' }}
+                  </v-btn>
+                  <v-btn v-if="initialSettingsDone" @click="isNew = false">
+                    Go to media calendar
+                  </v-btn>
+                </template>
+                <v-btn
+                  v-if="currentInitialSetting > 0"
+                  variant="text"
+                  color="secondary"
+                  @click="currentInitialSetting--"
+                  >Previous step</v-btn
+                >
+              </v-card-actions>
+            </v-card>
+            <!-- <v-sheet height="100%">
               <div class="d-flex fill-height justify-center align-center">
                 <div>{{ setting }}</div>
                 <div>
@@ -57,7 +121,7 @@
                     class="ma-3"
                     @click="
                       initialSettingsDone
-                        ? (isNew = '')
+                        ? (isNew = false)
                         : currentInitialSetting++
                     "
                   >
@@ -66,13 +130,13 @@
                   <v-btn
                     v-if="initialSettingsDone"
                     class="ma-3"
-                    @click="isNew = ''"
+                    @click="isNew = false"
                   >
                     Go to media calendar
                   </v-btn>
                 </div>
-              </div>
-            </v-sheet>
+              </div> -->
+            <!-- </v-sheet> -->
           </v-carousel-item>
         </v-carousel>
       </v-card>
@@ -81,7 +145,7 @@
       <cong-forced-prefs @done="forcingPrefs = false" />
     </v-dialog>
     <v-row no-gutters justify="center" class="fill-height settings">
-      <v-col cols="12" :style="`overflow:auto;max-height: ${contentHeight}px`">
+      <v-col cols="12">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
         <v-form ref="form" v-model="valid" @submit.prevent>
           <v-list density="compact">
@@ -204,6 +268,11 @@ const downloadSong = async (song: VideoFile) => {
   setProgress(++processed.value, NR_OF_KINGDOM_SONGS, true)
 }
 
+const launchFirstRun = () => {
+  currentInitialSetting.value = 0
+  isNew.value = true
+}
+
 const jwLangs = ref<ShortJWLang[]>([])
 const langs = computed(() => {
   return jwLangs.value.map((lang) => {
@@ -239,20 +308,103 @@ onMounted(() => {
   form.value?.validate()
 })
 
-const locales = $i18n.locales.value as LocaleObject[]
-const isNew = useRouteQuery<string>('new', '')
-const initialSettings = [
-  'Lorem ipsum',
-  'dolor sit',
-  'amet consectetur',
-  'adipiscing elit',
-  'sed do',
-]
+const locales = ref<{ name: string; code: string }[]>([])
+locales.value = $i18n.locales.value.map((l) => {
+  const locale = l as LocaleObject
+  return {
+    name: locale.name!,
+    code: locale.code,
+  }
+})
+const isNew = ref(!!useRouteQuery<string>('new', ''))
+
+const firstRunParams = ref({
+  usingAtKh: false,
+})
+const setFirstRunParam = (param: string, value: boolean) => {
+  firstRunParams.value[param] = value
+  console.log(param, value, firstRunParams)
+  currentInitialSetting.value++
+}
+const firstRunSteps = computed(() => {
+  const steps = [
+    {
+      title:
+        "Welcome! Let's configure a few things, and then we'll get on our way.",
+    },
+    {
+      title: 'What language do you want the app to be displayed in?',
+      subtitle:
+        "This only affects the app itself, not the media we'll be downloading, so feel free to choose the language you understand best.",
+      settings: [
+        {
+          name: 'app.localAppLang',
+          type: 'autocomplete',
+          items: locales.value,
+          actions: [],
+        },
+      ],
+    },
+    {
+      firstRunParam: 'usingAtKh',
+      title: 'Are you using this app at a Kingdom Hall?',
+      subtitle:
+        "If so, we'll configure a few things for you right off the bat.",
+    },
+    {
+      title: firstRunParams.value.usingAtKh
+        ? 'What is the name of your congregation or group?'
+        : 'Choose a name for this profile',
+      subtitle:
+        'This will be used to quickly switch between profiles, if ever you decide create more than one in the future.',
+      settings: [
+        { name: 'app.congregationName', type: 'input', items: [], actions: [] },
+      ],
+    },
+    {
+      title: firstRunParams.value.usingAtKh
+        ? 'What is the language of your congregation or group?'
+        : 'In what language should we download media?',
+      subtitle:
+        'Media such as videos and pictures will be downloaded from publications in this language.',
+      settings: [
+        {
+          name: 'media.lang',
+          type: 'autocomplete',
+          items: jwLangs.value,
+          actions: [],
+        },
+      ],
+      actions: [
+        firstRunParams.value.usingAtKh
+          ? enableExternalDisplayAndMusic
+          : undefined,
+      ],
+    },
+    {
+      title: "Excellent! We're off to a good start.",
+      subtitle:
+        "You'll notice the yeartext is now being displayed on the external monitor! But let's keep going.",
+    },
+  ]
+  return steps
+})
 const currentInitialSetting = ref(0)
 const initialSettingsDone = computed(
-  () => currentInitialSetting.value === initialSettings.length - 1
+  () => currentInitialSetting.value === firstRunSteps.value.length - 1
 )
+const enableExternalDisplayAndMusic = () => {
+  // actually update prefs here
+  // prefs.value.media.enableMediaDisplayButton = true
+  // prefs.value.media.enableMusicButton = true
+}
 
+const nextStep = (actions: any[]) => {
+  actions?.filter(Boolean).forEach((action: () => any) => action())
+  initialSettingsDone.value
+    ? (isNew.value = false)
+    : currentInitialSetting.value++
+}
 // Prefs
 const filter = ref('')
 const prefs = ref({ ...(getAllPrefs() ?? PREFS) })
