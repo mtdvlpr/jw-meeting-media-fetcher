@@ -19,6 +19,7 @@ interface StatStore {
   online: boolean
   navDisabled: boolean
   showMediaPlayback: boolean
+  showMusicButton: boolean
   initialLoad: boolean
   updateSuccess: boolean
   performance: Map<string, Perf>
@@ -29,6 +30,7 @@ const defaultState: StatStore = {
   online: false, // Whether the user is connected to the internet
   navDisabled: false, // Whether navigation is disabled (e.g. when settings are invalid)
   showMediaPlayback: false, // Whether the media playback nav item should be shown
+  showMusicButton: false,
   initialLoad: true, // Whether the app is loading for the first time
   updateSuccess: true, // Whether the update was successful
   performance: new Map(), // A map of performance data about how fast a file was downloaded
@@ -56,6 +58,9 @@ export const useStatStore = defineStore('stats', {
     },
     setShowMediaPlayback(showMediaPlayback: boolean) {
       this.showMediaPlayback = showMediaPlayback
+    },
+    setShowMusicButton(showMusicButton: boolean) {
+      this.showMusicButton = showMusicButton
     },
     setInitialLoad(initialLoad: boolean) {
       this.initialLoad = initialLoad

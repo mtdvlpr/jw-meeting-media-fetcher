@@ -249,8 +249,9 @@ watch(cached, (val) => {
 // Background music
 watch(
   () => meeting.value.enableMusicButton,
-  () => {
+  (val) => {
     meetingForm.value?.validate()
+    useStatStore().setShowMusicButton(val)
   }
 )
 const isSignLanguage = () => useMediaStore().mediaLang?.isSignLanguage

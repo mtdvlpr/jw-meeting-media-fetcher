@@ -47,8 +47,8 @@
     <template #append>
       <v-list nav>
         <v-list-item
-          v-if="getPrefs('meeting.enableMusicButton')"
-          title="Background music"
+          v-if="showMusicButton"
+          :title="$t('shuffleMusic')"
           :disabled="musicLoading"
           @click="toggleMusic()"
         >
@@ -67,14 +67,21 @@
               {{ timeRemaining }}
             </v-chip>
           </template>
+          <v-tooltip activator="parent">
+            {{ getPrefs('meeting.shuffleShortcut') }}
+          </v-tooltip>
         </v-list-item>
         <v-list-item
-          v-if="getPrefs('media.enableMediaDisplayButton')"
+          v-if="showMediaPlayback"
           :class="{ 'pulse-danger': !mediaVisible }"
           prepend-icon="fab fa-chromecast"
-          :title="`${mediaVisible ? 'Hide' : 'Show'} media display`"
+          :title="$t(`mediaWin${mediaVisible ? 'Hide' : 'Show'}`)"
           @click="toggleScreen()"
-        ></v-list-item>
+        >
+          <v-tooltip activator="parent">
+            {{ getPrefs('media.mediaWinShortcut') }}
+          </v-tooltip>
+        </v-list-item>
       </v-list>
     </template>
   </v-navigation-drawer>
@@ -86,7 +93,9 @@ const { $i18n } = useNuxtApp()
 const localePath = useLocalePath()
 const cong = useRouteQuery<string>('cong', '')
 const { isDev } = useRuntimeConfig().public
-const { navDisabled, showMediaPlayback } = storeToRefs(useStatStore())
+const { navDisabled, showMediaPlayback, showMusicButton } = storeToRefs(
+  useStatStore()
+)
 const navItems = computed(() => {
   const items = [
     {

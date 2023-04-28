@@ -742,8 +742,12 @@ const groups = computed((): Settings[] => {
             {
               type: 'text',
               key: 'media.mediaWinShortcut',
-              onChange: (val: string) =>
-                changeShortcut(val, 'toggleMediaWindow'),
+              onChange: (val: string) => {
+                changeShortcut(val, 'toggleMediaWindow')
+                const store = useStatStore()
+                store.setShowMediaPlayback(false)
+                store.setShowMediaPlayback(true)
+              },
             },
             {
               type: 'text',
@@ -758,6 +762,12 @@ const groups = computed((): Settings[] => {
             {
               type: 'text',
               key: 'media.shuffleShortcut',
+              onChange: (val: string) => {
+                changeShortcut(val, 'toggleMusicShuffle')
+                const store = useStatStore()
+                store.setShowMusicButton(false)
+                store.setShowMusicButton(true)
+              },
             },
             { key: 'media.enablePp' },
             {
@@ -1073,6 +1083,9 @@ const groups = computed((): Settings[] => {
           value: [
             {
               key: 'meeting.enableMusicButton',
+              onChange: (val: boolean) => {
+                useStatStore().setShowMusicButton(val)
+              },
             },
             {
               type: 'slider',
