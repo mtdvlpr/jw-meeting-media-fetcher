@@ -1,6 +1,6 @@
 <template>
   <div class="present-page">
-    <v-app-bar v-if="!date" style="z-index: 1000">
+    <v-app-bar v-if="!date">
       <v-app-bar-title>{{ $t('selectDate') }}</v-app-bar-title>
     </v-app-bar>
     <confirm-dialog
@@ -27,7 +27,6 @@
     <media-controls v-if="date" />
     <present-select v-else :first-choice="firstChoice" />
     <present-footer
-      :window-width="width"
       :participant="participant"
       @zoom-part="toggleZoomPart()"
       @clear-participant="participant = null"
@@ -53,8 +52,6 @@ watch(date, (val) => {
     firstChoice.value = false
   }
 })
-const { width } = useWindowSize()
-// provide(windowHeightKey, height)
 const mediaActive = ref(false)
 provide(mediaActiveKey, mediaActive)
 const videoActive = ref(false)
@@ -195,7 +192,7 @@ const listenToZoomSocket = () => {
     height: 0;
 
     > div {
-      z-index: 3;
+      z-index: 1100;
     }
   }
 }

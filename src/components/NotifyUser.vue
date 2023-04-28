@@ -13,7 +13,7 @@
     width="30%"
     :timeout="m.persistent ? -1 : 10000"
     content-class="message-content"
-    :style="`z-index: 1005; top: ${combinedHeight(i)}px`"
+    :style="`z-index: 9000; top: ${combinedHeight(i)}px`"
     @update:model-value="store.dismiss(i)"
   >
     <v-row justify="space-between">

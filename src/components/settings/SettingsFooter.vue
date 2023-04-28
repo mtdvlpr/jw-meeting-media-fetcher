@@ -206,6 +206,5 @@ const removeCache = async () => {
   bottom: 0;
   right: 0;
   width: calc(100% - 56px);
-  z-index: 1;
 }
 </style>

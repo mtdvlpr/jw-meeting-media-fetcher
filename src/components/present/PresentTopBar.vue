@@ -1,5 +1,5 @@
 <template>
-  <v-app-bar style="z-index: 1000" class="present-top-bar">
+  <v-app-bar class="present-top-bar">
     <v-app-bar-title>
       <v-breadcrumbs>
         <v-breadcrumbs-item
@@ -81,10 +81,11 @@
     </v-col>
   </v-app-bar>
   <v-progress-linear
+    v-if="dayDownloadProgress.percent > 0 && dayDownloadProgress.percent < 100"
     v-model="dayDownloadProgress.percent"
     color="primary"
     stream
-  ></v-progress-linear>
+  />
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
@@ -195,7 +196,6 @@ const actions = [
 .present-top-bar {
   width: 100%;
   height: 64px;
-  z-index: 2 !important;
 }
 </style>
 <style lang="scss">

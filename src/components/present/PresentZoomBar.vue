@@ -246,8 +246,6 @@ const spotlightParticipants = () => {
 </script>
 <style scoped lang="scss">
 #zoom-app-bar {
-  z-index: 2 !important;
-
   button.v-app-bar__nav-icon {
     cursor: initial !important;
 

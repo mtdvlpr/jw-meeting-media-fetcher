@@ -1,5 +1,8 @@
 <template>
-  <div id="media-list-container" style="width: 100%; overflow-y: auto">
+  <div
+    id="media-list-container"
+    :style="`width: 100%; overflow-y: auto;${listHeight}`"
+  >
     <v-expand-transition>
       <song-picker
         v-if="addSong"
@@ -206,7 +209,6 @@ const props = defineProps<{
 
 const dragging = ref(false)
 const date = useRouteQuery<string>('date', '')
-// const { client: zoomIntegration } = storeToRefs(useZoomStore())
 
 // Meeting day
 const meetingDay = ref('')
@@ -312,13 +314,14 @@ const deactivateSong = () => {
 }
 
 // Computed list height
-// const windowHeight = inject(windowHeightKey, ref(0))
-// const listHeight = computed(() => {
-//   const TOP_BAR = 64
-//   const FOOTER = 76
-//   const ZOOM_BAR = 56
-//   let otherElements = TOP_BAR + FOOTER
-//   if (zoomIntegration.value) otherElements += ZOOM_BAR
-//   return `max-height: ${windowHeight.value - otherElements}px`
-// })
+const { client: zoomIntegration } = storeToRefs(useZoomStore())
+const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
+const listHeight = computed(() => {
+  const TOP_BAR = 64
+  const FOOTER = 76
+  const ZOOM_BAR = 56
+  let otherElements = TOP_BAR + FOOTER
+  if (zoomIntegration.value) otherElements += ZOOM_BAR
+  return `max-height: ${windowSize.height.value - otherElements}px`
+})
 </script>

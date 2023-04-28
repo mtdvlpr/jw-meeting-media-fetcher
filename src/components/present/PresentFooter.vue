@@ -64,8 +64,7 @@ import { ObsPrefs } from '~~/types'
 
 const date = computed(() => useRoute().query.date as string)
 const emit = defineEmits(['zoomPart'])
-const props = defineProps<{
-  windowWidth: number
+defineProps<{
   participant: Participant | null
 }>()
 
@@ -161,6 +160,8 @@ const showButtons = computed(
 const showShortButtons = computed(
   () => combinedScenesLength.value > availableWidth.value
 )
+
+const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
 const availableWidth = computed(() => {
   let BUTTONS = 172
   const FOOTER_PADDING = 32
@@ -170,7 +171,7 @@ const availableWidth = computed(() => {
   if (getPrefs<boolean>('meeting.enableMusicButton')) BUTTONS += SHUFFLE_BUTTON
   const OBS_MENU_PADDING = 8
   const WIDTH_OF_OTHER_ELEMENTS = FOOTER_PADDING + BUTTONS + OBS_MENU_PADDING
-  return props.windowWidth - WIDTH_OF_OTHER_ELEMENTS
+  return windowSize.width.value - WIDTH_OF_OTHER_ELEMENTS
 })
 const shortScenesLength = computed(() => {
   let nrOfChars = 0

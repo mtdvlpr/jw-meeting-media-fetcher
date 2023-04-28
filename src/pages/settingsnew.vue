@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar style="z-index: 1000">
+    <v-app-bar>
       <v-app-bar-title :class="{ 'text-error': !valid }">
         {{ $t('settings') }}
       </v-app-bar-title>
@@ -214,7 +214,6 @@ const { client } = storeToRefs(useCongStore())
 const { screens, mediaScreenInit } = storeToRefs(usePresentStore())
 
 // Height
-// const { height } = useWindowSize()
 // const contentHeight = computed(() => {
 //   const TOOLBAR_HEIGHT = 112
 //   const FOOTER_HEIGHT = 76

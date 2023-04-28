@@ -21,6 +21,8 @@ import { join } from 'upath'
 import { Theme } from '~~/types'
 
 const statStore = useStatStore()
+const windowSize = useWindowSize()
+provide(windowSizeKey, windowSize)
 
 const initMediaWinState = async () => {
   const mediaWinOpen = await ipcRenderer.invoke('mediaWinOpen')

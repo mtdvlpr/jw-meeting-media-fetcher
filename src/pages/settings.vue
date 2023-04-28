@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar style="z-index: 1000">
+    <v-app-bar>
       <v-app-bar-title>{{ $t('settings') }}</v-app-bar-title>
       <progress-bar :current="currentProgress" :total="totalProgress" />
       <template #extension>
@@ -129,11 +129,11 @@ const { currentProgress, totalProgress, setProgress } = useProgress()
 provide(setProgressKey, setProgress)
 
 // Height
-const { height } = useWindowSize()
+const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
 const contentHeight = computed(() => {
   const TOOLBAR_HEIGHT = 112
   const FOOTER_HEIGHT = 76
-  return height.value - TOOLBAR_HEIGHT - FOOTER_HEIGHT
+  return windowSize.height.value - TOOLBAR_HEIGHT - FOOTER_HEIGHT
 })
 
 // Control cache
