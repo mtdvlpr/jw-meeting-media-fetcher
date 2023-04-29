@@ -199,6 +199,7 @@ import {
   ShortJWLang,
   VFormRef,
   VideoFile,
+  MeetingDay,
 } from '~~/types'
 
 useHead({ title: 'Settings' })
@@ -380,10 +381,60 @@ const firstRunSteps = computed(() => {
           : undefined,
       ],
     },
+    ...(firstRunParams.value.usingAtKh
+      ? [
+          {
+            title: "Excellent! We're off to a good start.",
+            subtitle:
+              "You'll notice the yeartext is now being displayed on the external monitor! But let's keep going.",
+          },
+        ]
+      : []),
     {
-      title: "Excellent! We're off to a good start.",
+      title: 'What are your meeting days and times?',
       subtitle:
-        "You'll notice the yeartext is now being displayed on the external monitor! But let's keep going.",
+        "We'll use this info to make sure that all media is categorized into dated folders for each meeting.",
+      settings: [
+        {
+          name: 'meeting.mwDay',
+          type: 'input',
+          actions: [],
+        },
+        {
+          name: 'meeting.mwStartTime',
+          type: 'input',
+          actions: [],
+        },
+        {
+          name: 'meeting.weDay',
+          type: 'input',
+          actions: [],
+        },
+        {
+          name: 'meeting.weStartTime',
+          type: 'input',
+          actions: [],
+        },
+      ],
+      actions: [
+        firstRunParams.value.usingAtKh
+          ? enableExternalDisplayAndMusic
+          : undefined,
+      ],
+    },
+    {
+      title:
+        'Where should the prepared media for playback at meetings be saved?',
+      subtitle:
+        'This is the folder in which the dated folders will be created for each meeting.',
+      settings: [
+        {
+          name: 'app.localOutputPath', // set default folder path here of user's "documents" folder
+          type: 'input',
+          actions: [],
+        },
+      ],
+      actions: [startMediaSync],
     },
   ]
   return steps
@@ -393,9 +444,15 @@ const initialSettingsDone = computed(
   () => currentInitialSetting.value === firstRunSteps.value.length - 1
 )
 const enableExternalDisplayAndMusic = () => {
-  // actually update prefs here
+  // update prefs here
+  console.log('update prefs here')
   // prefs.value.media.enableMediaDisplayButton = true
   // prefs.value.media.enableMusicButton = true
+}
+
+const startMediaSync = () => {
+  // start media sync here
+  console.log('start media sync here')
 }
 
 const nextStep = (actions: any[]) => {
