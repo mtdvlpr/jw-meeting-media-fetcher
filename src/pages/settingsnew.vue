@@ -48,10 +48,10 @@
           >
             <v-card class="mx-auto">
               <v-card-title>{{ setting.title }}</v-card-title>
-              <v-card-subtitle>{{ setting.subtitle }}</v-card-subtitle>
+              <v-card-subtitle></v-card-subtitle>
               <v-card-text>
                 <div>
-                  {{ firstRunParams }}
+                  {{ setting.subtitle }}
                 </div>
                 <template v-for="pref in setting.settings" :key="pref">
                   <v-text-field
@@ -82,7 +82,7 @@
                 <!-- <v-btn variant="text" color="deep-purple-accent-4">
                   Learn More
                 </v-btn> -->
-                <v-template v-if="setting.firstRunParam">
+                <template v-if="setting.firstRunParam">
                   <v-btn @click="setFirstRunParam(setting.firstRunParam, true)">
                     Yes
                   </v-btn>
@@ -91,7 +91,7 @@
                   >
                     No
                   </v-btn>
-                </v-template>
+                </template>
                 <template v-else>
                   <v-btn
                     variant="text"
@@ -199,7 +199,6 @@ import {
   ShortJWLang,
   VFormRef,
   VideoFile,
-  MeetingDay,
 } from '~~/types'
 
 useHead({ title: 'Settings' })
@@ -318,19 +317,20 @@ locales.value = $i18n.locales.value.map((l) => {
 })
 const isNew = ref(!!useRouteQuery<string>('new', ''))
 
-const firstRunParams = ref({
-  usingAtKh: false,
-})
+interface FirstRunParams {
+  [key: string]: boolean // Allow for string indexing
+}
+
+const firstRunParams = ref<FirstRunParams>({})
 const setFirstRunParam = (param: string, value: boolean) => {
   firstRunParams.value[param] = value
-  console.log(param, value, firstRunParams)
   currentInitialSetting.value++
 }
 const firstRunSteps = computed(() => {
   const steps = [
     {
-      title:
-        "Welcome! Let's configure a few things, and then we'll get on our way.",
+      title: 'Welcome!',
+      subtitle: "Let's configure a few things, and then we'll get on our way.",
     },
     {
       title: 'What language do you want the app to be displayed in?',
@@ -436,6 +436,105 @@ const firstRunSteps = computed(() => {
       ],
       actions: [startMediaSync],
     },
+    {
+      title: 'Excellent!',
+      subtitle:
+        "We're almost done! We'll start fetching media while we wrap up with our initial setup.",
+    },
+    ...(firstRunParams.value.usingAtKh
+      ? [
+          {
+            firstRunParam: 'usingObs',
+            title: 'Does your Kingdom Hall use a program called OBS Studio?',
+            subtitle:
+              'OBS Studio is a free app used to manage camera and video feeds.',
+          },
+          ...(firstRunParams.value.usingObs
+            ? [
+                {
+                  firstRunParam: 'integrateObs',
+                  title: 'Would you like to integrate M³ with OBS Studio?',
+                  subtitle:
+                    'Doing so will greatly simplify and facilitate sharing media during hybrid meetings.',
+                },
+                ...(firstRunParams.value.integrateObs
+                  ? [
+                      {
+                        title: 'Is OBS Studio configured properly?',
+                        subtitle:
+                          'Make sure that the OBS Studio Websocket plugin is configured with a port number and password, and that the OBS Studio virtual camera is installed on this computer. When this is done, click next.',
+                      },
+                      {
+                        title:
+                          "Enter the port and password configured in OBS Studio's Websocket plugin.",
+                        settings: [
+                          {
+                            name: 'app.obs.port',
+                            type: 'input',
+                            actions: [],
+                          },
+                          {
+                            name: 'app.obs.password',
+                            type: 'input',
+                            actions: [],
+                          },
+                        ],
+                        actions: [enableObs],
+                      },
+                      {
+                        title:
+                          'Configure a scene in OBS Studio to show a stage wide shot.',
+                        subtitle:
+                          'Once the scene has been created, select it here.',
+                        settings: [
+                          {
+                            name: 'app.obs.cameraScene',
+                            type: 'input',
+                            actions: [],
+                          },
+                        ],
+                      },
+                      {
+                        title:
+                          'Configure a scene in OBS Studio that will capture the media while it is displayed.',
+                        subtitle:
+                          'This can be either a "display capture" or a "window capture". Once the scene has been created, select it here.',
+                        settings: [
+                          {
+                            name: 'app.obs.mediaScene',
+                            type: 'input',
+                            actions: [],
+                          },
+                        ],
+                      },
+                    ]
+                  : []),
+              ]
+            : []),
+          {
+            title:
+              'Make sure that the setting to "use dual monitors" in Zoom is enabled.',
+            subtitle:
+              "That way, you'll be able to quickly show and hide Zoom participants on the TV screens when needed.",
+          },
+          {
+            title:
+              'How can I show Zoom on the TVs instead of the media or yeartext?',
+            subtitle:
+              "Look for this button in M³'s sidebar. Clicking it will temporarily hide the media and yeartext, and reveal the Zoom participants underneath. Once the Zoom part is over, you can show the yeartext again using the same button.",
+          },
+          {
+            title: 'What about background music?',
+            subtitle:
+              "In the sidebar, you'll also find a button to start and stop background music playback. Note that background music will start playing automatically before a meeting is scheduled to start when M³ is launched, and will stop automatically one minute before the meeting. However, background music playback will need to be manually started after the concluding prayer.",
+          },
+        ]
+      : []),
+    {
+      title: 'Congratulations!',
+      subtitle:
+        'M³ is now ready to be used. Feel free to browse around the other available options, or if you prefer you can head right to the media playback screen.',
+    },
   ]
   return steps
 })
@@ -455,8 +554,16 @@ const startMediaSync = () => {
   console.log('start media sync here')
 }
 
-const nextStep = (actions: any[]) => {
-  actions?.filter(Boolean).forEach((action: () => any) => action())
+const enableObs = () => {
+  // enable obs integration
+  // test port and pw
+  // if fail, go back a step
+}
+
+const nextStep = (actions: any[] | undefined) => {
+  actions?.filter(Boolean).forEach((action: () => void) => {
+    if (action) action()
+  })
   initialSettingsDone.value
     ? (isNew.value = false)
     : currentInitialSetting.value++
