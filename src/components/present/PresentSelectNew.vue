@@ -73,10 +73,10 @@
 </template>
 
 <script lang="ts">
-import { changeExt, join, basename } from 'upath'
+import { join, basename } from 'upath'
 import weekday from 'dayjs/plugin/weekday'
 import * as fileWatcher from 'chokidar'
-import { MediaPrefs, MeetingFile, DateFormat } from '~~/types'
+import { MediaPrefs, DateFormat } from '~~/types'
 const watcher = ref<fileWatcher.FSWatcher | null>(null)
 export default {
   data() {
@@ -236,98 +236,6 @@ export default {
     }
   },
   methods: {
-    async syncMediaItem(date: string, item: MeetingFile) {
-      let day = null
-      for (let i = 0; i < this.weeks.length; i++) {
-        const week = this.weeks[i]
-        for (let j = 0; j < week.length; j++) {
-          const currentDay = week[j]
-          if (currentDay.date === date) {
-            day = currentDay
-            break
-          }
-        }
-        if (day!) {
-          break
-        }
-      }
-      if (item.filesize && (item.url || item.filepath)) {
-        log.info(
-          `%c[jwOrg] [${day!.date}] ${item.safeName}`,
-          'background-color: #cce5ff; color: #004085;'
-        )
-        // Set markers for sign language videos
-        const path = mediaPath()
-        if (item.markers && path && item.folder && item.safeName) {
-          const markers = Array.from(
-            new Set(
-              item.markers.markers.map(
-                ({ duration, label, startTime, endTransitionDuration }) =>
-                  JSON.stringify({
-                    duration,
-                    label,
-                    startTime,
-                    endTransitionDuration,
-                  })
-              )
-            )
-          ).map((m) => JSON.parse(m))
-          write(
-            join(path, item.folder, changeExt(item.safeName, 'json')),
-            JSON.stringify(markers)
-          )
-        }
-
-        // Prevent duplicates
-        // const duplicate = path
-        //   ? findOne(
-        //       join(
-        //         path,
-        //         item.folder,
-        //         '*' +
-        //           item.safeName
-        //             ?.substring(MAX_PREFIX_LENGTH)
-        //             .replace('.svg', '.png')
-        //       )
-        //     )
-        //   : null
-
-        /* if (
-          duplicate &&
-          item.safeName &&
-          basename(duplicate) !== item.safeName &&
-          ((await stat(duplicate)).size === item.filesize ||
-            extname(item.safeName) === '.svg')
-        ) {
-          rename(
-            duplicate,
-            basename(duplicate),
-            item.safeName.replace('.svg', '.png')
-          )
-        } else */ if (item.url) {
-          const newItem = JSON.parse(JSON.stringify(item))
-          await downloadIfRequired({ file: newItem, date })
-        } else if (path && item.filepath && item.folder && item.safeName) {
-          const dest = join(path, item.folder, item.safeName)
-          await copy(item.filepath, dest)
-        }
-      } else {
-        warn(
-          'warnFileNotAvailable',
-          {
-            persistent: true,
-            identifier: [
-              item.queryInfo?.KeySymbol,
-              item.queryInfo?.Track,
-              item.queryInfo?.IssueTagNumber,
-            ]
-              .filter(Boolean)
-              .join('_'),
-          },
-          item
-        )
-      }
-    },
     async syncMedia(
       weeks: {
         date: string
@@ -406,7 +314,7 @@ export default {
           increaseProgress(day)
         }
         await Promise.allSettled([
-          day.meetingType && this.syncJWMediaByDate(day.date, day.meetingType),
+          day.meetingType && syncJWMediaByDate(day.date, day.meetingType),
           congSync.value && syncCongMediaByDate(day.date),
           syncLocalRecurringMediaByDate(day.date),
         ])
@@ -432,38 +340,6 @@ export default {
           date,
         },
       })
-    },
-    async syncJWMediaByDate(date: string, meetingType: string | undefined) {
-      if (meetingType === 'mw') {
-        await getMwMedia(date)
-      } else if (meetingType === 'we') {
-        await getWeMedia(date)
-      }
-
-      createMediaNamesByDate(date)
-      const meetingMedia = Object.fromEntries(
-        Array.from(useMediaStore().meetings)
-          .filter(([meetingMediaDate]) => meetingMediaDate === date)
-          .map(([date, parts]) => [
-            date,
-            Object.fromEntries(
-              Array.from(parts).map(([part, media]) => [
-                part,
-                media.filter(
-                  ({ congSpecific, hidden, isLocal }) =>
-                    !congSpecific && !hidden && !isLocal
-                ),
-              ])
-            ),
-          ])
-      )
-      for (const [date, parts] of Object.entries(meetingMedia)) {
-        for (const [, media] of Object.entries(parts)) {
-          for (const item of media) {
-            await this.syncMediaItem(date, item)
-          }
-        }
-      }
     },
   },
 }
