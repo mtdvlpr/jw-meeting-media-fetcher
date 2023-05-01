@@ -24,7 +24,14 @@
     </v-app-bar-title>
 
     <template #append>
-      <v-menu location="bottom">
+      <v-progress-circular
+        v-if="globalDownloadProgress.percent < 100"
+        indeterminate
+        color="primary"
+        class="ms-3"
+        size="small"
+      ></v-progress-circular>
+      <v-menu v-else location="bottom">
         <template #activator="{ props }">
           <v-btn
             icon="fa-ellipsis-vertical"
@@ -80,12 +87,6 @@
       </template>
     </v-col>
   </v-app-bar>
-  <v-progress-linear
-    v-if="dayDownloadProgress.percent > 0 && dayDownloadProgress.percent < 100"
-    v-model="dayDownloadProgress.percent"
-    color="primary"
-    stream
-  />
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
@@ -111,30 +112,44 @@ const mediaActive = inject(mediaActiveKey, ref(false))
 
 const date = useRouteQuery<string>('date', '')
 
-const dayDownloadProgress = computed(() => {
-  const { downloadProgress } = useMediaStore()
-  const progressByDate = new Map()
-  for (const [, progress] of downloadProgress) {
-    const { current, total, date } = progress
-    if (!date) continue
-    const existingProgress = progressByDate.get(date) ?? {
-      current: 0,
-      total: 0,
-      percent: 0,
-    }
-    const updatedProgress = {
-      current: existingProgress.current + current,
-      total: existingProgress.total + total,
-      percent:
-        ((existingProgress.current + current) /
-          (existingProgress.total + total)) *
-        100,
-    }
-    progressByDate.set(date, updatedProgress)
-  }
-  return (
-    progressByDate.get(date.value) ?? { current: 0, total: 0, percent: 100 }
-  )
+// const dayDownloadProgress = computed(() => {
+//   const { downloadProgress } = useMediaStore()
+//   const progressByDate = new Map()
+//   for (const [, progress] of downloadProgress) {
+//     const { current, total, date } = progress
+//     if (!date) continue
+//     const existingProgress = progressByDate.get(date) ?? {
+//       current: 0,
+//       total: 0,
+//       percent: 0,
+//     }
+//     const updatedProgress = {
+//       current: existingProgress.current + current,
+//       total: existingProgress.total + total,
+//       percent:
+//         ((existingProgress.current + current) /
+//           (existingProgress.total + total)) *
+//         100,
+//     }
+//     progressByDate.set(date, updatedProgress)
+//   }
+//   return (
+//     progressByDate.get(date.value) ?? { current: 0, total: 0, percent: 100 }
+//   )
+// })
+
+const globalDownloadProgress = computed(() => {
+  const progressArray = Array.from(useMediaStore().downloadProgress) /* .filter(
+        ([, d]) => d.current !== d.total
+      ) */
+  const current = progressArray.reduce((acc, [, value]) => {
+    return acc + value.current
+  }, 0)
+  const total = progressArray.reduce((acc, [, value]) => {
+    return acc + value.total
+  }, 0)
+  const percent = (current / total) * 100 || 0
+  return { current, total, percent }
 })
 
 // Change meeting date

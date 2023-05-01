@@ -8,7 +8,28 @@
           </v-breadcrumbs-item>
         </v-breadcrumbs>
       </v-app-bar-title>
+      <template #append>
+        <v-progress-circular
+          v-if="globalDownloadProgress.percent < 100"
+          indeterminate
+          color="primary"
+          class="ms-3"
+          size="small"
+        ></v-progress-circular>
+        <v-tooltip v-else text="Refresh all media">
+          <template #activator="{ props }">
+            <v-btn v-bind="props" size="small" variant="text">
+              <v-icon>fa-refresh</v-icon>
+            </v-btn>
+          </template>
+        </v-tooltip>
+      </template>
     </v-app-bar>
+    <v-progress-linear
+      v-model="globalDownloadProgress.percent"
+      color="primary"
+      stream
+    ></v-progress-linear>
     <confirm-dialog
       v-model="dialog"
       description="obsZoomSceneActivate"
@@ -43,7 +64,6 @@
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import type { Participant } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
-
 const date = computed(() => useRoute().query.date as string)
 useHead({
   title: computed(() =>
@@ -66,6 +86,19 @@ provide(videoActiveKey, videoActive)
 useIpcRendererOn('showingMedia', (_e, val: boolean[]) => {
   mediaActive.value = val[0]
   videoActive.value = val[1]
+})
+const globalDownloadProgress = computed(() => {
+  const progressArray = Array.from(useMediaStore().downloadProgress) /* .filter(
+        ([, d]) => d.current !== d.total
+      ) */
+  const current = progressArray.reduce((acc, [, value]) => {
+    return acc + value.current
+  }, 0)
+  const total = progressArray.reduce((acc, [, value]) => {
+    return acc + value.total
+  }, 0)
+  const percent = (current / total) * 100 || 0
+  return { current, total, percent }
 })
 
 onMounted(() => {

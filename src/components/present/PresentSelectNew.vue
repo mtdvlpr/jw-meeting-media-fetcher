@@ -1,15 +1,5 @@
 <template>
-  <!-- <loading-icon v-if="loading" /> -->
   <v-container class="calendar present-select pa-4 grow">
-    <v-progress-linear
-      v-model="globalDownloadProgress.percent"
-      color="primary"
-      stream
-    ></v-progress-linear>
-    <h1>GLOBAL</h1>
-    {{ globalDownloadProgress }}
-    <h1>DAYS</h1>
-    {{ daysDownloadProgress }}
     <v-row no-gutters>
       <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">
         <v-card :subtitle="day" variant="tonal" color="grey"></v-card>
@@ -55,20 +45,11 @@
             color="orange"
             stream
           ></v-progress-linear>
-          <!-- <v-progress-linear
-            v-if="daysProgress[day.date]"
-            v-model="daysProgress[day.date].percent"
-            color="yellow"
-            stream
-          ></v-progress-linear> -->
-          <!-- <progress-bar
-            :current="0"
-            :total="day.progress"
-            color="blue-lighten-3"
-          /> -->
         </v-card>
       </v-col>
     </v-row>
+    <h1>DAYS</h1>
+    {{ daysDownloadProgress }}
   </v-container>
 </template>
 
@@ -81,7 +62,6 @@ const watcher = ref<fileWatcher.FSWatcher | null>(null)
 export default {
   data() {
     return {
-      // loading: true,
       dayNames: [] as Array<string>,
       weeks: [] as Array<
         Array<{
@@ -100,21 +80,6 @@ export default {
     }
   },
   computed: {
-    globalDownloadProgress() {
-      const progressArray = Array.from(
-        useMediaStore().downloadProgress
-      ) /* .filter(
-        ([, d]) => d.current !== d.total
-      ) */
-      const current = progressArray.reduce((acc, [, value]) => {
-        return acc + value.current
-      }, 0)
-      const total = progressArray.reduce((acc, [, value]) => {
-        return acc + value.total
-      }, 0)
-      const percent = (current / total) * 100 || 0
-      return { current, total, percent }
-    },
     daysDownloadProgress() {
       const progressArray = Array.from(useMediaStore().downloadProgress)
       const progressByDate = new Map()

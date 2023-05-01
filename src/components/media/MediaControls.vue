@@ -33,7 +33,7 @@
         @song="addSong = false"
       />
     </v-expand-transition>
-    <v-bottom-navigation>
+    <v-bottom-navigation v-if="globalDownloadProgress.percent >= 100">
       <v-btn @click="managingMedia = true"> Add and remove media files </v-btn>
       <v-btn v-model="addSong" :active="addSong" @click="addSong = !addSong">
         Quickly add a song
@@ -60,6 +60,20 @@ const loading = ref(false)
 const addSong = ref(false)
 watch(addSong, () => {
   scrollToItem(0)
+})
+
+const globalDownloadProgress = computed(() => {
+  const progressArray = Array.from(useMediaStore().downloadProgress) /* .filter(
+        ([, d]) => d.current !== d.total
+      ) */
+  const current = progressArray.reduce((acc, [, value]) => {
+    return acc + value.current
+  }, 0)
+  const total = progressArray.reduce((acc, [, value]) => {
+    return acc + value.total
+  }, 0)
+  const percent = (current / total) * 100 || 0
+  return { current, total, percent }
 })
 
 // Current meeting date
