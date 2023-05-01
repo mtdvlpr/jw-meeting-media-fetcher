@@ -1,6 +1,6 @@
 <template>
   <v-form v-if="setting.type == 'group'" v-model="validGroups[setting.id]">
-    <v-list-group :value="!openGroups[setting.id]">
+    <v-list-group :value="setting.id">
       <template #activator="{ props }">
         <v-list-item
           v-bind="props"

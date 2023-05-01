@@ -20,27 +20,12 @@
     </v-btn>
     <v-dialog :model-value="isNew" fullscreen transition="fade-transition">
       <v-card class="h-100">
-        <!-- <v-carousel cycle :show-arrows="false" hide-delimiters height="100%">
-          <v-carousel-item v-for="(language, index) in locales" :key="index">
-            <v-sheet color="blue-grey-lighten-5" height="100%">
-              <div
-                class="d-flex fill-height justify-center align-center text-h2 pa-5"
-              >
-                <div>
-                  !-- eventually show "Welcome" in every language }} --
-                  {{ language.name }}
-                </div>
-              </div>
-            </v-sheet>
-          </v-carousel-item>
-        </v-carousel> -->
         <v-carousel
           v-model="currentInitialSetting"
           progress="primary"
           :show-arrows="false"
           height="100%"
           hide-delimiters
-          delimiter-icon="square"
         >
           <v-carousel-item
             v-for="setting in firstRunSteps"
@@ -113,30 +98,6 @@
                 >
               </v-card-actions>
             </v-card>
-            <!-- <v-sheet height="100%">
-              <div class="d-flex fill-height justify-center align-center">
-                <div>{{ setting }}</div>
-                <div>
-                  <v-btn
-                    class="ma-3"
-                    @click="
-                      initialSettingsDone
-                        ? (isNew = false)
-                        : currentInitialSetting++
-                    "
-                  >
-                    {{ initialSettingsDone ? 'Explore more settings' : 'Next' }}
-                  </v-btn>
-                  <v-btn
-                    v-if="initialSettingsDone"
-                    class="ma-3"
-                    @click="isNew = false"
-                  >
-                    Go to media calendar
-                  </v-btn>
-                </div>
-              </div> -->
-            <!-- </v-sheet> -->
           </v-carousel-item>
         </v-carousel>
       </v-card>
@@ -144,6 +105,8 @@
     <v-dialog v-model="forcingPrefs" fullscreen :scrim="false" persistent>
       <cong-forced-prefs @done="forcingPrefs = false" />
     </v-dialog>
+    {{ validGroups }}
+    {{ openGroups }}
     <v-row no-gutters justify="center" class="fill-height settings">
       <v-col cols="12">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
@@ -151,7 +114,7 @@
           <v-list density="compact">
             <template v-for="group in filteredGroups" :key="group.id">
               <v-form v-model="validGroups[group.id]" @submit.prevent>
-                <v-list-group :value="!openGroups[group.id]">
+                <v-list-group :value="group.id">
                   <template #activator="{ props }">
                     <v-list-item
                       v-bind="props"
@@ -315,7 +278,7 @@ locales.value = $i18n.locales.value.map((l) => {
     code: locale.code,
   }
 })
-const isNew = ref(!!useRouteQuery<string>('new', ''))
+const isNew = ref(!useRouteQuery<string>('new', ''))
 
 interface FirstRunParams {
   [key: string]: boolean // Allow for string indexing
@@ -960,285 +923,309 @@ const groups = computed((): Settings[] => {
             }
           },
         },
-        {
-          type: 'group',
-          id: 'obs',
-          label: 'OBS Studio',
-          value: [
-            {
-              key: 'app.obs.useV4',
-              label: 'obsUseV4',
-              onChange: () => {
-                if (obsComplete.value) {
-                  getScenes()
-                }
+        ...(prefs.value.app.obs.enable
+          ? [
+              {
+                type: 'group',
+                id: 'obs',
+                label: 'OBS Studio',
+                value: [
+                  {
+                    key: 'app.obs.useV4',
+                    label: 'obsUseV4',
+                    onChange: () => {
+                      if (obsComplete.value) {
+                        getScenes()
+                      }
+                    },
+                  },
+                  {
+                    type: 'password',
+                    key: 'app.obs.password',
+                  },
+                  {
+                    type: 'text',
+                    key: 'app.obs.port',
+                  },
+                  {
+                    type: 'select',
+                    key: 'app.obs.cameraScene',
+                    label: 'obsCameraScene',
+                    props: {
+                      items: scenes.value.filter(
+                        (s) =>
+                          s !== prefs.value.app.obs.mediaScene &&
+                          s !== prefs.value.app.obs.zoomScene &&
+                          s !== prefs.value.app.obs.imageScene
+                      ),
+                    },
+                  },
+                  {
+                    type: 'select',
+                    key: 'app.obs.imageScene',
+                    label: 'obsImageScene',
+                    props: {
+                      items: scenes.value.filter(
+                        (s) =>
+                          s !== prefs.value.app.obs.mediaScene &&
+                          s !== prefs.value.app.obs.zoomScene &&
+                          s !== prefs.value.app.obs.cameraScene
+                      ),
+                    },
+                  },
+                  {
+                    type: 'select',
+                    key: 'app.obs.mediaScene',
+                    label: 'obsMediaScene',
+                    props: {
+                      items: scenes.value.filter(
+                        (s) =>
+                          s !== prefs.value.app.obs.cameraScene &&
+                          s !== prefs.value.app.obs.zoomScene &&
+                          s !== prefs.value.app.obs.imageScene
+                      ),
+                    },
+                  },
+                  {
+                    type: 'select',
+                    key: 'app.obs.zoomScene',
+                    label: 'obsZoomScene',
+                    props: {
+                      items: scenes.value.filter(
+                        (s) =>
+                          s !== prefs.value.app.obs.mediaScene &&
+                          s !== prefs.value.app.obs.cameraScene &&
+                          s !== prefs.value.app.obs.imageScene
+                      ),
+                    },
+                  },
+                ],
               },
-            },
-            {
-              type: 'password',
-              key: 'app.obs.password',
-            },
-            {
-              type: 'text',
-              key: 'app.obs.port',
-            },
-            {
-              type: 'select',
-              key: 'app.obs.cameraScene',
-              label: 'obsCameraScene',
-              props: {
-                items: scenes.value.filter(
-                  (s) =>
-                    s !== prefs.value.app.obs.mediaScene &&
-                    s !== prefs.value.app.obs.zoomScene &&
-                    s !== prefs.value.app.obs.imageScene
-                ),
-              },
-            },
-            {
-              type: 'select',
-              key: 'app.obs.imageScene',
-              label: 'obsImageScene',
-              props: {
-                items: scenes.value.filter(
-                  (s) =>
-                    s !== prefs.value.app.obs.mediaScene &&
-                    s !== prefs.value.app.obs.zoomScene &&
-                    s !== prefs.value.app.obs.cameraScene
-                ),
-              },
-            },
-            {
-              type: 'select',
-              key: 'app.obs.mediaScene',
-              label: 'obsMediaScene',
-              props: {
-                items: scenes.value.filter(
-                  (s) =>
-                    s !== prefs.value.app.obs.cameraScene &&
-                    s !== prefs.value.app.obs.zoomScene &&
-                    s !== prefs.value.app.obs.imageScene
-                ),
-              },
-            },
-            {
-              type: 'select',
-              key: 'app.obs.zoomScene',
-              label: 'obsZoomScene',
-              props: {
-                items: scenes.value.filter(
-                  (s) =>
-                    s !== prefs.value.app.obs.mediaScene &&
-                    s !== prefs.value.app.obs.cameraScene &&
-                    s !== prefs.value.app.obs.imageScene
-                ),
-              },
-            },
-          ],
-        },
+            ]
+          : []
+        ).filter(Boolean),
         {
           key: 'cong.enable',
           label: 'webdavEnable',
         },
-        {
-          type: 'group',
-          id: 'webdav',
-          label: 'WebDAV',
-          value: [
-            {
-              type: 'text',
-              key: 'cong.server',
-              props: {
-                prefix: 'https://',
-                rules: [
-                  () =>
-                    !congComplete.value ||
-                    congError.value !== 'host' ||
-                    !online.value,
+        ...(prefs.value.cong.enable
+          ? [
+              {
+                type: 'group',
+                id: 'webdav',
+                label: 'WebDAV',
+                value: [
+                  {
+                    type: 'text',
+                    key: 'cong.server',
+                    props: {
+                      prefix: 'https://',
+                      rules: [
+                        () =>
+                          !congComplete.value ||
+                          congError.value !== 'host' ||
+                          !online.value,
+                      ],
+                    },
+                  },
+                  {
+                    type: 'text',
+                    key: 'cong.username',
+                    props: {
+                      rules: [
+                        () =>
+                          !congComplete.value ||
+                          congError.value !== 'credentials',
+                      ],
+                    },
+                  },
+                  {
+                    type: 'password',
+                    key: 'cong.password',
+                    props: {
+                      rules: [
+                        () =>
+                          !congComplete.value ||
+                          congError.value !== 'credentials',
+                      ],
+                    },
+                  },
+                  {
+                    type: 'text',
+                    key: 'cong.dir',
+                    label: 'webdavFolder',
+                    append: {
+                      type: 'action',
+                      label: 'fa-globe',
+                      icon: true,
+                      props: {
+                        loading: congLoading.value,
+                        disabled: !congComplete.value,
+                        color:
+                          congError.value === 'success'
+                            ? 'success'
+                            : congError.value === null
+                            ? 'error'
+                            : 'primary',
+                        rules: [
+                          () =>
+                            !congComplete.value || congError.value !== 'dir',
+                        ],
+                      },
+                      action: async () => {
+                        if (congComplete.value) {
+                          congLoading.value = true
+                          congError.value = (await connect(
+                            prefs.value.cong.server!,
+                            prefs.value.cong.username!,
+                            prefs.value.cong.password!,
+                            prefs.value.cong.dir!
+                          ))!
+                          if (client.value) {
+                            updateContentsTree()
+                            forcePrefs()
+                          }
+                          congLoading.value = false
+                          form.value?.validate()
+                        }
+                      },
+                    },
+                  },
+                  {
+                    type: 'action',
+                    label: 'settingsLocked',
+                    action: () => {
+                      forcingPrefs.value = true
+                    },
+                  },
                 ],
               },
-            },
-            {
-              type: 'text',
-              key: 'cong.username',
-              props: {
-                rules: [
-                  () =>
-                    !congComplete.value || congError.value !== 'credentials',
-                ],
-              },
-            },
-            {
-              type: 'password',
-              key: 'cong.password',
-              props: {
-                rules: [
-                  () =>
-                    !congComplete.value || congError.value !== 'credentials',
-                ],
-              },
-            },
-            {
-              type: 'text',
-              key: 'cong.dir',
-              label: 'webdavFolder',
-              append: {
-                type: 'action',
-                label: 'fa-globe',
-                icon: true,
-                props: {
-                  loading: congLoading.value,
-                  disabled: !congComplete.value,
-                  color:
-                    congError.value === 'success'
-                      ? 'success'
-                      : congError.value === null
-                      ? 'error'
-                      : 'primary',
-                  rules: [
-                    () => !congComplete.value || congError.value !== 'dir',
-                  ],
-                },
-                action: async () => {
-                  if (congComplete.value) {
-                    congLoading.value = true
-                    congError.value = (await connect(
-                      prefs.value.cong.server!,
-                      prefs.value.cong.username!,
-                      prefs.value.cong.password!,
-                      prefs.value.cong.dir!
-                    ))!
-                    if (client.value) {
-                      updateContentsTree()
-                      forcePrefs()
-                    }
-                    congLoading.value = false
-                    form.value?.validate()
-                  }
-                },
-              },
-            },
-            {
-              type: 'action',
-              label: 'settingsLocked',
-              action: () => {
-                forcingPrefs.value = true
-              },
-            },
-          ],
-        },
+            ]
+          : []
+        ).filter(Boolean),
         {
           key: 'app.zoom.enable',
         },
-        {
-          type: 'group',
-          id: 'zoom',
-          label: 'Zoom',
-          value: [
-            {
-              type: 'list',
-              key: 'app.zoom.autoRename',
-              label: 'zoomAutoRename',
-            },
-            {
-              key: 'autoStartMeeting',
-              label: 'zoomAutoStartMeeting',
-            },
-            {
-              type: 'text',
-              key: 'app.zoom.id',
-              label: 'zoomId',
-            },
-            {
-              type: 'password',
-              key: 'app.zoom.password',
-            },
-            {
-              key: 'app.zoom.spotlight',
-              label: 'zoomSpotlight',
-            },
-            {
-              type: 'text',
-              key: 'app.zoom.name',
-              label: 'zoomName',
-            },
-          ],
-        },
+        ...(prefs.value.app.zoom.enable
+          ? [
+              {
+                type: 'group',
+                id: 'zoom',
+                label: 'Zoom',
+                value: [
+                  {
+                    type: 'list',
+                    key: 'app.zoom.autoRename',
+                    label: 'zoomAutoRename',
+                  },
+                  {
+                    key: 'autoStartMeeting',
+                    label: 'zoomAutoStartMeeting',
+                  },
+                  {
+                    type: 'text',
+                    key: 'app.zoom.id',
+                    label: 'zoomId',
+                  },
+                  {
+                    type: 'password',
+                    key: 'app.zoom.password',
+                  },
+                  {
+                    key: 'app.zoom.spotlight',
+                    label: 'zoomSpotlight',
+                  },
+                  {
+                    type: 'text',
+                    key: 'app.zoom.name',
+                    label: 'zoomName',
+                  },
+                ],
+              },
+            ]
+          : []
+        ).filter(Boolean),
       ],
     },
     {
       id: 'playback',
       label: 'Media playback',
       settings: [
-        { key: 'media.autoPlayFirst' },
         { key: 'meeting.autoStartMusic' },
-        {
-          type: 'select',
-          key: 'media.preferredOutput',
-          props: {
-            items: [
-              { title: $i18n.t('window'), value: 'window' },
-              ...screens.value.map((s) => {
-                return {
-                  title: s.title,
-                  value: s.id,
-                }
-              }),
-            ],
-          },
-          onChange: () => {
-            if (prefs.value.media.enableMediaDisplayButton) {
-              getMediaWindowDestination().then((dest) => {
-                ipcRenderer.send('showMediaWindow', dest)
-              })
-            }
-          },
-        },
-        {
-          type: 'group',
-          id: 'playbackAdvanced',
-          label: $i18n.t('advanced'),
-          value: [
-            {
-              type: 'action',
-              label: 'mediaWindowBackground',
-              action: async () => {
-                const result = await ipcRenderer.invoke('openDialog', {
-                  properties: ['openFile'],
-                  filters: [
-                    {
-                      name: 'Image',
-                      extensions: ['jpg', 'png', 'jpeg', 'gif', 'svg'],
-                    },
-                  ],
-                })
-                if (!result || result.canceled) return
-                if (isImage(result.filePaths[0])) {
-                  const background = result.filePaths[0]
-                  const filename = `custom-background-image-${prefs.value.app.congregationName}`
-                  const extension = extname(background)
-                  rm(findAll(join(appPath(), filename + '*')))
-                  copy(background, join(appPath(), filename + extension))
-
-                  // Upload the background to the cong server
-                  if (client.value && prefs.value.cong.dir) {
-                    await client.value.putFileContents(
-                      join(prefs.value.cong.dir, filename + extension),
-                      await readFile(background),
-                      {
-                        overwrite: true,
+        ...(prefs.value.media.enableMediaDisplayButton
+          ? [
+              { key: 'media.autoPlayFirst' },
+              {
+                type: 'select',
+                key: 'media.preferredOutput',
+                props: {
+                  items: [
+                    { title: $i18n.t('window'), value: 'window' },
+                    ...screens.value.map((s) => {
+                      return {
+                        title: s.title,
+                        value: s.id,
                       }
-                    )
+                    }),
+                  ],
+                },
+                onChange: () => {
+                  if (prefs.value.media.enableMediaDisplayButton) {
+                    getMediaWindowDestination().then((dest) => {
+                      ipcRenderer.send('showMediaWindow', dest)
+                    })
                   }
-
-                  refreshBackgroundImgPreview()
-                } else {
-                  warn('notAnImage')
-                }
+                },
               },
-            },
-          ],
-        },
+
+              {
+                type: 'group',
+                id: 'playbackAdvanced',
+                label: $i18n.t('advanced'),
+                value: [
+                  {
+                    type: 'action',
+                    label: 'mediaWindowBackground',
+                    action: async () => {
+                      const result = await ipcRenderer.invoke('openDialog', {
+                        properties: ['openFile'],
+                        filters: [
+                          {
+                            name: 'Image',
+                            extensions: ['jpg', 'png', 'jpeg', 'gif', 'svg'],
+                          },
+                        ],
+                      })
+                      if (!result || result.canceled) return
+                      if (isImage(result.filePaths[0])) {
+                        const background = result.filePaths[0]
+                        const filename = `custom-background-image-${prefs.value.app.congregationName}`
+                        const extension = extname(background)
+                        rm(findAll(join(appPath(), filename + '*')))
+                        copy(background, join(appPath(), filename + extension))
+
+                        // Upload the background to the cong server
+                        if (client.value && prefs.value.cong.dir) {
+                          await client.value.putFileContents(
+                            join(prefs.value.cong.dir, filename + extension),
+                            await readFile(background),
+                            {
+                              overwrite: true,
+                            }
+                          )
+                        }
+
+                        refreshBackgroundImgPreview()
+                      } else {
+                        warn('notAnImage')
+                      }
+                    },
+                  },
+                ],
+              },
+            ]
+          : []
+        ).filter(Boolean),
         {
           type: 'group',
           id: 'music',
