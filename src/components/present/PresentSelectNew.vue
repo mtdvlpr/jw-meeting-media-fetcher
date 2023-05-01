@@ -73,9 +73,11 @@
 </template>
 
 <script lang="ts">
-import { changeExt, join } from 'upath'
+import { changeExt, join, basename } from 'upath'
 import weekday from 'dayjs/plugin/weekday'
+import * as fileWatcher from 'chokidar'
 import { MediaPrefs, MeetingFile, DateFormat } from '~~/types'
+const watcher = ref<fileWatcher.FSWatcher | null>(null)
 export default {
   data() {
     return {
@@ -136,6 +138,9 @@ export default {
       }
       return progressByDate
     },
+  },
+  unmounted() {
+    watcher.value?.close()
   },
   mounted() {
     const { $dayjs } = useNuxtApp()
@@ -201,6 +206,33 @@ export default {
           this.selectDate(this.today.format(dateFormat))
         }
       }
+      watcher.value = fileWatcher
+        .watch(mPath, {
+          awaitWriteFinish: true,
+          depth: 1,
+          alwaysStat: false,
+          ignorePermissionErrors: true,
+        })
+        .on('addDir', (path) => {
+          const folderName = basename(path)
+          const element = this.weeks[
+            this.weeks.findIndex((subarray) =>
+              subarray.find((el) => el.date === folderName)
+            )
+          ]?.find((el) => el.date === folderName) // The date to modify
+          if (element && !element.meetingType && !element.inPast) {
+            element.nonMeetingMedia = 1
+          }
+        })
+        .on('unlinkDir', (path) => {
+          const folderName = basename(path)
+          const element = this.weeks[
+            this.weeks.findIndex((subarray) =>
+              subarray.find((el) => el.date === folderName)
+            )
+          ]?.find((el) => el.date === folderName) // The date to modify
+          if (element) element.nonMeetingMedia = 0
+        })
     }
   },
   methods: {
