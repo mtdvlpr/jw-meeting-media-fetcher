@@ -39,7 +39,7 @@
           <v-chip
             v-if="titleParts[3]"
             color="song"
-            class="mr-3 font-weight-bold text-subtitle-1"
+            class="mr-3 font-weight-bold text-subtitle-1 number-chip"
             :title="`${translate('song')} ${cleanTitle(titleParts[3])}`"
           >
             <v-icon size="x-small" class="me-2">fa-music</v-icon>
@@ -49,7 +49,7 @@
           <v-chip
             v-if="titleParts[5]"
             color="paragraph"
-            class="mr-3 font-weight-bold text-subtitle-1"
+            class="mr-3 font-weight-bold text-subtitle-1 number-chip"
             :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
           >
             <v-icon size="x-small" class="me-2">fa-paragraph</v-icon>
@@ -563,6 +563,9 @@ const resetZoom = () => {
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
       }
+    }
+    .number-chip {
+      min-width: fit-content;
     }
   }
   .video-progress {
