@@ -3,15 +3,7 @@
     id="media-list-container"
     :style="`width: 100%; overflow-y: auto;${listHeight}`"
   >
-    <v-expand-transition>
-      <song-picker
-        v-if="addSong"
-        ref="songPicker"
-        v-model="song"
-        class="ma-4"
-        clearable
-      />
-    </v-expand-transition>
+    <song-picker ref="songPicker" v-model="song" class="ma-4" clearable />
     <v-expand-transition>
       <v-list v-if="song" class="ma-4">
         <media-item
@@ -188,7 +180,7 @@ import { useRouteQuery } from '@vueuse/router'
 import { readFile } from 'fs-extra'
 import { basename, join } from 'upath'
 import draggable from 'vuedraggable'
-import { DateFormat, VideoFile } from '~~/types'
+import { DateFormat, ObsPrefs, VideoFile } from '~~/types'
 type MediaItem = {
   id: string
   path: string
@@ -197,14 +189,12 @@ type MediaItem = {
   deactivate: boolean
 }
 const emit = defineEmits<{
-  (e: 'song'): void
   (e: 'index', id: number): void
   (e: 'deactivate', index: number): void
 }>()
 
 const props = defineProps<{
   items: MediaItem[]
-  addSong?: boolean
 }>()
 
 const dragging = ref(false)
@@ -308,19 +298,23 @@ const setIndex = (id: string) => {
 
 // Song
 const song = ref<VideoFile | null>(null)
-watch(song, () => emit('song'))
 const deactivateSong = () => {
   if (song.value) song.value.deactivate = false
 }
 
 // Computed list height
+const obsEnabled = computed(() => {
+  const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')
+  return enable && !!port && !!password
+})
 const { client: zoomIntegration } = storeToRefs(useZoomStore())
 const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
 const listHeight = computed(() => {
   const TOP_BAR = 64
   const FOOTER = 76
   const ZOOM_BAR = 56
-  let otherElements = TOP_BAR + FOOTER
+  let otherElements = TOP_BAR
+  if (obsEnabled.value) otherElements += FOOTER
   if (zoomIntegration.value) otherElements += ZOOM_BAR
   return `max-height: ${windowSize.height.value - otherElements}px`
 })

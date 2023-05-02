@@ -74,6 +74,7 @@ export default defineNuxtConfig({
             process.env.NODE_ENV === 'development'
               ? {
                   'fs-extra': { type: 'cjs' },
+                  'obs-websocket-js': { type: 'cjs' },
                 }
               : undefined,
         },

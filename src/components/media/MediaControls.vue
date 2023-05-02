@@ -4,11 +4,11 @@
     <present-top-bar
       :current-index="currentIndex"
       :media-count="items.length"
-      @song="addSong = !addSong"
       @cc="ccEnable = !ccEnable"
       @previous="previous()"
       @next="next()"
       @show-prefix="togglePrefix()"
+      @manage-media="managingMedia = true"
     />
     <present-zoom-bar v-if="zoomIntegration" />
     <v-dialog v-model="managingMedia" persistent scrollable width="auto">
@@ -27,26 +27,10 @@
         :media-active="mediaActive"
         :zoom-part="zoomPart"
         :cc-enable="ccEnable"
-        :add-song="addSong"
         @index="setIndex"
         @deactivate="resetDeactivate"
-        @song="addSong = false"
       />
     </v-expand-transition>
-    <v-bottom-navigation v-if="globalDownloadProgress.percent >= 100">
-      <v-btn @click="managingMedia = true"> Add and remove media files </v-btn>
-      <v-btn v-model="addSong" :active="addSong" @click="addSong = !addSong">
-        Quickly add a song
-      </v-btn>
-      <v-btn
-        v-if="getPrefs('media.enableSubtitles') && ccAvailable"
-        v-model="ccEnable"
-        :active="ccEnable"
-        @click="ccEnable = !ccEnable"
-      >
-        Subtitles are enabled
-      </v-btn>
-    </v-bottom-navigation>
   </v-row>
 </template>
 <script setup lang="ts">
@@ -57,35 +41,13 @@ import * as fileWatcher from 'chokidar'
 import { LocalFile } from '~~/types'
 
 const loading = ref(false)
-const addSong = ref(false)
-watch(addSong, () => {
-  scrollToItem(0)
-})
-
-const globalDownloadProgress = computed(() => {
-  const progressArray = Array.from(useMediaStore().downloadProgress) /* .filter(
-        ([, d]) => d.current !== d.total
-      ) */
-  const current = progressArray.reduce((acc, [, value]) => {
-    return acc + value.current
-  }, 0)
-  const total = progressArray.reduce((acc, [, value]) => {
-    return acc + value.total
-  }, 0)
-  const percent = (current / total) * 100 || 0
-  return { current, total, percent }
-})
 
 // Current meeting date
 const date = useRouteQuery<string>('date', '')
 
 // Subtitles
-const ccAvailable = ref(false)
-const ccEnable = inject(ccEnableKey, ref(false))
-// const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
-const setCcAvailable = () => {
-  ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
-}
+const ccEnable = ref(true)
+provide(ccEnableKey, ccEnable)
 
 // Manage media dialog
 const managingMedia = ref(false)
@@ -179,7 +141,6 @@ onMounted(() => {
       }
     )
   }
-  setCcAvailable()
 })
 
 // Media active state

@@ -1,8 +1,5 @@
 <template>
-  <v-footer
-    v-if="date && (obsEnabled || obsEnabled)"
-    class="justify-end present-footer"
-  >
+  <v-footer v-if="date && obsEnabled" class="justify-end present-footer">
     <v-col v-if="date && scene && zoomScene" cols="auto">
       <v-btn icon variant="text" size="medium" @click="emit('zoomPart')">
         <v-icon
@@ -15,7 +12,7 @@
       </v-btn>
     </v-col>
     <v-col v-else-if="date && obsEnabled && !scene">
-      <v-btn icon :loading="obsLoading" @click="initOBS()">
+      <v-btn icon variant="text" :loading="obsLoading" @click="initOBS()">
         <v-icon icon="fa-rotate-right" size="medium" />
         <v-tooltip location="top" activator="parent">
           {{ $t('obsRefresh') }}
@@ -51,10 +48,6 @@
         hide-details="auto"
       />
     </v-col>
-    <!-- <v-col class="text-right" cols="auto">
-      <shuffle-btn v-if="getPrefs('meeting.enableMusicButton')" />
-      <toggle-screen-btn class="mx-2" />
-    </v-col> -->
   </v-footer>
 </template>
 <script setup lang="ts">

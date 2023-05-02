@@ -25,12 +25,15 @@
 
     <template #append>
       <v-progress-circular
-        v-if="globalDownloadProgress.percent < 100"
+        v-if="
+          globalDownloadProgress.percent > 0 &&
+          globalDownloadProgress.percent < 100
+        "
         indeterminate
         color="primary"
         class="ms-3"
         size="small"
-      ></v-progress-circular>
+      />
       <v-menu v-else location="bottom">
         <template #activator="{ props }">
           <v-btn
@@ -59,6 +62,18 @@
     </template>
 
     <v-col class="text-right" cols="auto">
+      <v-btn
+        v-if="getPrefs('media.enableSubtitles') && ccAvailable"
+        icon
+        aria-label="Toggle subtitles"
+        :color="ccEnable ? 'primary' : undefined"
+        @click="emit('cc')"
+      >
+        <v-icon :icon="`${ccIcon}fa-closed-captioning`" size="small" />
+        <v-tooltip activator="parent" location="bottom">
+          {{ $t('toggleSubtitles') }}
+        </v-tooltip>
+      </v-btn>
       <template v-if="getPrefs('media.enablePp')">
         <v-btn
           id="btn-pp-previous"
@@ -99,7 +114,6 @@ defineProps<{
 }>()
 
 const emit = defineEmits([
-  'song',
   'cc',
   'previous',
   'next',
@@ -152,6 +166,18 @@ const globalDownloadProgress = computed(() => {
   return { current, total, percent }
 })
 
+// Subtitles
+const ccAvailable = ref(false)
+const ccEnable = inject(ccEnableKey, ref(false))
+const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
+const setCcAvailable = () => {
+  ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
+}
+
+onMounted(() => {
+  setCcAvailable()
+})
+
 // Change meeting date
 const clearDate = () => {
   useRouter().push({
@@ -189,6 +215,13 @@ const openWebsite = () => {
 
 // More actions
 const actions = [
+  {
+    title: $i18n.t('manageMedia'),
+    icon: 'fa-folder-plus',
+    action: () => {
+      emit('manageMedia')
+    },
+  },
   {
     title: $i18n.t('openFolder'),
     icon: 'fa-folder-open',

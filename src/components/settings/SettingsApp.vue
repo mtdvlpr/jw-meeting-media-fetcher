@@ -576,7 +576,7 @@ const isValidPort = (port: string | null) => {
 const refreshOBS = async () => {
   if (obsComplete.value) {
     await resetOBS()
-    await getScenes()
+    getScenes()
   }
 }
 
