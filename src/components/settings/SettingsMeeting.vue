@@ -127,7 +127,6 @@
           <v-btn-toggle
             id="meeting.musicFadeOutType"
             v-model="meeting.musicFadeOutType"
-            color="primary"
             variant="outlined"
             mandatory
             :locked="isLocked('meeting.musicFadeOutType')"

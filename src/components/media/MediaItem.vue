@@ -113,7 +113,6 @@
           v-else
           :model-value="progress"
           aria-label="Video progress"
-          color="primary"
           class="video-progress"
           :bg-opacity="0"
         />

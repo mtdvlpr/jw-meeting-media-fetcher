@@ -23,12 +23,7 @@
       v-if="date && scene && !zoomPart && scenes.length > 1"
       class="d-flex justify-end pa-1"
     >
-      <v-btn-toggle
-        v-if="showButtons"
-        v-model="scene"
-        mandatory
-        color="primary"
-      >
+      <v-btn-toggle v-if="showButtons" v-model="scene" mandatory>
         <template v-for="s in scenes" :key="s.value">
           <v-btn :value="s.value">
             {{ showShortButtons ? s.shortText : s.value }}

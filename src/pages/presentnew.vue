@@ -27,7 +27,6 @@
     </v-app-bar>
     <v-progress-linear
       v-model="globalDownloadProgress.percent"
-      color="primary"
       stream
     ></v-progress-linear>
     <confirm-dialog

@@ -12,7 +12,13 @@ export default defineNuxtPlugin((nuxtApp) => {
       },
     },
     defaults: {
+      VBtnToggle: {
+        color: 'primary',
+      },
       VField: {
+        color: 'primary',
+      },
+      VProgressLinear: {
         color: 'primary',
       },
       VSelectionControl: {
