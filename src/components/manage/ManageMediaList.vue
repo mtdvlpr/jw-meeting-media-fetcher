@@ -1,38 +1,36 @@
 <template>
-  <v-card v-if="dropping" class="d-flex ma-4" style="border: 1px dashed">
-    <v-card-text class="d-flex flex-column justify-center align-center">
-      {{ $t('dropFiles') }}
-      <v-icon icon="fa-download" size="x-large" class="mt-4" />
-    </v-card-text>
-  </v-card>
-  <v-list
-    v-else-if="mediaList.length > 0"
-    density="compact"
-    style="position: static; overflow-y: auto"
+  <v-dialog
+    v-if="edit"
+    :model-value="true"
+    max-width="700px"
+    @click:outside="edit = null"
   >
-    <v-dialog
-      v-if="edit"
-      :model-value="true"
-      max-width="700px"
-      @click:outside="edit = null"
-    >
-      <v-card>
-        <v-card-text>
-          <form-input v-model="edit.newName" :suffix="edit.ext" />
-        </v-card-text>
-        <v-card-actions>
-          <v-btn
-            :loading="renaming"
-            color="blue-darken-1"
-            variant="text"
-            aria-label="save"
-            @click="saveNewName()"
-          >
-            Save
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <v-card>
+      <v-card-text>
+        <form-input v-model="edit.newName" :suffix="edit.ext" />
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          :loading="renaming"
+          color="blue-darken-1"
+          variant="text"
+          aria-label="save"
+          @click="saveNewName()"
+        >
+          {{ $t('save') }}
+        </v-btn>
+        <v-btn
+          color="red"
+          variant="text"
+          aria-label="cancel"
+          @click="edit = null"
+        >
+          {{ $t('cancel') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-list v-if="mediaList.length > 0" density="compact">
     <manage-media-item
       v-for="item in mediaList"
       :key="item.safeName + (item.color ? item.color : '')"
@@ -62,7 +60,6 @@ const props = defineProps<{
   prefix: string
   showPrefix?: boolean
   showInput?: boolean
-  dropping?: boolean
 }>()
 
 onMounted(() => {
@@ -216,22 +213,4 @@ const removeItem = async (item: MeetingFile | LocalFile) => {
   item.loading = false
   emit('refresh')
 }
-
-// Available list height
-// const windowHeight = inject(windowHeightKey, ref(0))
-// const listHeight = computed(() => {
-//   const TOOLBAR = 112
-//   const INPUT = 56
-//   const PREFIX = 56
-//   const EL_PADDING = 12
-//   const FOOTER = 72
-//   let otherElements = FOOTER + TOOLBAR + EL_PADDING
-//   if (props.showInput) {
-//     otherElements += INPUT
-//   }
-//   if (props.showPrefix) {
-//     otherElements += PREFIX
-//   }
-//   return windowHeight.value - otherElements
-// })
 </script>

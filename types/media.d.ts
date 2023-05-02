@@ -9,6 +9,7 @@ export interface MeetingFileBase {
   destFilename?: string
   downloadRequired?: boolean
   filename?: undefined
+  objectUrl?: undefined
   folder?: string
   hidden?: boolean
   isLocal?: boolean
@@ -27,7 +28,6 @@ export interface VideoFile extends SmallMediaFile, MeetingFileBase {
   play?: boolean
   stop?: boolean
   deactivate?: boolean
-  fileObjectUrl?: string
 }
 
 export interface ImageFile extends MeetingFileBase {
@@ -64,7 +64,9 @@ export interface LocalFile {
   url?: string
   loading?: boolean
   ignored?: boolean
-  fileObjectUrl?: string
+  objectUrl?: string
+  subtitles?: undefined
+  markers?: undefined
 }
 
 export declare type MeetingFile = ImageFile | VideoFile

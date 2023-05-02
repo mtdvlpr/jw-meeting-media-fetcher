@@ -4,16 +4,12 @@
     @cancel="type = 'custom'"
     @select="selectVideo"
   />
-  <v-card v-bind="props">
+  <v-card class="manage-media">
     <v-card-title class="pa-0">
       <v-overlay :model-value="dropping" class="align-center justify-center">
         <v-chip variant="flat">Drop one or more files here!</v-chip>
       </v-overlay>
-      <v-tabs
-        v-model="type"
-        bg-color="grey-lighten-3"
-        @update:model-value="reset()"
-      >
+      <v-tabs v-model="type" @update:model-value="reset()">
         <v-tab v-for="t in types" :key="t.value" :value="t.value">
           {{ t.label }}
         </v-tab>
@@ -33,6 +29,7 @@
           :type="type"
           :files="files"
           :loading="loading || saving"
+          @remove="removeFile"
           @reset="reset()"
           @click="!isLoneJwpub ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')"
         />
@@ -46,44 +43,32 @@
       </v-row>
     </v-card-title>
     <v-divider></v-divider>
-    <v-card-text class="h-auto">
-      <div class="manage-media">
-        <v-dialog
-          v-if="files.length === 1"
-          width="auto"
-          :model-value="isLoneJwpub"
-        >
-          <!-- :set-progress="setProgress" -->
-          <manage-select-document
-            :file="files[0]"
-            @select="addMedia($event)"
-            @empty="reset()"
-          />
-        </v-dialog>
-
-        <!-- <v-col
-      ref="dropzone"
-      cols="12"
-      class="px-0 pb-0"
-      style="position: relative"
-    > -->
-        <!-- <drop @drop="onDrop(myArg, transferData, nativeEvent)">Hello!</drop> -->
-
-        <loading-icon v-if="loading || saving" />
-        <template v-else>
-          <!-- :dropping="isOverDropZone" -->
-          <manage-media-list
-            :date="date"
-            :new-file="jwFile"
-            :new-files="files"
-            :prefix="prefix"
-            :media="media"
-            :show-input="!!type && type !== 'jwOrg'"
-            :show-prefix="!!jwFile || files.length > 0"
-            @refresh="emit('refresh')"
-          />
-        </template>
-      </div>
+    <v-card-text :style="`overflow-y: auto;${listHeight}`">
+      <v-dialog
+        v-if="files.length === 1"
+        width="auto"
+        :model-value="isLoneJwpub"
+      >
+        <!-- :set-progress="setProgress" -->
+        <manage-select-document
+          :file="files[0]"
+          @select="addMedia($event)"
+          @empty="reset()"
+        />
+      </v-dialog>
+      <loading-icon v-if="loading || saving" />
+      <template v-else>
+        <manage-media-list
+          :date="date"
+          :new-file="jwFile"
+          :new-files="files"
+          :prefix="prefix"
+          :media="media"
+          :show-input="!!type && type !== 'jwOrg'"
+          :show-prefix="!!jwFile || files.length > 0"
+          @refresh="emit('refresh')"
+        />
+      </template>
     </v-card-text>
     <v-divider></v-divider>
     <v-card-actions>
@@ -93,7 +78,7 @@
         variant="text"
         @click="cancel()"
       >
-        Cancel
+        {{ $t('cancel') }}
       </v-btn>
       <v-btn
         v-if="jwFile || files.length > 0"
@@ -102,7 +87,7 @@
         variant="text"
         @click="saveFiles()"
       >
-        Save
+        {{ $t('save') }}
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -190,6 +175,9 @@ const addFiles = async (multi = true, ...exts: string[]) => {
     }))
   }
 }
+const removeFile = (index: number) => {
+  files.value.splice(index, 1)
+}
 
 // Save files
 const saving = ref(false)
@@ -264,11 +252,11 @@ const processFile = async (file: LocalFile | VideoFile) => {
   }
   // Local file
   else if (file.filepath) {
-    copy(file.filepath, path)
+    await copy(file.filepath, path)
   }
   // Dropped file object (from web browser for example)
-  else if (file.fileObjectUrl) {
-    await fetchFile({ url: file.fileObjectUrl, dest: path })
+  else if (file.objectUrl) {
+    await fetchFile({ url: file.objectUrl, dest: path })
   }
   // External file from jw.org
   else if (file.safeName) {
@@ -278,15 +266,15 @@ const processFile = async (file: LocalFile | VideoFile) => {
       // _setProgress: setProgress,
     })
 
-    if ((file as VideoFile).subtitles) {
+    if (file.subtitles) {
       congPromises.push(uploadFile(changeExt(path, 'vtt')))
     }
 
     // Download markers if required
-    if ((file as VideoFile).markers && file.folder && file.safeName) {
+    if (file.markers && file.folder && file.safeName) {
       const markers = Array.from(
         new Set(
-          (file as VideoFile).markers?.markers?.map(
+          file.markers?.markers?.map(
             ({ duration, label, startTime, endTransitionDuration }) =>
               JSON.stringify({
                 duration,
@@ -309,7 +297,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
   }
 
   // Upload media to the cong server
-  if (client && online && props.uploadMedia) {
+  if (client.value && online.value && props.uploadMedia) {
     const perf: any = {
       start: performance.now(),
       bytes: (await stat(path)).size,
@@ -368,7 +356,7 @@ const reset = (resetTypeToo?: boolean) => {
   // totalFiles.value = 0
 }
 
-// Cancel adding media from manage dialog
+// Cancel adding media
 const cancel = () => {
   emit('cancel')
   reset(true)
@@ -400,15 +388,33 @@ document.addEventListener('drop', (event) => {
   event.preventDefault()
   event.stopPropagation()
   if (event.dataTransfer?.files) {
-    console.log(Array.from(event.dataTransfer.files))
     files.value = Array.from(event.dataTransfer.files).map((item) => {
       return {
         safeName: '- ' + sanitize(basename(item.name), true),
-        fileObjectUrl: URL.createObjectURL(item),
+        objectUrl: URL.createObjectURL(item),
         filepath: item.path,
-      }
+      } as LocalFile
     })
   }
   dropping.value = false
+})
+
+// List height
+const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
+const listHeight = computed(() => {
+  const TOOLBAR = 48
+  const INPUT = 72
+  const PREFIX = 72
+  const EL_PADDING = 2
+  const FOOTER = 52
+  let otherElements = FOOTER + TOOLBAR + EL_PADDING
+  if (!!type.value && type.value !== 'jwOrg') {
+    otherElements += INPUT
+  }
+  if (!!jwFile.value || files.value.length > 0) {
+    otherElements += PREFIX
+  }
+  const height = windowSize.height.value - otherElements
+  return `min-height: ${height}px;max-height: ${height}px;`
 })
 </script>

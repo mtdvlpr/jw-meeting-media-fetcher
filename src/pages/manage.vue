@@ -4,6 +4,7 @@
     :loading="loading"
     :upload-media="true"
     @refresh="getExistingMedia()"
+    @cancel="useRouter().back()"
   />
 </template>
 <script setup lang="ts">
@@ -12,9 +13,16 @@ import { existsSync, readdirSync } from 'fs-extra'
 import { extname, join } from 'upath'
 import { DateFormat, LocalFile, MeetingFile } from '~~/types'
 
+const { $i18n } = useNuxtApp()
 const date = computed(() => useRoute().query.date as string)
 useHead({
-  title: computed(() => (date.value ? `Manage ${date.value}` : 'Manage Media')),
+  title: computed(() =>
+    date.value
+      ? date.value === 'Recurring'
+        ? $i18n.t('recurring')
+        : `Manage ${date.value}`
+      : 'Manage Media'
+  ),
 })
 
 const now = getNow()

@@ -1,115 +1,132 @@
 <template>
-  <v-hover>
-    <template #default="{ isHovering, props: propsListItem }">
-      <v-list-item
-        :active="!item.isLocal && !item.congSpecific"
-        active-color="success"
-        v-bind="propsListItem"
-        density="compact"
-        class="px-0"
-        :disabled="item.loading"
-      >
-        <template #prepend>
-          <v-hover>
-            <template
-              #default="{ isHovering: isHoveringOverIcon, props: propsIcon }"
-            >
-              <v-avatar
-                v-bind="propsIcon"
-                :color="
-                  getPreview(item)
-                    ? isHovering
-                      ? 'primary'
-                      : 'blue-lighten-3'
-                    : 'teal-lighten-3'
-                "
-              >
-                <v-icon color="white">{{ typeIcon(item.safeName) }}</v-icon>
-              </v-avatar>
-              <v-img
-                v-if="getPreview(item) && isHoveringOverIcon"
-                :src="preview"
-                :alt="loading ? 'Loading...' : item.safeName"
-                class="tooltip-img elevation-10"
-              />
-            </template>
-          </v-hover>
-        </template>
-        <template #append>
-          <v-icon v-if="item.recurring" icon="fa-sync-alt" color="info" />
-          <v-btn
-            v-else-if="
-              isHovering && (item.congSpecific || item.isLocal) && !item.hidden
-            "
-            icon="fa-pen"
-            size="x-small"
-            variant="text"
-            aria-label="rename file"
-            @click="emit('edit')"
-          />
-          <v-progress-circular v-if="item.loading" indeterminate width="2" />
-          <template
-            v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
+  <v-list-item
+    link
+    density="compact"
+    :active="item.isLocal === undefined"
+    class="manage-item px-0"
+    :disabled="item.loading"
+  >
+    <template #prepend>
+      <v-hover>
+        <template
+          #default="{ isHovering: isHoveringOverIcon, props: propsIcon }"
+        >
+          <v-avatar
+            v-bind="propsIcon"
+            :color="getPreview(item) ? 'primary' : 'teal-lighten-3'"
           >
-            <v-tooltip
-              v-if="clickedOnce"
-              model-value
-              @update:model-value="() => {}"
-            >
-              {{ $t('clickAgain') }}
-              <template #activator="{ props: attrs }">
-                <v-btn
-                  color="red-lighten-1"
-                  icon="fa-circle-xmark"
-                  variant="text"
-                  v-bind="attrs"
-                  @click="atClick(item)"
-                ></v-btn>
-              </template>
-            </v-tooltip>
+            <v-icon color="white">{{ typeIcon(item.safeName) }}</v-icon>
+          </v-avatar>
+          <v-img
+            v-if="getPreview(item) && isHoveringOverIcon"
+            :src="preview"
+            :alt="loading ? 'Loading...' : item.safeName"
+            class="tooltip-img elevation-10"
+          />
+        </template>
+      </v-hover>
+    </template>
+    <template #append>
+      <v-icon v-if="item.recurring" icon="fa-sync-alt" color="info" />
+      <v-btn
+        v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
+        icon="fa-pen"
+        size="x-small"
+        variant="text"
+        aria-label="rename file"
+        @click="emit('edit')"
+      />
+      <v-progress-circular v-if="item.loading" indeterminate width="2" />
+      <template
+        v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
+      >
+        <v-tooltip
+          v-if="clickedOnce"
+          model-value
+          @update:model-value="() => {}"
+        >
+          {{ $t('clickAgain') }}
+          <template #activator="{ props: attrs }">
             <v-btn
-              v-else
               color="red-lighten-1"
               icon="fa-circle-xmark"
               variant="text"
+              v-bind="attrs"
               @click="atClick(item)"
             ></v-btn>
           </template>
-          <v-btn
-            v-else
-            variant="text"
-            color="success"
-            :icon="
-              'fa-circle' +
-              (item.isLocal === undefined
-                ? '-plus'
-                : item.hidden
-                ? ''
-                : '-check')
-            "
-            @click="atClick(item)"
-          />
-        </template>
-
-        <v-list-item-title
-          v-if="item.isLocal === undefined"
-          :class="{
-            'text-decoration-line-through': item.ignored,
-          }"
-        >
-          {{ prefix + ' ' + item.safeName }}
-        </v-list-item-title>
-        <v-list-item-title
+        </v-tooltip>
+        <v-btn
           v-else
-          :class="{
-            'text-decoration-line-through': item.hidden,
-          }"
+          color="red-lighten-1"
+          icon="fa-circle-xmark"
+          variant="text"
+          @click="atClick(item)"
+        ></v-btn>
+      </template>
+      <template v-else>
+        <v-tooltip
+          v-if="clickedOnce"
+          model-value
+          @update:model-value="() => {}"
         >
-          {{ item.safeName }}
-        </v-list-item-title>
-      </v-list-item></template
+          {{ $t('clickAgain') }}
+          <template #activator="{ props: attrs }">
+            <v-btn
+              variant="text"
+              :color="
+                item.isLocal === undefined || item.hidden
+                  ? 'success'
+                  : 'warning'
+              "
+              :icon="
+                'fa-circle' +
+                (item.isLocal === undefined
+                  ? '-plus'
+                  : item.hidden
+                  ? '-check'
+                  : '-minus')
+              "
+              v-bind="attrs"
+              @click="atClick(item)"
+            />
+          </template>
+        </v-tooltip>
+        <v-btn
+          v-else
+          variant="text"
+          :color="
+            item.isLocal === undefined || item.hidden ? 'success' : 'warning'
+          "
+          :icon="
+            'fa-circle' +
+            (item.isLocal === undefined
+              ? '-plus'
+              : item.hidden
+              ? '-check'
+              : '-minus')
+          "
+          @click="atClick(item)"
+        />
+      </template>
+    </template>
+    <v-list-item-title
+      v-if="item.isLocal === undefined"
+      :class="{
+        'text-decoration-line-through': item.ignored,
+      }"
     >
-  </v-hover>
+      {{ prefix + ' ' + item.safeName }}
+    </v-list-item-title>
+    <v-list-item-title
+      v-else
+      :class="{
+        'text-decoration-line-through': item.hidden,
+      }"
+    >
+      {{ item.safeName }}
+    </v-list-item-title>
+  </v-list-item>
 </template>
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
@@ -250,13 +267,19 @@ const typeIcon = (filename?: string) => {
 }
 </script>
 <style lang="scss" scoped>
-.tooltip-img {
-  content: '';
-  position: absolute;
-  min-height: 100px;
-  min-width: 200px;
-  top: 50%;
-  right: 10em;
-  transform: translateY(-50%);
+.manage-item {
+  &:hover {
+    cursor: default;
+  }
+
+  .tooltip-img {
+    content: '';
+    position: absolute;
+    min-height: 100px;
+    min-width: 200px;
+    top: 50%;
+    right: 10em;
+    transform: translateY(-50%);
+  }
 }
 </style>

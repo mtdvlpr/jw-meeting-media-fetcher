@@ -463,7 +463,7 @@ async function syncMediaItem(
       })
       await store.progress.get(newItem.url)
     } else if (path && item.filepath && item.folder && item.safeName) {
-      copy(item.filepath, join(path, item.folder, item.safeName))
+      await copy(item.filepath, join(path, item.folder, item.safeName))
     }
   } else {
     warn(
