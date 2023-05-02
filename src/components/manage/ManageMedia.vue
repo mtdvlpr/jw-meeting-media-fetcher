@@ -11,9 +11,7 @@
       </v-overlay>
       <v-tabs
         v-model="type"
-        color="primary"
         bg-color="grey-lighten-3"
-        grow
         @update:model-value="reset()"
       >
         <v-tab v-for="t in types" :key="t.value" :value="t.value">

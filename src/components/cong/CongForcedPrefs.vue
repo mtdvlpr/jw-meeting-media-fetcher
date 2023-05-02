@@ -24,7 +24,6 @@
         <v-switch
           v-model="item.forced"
           hide-details="auto"
-          color="primary"
           class="my-0 py-0"
           @update:model-value="change = true"
         >

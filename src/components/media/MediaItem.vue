@@ -99,7 +99,6 @@
         <v-slider
           v-if="active && paused"
           v-model="newProgress"
-          color="primary"
           density="compact"
           hide-details="auto"
           step="any"

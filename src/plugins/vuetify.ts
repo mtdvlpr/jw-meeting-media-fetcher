@@ -11,6 +11,21 @@ export default defineNuxtPlugin((nuxtApp) => {
         fa,
       },
     },
+    defaults: {
+      VField: {
+        color: 'primary',
+      },
+      VSelectionControl: {
+        color: 'primary',
+      },
+      VSlider: {
+        color: 'primary',
+      },
+      VTabs: {
+        color: 'primary',
+        grow: true,
+      },
+    },
     theme: {
       themes: {
         light: {

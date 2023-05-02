@@ -7,7 +7,7 @@
     <span v-html="$t(label)" />
     <template #prepend>
       <v-list-item-action start>
-        <v-switch :model-value="value" color="primary" hide-details />
+        <v-switch :model-value="value" hide-details />
       </v-list-item-action>
     </template>
     <template v-if="setting.explanation || isLocked(setting.key)" #append>
@@ -76,7 +76,7 @@
     <v-col>
       <v-chip
         v-for="(name, i) in value"
-        :key="name"
+        :key="i"
         closable
         class="mb-2 mr-2"
         @click:close="removeValue(i)"
