@@ -68,7 +68,7 @@
     "@types/get-folder-size": "^3.0.1",
     "@types/node": "^18.16.3",
     "@typescript-eslint/parser": "^5.59.2",
-    "@vuepic/vue-datepicker": "^4.5.1",
+    "@vuepic/vue-datepicker": "^5.0.0",
     "@vueuse/electron": "^10.1.2",
     "@vueuse/nuxt": "^10.1.2",
     "@vueuse/router": "^10.1.2",
