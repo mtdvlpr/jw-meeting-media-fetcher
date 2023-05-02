@@ -2,7 +2,10 @@
   <div>
     <v-app-bar>
       <v-app-bar-title>{{ $t('plannedMedia') }}</v-app-bar-title>
-      <progress-bar :current="currentProgress" :total="totalProgress" />
+      <progress-bar
+        :current="relativeDownloadProgress"
+        :total="totalProgress"
+      />
       <template #extension>
         <v-tabs v-model="currentWeek" grow>
           <v-tab v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
@@ -320,7 +323,7 @@ const startMediaSync = async (dryrun = false) => {
   }
 }
 
-const { currentProgress, totalProgress, setProgress } = useProgress()
+const { totalProgress, setProgress, relativeDownloadProgress } = useProgress()
 const syncJWorgMedia = async (dryrun = false) => {
   statStore.startPerf({ func: 'syncJWorgMedia', start: performance.now() })
   jwSyncColor.value = 'warning'

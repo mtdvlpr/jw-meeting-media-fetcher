@@ -2,7 +2,10 @@
   <div>
     <v-app-bar>
       <v-app-bar-title>{{ $t('settings') }}</v-app-bar-title>
-      <progress-bar :current="currentProgress" :total="totalProgress" />
+      <progress-bar
+        :current="relativeDownloadProgress"
+        :total="totalProgress"
+      />
       <template #extension>
         <v-tabs v-model="tab" grow>
           <v-tab>{{ $t('all') }}</v-tab>
@@ -125,7 +128,7 @@
 import { PrefStore } from '~~/types'
 
 useHead({ title: 'Settings' })
-const { currentProgress, totalProgress, setProgress } = useProgress()
+const { totalProgress, setProgress, relativeDownloadProgress } = useProgress()
 provide(setProgressKey, setProgress)
 
 // Height

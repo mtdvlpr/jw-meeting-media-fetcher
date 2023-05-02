@@ -4,7 +4,10 @@
       <v-app-bar-title :class="{ 'text-error': !valid }">
         {{ $t('settings') }}
       </v-app-bar-title>
-      <progress-bar :current="currentProgress" :total="totalProgress" />
+      <progress-bar
+        :current="relativeDownloadProgress"
+        :total="totalProgress"
+      />
       <template #extension>
         <v-text-field
           v-model="filter"
@@ -168,7 +171,7 @@ useHead({ title: 'Settings' })
 const { setTheme } = useTheme()
 const { online } = useOnline()
 const { $i18n, $dayjs } = useNuxtApp()
-const { currentProgress, totalProgress, setProgress } = useProgress()
+const { relativeDownloadProgress, totalProgress, setProgress } = useProgress()
 provide(setProgressKey, setProgress)
 
 // Stores
