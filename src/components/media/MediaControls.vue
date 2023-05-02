@@ -1,4 +1,12 @@
 <template>
+  <v-dialog v-model="managingMedia" persistent fullscreen>
+    <manage-media
+      :media="localMedia"
+      :loading="loading"
+      dialog
+      @cancel="managingMedia = false"
+    />
+  </v-dialog>
   <v-row no-gutters class="media-controls">
     <!-- :media-active="mediaActive" -->
     <present-top-bar
@@ -11,14 +19,6 @@
       @manage-media="managingMedia = true"
     />
     <present-zoom-bar v-if="zoomIntegration" />
-    <v-dialog v-model="managingMedia" persistent scrollable width="auto">
-      <manage-media
-        :media="localMedia"
-        :loading="loading"
-        dialog
-        @cancel="managingMedia = false"
-      />
-    </v-dialog>
     <v-expand-transition>
       <loading-icon v-if="loading" />
       <media-list
