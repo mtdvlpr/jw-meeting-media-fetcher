@@ -507,6 +507,7 @@ const removeBg = async () => {
 
   // Refresh the media screen background
   loadBg()
+  loadFont('yeartext')
 }
 </script>
 <style lang="scss" scoped>
@@ -514,6 +515,7 @@ const removeBg = async () => {
   #yeartextContainer {
     font-family: 'Wt-ClearText-Bold', 'NotoSerif', serif;
     font-size: 1cqw;
+    text-align: center;
   }
 
   #yeartextLogoContainer {
