@@ -21,89 +21,85 @@
     <v-btn color="primary" @click="launchFirstRun()">
       Open First Time Wizard
     </v-btn>
-    <v-dialog :model-value="isNew" fullscreen transition="fade-transition">
-      <v-card class="h-100">
-        <v-carousel
-          v-model="currentInitialSetting"
-          progress="primary"
-          :show-arrows="false"
-          height="100%"
-          hide-delimiters
-        >
-          <v-carousel-item
-            v-for="setting in firstRunSteps"
-            :key="setting.title"
-          >
-            <v-card class="mx-auto">
-              <v-card-title>{{ setting.title }}</v-card-title>
-              <v-card-subtitle></v-card-subtitle>
-              <v-card-text>
-                <div>
-                  {{ setting.subtitle }}
-                </div>
-                <template v-for="pref in setting.settings" :key="pref">
-                  <v-text-field
-                    v-if="pref.type == 'input'"
-                    :id="pref.name"
-                    v-model="
-                      prefs[pref.name.split('.')[0]][pref.name.split('.')[1]]
-                    "
-                    field="text"
-                    required
-                  />
-                  <form-input
-                    v-else-if="pref.type == 'autocomplete' && pref.items"
-                    :id="pref.name"
-                    v-model="
-                      prefs[pref.name.split('.')[0]][pref.name.split('.')[1]]
-                    "
-                    field="autocomplete"
-                    :items="pref.items"
-                    item-title="name"
-                    item-value="code"
-                    required
-                    auto-select-first
-                  />
-                </template>
-              </v-card-text>
-              <v-card-actions>
-                <!-- <v-btn variant="text" color="deep-purple-accent-4">
-                  Learn More
-                </v-btn> -->
-                <template v-if="setting.firstRunParam">
-                  <v-btn @click="setFirstRunParam(setting.firstRunParam, true)">
-                    Yes
-                  </v-btn>
-                  <v-btn
-                    @click="setFirstRunParam(setting.firstRunParam, false)"
-                  >
-                    No
-                  </v-btn>
-                </template>
-                <template v-else>
-                  <v-btn
-                    variant="text"
-                    color="primary"
-                    @click="nextStep(setting.actions)"
-                  >
-                    {{ initialSettingsDone ? 'Explore more settings' : 'Next' }}
-                  </v-btn>
-                  <v-btn v-if="initialSettingsDone" @click="isNew = false">
-                    Go to media calendar
-                  </v-btn>
-                </template>
+    <v-dialog :model-value="isNew" persistent transition="fade-transition">
+      <v-window v-model="currentInitialSetting">
+        <v-window-item v-for="setting in firstRunSteps" :key="setting.title">
+          <v-card class="mx-auto">
+            <v-card-title>{{ setting.title }}</v-card-title>
+            <v-card-subtitle></v-card-subtitle>
+            <v-card-text>
+              <template v-for="pref in setting.settings" :key="pref">
+                <v-text-field
+                  v-if="pref.type == 'input'"
+                  :id="pref.name"
+                  v-model="
+                    prefs[pref.name.split('.')[0]][pref.name.split('.')[1]]
+                  "
+                  field="text"
+                  required
+                />
+                <form-input
+                  v-else-if="pref.type == 'autocomplete' && pref.items"
+                  :id="pref.name"
+                  v-model="
+                    prefs[pref.name.split('.')[0]][pref.name.split('.')[1]]
+                  "
+                  field="autocomplete"
+                  :items="pref.items"
+                  item-title="name"
+                  item-value="code"
+                  required
+                  auto-select-first
+                />
+              </template>
+              <span class="text-caption text-grey-darken-1">{{
+                setting.subtitle
+              }}</span>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-btn
+                v-if="currentInitialSetting > 0"
+                variant="text"
+                color="secondary"
+                @click="currentInitialSetting--"
+                >Previous step</v-btn
+              >
+              <v-spacer></v-spacer>
+              <template v-if="setting.firstRunParam">
                 <v-btn
-                  v-if="currentInitialSetting > 0"
-                  variant="text"
-                  color="secondary"
-                  @click="currentInitialSetting--"
-                  >Previous step</v-btn
+                  variant="flat"
+                  @click="setFirstRunParam(setting.firstRunParam, false)"
                 >
-              </v-card-actions>
-            </v-card>
-          </v-carousel-item>
-        </v-carousel>
-      </v-card>
+                  No
+                </v-btn>
+                <v-btn
+                  variant="flat"
+                  color="primary"
+                  @click="setFirstRunParam(setting.firstRunParam, true)"
+                >
+                  Yes
+                </v-btn>
+              </template>
+              <template v-else>
+                <v-btn v-if="initialSettingsDone" @click="isNew = false">
+                  Go to media calendar
+                </v-btn>
+                <v-btn
+                  variant="flat"
+                  color="primary"
+                  @click="nextStep(setting.actions)"
+                >
+                  {{ initialSettingsDone ? 'Explore more settings' : 'Next' }}
+                </v-btn>
+              </template>
+            </v-card-actions>
+            <v-progress-linear
+              :model-value="firstRunProgress"
+            ></v-progress-linear>
+          </v-card>
+        </v-window-item>
+      </v-window>
     </v-dialog>
     <v-dialog v-model="forcingPrefs" fullscreen :scrim="false" persistent>
       <cong-forced-prefs @done="forcingPrefs = false" />
@@ -507,6 +503,9 @@ const firstRunSteps = computed(() => {
 const currentInitialSetting = ref(0)
 const initialSettingsDone = computed(
   () => currentInitialSetting.value === firstRunSteps.value.length - 1
+)
+const firstRunProgress = computed(
+  () => ((currentInitialSetting.value + 1) / firstRunSteps.value.length) * 100
 )
 const enableExternalDisplayAndMusic = () => {
   // update prefs here
