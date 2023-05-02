@@ -8,14 +8,18 @@
           </v-breadcrumbs-item>
         </v-breadcrumbs>
       </v-app-bar-title>
+      <progress-bar :current="0" :total="globalDownloadProgress.percent" />
       <template #append>
         <v-progress-circular
-          v-if="globalDownloadProgress.percent < 100"
+          v-if="
+            globalDownloadProgress.percent > 0 &&
+            globalDownloadProgress.percent < 100
+          "
           indeterminate
           color="primary"
           class="ms-3"
           size="small"
-        ></v-progress-circular>
+        />
         <v-tooltip v-else text="Refresh all media">
           <template #activator="{ props }">
             <v-btn v-bind="props" size="small" variant="text">
@@ -25,10 +29,6 @@
         </v-tooltip>
       </template>
     </v-app-bar>
-    <v-progress-linear
-      v-model="globalDownloadProgress.percent"
-      stream
-    ></v-progress-linear>
     <confirm-dialog
       v-model="dialog"
       description="obsZoomSceneActivate"
