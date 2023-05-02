@@ -1,7 +1,7 @@
 <template>
   <v-app-bar class="present-top-bar">
     <v-app-bar-title>
-      <v-breadcrumbs>
+      <v-breadcrumbs class="pl-0 ml-n1">
         <v-breadcrumbs-item
           v-for="breadcrumb in [
             {

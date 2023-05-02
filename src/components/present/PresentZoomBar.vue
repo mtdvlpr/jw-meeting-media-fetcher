@@ -63,7 +63,7 @@
           <v-tooltip activator="parent" location="bottom">
             {{ $t(`zoom${started ? 'Stop' : 'Start'}Meeting`) }}
           </v-tooltip>
-          <v-icon :icon="started ? 'fa-stop' : 'fa-play'" size="small" />
+          <v-icon :icon="started ? 'fa-stop' : 'fa-play'" size="x-small" />
         </v-btn>
         <v-btn
           icon
@@ -246,10 +246,10 @@ const spotlightParticipants = () => {
 </script>
 <style scoped lang="scss">
 #zoom-app-bar {
-  button.v-app-bar__nav-icon {
+  button.v-app-bar-nav-icon {
     cursor: initial !important;
 
-    &:before {
+    :deep(.v-btn__overlay) {
       opacity: 0 !important;
     }
   }
