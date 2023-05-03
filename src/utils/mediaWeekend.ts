@@ -9,10 +9,7 @@ import {
   VideoFile,
 } from '~~/types'
 
-export async function getWeMedia(
-  date: string,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
-) {
+export async function getWeMedia(date: string) {
   const { $dayjs } = useNuxtApp()
   const weDay = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
   const baseDate = weDay.startOf('week')
@@ -34,12 +31,12 @@ export async function getWeMedia(
   }
 
   let issue = baseDate.subtract(8, 'weeks').format('YYYYMM') + '00'
-  let db = await getDbFromJWPUB({ pub: 'w', issue, setProgress, date })
+  let db = await getDbFromJWPUB({ pub: 'w', issue, date })
   let weekNr = getWeekNr(db)
 
   if (weekNr < 0) {
     issue = baseDate.subtract(9, 'weeks').format('YYYYMM') + '00'
-    db = await getDbFromJWPUB({ pub: 'w', issue, setProgress, date })
+    db = await getDbFromJWPUB({ pub: 'w', issue, date })
     weekNr = getWeekNr(db)
   }
   if (!db || weekNr < 0) {

@@ -23,14 +23,12 @@ export function executeQuery<T extends Record<string, any>>(
 export async function getDbFromJWPUB({
   pub,
   issue,
-  setProgress,
   lang,
   localPath = '',
   date,
 }: {
   pub?: string
   issue?: string
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
   lang?: string
   localPath?: string
   date?: string
@@ -82,7 +80,6 @@ export async function getDbFromJWPUB({
         key: jwpub.url,
         promise: downloadIfRequired({
           file: jwpub,
-          _setProgress: setProgress,
           date,
         }),
       })

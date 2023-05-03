@@ -21,82 +21,62 @@
     <v-btn color="primary" @click="launchFirstRun()">
       Open First Time Wizard
     </v-btn>
-    <v-dialog :model-value="isNew" persistent transition="fade-transition">
+    <v-dialog :model-value="!!isNew" persistent transition="fade-transition">
       <v-window v-model="currentInitialSetting">
-        <v-window-item v-for="setting in firstRunSteps" :key="setting.title">
+        <v-window-item v-for="step in firstRunSteps" :key="step.title">
           <v-card class="mx-auto">
-            <v-card-title>{{ setting.title }}</v-card-title>
+            <v-card-title>{{ step.title }}</v-card-title>
             <v-card-subtitle></v-card-subtitle>
             <v-card-text>
-              <template v-for="pref in setting.settings" :key="pref">
-                <v-text-field
-                  v-if="pref.type == 'input'"
-                  :id="pref.name"
-                  v-model="
-                    prefs[pref.name.split('.')[0]][pref.name.split('.')[1]]
-                  "
-                  field="text"
-                  required
-                />
-                <form-input
-                  v-else-if="pref.type == 'autocomplete' && pref.items"
-                  :id="pref.name"
-                  v-model="
-                    prefs[pref.name.split('.')[0]][pref.name.split('.')[1]]
-                  "
-                  field="autocomplete"
-                  :items="pref.items"
-                  item-title="name"
-                  item-value="code"
-                  required
-                  auto-select-first
-                />
-              </template>
-              <span class="text-caption text-grey-darken-1">{{
-                setting.subtitle
-              }}</span>
+              <settings-item
+                v-for="pref in step.settings"
+                :key="pref.key"
+                :setting="pref"
+              />
+              <span class="text-caption text-grey-darken-1">
+                {{ step.subtitle }}
+              </span>
             </v-card-text>
-            <v-divider></v-divider>
+            <v-divider />
             <v-card-actions>
               <v-btn
                 v-if="currentInitialSetting > 0"
                 variant="text"
                 color="secondary"
-                @click="currentInitialSetting--"
-                >Previous step</v-btn
+                @click="previousStep()"
               >
-              <v-spacer></v-spacer>
-              <template v-if="setting.firstRunParam">
+                Previous step
+              </v-btn>
+              <v-spacer />
+              <template v-if="step.firstRunParam">
                 <v-btn
                   variant="flat"
-                  @click="setFirstRunParam(setting.firstRunParam, false)"
+                  @click="setFirstRunParam(step.firstRunParam, false)"
                 >
                   No
                 </v-btn>
                 <v-btn
                   variant="flat"
                   color="primary"
-                  @click="setFirstRunParam(setting.firstRunParam, true)"
+                  @click="setFirstRunParam(step.firstRunParam, true)"
                 >
                   Yes
                 </v-btn>
               </template>
               <template v-else>
-                <v-btn v-if="initialSettingsDone" @click="isNew = false">
+                <v-btn v-if="initialSettingsDone" @click="isNew = ''">
                   Go to media calendar
                 </v-btn>
                 <v-btn
                   variant="flat"
                   color="primary"
-                  @click="nextStep(setting.actions)"
+                  @click="nextStep(step.onComplete)"
                 >
                   {{ initialSettingsDone ? 'Explore more settings' : 'Next' }}
                 </v-btn>
               </template>
             </v-card-actions>
-            <v-progress-linear
-              :model-value="firstRunProgress"
-            ></v-progress-linear>
+            <v-progress-linear :model-value="firstRunProgress" />
           </v-card>
         </v-window-item>
       </v-window>
@@ -223,15 +203,24 @@ const dateFormats = [
   'YYYY-MM-DD - dddd',
 ]
 
+const localeDays = computed(() => {
+  return $dayjs.weekdaysMin(true).map((day, i) => {
+    return {
+      title: day,
+      value: i,
+    }
+  })
+})
+
 const processed = ref(0)
 const downloadSong = async (song: VideoFile) => {
-  await downloadIfRequired({ file: song, _setProgress: setProgress })
+  await downloadIfRequired({ file: song })
   setProgress(++processed.value, NR_OF_KINGDOM_SONGS, true)
 }
 
 const launchFirstRun = () => {
   currentInitialSetting.value = 0
-  isNew.value = true
+  isNew.value = 'true'
 }
 
 const jwLangs = ref<ShortJWLang[]>([])
@@ -277,19 +266,155 @@ locales.value = $i18n.locales.value.map((l) => {
     code: locale.code,
   }
 })
-const isNew = ref(!useRouteQuery<string>('new', ''))
+const isNew = useRouteQuery<string>('new', '')
 
-interface FirstRunParams {
-  [key: string]: boolean // Allow for string indexing
-}
+const requiredSettings = {
+  'app.localAppLang': {
+    type: 'select',
+    key: 'app.localAppLang',
+    props: {
+      items: $i18n.locales.value.map((l) => {
+        const locale = l as LocaleObject
+        return {
+          title: locale.name!,
+          value: locale.code,
+        }
+      }),
+    },
+    onChange: (val: string, oldVal: string) => {
+      if (!val) return
+      const locales = $i18n.locales.value as LocaleObject[]
+      const locale = locales.find((l) => l.code === val)!
+      const oldLocale = locales.find((l) => l.code === oldVal)
+      $dayjs.locale(locale?.dayjs ?? val)
+      if (oldLocale && val !== oldVal) {
+        useMediaStore().clear()
+        renamePubs(oldLocale, locale)
+      }
+      if (val !== $i18n.locale.value) {
+        log.debug('Change localAppLang')
+        useRouter().replace(useSwitchLocalePath()(val))
+      }
+    },
+  },
+  'app.localOutputPath': {
+    type: 'path',
+    label: $i18n.t('mediaSaveFolder'),
+    key: 'app.localOutputPath',
+    onChange: (val: string) => {
+      if (!val) return
+      const badCharacters = val.match(/(\\?)([()*?[\]{|}]|^!|[!+@](?=\())/g)
+      if (badCharacters) {
+        warn('errorBadOutputPath', {
+          identifier: badCharacters.join(' '),
+        })
+        updatePrefs('app.localOutputPath', null)
+      }
+    },
+  },
+  'app.congregationName': {
+    type: 'text',
+    key: 'app.congregationName',
+    props: {
+      required: true,
+    },
+    onChange: (val: string) => {
+      if (!val) return
+      useNuxtApp().$sentry.setUser({ username: val })
+    },
+  },
+  'app.obs.password': {
+    type: 'password',
+    key: 'app.obs.password',
+  },
+  'app.obs.port': {
+    type: 'text',
+    key: 'app.obs.port',
+  },
+  'app.obs.cameraScene': {
+    type: 'select',
+    key: 'app.obs.cameraScene',
+    label: 'obsCameraScene',
+    props: {
+      items: scenes.value.filter(
+        (s) =>
+          s !== prefs.value.app.obs.mediaScene &&
+          s !== prefs.value.app.obs.zoomScene &&
+          s !== prefs.value.app.obs.imageScene
+      ),
+    },
+  },
+  'app.obs.mediaScene': {
+    type: 'select',
+    key: 'app.obs.mediaScene',
+    label: 'obsMediaScene',
+    props: {
+      items: scenes.value.filter(
+        (s) =>
+          s !== prefs.value.app.obs.cameraScene &&
+          s !== prefs.value.app.obs.zoomScene &&
+          s !== prefs.value.app.obs.imageScene
+      ),
+    },
+  },
+  'media.lang': {
+    type: 'autocomplete',
+    label: 'mediaLang',
+    key: 'media.lang',
+    props: {
+      items: langs.value,
+      required: true,
+    },
+    onChange: (val: string) => {
+      if (!val) return
+      useDbStore().clear()
+      useMediaStore().clear()
+      getPubAvailability(val)
+      getJWLangs()
+      refreshBackgroundImgPreview(true)
+    },
+  },
+  'meeting.mwDay': {
+    type: 'btn-group',
+    key: 'meeting.mwDay',
+    props: {
+      groupLabel: 'mwDay',
+      groupItems: localeDays.value,
+    },
+  },
+  'meeting.mwStartTime': {
+    type: 'time',
+    key: 'meeting.mwStartTime',
+  },
+  'meeting.weDay': {
+    type: 'btn-group',
+    key: 'meeting.weDay',
+    props: {
+      groupLabel: 'weDay',
+      groupItems: localeDays.value,
+    },
+  },
+  'meeting.weStartTime': {
+    type: 'time',
+    key: 'meeting.weStartTime',
+  },
+} satisfies Record<string, Setting>
 
-const firstRunParams = ref<FirstRunParams>({})
+const firstRunParams = ref<Record<string, boolean>>({})
 const setFirstRunParam = (param: string, value: boolean) => {
   firstRunParams.value[param] = value
-  currentInitialSetting.value++
+  nextStep()
 }
-const firstRunSteps = computed(() => {
-  const steps = [
+interface FirstRunStep {
+  skip?: boolean
+  title: string
+  subtitle?: string
+  firstRunParam?: string
+  settings?: Setting[]
+  onComplete?: () => void
+}
+const firstRunSteps = computed((): FirstRunStep[] => {
+  return [
     {
       title: 'Welcome!',
       subtitle: "Let's configure a few things, and then we'll get on our way.",
@@ -298,14 +423,7 @@ const firstRunSteps = computed(() => {
       title: 'What language do you want the app to be displayed in?',
       subtitle:
         "This only affects the app itself, not the media we'll be downloading, so feel free to choose the language you understand best.",
-      settings: [
-        {
-          name: 'app.localAppLang',
-          type: 'autocomplete',
-          items: locales.value,
-          actions: [],
-        },
-      ],
+      settings: [requiredSettings['app.localAppLang']],
     },
     {
       firstRunParam: 'usingAtKh',
@@ -319,9 +437,7 @@ const firstRunSteps = computed(() => {
         : 'Choose a name for this profile',
       subtitle:
         'This will be used to quickly switch between profiles, if ever you decide create more than one in the future.',
-      settings: [
-        { name: 'app.congregationName', type: 'input', items: [], actions: [] },
-      ],
+      settings: [requiredSettings['app.congregationName']],
     },
     {
       title: firstRunParams.value.usingAtKh
@@ -329,176 +445,133 @@ const firstRunSteps = computed(() => {
         : 'In what language should we download media?',
       subtitle:
         'Media such as videos and pictures will be downloaded from publications in this language.',
-      settings: [
-        {
-          name: 'media.lang',
-          type: 'autocomplete',
-          items: jwLangs.value,
-          actions: [],
-        },
-      ],
-      actions: [
-        firstRunParams.value.usingAtKh
-          ? enableExternalDisplayAndMusic
-          : undefined,
-      ],
+      settings: [requiredSettings['media.lang']],
+      onComplete: () => {
+        if (firstRunParams.value.usingAtKh) {
+          enableExternalDisplayAndMusic()
+        }
+      },
     },
-    ...(firstRunParams.value.usingAtKh
-      ? [
-          {
-            title: "Excellent! We're off to a good start.",
-            subtitle:
-              "You'll notice the yeartext is now being displayed on the external monitor! But let's keep going.",
-          },
-        ]
-      : []),
+    {
+      skip: !firstRunParams.value.usingAtKh,
+      title: "Excellent! We're off to a good start.",
+      subtitle:
+        "You'll notice the yeartext is now being displayed on the external monitor! But let's keep going.",
+    },
     {
       title: 'What are your meeting days and times?',
       subtitle:
         "We'll use this info to make sure that all media is categorized into dated folders for each meeting.",
       settings: [
-        {
-          name: 'meeting.mwDay',
-          type: 'input',
-          actions: [],
-        },
-        {
-          name: 'meeting.mwStartTime',
-          type: 'input',
-          actions: [],
-        },
-        {
-          name: 'meeting.weDay',
-          type: 'input',
-          actions: [],
-        },
-        {
-          name: 'meeting.weStartTime',
-          type: 'input',
-          actions: [],
-        },
+        requiredSettings['meeting.mwDay'],
+        requiredSettings['meeting.mwStartTime'],
+        requiredSettings['meeting.weDay'],
+        requiredSettings['meeting.weStartTime'],
       ],
-      actions: [
-        firstRunParams.value.usingAtKh
-          ? enableExternalDisplayAndMusic
-          : undefined,
-      ],
+      onComplete: () => {
+        if (firstRunParams.value.usingAtKh) {
+          enableExternalDisplayAndMusic()
+        }
+      },
     },
     {
       title:
         'Where should the prepared media for playback at meetings be saved?',
       subtitle:
         'This is the folder in which the dated folders will be created for each meeting.',
-      settings: [
-        {
-          name: 'app.localOutputPath', // set default folder path here of user's "documents" folder
-          type: 'input',
-          actions: [],
-        },
-      ],
-      actions: [startMediaSync],
+      settings: [requiredSettings['app.localOutputPath']],
+      onComplete: () => {
+        startMediaSync()
+      },
     },
     {
       title: 'Excellent!',
       subtitle:
         "We're almost done! We'll start fetching media while we wrap up with our initial setup.",
     },
-    ...(firstRunParams.value.usingAtKh
-      ? [
-          {
-            firstRunParam: 'usingObs',
-            title: 'Does your Kingdom Hall use a program called OBS Studio?',
-            subtitle:
-              'OBS Studio is a free app used to manage camera and video feeds.',
-          },
-          ...(firstRunParams.value.usingObs
-            ? [
-                {
-                  firstRunParam: 'integrateObs',
-                  title: 'Would you like to integrate M³ with OBS Studio?',
-                  subtitle:
-                    'Doing so will greatly simplify and facilitate sharing media during hybrid meetings.',
-                },
-                ...(firstRunParams.value.integrateObs
-                  ? [
-                      {
-                        title: 'Is OBS Studio configured properly?',
-                        subtitle:
-                          'Make sure that the OBS Studio Websocket plugin is configured with a port number and password, and that the OBS Studio virtual camera is installed on this computer. When this is done, click next.',
-                      },
-                      {
-                        title:
-                          "Enter the port and password configured in OBS Studio's Websocket plugin.",
-                        settings: [
-                          {
-                            name: 'app.obs.port',
-                            type: 'input',
-                            actions: [],
-                          },
-                          {
-                            name: 'app.obs.password',
-                            type: 'input',
-                            actions: [],
-                          },
-                        ],
-                        actions: [enableObs],
-                      },
-                      {
-                        title:
-                          'Configure a scene in OBS Studio to show a stage wide shot.',
-                        subtitle:
-                          'Once the scene has been created, select it here.',
-                        settings: [
-                          {
-                            name: 'app.obs.cameraScene',
-                            type: 'input',
-                            actions: [],
-                          },
-                        ],
-                      },
-                      {
-                        title:
-                          'Configure a scene in OBS Studio that will capture the media while it is displayed.',
-                        subtitle:
-                          'This can be either a "display capture" or a "window capture". Once the scene has been created, select it here.',
-                        settings: [
-                          {
-                            name: 'app.obs.mediaScene',
-                            type: 'input',
-                            actions: [],
-                          },
-                        ],
-                      },
-                    ]
-                  : []),
-              ]
-            : []),
-          {
-            title:
-              'Make sure that the setting to "use dual monitors" in Zoom is enabled.',
-            subtitle:
-              "That way, you'll be able to quickly show and hide Zoom participants on the TV screens when needed.",
-          },
-          {
-            title:
-              'How can I show Zoom on the TVs instead of the media or yeartext?',
-            subtitle:
-              "Look for this button in M³'s sidebar. Clicking it will temporarily hide the media and yeartext, and reveal the Zoom participants underneath. Once the Zoom part is over, you can show the yeartext again using the same button.",
-          },
-          {
-            title: 'What about background music?',
-            subtitle:
-              "In the sidebar, you'll also find a button to start and stop background music playback. Note that background music will start playing automatically before a meeting is scheduled to start when M³ is launched, and will stop automatically one minute before the meeting. However, background music playback will need to be manually started after the concluding prayer.",
-          },
-        ]
-      : []),
+    {
+      skip: !firstRunParams.value.usingAtKh,
+      firstRunParam: 'usingObs',
+      title: 'Does your Kingdom Hall use a program called OBS Studio?',
+      subtitle:
+        'OBS Studio is a free app used to manage camera and video feeds.',
+    },
+    {
+      skip: !firstRunParams.value.usingAtKh || !firstRunParams.value.usingObs,
+      firstRunParam: 'integrateObs',
+      title: 'Would you like to integrate M³ with OBS Studio?',
+      subtitle:
+        'Doing so will greatly simplify and facilitate sharing media during hybrid meetings.',
+    },
+    {
+      skip:
+        !firstRunParams.value.usingAtKh ||
+        !firstRunParams.value.usingObs ||
+        !firstRunParams.value.integrateObs,
+      title: 'Is OBS Studio configured properly?',
+      subtitle:
+        'Make sure that the OBS Studio Websocket plugin is configured with a port number and password, and that the OBS Studio virtual camera is installed on this computer. When this is done, click next.',
+    },
+    {
+      skip:
+        !firstRunParams.value.usingAtKh ||
+        !firstRunParams.value.usingObs ||
+        !firstRunParams.value.integrateObs,
+      title:
+        "Enter the port and password configured in OBS Studio's Websocket plugin.",
+      settings: [
+        requiredSettings['app.obs.port'],
+        requiredSettings['app.obs.password'],
+      ],
+      onComplete: () => {
+        enableObs()
+      },
+    },
+    {
+      skip:
+        !firstRunParams.value.usingAtKh ||
+        !firstRunParams.value.usingObs ||
+        !firstRunParams.value.integrateObs,
+      title: 'Configure a scene in OBS Studio to show a stage wide shot.',
+      subtitle: 'Once the scene has been created, select it here.',
+      settings: [requiredSettings['app.obs.cameraScene']],
+    },
+    {
+      skip:
+        !firstRunParams.value.usingAtKh ||
+        !firstRunParams.value.usingObs ||
+        !firstRunParams.value.integrateObs,
+      title:
+        'Configure a scene in OBS Studio that will capture the media while it is displayed.',
+      subtitle:
+        'This can be either a "display capture" or a "window capture". Once the scene has been created, select it here.',
+      settings: [requiredSettings['app.obs.mediaScene']],
+    },
+    {
+      skip: !firstRunParams.value.usingAtKh,
+      title:
+        'Make sure that the setting to "use dual monitors" in Zoom is enabled.',
+      subtitle:
+        "That way, you'll be able to quickly show and hide Zoom participants on the TV screens when needed.",
+    },
+    {
+      skip: !firstRunParams.value.usingAtKh,
+      title: 'How can I show Zoom on the TVs instead of the media or yeartext?',
+      subtitle:
+        "Look for this button in M³'s sidebar. Clicking it will temporarily hide the media and yeartext, and reveal the Zoom participants underneath. Once the Zoom part is over, you can show the yeartext again using the same button.",
+    },
+    {
+      skip: !firstRunParams.value.usingAtKh,
+      title: 'What about background music?',
+      subtitle:
+        "In the sidebar, you'll also find a button to start and stop background music playback. Note that background music will start playing automatically before a meeting is scheduled to start when M³ is launched, and will stop automatically one minute before the meeting. However, background music playback will need to be manually started after the concluding prayer.",
+    },
     {
       title: 'Congratulations!',
       subtitle:
         'M³ is now ready to be used. Feel free to browse around the other available options, or if you prefer you can head right to the media playback screen.',
     },
   ]
-  return steps
 })
 const currentInitialSetting = ref(0)
 const initialSettingsDone = computed(
@@ -524,14 +597,25 @@ const enableObs = () => {
   // test port and pw
   // if fail, go back a step
 }
+const previousStep = () => {
+  let stepSize = 1
+  while (firstRunSteps.value[currentInitialSetting.value - stepSize].skip) {
+    stepSize++
+  }
+  currentInitialSetting.value -= stepSize
+}
 
-const nextStep = (actions: any[] | undefined) => {
-  actions?.filter(Boolean).forEach((action: () => void) => {
-    if (action) action()
-  })
-  initialSettingsDone.value
-    ? (isNew.value = false)
-    : currentInitialSetting.value++
+const nextStep = (action?: () => void) => {
+  if (action) action()
+  if (initialSettingsDone.value) {
+    isNew.value = ''
+  } else {
+    let stepSize = 1
+    while (firstRunSteps.value[currentInitialSetting.value + stepSize].skip) {
+      stepSize++
+    }
+    currentInitialSetting.value += stepSize
+  }
 }
 // Prefs
 const filter = ref('')
@@ -577,17 +661,7 @@ const groups = computed((): Settings[] => {
       id: 'general',
       label: 'General',
       settings: [
-        {
-          type: 'text',
-          key: 'app.congregationName',
-          props: {
-            required: true,
-          },
-          onChange: (val: string) => {
-            if (!val) return
-            useNuxtApp().$sentry.setUser({ username: val })
-          },
-        },
+        requiredSettings['app.congregationName'],
         {
           label: $i18n.t('enableMediaDisplayButton'),
           key: 'media.enableMediaDisplayButton',
@@ -610,34 +684,7 @@ const groups = computed((): Settings[] => {
             useStatStore().setShowMediaPlayback(val)
           },
         },
-        {
-          type: 'select',
-          key: 'app.localAppLang',
-          props: {
-            items: $i18n.locales.value.map((l) => {
-              const locale = l as LocaleObject
-              return {
-                title: locale.name!,
-                value: locale.code,
-              }
-            }),
-          },
-          onChange: (val: string, oldVal: string) => {
-            if (!val) return
-            const locales = $i18n.locales.value as LocaleObject[]
-            const locale = locales.find((l) => l.code === val)!
-            const oldLocale = locales.find((l) => l.code === oldVal)
-            $dayjs.locale(locale?.dayjs ?? val)
-            if (oldLocale && val !== oldVal) {
-              useMediaStore().clear()
-              renamePubs(oldLocale, locale)
-            }
-            if (val !== $i18n.locale.value) {
-              log.debug('Change localAppLang')
-              useRouter().replace(useSwitchLocalePath()(val))
-            }
-          },
-        },
+        requiredSettings['app.localAppLang'],
         {
           type: 'select',
           label: 'themePreference',
@@ -693,40 +740,8 @@ const groups = computed((): Settings[] => {
           },
         },
         { key: 'media.includePrinted' },
-        {
-          type: 'autocomplete',
-          label: 'mediaLang',
-          key: 'media.lang',
-          props: {
-            items: langs.value,
-            required: true,
-          },
-          onChange: (val: string) => {
-            if (!val) return
-            useDbStore().clear()
-            useMediaStore().clear()
-            getPubAvailability(val)
-            getJWLangs()
-            refreshBackgroundImgPreview(true)
-          },
-        },
-        {
-          type: 'path',
-          label: $i18n.t('mediaSaveFolder'),
-          key: 'app.localOutputPath',
-          onChange: (val: string) => {
-            if (!val) return
-            const badCharacters = val.match(
-              /(\\?)([()*?[\]{|}]|^!|[!+@](?=\())/g
-            )
-            if (badCharacters) {
-              warn('errorBadOutputPath', {
-                identifier: badCharacters.join(' '),
-              })
-              updatePrefs('app.localOutputPath', null)
-            }
-          },
-        },
+        requiredSettings['media.lang'],
+        requiredSettings['app.localOutputPath'],
         { key: 'meeting.specialCong' },
         {
           type: 'group',
@@ -925,228 +940,180 @@ const groups = computed((): Settings[] => {
             }
           },
         },
-        ...(prefs.value.app.obs.enable
-          ? [
-              {
-                type: 'group',
-                id: 'obs',
-                label: 'OBS Studio',
-                value: [
-                  {
-                    key: 'app.obs.useV4',
-                    label: 'obsUseV4',
-                    onChange: () => {
-                      if (obsComplete.value) {
-                        getScenes()
-                      }
-                    },
-                  },
-                  {
-                    type: 'password',
-                    key: 'app.obs.password',
-                  },
-                  {
-                    type: 'text',
-                    key: 'app.obs.port',
-                  },
-                  {
-                    type: 'select',
-                    key: 'app.obs.cameraScene',
-                    label: 'obsCameraScene',
-                    props: {
-                      items: scenes.value.filter(
-                        (s) =>
-                          s !== prefs.value.app.obs.mediaScene &&
-                          s !== prefs.value.app.obs.zoomScene &&
-                          s !== prefs.value.app.obs.imageScene
-                      ),
-                    },
-                  },
-                  {
-                    type: 'select',
-                    key: 'app.obs.imageScene',
-                    label: 'obsImageScene',
-                    props: {
-                      items: scenes.value.filter(
-                        (s) =>
-                          s !== prefs.value.app.obs.mediaScene &&
-                          s !== prefs.value.app.obs.zoomScene &&
-                          s !== prefs.value.app.obs.cameraScene
-                      ),
-                    },
-                  },
-                  {
-                    type: 'select',
-                    key: 'app.obs.mediaScene',
-                    label: 'obsMediaScene',
-                    props: {
-                      items: scenes.value.filter(
-                        (s) =>
-                          s !== prefs.value.app.obs.cameraScene &&
-                          s !== prefs.value.app.obs.zoomScene &&
-                          s !== prefs.value.app.obs.imageScene
-                      ),
-                    },
-                  },
-                  {
-                    type: 'select',
-                    key: 'app.obs.zoomScene',
-                    label: 'obsZoomScene',
-                    props: {
-                      items: scenes.value.filter(
-                        (s) =>
-                          s !== prefs.value.app.obs.mediaScene &&
-                          s !== prefs.value.app.obs.cameraScene &&
-                          s !== prefs.value.app.obs.imageScene
-                      ),
-                    },
-                  },
-                ],
+        {
+          type: 'group',
+          id: 'obs',
+          label: 'OBS Studio',
+          value: [
+            {
+              key: 'app.obs.useV4',
+              label: 'obsUseV4',
+              onChange: () => {
+                if (obsComplete.value) {
+                  getScenes()
+                }
               },
-            ]
-          : []
-        ).filter(Boolean),
+            },
+            requiredSettings['app.obs.password'],
+            requiredSettings['app.obs.port'],
+            requiredSettings['app.obs.cameraScene'],
+            {
+              type: 'select',
+              key: 'app.obs.imageScene',
+              label: 'obsImageScene',
+              props: {
+                items: scenes.value.filter(
+                  (s) =>
+                    s !== prefs.value.app.obs.mediaScene &&
+                    s !== prefs.value.app.obs.zoomScene &&
+                    s !== prefs.value.app.obs.cameraScene
+                ),
+              },
+            },
+            requiredSettings['app.obs.mediaScene'],
+            {
+              type: 'select',
+              key: 'app.obs.zoomScene',
+              label: 'obsZoomScene',
+              props: {
+                items: scenes.value.filter(
+                  (s) =>
+                    s !== prefs.value.app.obs.mediaScene &&
+                    s !== prefs.value.app.obs.cameraScene &&
+                    s !== prefs.value.app.obs.imageScene
+                ),
+              },
+            },
+          ],
+        },
         {
           key: 'cong.enable',
           label: 'webdavEnable',
         },
-        ...(prefs.value.cong.enable
-          ? [
-              {
-                type: 'group',
-                id: 'webdav',
-                label: 'WebDAV',
-                value: [
-                  {
-                    type: 'text',
-                    key: 'cong.server',
-                    props: {
-                      prefix: 'https://',
-                      rules: [
-                        () =>
-                          !congComplete.value ||
-                          congError.value !== 'host' ||
-                          !online.value,
-                      ],
-                    },
-                  },
-                  {
-                    type: 'text',
-                    key: 'cong.username',
-                    props: {
-                      rules: [
-                        () =>
-                          !congComplete.value ||
-                          congError.value !== 'credentials',
-                      ],
-                    },
-                  },
-                  {
-                    type: 'password',
-                    key: 'cong.password',
-                    props: {
-                      rules: [
-                        () =>
-                          !congComplete.value ||
-                          congError.value !== 'credentials',
-                      ],
-                    },
-                  },
-                  {
-                    type: 'text',
-                    key: 'cong.dir',
-                    label: 'webdavFolder',
-                    append: {
-                      type: 'action',
-                      label: 'fa-globe',
-                      icon: true,
-                      props: {
-                        loading: congLoading.value,
-                        disabled: !congComplete.value,
-                        color:
-                          congError.value === 'success'
-                            ? 'success'
-                            : congError.value === null
-                            ? 'error'
-                            : 'primary',
-                        rules: [
-                          () =>
-                            !congComplete.value || congError.value !== 'dir',
-                        ],
-                      },
-                      action: async () => {
-                        if (congComplete.value) {
-                          congLoading.value = true
-                          congError.value = (await connect(
-                            prefs.value.cong.server!,
-                            prefs.value.cong.username!,
-                            prefs.value.cong.password!,
-                            prefs.value.cong.dir!
-                          ))!
-                          if (client.value) {
-                            updateContentsTree()
-                            forcePrefs()
-                          }
-                          congLoading.value = false
-                          form.value?.validate()
-                        }
-                      },
-                    },
-                  },
-                  {
-                    type: 'action',
-                    label: 'settingsLocked',
-                    action: () => {
-                      forcingPrefs.value = true
-                    },
-                  },
+        {
+          type: 'group',
+          id: 'webdav',
+          label: 'WebDAV',
+          value: [
+            {
+              type: 'text',
+              key: 'cong.server',
+              props: {
+                prefix: 'https://',
+                rules: [
+                  () =>
+                    !congComplete.value ||
+                    congError.value !== 'host' ||
+                    !online.value,
                 ],
               },
-            ]
-          : []
-        ).filter(Boolean),
+            },
+            {
+              type: 'text',
+              key: 'cong.username',
+              props: {
+                rules: [
+                  () =>
+                    !congComplete.value || congError.value !== 'credentials',
+                ],
+              },
+            },
+            {
+              type: 'password',
+              key: 'cong.password',
+              props: {
+                rules: [
+                  () =>
+                    !congComplete.value || congError.value !== 'credentials',
+                ],
+              },
+            },
+            {
+              type: 'text',
+              key: 'cong.dir',
+              label: 'webdavFolder',
+              append: {
+                type: 'action',
+                label: 'fa-globe',
+                icon: true,
+                props: {
+                  loading: congLoading.value,
+                  disabled: !congComplete.value,
+                  color:
+                    congError.value === 'success'
+                      ? 'success'
+                      : congError.value === null
+                      ? 'error'
+                      : 'primary',
+                  rules: [
+                    () => !congComplete.value || congError.value !== 'dir',
+                  ],
+                },
+                action: async () => {
+                  if (congComplete.value) {
+                    congLoading.value = true
+                    congError.value = (await connect(
+                      prefs.value.cong.server!,
+                      prefs.value.cong.username!,
+                      prefs.value.cong.password!,
+                      prefs.value.cong.dir!
+                    ))!
+                    if (client.value) {
+                      updateContentsTree()
+                      forcePrefs()
+                    }
+                    congLoading.value = false
+                    form.value?.validate()
+                  }
+                },
+              },
+            },
+            {
+              type: 'action',
+              label: 'settingsLocked',
+              action: () => {
+                forcingPrefs.value = true
+              },
+            },
+          ],
+        },
         {
           key: 'app.zoom.enable',
         },
-        ...(prefs.value.app.zoom.enable
-          ? [
-              {
-                type: 'group',
-                id: 'zoom',
-                label: 'Zoom',
-                value: [
-                  {
-                    type: 'list',
-                    key: 'app.zoom.autoRename',
-                    label: 'zoomAutoRename',
-                  },
-                  {
-                    key: 'autoStartMeeting',
-                    label: 'zoomAutoStartMeeting',
-                  },
-                  {
-                    type: 'text',
-                    key: 'app.zoom.id',
-                    label: 'zoomId',
-                  },
-                  {
-                    type: 'password',
-                    key: 'app.zoom.password',
-                  },
-                  {
-                    key: 'app.zoom.spotlight',
-                    label: 'zoomSpotlight',
-                  },
-                  {
-                    type: 'text',
-                    key: 'app.zoom.name',
-                    label: 'zoomName',
-                  },
-                ],
-              },
-            ]
-          : []
-        ).filter(Boolean),
+        {
+          type: 'group',
+          id: 'zoom',
+          label: 'Zoom',
+          value: [
+            {
+              type: 'list',
+              key: 'app.zoom.autoRename',
+              label: 'zoomAutoRename',
+            },
+            {
+              key: 'autoStartMeeting',
+              label: 'zoomAutoStartMeeting',
+            },
+            {
+              type: 'text',
+              key: 'app.zoom.id',
+              label: 'zoomId',
+            },
+            {
+              type: 'password',
+              key: 'app.zoom.password',
+            },
+            {
+              key: 'app.zoom.spotlight',
+              label: 'zoomSpotlight',
+            },
+            {
+              type: 'text',
+              key: 'app.zoom.name',
+              label: 'zoomName',
+            },
+          ],
+        },
       ],
     },
     {
@@ -1154,80 +1121,75 @@ const groups = computed((): Settings[] => {
       label: 'Media playback',
       settings: [
         { key: 'meeting.autoStartMusic' },
-        ...(prefs.value.media.enableMediaDisplayButton
-          ? [
-              { key: 'media.autoPlayFirst' },
-              {
-                type: 'select',
-                key: 'media.preferredOutput',
-                props: {
-                  items: [
-                    { title: $i18n.t('window'), value: 'window' },
-                    ...screens.value.map((s) => {
-                      return {
-                        title: s.title,
-                        value: s.id,
-                      }
-                    }),
-                  ],
-                },
-                onChange: () => {
-                  if (prefs.value.media.enableMediaDisplayButton) {
-                    getMediaWindowDestination().then((dest) => {
-                      ipcRenderer.send('showMediaWindow', dest)
-                    })
-                  }
-                },
-              },
+        { key: 'media.autoPlayFirst' },
+        {
+          type: 'select',
+          key: 'media.preferredOutput',
+          props: {
+            items: [
+              { title: $i18n.t('window'), value: 'window' },
+              ...screens.value.map((s) => {
+                return {
+                  title: s.title,
+                  value: s.id,
+                }
+              }),
+            ],
+          },
+          onChange: () => {
+            if (prefs.value.media.enableMediaDisplayButton) {
+              getMediaWindowDestination().then((dest) => {
+                ipcRenderer.send('showMediaWindow', dest)
+              })
+            }
+          },
+        },
 
-              {
-                type: 'group',
-                id: 'playbackAdvanced',
-                label: $i18n.t('advanced'),
-                value: [
-                  {
-                    type: 'action',
-                    label: 'mediaWindowBackground',
-                    action: async () => {
-                      const result = await ipcRenderer.invoke('openDialog', {
-                        properties: ['openFile'],
-                        filters: [
-                          {
-                            name: 'Image',
-                            extensions: ['jpg', 'png', 'jpeg', 'gif', 'svg'],
-                          },
-                        ],
-                      })
-                      if (!result || result.canceled) return
-                      if (isImage(result.filePaths[0])) {
-                        const background = result.filePaths[0]
-                        const filename = `custom-background-image-${prefs.value.app.congregationName}`
-                        const extension = extname(background)
-                        rm(findAll(join(appPath(), filename + '*')))
-                        copy(background, join(appPath(), filename + extension))
-
-                        // Upload the background to the cong server
-                        if (client.value && prefs.value.cong.dir) {
-                          await client.value.putFileContents(
-                            join(prefs.value.cong.dir, filename + extension),
-                            await readFile(background),
-                            {
-                              overwrite: true,
-                            }
-                          )
-                        }
-
-                        refreshBackgroundImgPreview()
-                      } else {
-                        warn('notAnImage')
-                      }
+        {
+          type: 'group',
+          id: 'playbackAdvanced',
+          label: $i18n.t('advanced'),
+          value: [
+            {
+              type: 'action',
+              label: 'mediaWindowBackground',
+              action: async () => {
+                const result = await ipcRenderer.invoke('openDialog', {
+                  properties: ['openFile'],
+                  filters: [
+                    {
+                      name: 'Image',
+                      extensions: ['jpg', 'png', 'jpeg', 'gif', 'svg'],
                     },
-                  },
-                ],
+                  ],
+                })
+                if (!result || result.canceled) return
+                if (isImage(result.filePaths[0])) {
+                  const background = result.filePaths[0]
+                  const filename = `custom-background-image-${prefs.value.app.congregationName}`
+                  const extension = extname(background)
+                  rm(findAll(join(appPath(), filename + '*')))
+                  copy(background, join(appPath(), filename + extension))
+
+                  // Upload the background to the cong server
+                  if (client.value && prefs.value.cong.dir) {
+                    await client.value.putFileContents(
+                      join(prefs.value.cong.dir, filename + extension),
+                      await readFile(background),
+                      {
+                        overwrite: true,
+                      }
+                    )
+                  }
+
+                  refreshBackgroundImgPreview()
+                } else {
+                  warn('notAnImage')
+                }
               },
-            ]
-          : []
-        ).filter(Boolean),
+            },
+          ],
+        },
         {
           type: 'group',
           id: 'music',
@@ -1286,14 +1248,10 @@ const groups = computed((): Settings[] => {
             ],
           },
         },
-        {
-          type: 'time',
-          key: 'meeting.mwDay',
-        },
-        {
-          type: 'time',
-          key: 'meeting.weDay',
-        },
+        requiredSettings['meeting.mwDay'],
+        requiredSettings['meeting.mwStartTime'],
+        requiredSettings['meeting.weDay'],
+        requiredSettings['meeting.weStartTime'],
       ],
     },
   ]

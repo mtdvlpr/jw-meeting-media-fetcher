@@ -270,7 +270,7 @@ const musicFadeOutTimer = useComputedLabel<MeetingPrefs>(
 const processed = ref(0)
 const setProgress = inject(setProgressKey, () => {})
 const downloadSong = async (song: VideoFile) => {
-  await downloadIfRequired({ file: song, _setProgress: setProgress })
+  await downloadIfRequired({ file: song })
   setProgress(++processed.value, NR_OF_KINGDOM_SONGS, true)
 }
 

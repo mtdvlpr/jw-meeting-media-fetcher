@@ -2,10 +2,7 @@ import type { Database } from '@stephen/sql.js'
 import { join } from 'upath'
 import { MultiMediaExtractRef, DateFormat } from '~~/types'
 
-export async function getMwMedia(
-  date: string,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
-) {
+export async function getMwMedia(date: string) {
   const { $dayjs } = useNuxtApp()
   const mwDay = $dayjs(date, getPrefs<DateFormat>('app.outputFolderDateFormat'))
   const baseDate = mwDay.startOf('week')
@@ -16,7 +13,7 @@ export async function getMwMedia(
   }
 
   // Get document id of this weeks mwb issue
-  const db = await getDbFromJWPUB({ pub: 'mwb', issue, setProgress, date })
+  const db = await getDbFromJWPUB({ pub: 'mwb', issue, date })
   if (!db) throw new Error(`No MW media data found for ${date}!`)
   const docId = executeQuery<{ DocumentId: number }>(
     db,
@@ -74,7 +71,6 @@ export async function getMwMedia(
     db,
     docId,
     baseDate,
-    setProgress,
     date,
   })
 

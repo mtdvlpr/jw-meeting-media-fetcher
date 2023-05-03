@@ -6,13 +6,11 @@ export async function getDocumentExtract({
   db,
   docId,
   baseDate,
-  setProgress,
   date,
 }: {
   db: Database
   docId: number
   baseDate: Dayjs
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
   date?: string
 }) {
   const songPub = useMediaStore().songPub
@@ -57,9 +55,7 @@ export async function getDocumentExtract({
       isCoWeek(baseDate) && extract.UniqueEnglishSymbol === 'lff' && !imagesOnly
 
     if (!skipCBS && (!imagesOnly || !excludeLffImages)) {
-      promises.push(
-        extractMediaItems({ extract, setProgress, imagesOnly, date })
-      )
+      promises.push(extractMediaItems({ extract, imagesOnly, date }))
     }
   })
 
@@ -76,12 +72,10 @@ export async function getDocumentExtract({
 
 async function extractMediaItems({
   extract,
-  setProgress,
   imagesOnly = false,
   date,
 }: {
   extract: MultiMediaExtract
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
   imagesOnly?: boolean
   date?: string
 }) {
@@ -107,7 +101,6 @@ async function extractMediaItems({
   let extractDb = await getDbFromJWPUB({
     pub: symbol,
     issue: extract.IssueTagNumber,
-    setProgress,
     lang: fallbackLang ? mediaLang : extract.Lang,
     date,
   })
@@ -120,7 +113,6 @@ async function extractMediaItems({
         extract.Lang === mediaLang
           ? fallbackLang
           : extract.Lang ?? fallbackLang,
-      setProgress,
       date,
     })
   }

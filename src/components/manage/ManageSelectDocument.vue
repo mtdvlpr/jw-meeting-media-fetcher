@@ -79,7 +79,6 @@ const items = ref<{ DocumentId: number; Title: string }[]>([])
 const getDocuments = async () => {
   loading.value = true
   const database = await getDbFromJWPUB({
-    setProgress: props.setProgress,
     localPath: props.file.filepath,
   })
   if (!database) return
