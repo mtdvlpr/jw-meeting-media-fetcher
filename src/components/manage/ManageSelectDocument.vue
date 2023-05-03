@@ -1,16 +1,20 @@
 <template>
   <v-card>
-    <v-card-title style="word-break: break-word" class="justify-center">
+    <!-- <v-card-title style="word-break: break-word" class="justify-center">
       {{
         !loading && missingMedia.length > 0
           ? $t('selectExternalMedia')
           : $t('selectDocument')
       }}
-    </v-card-title>
-    <v-col cols="12">
-      <v-divider />
-    </v-col>
-    <v-col cols="12">
+    </v-card-title> -->
+    <v-card-text>
+      <div>
+        {{
+          !loading && missingMedia.length > 0
+            ? $t('selectExternalMedia')
+            : $t('selectDocument')
+        }}
+      </div>
       <loading-icon v-if="loading" />
       <v-list v-else-if="missingMedia.length > 0">
         <template v-for="item in missingMedia" :key="item">
@@ -28,19 +32,19 @@
           <v-divider />
         </template>
       </v-list>
-      <v-card-actions v-if="!loading">
-        <v-col class="d-flex justify-space-between">
-          <icon-btn variant="cancel" @click="emit('empty')" />
-          <v-btn
-            v-if="missingMedia.length > 0"
-            color="primary"
-            @click="finish()"
-          >
-            <v-icon icon="fa-save" size="small" />
-          </v-btn>
-        </v-col>
-      </v-card-actions>
-    </v-col>
+    </v-card-text>
+    <v-card-actions v-if="!loading">
+      <v-btn @click="emit('empty')">Cancel</v-btn>
+      <v-spacer></v-spacer>
+      <v-btn
+        v-if="missingMedia.length > 0"
+        color="primary"
+        variant="flat"
+        @click="finish()"
+      >
+        Save
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 <script setup lang="ts">

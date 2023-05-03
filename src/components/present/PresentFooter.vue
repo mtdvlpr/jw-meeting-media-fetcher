@@ -3,7 +3,7 @@
     <v-col v-if="date && scene && zoomScene" cols="auto">
       <v-btn icon variant="text" size="medium" @click="emit('zoomPart')">
         <v-icon
-          :icon="zoomPart ? 'fa-podcast' : 'fa-house-user'"
+          :icon="zoomPart ? 'mdi-video-box' : 'mdi-lectern'"
           :color="zoomPart ? 'success' : undefined"
         />
         <v-tooltip location="top" activator="parent">
@@ -13,7 +13,7 @@
     </v-col>
     <v-col v-else-if="date && obsEnabled && !scene">
       <v-btn icon variant="text" :loading="obsLoading" @click="initOBS()">
-        <v-icon icon="fa-rotate-right" size="medium" />
+        <v-icon icon="mdi-rotate-right" size="medium" />
         <v-tooltip location="top" activator="parent">
           {{ $t('obsRefresh') }}
         </v-tooltip>

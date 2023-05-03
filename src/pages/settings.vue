@@ -152,25 +152,25 @@ const headers = ref<
 >([
   {
     key: 'app',
-    icon: 'fa-sliders',
+    icon: 'mdi-application',
     name: $i18n.t('optionsApp'),
     valid: false,
   },
   {
     key: 'cong',
-    icon: 'fa-cloud',
+    icon: 'mdi-cloud',
     name: $i18n.t('optionsCongSync'),
     valid: false,
   },
   {
     key: 'media',
-    icon: 'fa-photo-film',
+    icon: 'mdi-multimedia',
     name: $i18n.t('optionsMedia'),
     valid: false,
   },
   {
     key: 'meeting',
-    icon: 'fa-people-roof',
+    icon: 'mdi-lectern',
     name: $i18n.t('optionsMeetings'),
     valid: false,
   },

@@ -12,6 +12,7 @@
           #default="{ isHovering: isHoveringOverIcon, props: propsIcon }"
         >
           <v-avatar
+            v-if="item.safeName"
             v-bind="propsIcon"
             :color="
               item.congSpecific ? 'info' : item.isLocal ? undefined : 'primary'
@@ -29,10 +30,10 @@
       </v-hover>
     </template>
     <template #append>
-      <v-icon v-if="item.recurring" icon="fa-sync-alt" color="info" />
+      <v-icon v-if="item.recurring" icon="mdi-repeat-variant" color="info" />
       <v-btn
         v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
-        icon="fa-pen"
+        icon="mdi-pencil"
         size="x-small"
         variant="text"
         aria-label="rename file"
@@ -48,7 +49,7 @@
           <template #activator="{ props: attrs }">
             <v-btn
               color="red-lighten-1"
-              icon="fa-circle-xmark"
+              icon="mdi-delete"
               variant="text"
               :loading="item.loading"
               v-bind="attrs"
@@ -59,7 +60,7 @@
         <v-btn
           v-else
           color="red-lighten-1"
-          icon="fa-circle-xmark"
+          icon="mdi-delete"
           variant="text"
           :loading="item.loading"
           @click="atClick(item)"
@@ -81,12 +82,13 @@
                   : 'warning'
               "
               :icon="
-                'fa-circle' +
+                'mdi-' +
                 (item.isLocal === undefined
-                  ? '-plus'
+                  ? 'plus'
                   : item.hidden
                   ? '-check'
-                  : '-minus')
+                  : '-minus') +
+                '-circle'
               "
               :loading="item.loading"
               v-bind="attrs"
@@ -101,12 +103,13 @@
             item.isLocal === undefined || item.hidden ? 'success' : 'warning'
           "
           :icon="
-            'fa-circle' +
+            'mdi-' +
             (item.isLocal === undefined
-              ? '-plus'
+              ? 'plus'
               : item.hidden
-              ? '-check'
-              : '-minus')
+              ? 'check'
+              : 'minus') +
+            '-circle'
           "
           :loading="item.loading"
           @click="atClick(item)"
@@ -189,7 +192,7 @@ const getPreview = (item: MeetingFile | LocalFile) => {
 
 // When clicking on a file
 const { atClick, clickedOnce } = useClickTwice(() => {
-  if (props.item.loading) return
+  if (props.item.loading || props.item.isLocal === undefined) return
   emit('atClick')
   if (
     !props.item.recurring &&
@@ -250,22 +253,24 @@ const toggleVisibility = async (item: MeetingFile | LocalFile) => {
 }
 
 // File type icon
-const typeIcon = (filename?: string) => {
-  if (!filename) return 'fa-question-circle'
-  if (isImage(filename)) {
-    return 'fa-image'
-  } else if (isVideo(filename)) {
-    return 'fa-film'
-  } else if (isAudio(filename)) {
-    return 'fa-headphones'
-  } else if (extname(filename) === '.pdf') {
-    return 'fa-file-pdf'
-  } else if (extname(filename) === '.vtt') {
-    return 'fa-closed-captioning'
-  } else if (['.xspf', '.json'].includes(extname(filename))) {
-    return 'fa-file-code'
-  } else {
-    return 'fa-question-circle'
+const typeIcon = (filename: string) => {
+  const ext = filename ? extname(filename).toLowerCase() : ''
+  switch (ext) {
+    case '.pdf':
+      return 'mdi-file-pdf-box'
+    case '.vtt':
+      return 'mdi-closed-caption'
+    case '.json':
+    case '.xspf':
+      return 'mdi-file-code'
+    default:
+      return isImage(filename)
+        ? 'mdi-image'
+        : isVideo(filename)
+        ? 'mdi-movie-open'
+        : isAudio(filename)
+        ? 'mdi-headphones'
+        : 'mdi-file-question'
   }
 }
 </script>

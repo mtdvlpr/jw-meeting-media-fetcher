@@ -1,14 +1,15 @@
 import { createVuetify } from 'vuetify'
-import { aliases, fa } from 'vuetify/iconsets/fa-svg'
+import { aliases, mdi } from 'vuetify/lib/iconsets/mdi'
+import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles' // pre-build css styles
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
     icons: {
-      defaultSet: 'fa',
+      defaultSet: 'mdi',
       aliases,
       sets: {
-        fa,
+        mdi,
       },
     },
     defaults: {

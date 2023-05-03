@@ -9,7 +9,7 @@
         >
           <v-icon
             v-if="!updateSuccess"
-            icon="fa-hand-point-right"
+            icon="mdi-hand-pointing-right"
             class="mr-1"
           />
           M³ {{ isDev ? 'dev' : version }}
@@ -18,10 +18,10 @@
           <v-tooltip activator="parent" location="top">
             {{ $t('reportIssue') }}
           </v-tooltip>
-          <v-icon icon="fa-bug" />
+          <v-icon icon="mdi-bug" />
         </v-btn>
         <v-btn :color="cacheColor" :loading="loading" @click="removeCache()">
-          <v-icon icon="fa-trash" size="small" color="black" start />
+          <v-icon icon="mdi-file-image-remove" color="black" start />
           {{ `${cache}MB` }}
           <v-tooltip
             v-if="cacheColor === 'warning'"

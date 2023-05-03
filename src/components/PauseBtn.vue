@@ -1,20 +1,16 @@
 <template>
-  <v-btn
-    color="warning"
-    aria-label="Pause"
-    v-bind="$attrs"
-    :class="{ 'pulse-danger': toggled, 'pause-btn': true }"
-    @click="emit('click')"
-  >
-    <v-tooltip activator="parent" :location="tooltip">
-      {{ $t(video ? 'pause' : 'pauseImg') }}
-    </v-tooltip>
-    <v-icon
-      :icon="video ? pauseIcon : pauseImageIcon"
-      size="medium"
-      color="black"
-    />
-  </v-btn>
+  <v-tooltip :location="tooltip" :text="$t(video ? 'pause' : 'pauseImg')">
+    <template #activator="{ props }">
+      <v-btn
+        v-bind="props"
+        color="warning"
+        aria-label="Pause"
+        :icon="video ? pauseIcon : pauseImageIcon"
+        :class="{ 'pulse-danger': toggled, 'pause-btn': true }"
+        @click="emit('click')"
+      />
+    </template>
+  </v-tooltip>
 </template>
 <script setup lang="ts">
 const props = defineProps<{
@@ -25,8 +21,8 @@ const props = defineProps<{
 
 const emit = defineEmits(['click'])
 
-const pauseIcon = computed(() => (props.toggled ? 'fa-play' : 'fa-pause'))
-const pauseImageIcon = computed(() =>
-  props.toggled ? 'fa-video' : 'fa-video-slash'
+const pauseIcon = computed(() => (props.toggled ? 'mdi-play' : 'mdi-pause'))
+const pauseImageIcon = computed(
+  () => `mdi-video-box${props.toggled ? '' : '-off'}`
 )
 </script>

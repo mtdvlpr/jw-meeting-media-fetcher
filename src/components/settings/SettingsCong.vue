@@ -5,7 +5,7 @@
     class="text-left"
     @submit.prevent="submit()"
   >
-    <v-dialog v-if="forcingPrefs" :model-value="true" fullscreen :scrim="false">
+    <v-dialog :model-value="forcingPrefs" persistent>
       <cong-forced-prefs @done="forcingPrefs = false" />
     </v-dialog>
 
@@ -71,7 +71,7 @@
         :disabled="!complete"
         @click="submit()"
       >
-        <v-icon icon="fa-globe" />
+        <v-icon icon="mdi-cloud-check" />
       </v-btn>
     </v-col>
     <template v-if="client">
@@ -85,7 +85,7 @@
         </v-col>
         <v-col class="text-right pr-0">
           <v-btn color="primary" @click="forcingPrefs = true">
-            <v-icon icon="fa-cog" />
+            <v-icon icon="mdi-cloud-lock-open" />
           </v-btn>
         </v-col>
       </v-col>

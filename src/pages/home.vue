@@ -60,15 +60,6 @@
         </v-btn>
       </v-col>
     </v-row>
-    <!-- <v-footer
-      v-if="shuffleEnabled || presentModeEnabled"
-      class="justify-end home-footer"
-    >
-      <v-col class="text-right" cols="auto">
-        <shuffle-btn v-if="shuffleEnabled" />
-        <toggle-screen-btn v-if="presentModeEnabled" class="mx-2" />
-      </v-col>
-    </v-footer> -->
   </div>
 </template>
 <script setup lang="ts">
@@ -416,9 +407,9 @@ const action = ref('')
 const icon = (action: string) => {
   switch (action) {
     case 'quitApp':
-      return 'fa-person-running'
+      return 'mdi-exit-run'
     case 'startMediaSync':
-      return 'fa-pause'
+      return 'mdi-pause'
     default:
       throw new Error(`Unknown action: ${action}`)
   }

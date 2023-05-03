@@ -24,7 +24,7 @@
       <v-col cols="auto" class="pa-2">
         <v-btn
           v-if="m.persistent || m.dismiss"
-          icon="fa-xmark"
+          icon="mdi-close"
           size="x-small"
           variant="text"
           class="align-right"
@@ -68,11 +68,11 @@ const icon = (type: string) => {
   switch (type) {
     case 'warning':
     case 'error':
-      return 'fa-circle-exclamation'
+      return 'mdi-alert-circle'
     case 'success':
-      return 'fa-check-circle'
+      return 'mdi-check-circle'
     default:
-      return 'fa-info-circle'
+      return 'mdi-information'
   }
 }
 

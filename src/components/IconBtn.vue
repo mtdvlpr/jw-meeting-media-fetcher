@@ -118,7 +118,7 @@ const styles: Record<string, Style> = {
       'min-width': '32px',
       color: 'btn',
     },
-    icons: [{ text: 'fa-home', props: { color: 'white' } }],
+    icons: [{ text: 'mdi-home', props: { color: 'white' } }],
   },
   cancel: {
     props: {
@@ -127,21 +127,21 @@ const styles: Record<string, Style> = {
     },
     icons: [
       {
-        text: 'fa-circle-arrow-left',
+        text: 'mdi-arrow-left-bold-circle',
         props: { color: 'white', size: 'medium' },
       },
     ],
   },
   play: {
     props: { color: 'primary' },
-    icons: [{ text: 'fa-play', props: { size: 'medium' } }],
+    icons: [{ text: 'mdi-play', props: { size: 'x-large' } }],
   },
   stop: {
     props: { color: 'warning' },
     icons: [
       {
-        text: 'fa-stop',
-        props: { size: 'medium', color: 'black' },
+        text: 'mdi-stop',
+        props: { size: 'x-large', color: 'black' },
       },
     ],
   },

@@ -123,10 +123,9 @@
             v-if="bg === 'yeartext'"
             color="primary"
             class="mb-2"
+            icon="mdi-image-edit-outline"
             @click="uploadBg()"
-          >
-            {{ $t('browse') }}
-          </v-btn>
+          />
           <v-btn v-else color="error" class="mb-2" @click="removeBg()">
             {{ $t('delete') }}
           </v-btn>
@@ -134,10 +133,9 @@
             color="warning"
             class="mb-2"
             min-width="32px"
+            icon="mdi-web-refresh"
             @click="refreshBg()"
-          >
-            <v-icon icon="fa-arrows-rotate" color="black" />
-          </v-btn>
+          />
         </v-col>
       </v-row>
       <v-row>

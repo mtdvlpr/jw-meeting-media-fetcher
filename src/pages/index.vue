@@ -3,7 +3,6 @@
   <div class="cong-select">
     <v-app-bar>
       <v-app-bar-title>
-        <v-icon icon="fa-building-user" size="x-large" />
         {{ $t('selectCong') }}
       </v-app-bar-title>
     </v-app-bar>
@@ -20,15 +19,16 @@
           >
             <template v-if="c.id !== cong" #append>
               <v-btn
-                icon="fa-trash"
+                icon="mdi-delete"
                 variant="text"
+                color="error"
                 size="small"
                 @click="removeCong(c.path)"
               />
             </template>
           </v-list-item>
           <v-list-item
-            prepend-icon="fa-plus"
+            prepend-icon="mdi-plus"
             :title="$t('congregationAdd')"
             @click="createCong()"
           />

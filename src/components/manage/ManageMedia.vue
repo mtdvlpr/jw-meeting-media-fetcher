@@ -49,11 +49,7 @@
     </v-card-title>
     <v-divider></v-divider>
     <v-card-text :style="`overflow-y: auto;${listHeight}`">
-      <v-dialog
-        v-if="files.length === 1"
-        width="auto"
-        :model-value="isLoneJwpub"
-      >
+      <v-dialog v-if="files.length === 1" persistent :model-value="isLoneJwpub">
         <manage-select-document
           :file="files[0]"
           :set-progress="setProgress"

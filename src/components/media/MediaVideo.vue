@@ -19,7 +19,7 @@
               <v-tooltip activator="parent" location="top">
                 {{ $t('videoTimeReset') }}
               </v-tooltip>
-              <v-icon icon="fa-rotate-left" />
+              <v-icon icon="mdi-rotate-left" />
             </v-btn>
           </form-timestamp>
           <form-timestamp
@@ -33,7 +33,7 @@
                 {{ $t('videoTimeSet') }}
               </v-tooltip>
               <v-icon
-                icon="fa-square-check"
+                icon="mdi-checkbox-marked"
                 :class="`text-${validStart && validEnd ? 'success' : 'error'}`"
               />
             </v-btn>
@@ -59,7 +59,7 @@
       >
         {{ $t('clickAgain') }}
       </v-tooltip>
-      <v-icon icon="fa-film" start />
+      <v-icon icon="mdi-movie-open" start />
       {{
         (playing || isClipped) && !isShortVideo
           ? `${progress[0] || limits.start}/${limits.end}`
@@ -77,7 +77,7 @@
       <v-tooltip activator="parent" location="right">
         {{ $t('toggleSubtitlePosition') }}
       </v-tooltip>
-      <v-icon :icon="`${ccIcon}fa-closed-captioning`" />
+      <v-icon :icon="ccIcon" />
     </v-btn>
   </div>
 </template>
@@ -216,7 +216,9 @@ watch(
     if (props.playing) toggleSubtitles(val, false)
   }
 )
-const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
+const ccIcon = computed(
+  () => `mdi-closed-caption${ccEnable.value ? '' : '-outline'}`
+)
 const toggleSubtitles = (enabled: boolean, toggle = false) => {
   ipcRenderer.send('toggleSubtitles', { enabled, toggle })
 }

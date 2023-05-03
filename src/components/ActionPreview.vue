@@ -5,9 +5,7 @@
       <v-container class="d-flex flex-column justify-center fill-height">
         <h1 class="mb-6 text-center">{{ $t(text) }}</h1>
         <v-badge :content="timer" color="primary">
-          <v-btn color="error" @click="emit('abort')">
-            <v-icon :icon="icon" />
-          </v-btn>
+          <v-btn color="error" :icon="icon" @click="emit('abort')" />
         </v-badge>
       </v-container>
     </v-sheet>

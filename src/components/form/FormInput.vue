@@ -10,6 +10,7 @@
     v-bind="$attrs"
     variant="outlined"
     density="compact"
+    :append-inner-icon="isLocked(id) ? 'mdi-lock' : ''"
     :rules="rules"
     :counted="max > 0 ? max : undefined"
   >
@@ -108,7 +109,7 @@
         >
           {{ item.title }}
         </v-btn>
-        <v-btn v-if="isLocked(id)" icon="fa-lock" size="small" disabled />
+        <v-btn v-if="isLocked(id)" icon="mdi-lock" size="small" disabled />
       </v-btn-toggle>
     </v-col>
     <v-col
@@ -228,9 +229,7 @@ const rules = computed(() => {
 
 // Password
 const passwordVisible = ref(false)
-const passIcon = computed(() =>
-  passwordVisible.value ? 'fa-eye-slash' : 'fa-eye'
-)
+const passIcon = computed(() => `mdi-eye${passwordVisible.value ? '' : '-off'}`)
 
 // Slider
 const formattedSlider = computed(() => {

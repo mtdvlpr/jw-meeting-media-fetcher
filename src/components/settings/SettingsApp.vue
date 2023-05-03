@@ -165,7 +165,7 @@
           :color="scenes.length > 0 ? 'success' : 'primary'"
           @click="refreshOBS()"
         >
-          <v-icon icon="fa-globe" />
+          <v-icon icon="mdi-book-refresh" />
         </v-btn>
       </v-col>
       <form-input
@@ -278,7 +278,7 @@
           hide-details="auto"
         />
         <v-btn class="ml-2" color="primary" @click="addAutoRename()">
-          <v-icon icon="fa-add" size="small" />
+          <v-icon icon="mdi-plus" size="small" />
         </v-btn>
       </v-col>
       <v-col>

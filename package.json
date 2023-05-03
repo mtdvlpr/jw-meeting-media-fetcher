@@ -40,6 +40,7 @@
   ],
   "packageManager": "yarn@3.5.1",
   "dependencies": {
+    "@mdi/font": "^7.2.96",
     "@sentry/electron": "^4.5.0",
     "chokidar": "^3.5.3",
     "dotenv": "^16.0.3",
@@ -49,11 +50,6 @@
   },
   "devDependencies": {
     "@electron/asar": "^3.2.4",
-    "@fortawesome/fontawesome-svg-core": "^6.4.0",
-    "@fortawesome/free-brands-svg-icons": "^6.4.0",
-    "@fortawesome/free-regular-svg-icons": "^6.4.0",
-    "@fortawesome/free-solid-svg-icons": "^6.4.0",
-    "@fortawesome/vue-fontawesome": "^3.0.3",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/i18n": "8.0.0-beta.10",
     "@panzoom/panzoom": "^4.5.1",

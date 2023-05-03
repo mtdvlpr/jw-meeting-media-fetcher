@@ -14,7 +14,7 @@
       <v-tooltip location="top" activator="parent">
         <template #activator="{ props: attrs }">
           <v-icon
-            :icon="isLocked(setting.key) ? 'fa-lock' : 'fa-circle-question'"
+            :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
             size="small"
             v-bind="attrs"
             style="margin-top: 2px; pointer-events: auto"
@@ -69,9 +69,12 @@
         :placeholder="$t(`${label}Format`)"
         hide-details="auto"
       />
-      <v-btn class="ml-2" color="primary" @click="addNewValue()">
-        <v-icon icon="fa-add" size="small" />
-      </v-btn>
+      <v-btn
+        class="ml-2"
+        color="primary"
+        icon="mdi-plus"
+        @click="addNewValue()"
+      />
     </v-col>
     <v-col>
       <v-chip
@@ -137,7 +140,7 @@
         #append-inner
       >
         <v-icon
-          :icon="isLocked(setting.key) ? 'fa-lock' : 'fa-circle-question'"
+          :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
           size="small"
           style="margin-top: 2px; pointer-events: auto"
         >
@@ -151,7 +154,7 @@
         #append
       >
         <v-icon
-          :icon="isLocked(setting.key) ? 'fa-lock' : 'fa-circle-question'"
+          :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
           size="small"
           style="margin-top: 2px; pointer-events: auto"
         >

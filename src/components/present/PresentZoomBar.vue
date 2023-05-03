@@ -24,7 +24,7 @@
               aria-label="save"
               @click="renamePerson(participant, newName)"
             >
-              <v-icon icon="fa-check" />
+              <v-icon icon="mdi-check-bold" />
             </v-btn>
           </v-col>
         </v-row>
@@ -38,7 +38,7 @@
       class="text-left"
     >
       <v-app-bar-nav-icon>
-        <v-icon icon="fa-z" size="small" />
+        <v-icon icon="mdi-alpha-z-box" size="small" />
       </v-app-bar-nav-icon>
       <v-col cols="auto">
         <v-btn
@@ -50,7 +50,7 @@
             {{ $t('zoomToggleComponent') }}
           </v-tooltip>
           <v-icon
-            :icon="showZoomComponent ? 'fa-eye-slash' : 'fa-eye'"
+            :icon="`mdi-eye${showZoomComponent ? '' : '-off'}`"
             size="small"
           />
         </v-btn>
@@ -63,7 +63,7 @@
           <v-tooltip activator="parent" location="bottom">
             {{ $t(`zoom${started ? 'Stop' : 'Start'}Meeting`) }}
           </v-tooltip>
-          <v-icon :icon="started ? 'fa-stop' : 'fa-play'" size="x-small" />
+          <v-icon :icon="started ? 'mdi-stop' : 'mdi-play'" />
         </v-btn>
         <v-btn
           icon
@@ -73,7 +73,7 @@
           <v-tooltip activator="parent" location="bottom">
             {{ $t('zoomMuteParticipants') }}
           </v-tooltip>
-          <v-icon icon="fa-microphone-slash" size="small" />
+          <v-icon icon="mdi-microphone-off" size="small" />
         </v-btn>
       </v-col>
       <v-col class="d-flex flex-row pr-0">
@@ -109,7 +109,7 @@
               <v-list-item-title>{{ item.displayName }}</v-list-item-title>
               <v-list-item-action>
                 <v-btn icon @click.stop="atRename(item)">
-                  <v-icon icon="fa-pencil" size="small" />
+                  <v-icon icon="mdi-pencil" size="small" />
                 </v-btn>
               </v-list-item-action>
             </template>
@@ -123,7 +123,7 @@
             @click="spotlightParticipants()"
           >
             <v-icon
-              :icon="spotlightActive ? 'fa-users-slash' : 'fa-users-rectangle'"
+              :icon="spotlightActive ? 'mdi-account-minus' : 'mdi-account-box'"
               size="small"
             />
           </v-btn>

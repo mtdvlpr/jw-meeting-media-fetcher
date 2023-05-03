@@ -51,27 +51,30 @@
         hide-details="auto"
         class="mr-4 mb-2"
       />
-      <v-btn
-        v-if="meeting.enableMusicButton"
-        :loading="status === 'loading'"
-        :disabled="!appOnline"
-        :color="
-          status ? (status === 'loading' ? 'primary' : status) : 'primary'
+      <v-tooltip
+        location="top"
+        :text="
+          $t(
+            status == 'success'
+              ? 'shuffleMusicDownloaded'
+              : 'downloadShuffleMusic'
+          )
         "
-        @click="downloadShuffleMusic()"
       >
-        <v-tooltip activator="parent" location="top">
-          {{
-            $t(
-              status == 'success'
-                ? 'shuffleMusicDownloaded'
-                : 'downloadShuffleMusic'
-            )
-          }}
-        </v-tooltip>
-        <v-icon icon="fa-music" size="small" start />
-        <v-icon icon="fa-download" size="small" end />
-      </v-btn>
+        <template #activator="{ btnProps }">
+          <v-btn
+            v-if="meeting.enableMusicButton"
+            v-bind="btnProps"
+            icon="mdi-playlist-music"
+            :loading="status === 'loading'"
+            :disabled="!appOnline"
+            :color="
+              status ? (status === 'loading' ? 'primary' : status) : 'primary'
+            "
+            @click="downloadShuffleMusic()"
+          />
+        </template>
+      </v-tooltip>
     </v-col>
     <template v-if="meeting.enableMusicButton">
       <form-input

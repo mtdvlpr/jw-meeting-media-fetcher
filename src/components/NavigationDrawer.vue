@@ -47,6 +47,12 @@
     <template #append>
       <v-list nav>
         <v-list-item
+          v-if="!online"
+          prepend-icon="mdi-wifi-off"
+          title="No internet connection"
+        >
+        </v-list-item>
+        <v-list-item
           v-if="showMusicButton"
           :title="$t('shuffleMusic')"
           :disabled="musicLoading"
@@ -59,8 +65,8 @@
               size="small"
               class="mr-8"
             />
-            <v-icon v-else-if="musicFadeOut" icon="far fa-circle-stop" />
-            <v-icon v-else icon="fa-music" />
+            <v-icon v-else-if="musicFadeOut" icon="mdi-stop-circle-outline" />
+            <v-icon v-else icon="mdi-music-note" />
           </template>
           <template v-if="musicFadeOut" #append>
             <v-chip variant="plain" density="compact">
@@ -74,7 +80,7 @@
         <v-list-item
           v-if="showMediaPlayback"
           :class="{ 'pulse-danger': !mediaVisible }"
-          prepend-icon="fab fa-chromecast"
+          :prepend-icon="`mdi-television${mediaVisible ? '' : '-off'}`"
           :title="$t(`mediaWin${mediaVisible ? 'Hide' : 'Show'}`)"
           @click="toggleScreen()"
         >
@@ -93,21 +99,23 @@ const { $i18n } = useNuxtApp()
 const localePath = useLocalePath()
 const cong = useRouteQuery<string>('cong', '')
 const { isDev } = useRuntimeConfig().public
-const { navDisabled, showMediaPlayback, showMusicButton } = storeToRefs(
+const { navDisabled, showMediaPlayback, showMusicButton, online } = storeToRefs(
   useStatStore()
 )
+//        //const { online } = storeToRefs(statStore)
+
 const navItems = computed(() => {
   const items = [
     {
       title: $i18n.t('plannedMedia'),
-      icon: 'fa-calendar-week',
+      icon: 'mdi-calendar-week',
       to: localePath('/home'),
       tooltip: '',
       aria: 'home',
     },
     {
       title: $i18n.t('settings'),
-      icon: 'fa-cog',
+      icon: 'mdi-cog',
       to: localePath('/settings'),
       tooltip: '',
       aria: 'settings',
@@ -116,7 +124,7 @@ const navItems = computed(() => {
   if (showMediaPlayback.value) {
     items.unshift({
       title: $i18n.t('mediaPlayback'),
-      icon: 'fab fa-chromecast',
+      icon: 'mdi-multimedia',
       to: localePath('/present'),
       tooltip: getPrefs<string>('media.presentShortcut'),
       aria: 'present',
@@ -125,14 +133,14 @@ const navItems = computed(() => {
   if (isDev) {
     items.splice(1, 0, {
       title: $i18n.t('mediaPlayback') + ' DEV',
-      icon: 'fab fa-chromecast',
+      icon: 'mdi-multimedia',
       to: localePath('/presentnew'),
       tooltip: getPrefs<string>('media.presentShortcut'),
       aria: 'present',
     })
     items.splice(1, 0, {
       title: $i18n.t('settings') + ' DEV',
-      icon: 'fa-cog',
+      icon: 'mdi-cog',
       to: localePath('/settingsnew'),
       tooltip: '',
       aria: 'settings',

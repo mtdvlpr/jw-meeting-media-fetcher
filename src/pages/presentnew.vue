@@ -22,9 +22,7 @@
         />
         <v-tooltip v-else text="Refresh all media">
           <template #activator="{ props }">
-            <v-btn v-bind="props" size="small" variant="text">
-              <v-icon>fa-refresh</v-icon>
-            </v-btn>
+            <v-btn v-bind="props" icon="mdi-refresh" variant="text" />
           </template>
         </v-tooltip>
       </template>

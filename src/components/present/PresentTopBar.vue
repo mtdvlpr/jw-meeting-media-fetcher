@@ -32,13 +32,11 @@
         indeterminate
         color="primary"
         class="ms-3"
-        size="small"
       />
       <v-menu v-else location="bottom">
         <template #activator="{ props }">
           <v-btn
-            icon="fa-ellipsis-vertical"
-            size="small"
+            icon="mdi-dots-vertical"
             variant="text"
             v-bind="props"
             aria-label="More actions"
@@ -53,7 +51,7 @@
             @click="action.action()"
           >
             <template #prepend>
-              <v-icon :icon="action.icon" size="x-small" />
+              <v-icon :icon="action.icon" />
             </template>
             <v-list-item-title>{{ action.title }}</v-list-item-title>
           </v-list-item>
@@ -69,7 +67,7 @@
         :color="ccEnable ? 'primary' : undefined"
         @click="emit('cc')"
       >
-        <v-icon :icon="`${ccIcon}fa-closed-captioning`" size="small" />
+        <v-icon :icon="ccIcon" />
         <v-tooltip activator="parent" location="bottom">
           {{ $t('toggleSubtitles') }}
         </v-tooltip>
@@ -82,7 +80,7 @@
           :disabled="!mediaActive && currentIndex < 1"
           @click="emit('previous')"
         >
-          <v-icon icon="fa-backward" size="small" />
+          <v-icon icon="mdi-skip-backward" />
           <v-tooltip activator="parent" location="bottom">
             {{ getPrefs('media.ppBackward') }}
           </v-tooltip>
@@ -97,7 +95,7 @@
           <v-tooltip activator="parent" location="bottom">
             {{ getPrefs('media.ppForward') }}
           </v-tooltip>
-          <v-icon icon="fa-forward" size="small" />
+          <v-icon icon="mdi-skip-forward" />
         </v-btn>
       </template>
     </v-col>
@@ -169,7 +167,9 @@ const globalDownloadProgress = computed(() => {
 // Subtitles
 const ccAvailable = ref(false)
 const ccEnable = inject(ccEnableKey, ref(false))
-const ccIcon = computed(() => (ccEnable.value ? '' : 'far '))
+const ccIcon = computed(
+  () => `mdi-closed-caption${ccEnable.value ? '' : '-outline'}`
+)
 const setCcAvailable = () => {
   ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
 }
@@ -217,24 +217,24 @@ const openWebsite = () => {
 const actions = [
   {
     title: $i18n.t('manageMedia'),
-    icon: 'fa-folder-plus',
+    icon: 'mdi-movie-open-edit',
     action: () => {
       emit('manageMedia')
     },
   },
   {
     title: $i18n.t('openFolder'),
-    icon: 'fa-folder-open',
+    icon: 'mdi-folder-open',
     action: openFolder,
   },
   {
     title: $i18n.t('showPrefix'),
-    icon: 'fa-list-ol',
+    icon: 'mdi-numeric',
     action: () => emit('showPrefix'),
   },
   {
     title: $i18n.t('openJWorg') + ' [BETA]',
-    icon: 'fa-globe',
+    icon: 'mdi-web',
     action: openWebsite,
     disabled: true,
   },
@@ -244,12 +244,5 @@ const actions = [
 .present-top-bar {
   width: 100%;
   height: 64px;
-}
-</style>
-<style lang="scss">
-.present-top-bar {
-  .fa-ellipsis-vertical {
-    max-height: 20px;
-  }
 }
 </style>

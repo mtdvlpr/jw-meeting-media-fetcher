@@ -17,6 +17,37 @@
           clearable
         />
       </template>
+      <template #append>
+        <v-menu location="top">
+          <template #activator="{ props }">
+            <v-btn
+              icon="mdi-dots-vertical"
+              variant="text"
+              v-bind="props"
+              aria-label="More actions"
+              class="mr-2"
+            />
+          </template>
+          <v-list>
+            <v-list-item
+              append-icon="mdi-file-image-remove"
+              @click="removeCache()"
+            >
+              {{ $t('cleanCache') }} ({{ `${cache}MB` }})
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item
+              append-icon="mdi-code-braces-box"
+              @click="openReleases()"
+            >
+              Open project page in GitHub
+            </v-list-item>
+            <v-list-item append-icon="mdi-bug" @click="report()">
+              {{ $t('reportIssue') }}
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
     </v-app-bar>
     <v-btn color="primary" @click="launchFirstRun()">
       Open First Time Wizard
@@ -115,14 +146,6 @@
         </v-form>
       </v-col>
     </v-row>
-    <settings-footer
-      :prefs="prefs"
-      :mounting="false"
-      :valid="valid"
-      :cache="cache"
-      :refresh="refresh"
-      @cache="cache = $event"
-    />
   </div>
 </template>
 <script setup lang="ts">
@@ -131,6 +154,7 @@ import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { extname, join } from 'upath'
 import { readFile } from 'fs-extra'
 import { useRouteQuery } from '@vueuse/router'
+import getFolderSize from 'get-folder-size'
 import {
   Action,
   Group,
@@ -165,7 +189,7 @@ const { screens, mediaScreenInit } = storeToRefs(usePresentStore())
 // Control cache
 const cache = ref(0)
 const refresh = ref(false)
-const calcCache = () => (refresh.value = !refresh.value)
+// const calcCache = () => (refresh.value = !refresh.value)
 
 // Validation
 const form = ref<VFormRef | null>()
@@ -256,6 +280,7 @@ const obsComplete = computed(() => {
 onMounted(() => {
   getLangs()
   form.value?.validate()
+  calcCache()
 })
 
 const locales = ref<{ name: string; code: string }[]>([])
@@ -1036,7 +1061,7 @@ const groups = computed((): Settings[] => {
               label: 'webdavFolder',
               append: {
                 type: 'action',
-                label: 'fa-globe',
+                label: 'mdi-cloud',
                 icon: true,
                 props: {
                   loading: congLoading.value,
@@ -1304,6 +1329,89 @@ const filteredGroups = computed(() => {
   })
   return filtered
 })
+const { updateSuccess } = storeToRefs(useStatStore())
+const openReleases = () => {
+  const { repo, version } = useRuntimeConfig().public
+  window.open(
+    `${repo}/releases/${updateSuccess.value ? 'tag/' + version : ''}`,
+    '_blank'
+  )
+}
+const loading = ref(false)
+const removeCache = async () => {
+  loading.value = true
+  const mPath = mediaPath()
+  if (mPath && shuffleMusicFiles.value) rm(findAll(shuffleMusicFiles.value))
+  const folders = getCacheFolders(true)
+  rm(
+    findAll(folders, {
+      ignore: mPath ? [join(mPath, 'Recurring')] : [],
+      onlyDirectories: true,
+    })
+  )
+  if (online.value) {
+    await Promise.allSettled([getJWLangs(), getYearText()])
+  }
+  calcCache()
+  useMediaStore().clear()
+  useDbStore().clear()
+  loading.value = false
+}
+const shuffleMusicFiles = ref('')
+const isSignLanguage = () => useMediaStore().mediaLang?.isSignLanguage
+const setShuffleMusicFiles = () => {
+  const pPath = pubPath()
+  if (!pPath || !prefs.value.media.lang) return
+  shuffleMusicFiles.value = isSignLanguage()
+    ? join(pPath, '..', prefs.value.media.lang, 'sjj', '**', '*.mp4')
+    : prefs.value.media.lang === 'E'
+    ? ''
+    : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
+}
+const calcCache = async () => {
+  loading.value = true
+  setShuffleMusicFiles()
+  let size = 0
+  if (prefs.value.app.localOutputPath || prefs.value.media.lang) {
+    const folders = getCacheFolders()
+
+    for (const folder of folders) {
+      try {
+        size +=
+          (await getFolderSize.loose(folder, { ignore: /Recurring/ })) /
+          1000 /
+          1000
+      } catch (e) {
+        log.error(folder, e)
+      }
+    }
+  }
+  emit('cache', parseFloat(size.toFixed(1)))
+  loading.value = false
+}
+const emit = defineEmits<{
+  (e: 'cache', cache: number): void
+}>()
+const getCacheFolders = (onlyDirs = false) => {
+  const folders: string[] = []
+  const pPath = pubPath()
+  const mPath = mediaPath()
+  const mediaLang = prefs.value.media.lang
+  if (mPath) folders.push(join(mPath, '..', mediaLang, onlyDirs ? '*' : ''))
+  if (pPath) {
+    folders.push(join(pPath, '..', mediaLang))
+    if (!onlyDirs && shuffleMusicFiles.value) {
+      folders.push(...findAll(shuffleMusicFiles.value))
+    }
+    const fallbackLang = prefs.value.media.langFallback
+    if (fallbackLang) {
+      const fallbackDir = join(pPath, '..', fallbackLang)
+      folders.push(fallbackDir)
+    }
+  }
+  return folders
+}
+const report = () => window.open(bugURL(), '_blank')
 </script>
 <style lang="scss" scoped>
 .settings {

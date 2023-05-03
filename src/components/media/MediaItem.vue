@@ -42,7 +42,7 @@
             class="mr-3 font-weight-bold text-subtitle-1 number-chip"
             :title="`${translate('song')} ${cleanTitle(titleParts[3])}`"
           >
-            <v-icon size="x-small" class="me-2">fa-music</v-icon>
+            <v-icon size="x-small" class="me-1">mdi-music-note</v-icon>
 
             {{ titleParts[3] }}
           </v-chip>
@@ -52,7 +52,7 @@
             class="mr-3 font-weight-bold text-subtitle-1 number-chip"
             :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
           >
-            <v-icon size="x-small" class="me-2">fa-paragraph</v-icon>
+            <v-icon size="medium" class="me-1">mdi-format-section</v-icon>
             {{ titleParts[5] }}
           </v-chip>
           <div

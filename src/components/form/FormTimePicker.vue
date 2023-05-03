@@ -68,7 +68,7 @@ watch(value, (val) => {
         v-on="on"
       >
         <template v-if="!locked" #append>
-          <v-icon icon="fa-clock" style="margin-top: 2px" />
+          <v-icon icon="mdi-clock" style="margin-top: 2px" />
         </template>
       </form-input>
     </template>

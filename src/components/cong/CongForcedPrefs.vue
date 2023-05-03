@@ -4,48 +4,50 @@
     <v-card-title class="justify-center">
       {{ $t('settingsLocked') }}
     </v-card-title>
-    <v-divider />
-    <v-card-text style="flex: 0 0 auto">
-      {{ $t('settingsLockedWhoAreYou') }}
-    </v-card-text>
-    <v-card-text style="flex: 0 0 auto">
-      {{ $t('settingsLockedExplain') }}
-    </v-card-text>
-    <loading-icon v-if="loading" />
-    <v-row v-else class="mb-10 justify-space-around">
-      <v-col
-        v-for="item in forcable"
-        :key="item.key"
-        cols="12"
-        md="5"
-        lg="4"
-        class="pl-8 py-2"
-      >
+    <v-divider></v-divider>
+    <v-card-text class="overflow-auto">
+      <!-- <div>{{ $t('settingsLockedWhoAreYou') }}</div>
+      <br /> -->
+      <div class="text-caption text-grey-darken-1">
+        {{ $t('settingsLockedExplain') }}
+      </div>
+      <v-divider class="my-3"></v-divider>
+      <loading-icon v-if="loading" />
+      <template v-for="item in forcable" v-else :key="item.key">
         <v-switch
+          v-if="item.value !== null"
           v-model="item.forced"
           hide-details="auto"
-          class="my-0 py-0"
           @update:model-value="change = true"
         >
           <template #label>
             <span>
               <v-tooltip activator="parent" location="top">
-                <span v-html="$t(item.description)" />
+                {{ item.key }}
               </v-tooltip>
-              <v-chip color="info">{{ item.key }}</v-chip>
+              <v-chip :color="item.forced ? 'primary' : 'secondary'">{{
+                $t(item.description)
+              }}</v-chip>
             </span>
             <v-chip>
-              {{ item.value === null ? 'null' : item.value }}
+              {{ item.value }}
             </v-chip>
           </template>
         </v-switch>
-      </v-col>
-    </v-row>
-    <v-footer class="footer" style="justify-content: right">
-      <v-btn color="primary" :loading="loading" @click="updatePrefs()">
-        <v-icon icon="fa-check" size="medium" />
+      </template>
+    </v-card-text>
+    <v-divider></v-divider>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn
+        color="primary"
+        variant="flat"
+        :loading="loading"
+        @click="updatePrefs()"
+      >
+        <v-icon icon="mdi-check-bold" />
       </v-btn>
-    </v-footer>
+    </v-card-actions>
   </v-card>
 </template>
 <script setup lang="ts">
