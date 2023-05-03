@@ -3,13 +3,14 @@
     <v-icon icon="fa-arrow-down-1-9" />
   </v-col>
   <v-col cols="11" class="d-flex" align-self="center">
-    <form-input v-model="value" hide-details="auto" />
+    <form-input v-model="value" :disabled="loading" hide-details="auto" />
   </v-col>
 </template>
 <script setup lang="ts">
 const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
   modelValue: string
+  loading?: boolean
 }>()
 
 const value = useVModel(props, 'modelValue', emit)

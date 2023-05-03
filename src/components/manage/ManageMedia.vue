@@ -4,16 +4,26 @@
     @cancel="type = 'custom'"
     @select="selectVideo"
   />
+  <v-app-bar>
+    <v-app-bar-title>{{ $t('plannedMedia') }}</v-app-bar-title>
+    <progress-bar :current="relativeDownloadProgress" :total="totalProgress" />
+    <template #extension>
+      <v-tabs
+        v-model="type"
+        :disabled="loading || saving"
+        @update:model-value="reset()"
+      >
+        <v-tab v-for="t in types" :key="t.value" :value="t.value">
+          {{ t.label }}
+        </v-tab>
+      </v-tabs>
+    </template>
+  </v-app-bar>
   <v-card class="manage-media">
     <v-card-title class="pa-0">
       <v-overlay :model-value="dropping" class="align-center justify-center">
         <v-chip variant="flat">Drop one or more files here!</v-chip>
       </v-overlay>
-      <v-tabs v-model="type" @update:model-value="reset()">
-        <v-tab v-for="t in types" :key="t.value" :value="t.value">
-          {{ t.label }}
-        </v-tab>
-      </v-tabs>
       <v-row
         v-if="type && type !== 'jwOrg'"
         no-gutters
@@ -39,7 +49,7 @@
         no-gutters
         class="pa-4 align-center"
       >
-        <manage-media-prefix v-model="prefix" />
+        <manage-media-prefix v-model="prefix" :loading="loading || saving" />
       </v-row>
     </v-card-title>
     <v-divider></v-divider>
@@ -49,9 +59,9 @@
         width="auto"
         :model-value="isLoneJwpub"
       >
-        <!-- :set-progress="setProgress" -->
         <manage-select-document
           :file="files[0]"
+          :set-progress="setProgress"
           @select="addMedia($event)"
           @empty="reset()"
         />
@@ -190,7 +200,7 @@ const saveFiles = async () => {
     const promises: Promise<void>[] = []
     const fileArray = [...files.value]
     if (jwFile.value) fileArray.push(jwFile.value)
-    // totalFiles.value = fileArray.length
+    totalFiles.value = fileArray.length
 
     if (client.value && online.value && props.uploadMedia) {
       const mPath = join(getPrefs<string>('cong.dir'), 'Media')
@@ -217,7 +227,7 @@ const saveFiles = async () => {
 
     const localMediaPath = mediaPath()
     if (localMediaPath) {
-      await convertUnusableFiles(localMediaPath /*, setProgress */)
+      await convertUnusableFiles(localMediaPath, setProgress)
     }
     if (client.value && props.uploadMedia) await updateContent()
     emit('refresh')
@@ -236,7 +246,7 @@ const saveFiles = async () => {
 // Process single file
 const processFile = async (file: LocalFile | VideoFile) => {
   if (!file?.safeName || file.ignored) {
-    // increaseProgress()
+    increaseProgress()
     return
   }
   if (prefix.value) {
@@ -263,7 +273,6 @@ const processFile = async (file: LocalFile | VideoFile) => {
     file.folder = date.value
     await downloadIfRequired({
       file: file as VideoFile,
-      // _setProgress: setProgress,
     })
 
     if (file.subtitles) {
@@ -316,7 +325,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
     perf.dir = 'up'
     log.debug('perf', perf)
   }
-  // increaseProgress()
+  increaseProgress()
 }
 
 // Upload file to cong server
@@ -332,9 +341,9 @@ const uploadFile = async (path: string) => {
   try {
     await client.value.putFileContents(filePath, await readFile(path), {
       overwrite: true,
-      /* onUploadProgress: ({ loaded, total }) => {
+      onUploadProgress: ({ loaded, total }) => {
         setProgress(loaded, total)
-      }, */
+      },
     })
   } catch (e: any) {
     if (
@@ -347,13 +356,22 @@ const uploadFile = async (path: string) => {
   }
 }
 
+// Show progress
+const processedFiles = ref(0)
+const totalFiles = ref(0)
+const { totalProgress, relativeDownloadProgress, setProgress } = useProgress()
+const increaseProgress = () => {
+  processedFiles.value++
+  setProgress(processedFiles.value, totalFiles.value, true)
+}
+
 // Reset values
 const reset = (resetTypeToo?: boolean) => {
   jwFile.value = null
   files.value = []
   if (resetTypeToo) type.value = 'custom'
-  // processedFiles.value = 0
-  // totalFiles.value = 0
+  processedFiles.value = 0
+  totalFiles.value = 0
 }
 
 // Cancel adding media
@@ -361,15 +379,6 @@ const cancel = () => {
   emit('cancel')
   reset(true)
 }
-
-// // Show progress
-// const processedFiles = ref(0)
-// const totalFiles = ref(0)
-// // const { currentProgress, totalProgress, setProgress } = useProgress()
-// // const increaseProgress = () => {
-// //   processedFiles.value++
-// //   setProgress(processedFiles.value, totalFiles.value, true)
-// // }
 
 // Drag and drop
 const dropping = ref(false)
@@ -402,7 +411,7 @@ document.addEventListener('drop', (event) => {
 // List height
 const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
 const listHeight = computed(() => {
-  const TOOLBAR = 48
+  const TOOLBAR = 112
   const INPUT = 72
   const PREFIX = 72
   const EL_PADDING = 2

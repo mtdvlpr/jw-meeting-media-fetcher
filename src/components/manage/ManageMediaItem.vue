@@ -13,7 +13,9 @@
         >
           <v-avatar
             v-bind="propsIcon"
-            :color="getPreview(item) ? 'primary' : 'teal-lighten-3'"
+            :color="
+              item.congSpecific ? 'info' : item.isLocal ? undefined : 'primary'
+            "
           >
             <v-icon color="white">{{ typeIcon(item.safeName) }}</v-icon>
           </v-avatar>
@@ -36,10 +38,7 @@
         aria-label="rename file"
         @click="emit('edit')"
       />
-      <v-progress-circular v-if="item.loading" indeterminate width="2" />
-      <template
-        v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
-      >
+      <template v-if="!item.recurring && (item.isLocal || item.congSpecific)">
         <v-tooltip
           v-if="clickedOnce"
           model-value
@@ -51,9 +50,10 @@
               color="red-lighten-1"
               icon="fa-circle-xmark"
               variant="text"
+              :loading="item.loading"
               v-bind="attrs"
               @click="atClick(item)"
-            ></v-btn>
+            />
           </template>
         </v-tooltip>
         <v-btn
@@ -61,8 +61,9 @@
           color="red-lighten-1"
           icon="fa-circle-xmark"
           variant="text"
+          :loading="item.loading"
           @click="atClick(item)"
-        ></v-btn>
+        />
       </template>
       <template v-else>
         <v-tooltip
@@ -87,6 +88,7 @@
                   ? '-check'
                   : '-minus')
               "
+              :loading="item.loading"
               v-bind="attrs"
               @click="atClick(item)"
             />
@@ -106,6 +108,7 @@
               ? '-check'
               : '-minus')
           "
+          :loading="item.loading"
           @click="atClick(item)"
         />
       </template>

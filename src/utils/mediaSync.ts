@@ -162,11 +162,9 @@ export function createMediaNames() {
 
 export async function downloadIfRequired({
   file,
-  _setProgress,
   date,
 }: {
   file: VideoFile
-  _setProgress?: (loaded: number, total: number, global?: boolean) => void
   date?: string
 }): Promise<string> {
   const progressMap = useMediaStore().progress
@@ -457,7 +455,6 @@ async function syncMediaItem(
         key: newItem.url,
         promise: downloadIfRequired({
           file: newItem,
-          _setProgress: setProgress,
           date,
         }),
       })

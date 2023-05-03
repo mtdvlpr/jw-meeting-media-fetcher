@@ -1,5 +1,12 @@
 <template>
   <div>
+    <action-preview
+      v-if="action"
+      :text="text(action)"
+      :icon="icon(action)"
+      @abort="action = ''"
+      @perform="execute(action)"
+    />
     <v-app-bar>
       <v-app-bar-title>{{ $t('plannedMedia') }}</v-app-bar-title>
       <progress-bar
@@ -14,13 +21,6 @@
         </v-tabs>
       </template>
     </v-app-bar>
-    <action-preview
-      v-if="action"
-      :text="text(action)"
-      :icon="icon(action)"
-      @abort="action = ''"
-      @perform="execute(action)"
-    />
     <v-row justify="center" class="pa-4">
       <v-window v-model="currentWeek">
         <v-window-item v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
