@@ -268,137 +268,139 @@ locales.value = $i18n.locales.value.map((l) => {
 })
 const isNew = useRouteQuery<string>('new', '')
 
-const requiredSettings = {
-  'app.localAppLang': {
-    type: 'select',
-    key: 'app.localAppLang',
-    props: {
-      items: $i18n.locales.value.map((l) => {
-        const locale = l as LocaleObject
-        return {
-          title: locale.name!,
-          value: locale.code,
+const requiredSettings = computed(() => {
+  return {
+    'app.localAppLang': {
+      type: 'select',
+      key: 'app.localAppLang',
+      props: {
+        items: $i18n.locales.value.map((l) => {
+          const locale = l as LocaleObject
+          return {
+            title: locale.name!,
+            value: locale.code,
+          }
+        }),
+      },
+      onChange: (val: string, oldVal: string) => {
+        if (!val) return
+        const locales = $i18n.locales.value as LocaleObject[]
+        const locale = locales.find((l) => l.code === val)!
+        const oldLocale = locales.find((l) => l.code === oldVal)
+        $dayjs.locale(locale?.dayjs ?? val)
+        if (oldLocale && val !== oldVal) {
+          useMediaStore().clear()
+          renamePubs(oldLocale, locale)
         }
-      }),
+        if (val !== $i18n.locale.value) {
+          log.debug('Change localAppLang')
+          useRouter().replace(useSwitchLocalePath()(val))
+        }
+      },
     },
-    onChange: (val: string, oldVal: string) => {
-      if (!val) return
-      const locales = $i18n.locales.value as LocaleObject[]
-      const locale = locales.find((l) => l.code === val)!
-      const oldLocale = locales.find((l) => l.code === oldVal)
-      $dayjs.locale(locale?.dayjs ?? val)
-      if (oldLocale && val !== oldVal) {
+    'app.localOutputPath': {
+      type: 'path',
+      label: $i18n.t('mediaSaveFolder'),
+      key: 'app.localOutputPath',
+      onChange: (val: string) => {
+        if (!val) return
+        const badCharacters = val.match(/(\\?)([()*?[\]{|}]|^!|[!+@](?=\())/g)
+        if (badCharacters) {
+          warn('errorBadOutputPath', {
+            identifier: badCharacters.join(' '),
+          })
+          updatePrefs('app.localOutputPath', null)
+        }
+      },
+    },
+    'app.congregationName': {
+      type: 'text',
+      key: 'app.congregationName',
+      props: {
+        required: true,
+      },
+      onChange: (val: string) => {
+        if (!val) return
+        useNuxtApp().$sentry.setUser({ username: val })
+      },
+    },
+    'app.obs.password': {
+      type: 'password',
+      key: 'app.obs.password',
+    },
+    'app.obs.port': {
+      type: 'text',
+      key: 'app.obs.port',
+    },
+    'app.obs.cameraScene': {
+      type: 'select',
+      key: 'app.obs.cameraScene',
+      label: 'obsCameraScene',
+      props: {
+        items: scenes.value.filter(
+          (s) =>
+            s !== prefs.value.app.obs.mediaScene &&
+            s !== prefs.value.app.obs.zoomScene &&
+            s !== prefs.value.app.obs.imageScene
+        ),
+      },
+    },
+    'app.obs.mediaScene': {
+      type: 'select',
+      key: 'app.obs.mediaScene',
+      label: 'obsMediaScene',
+      props: {
+        items: scenes.value.filter(
+          (s) =>
+            s !== prefs.value.app.obs.cameraScene &&
+            s !== prefs.value.app.obs.zoomScene &&
+            s !== prefs.value.app.obs.imageScene
+        ),
+      },
+    },
+    'media.lang': {
+      type: 'autocomplete',
+      label: 'mediaLang',
+      key: 'media.lang',
+      props: {
+        items: langs.value,
+        required: true,
+      },
+      onChange: (val: string) => {
+        if (!val) return
+        useDbStore().clear()
         useMediaStore().clear()
-        renamePubs(oldLocale, locale)
-      }
-      if (val !== $i18n.locale.value) {
-        log.debug('Change localAppLang')
-        useRouter().replace(useSwitchLocalePath()(val))
-      }
+        getPubAvailability(val)
+        getJWLangs()
+        refreshBackgroundImgPreview(true)
+      },
     },
-  },
-  'app.localOutputPath': {
-    type: 'path',
-    label: $i18n.t('mediaSaveFolder'),
-    key: 'app.localOutputPath',
-    onChange: (val: string) => {
-      if (!val) return
-      const badCharacters = val.match(/(\\?)([()*?[\]{|}]|^!|[!+@](?=\())/g)
-      if (badCharacters) {
-        warn('errorBadOutputPath', {
-          identifier: badCharacters.join(' '),
-        })
-        updatePrefs('app.localOutputPath', null)
-      }
+    'meeting.mwDay': {
+      type: 'btn-group',
+      key: 'meeting.mwDay',
+      props: {
+        groupLabel: 'mwDay',
+        groupItems: localeDays.value,
+      },
     },
-  },
-  'app.congregationName': {
-    type: 'text',
-    key: 'app.congregationName',
-    props: {
-      required: true,
+    'meeting.mwStartTime': {
+      type: 'time',
+      key: 'meeting.mwStartTime',
     },
-    onChange: (val: string) => {
-      if (!val) return
-      useNuxtApp().$sentry.setUser({ username: val })
+    'meeting.weDay': {
+      type: 'btn-group',
+      key: 'meeting.weDay',
+      props: {
+        groupLabel: 'weDay',
+        groupItems: localeDays.value,
+      },
     },
-  },
-  'app.obs.password': {
-    type: 'password',
-    key: 'app.obs.password',
-  },
-  'app.obs.port': {
-    type: 'text',
-    key: 'app.obs.port',
-  },
-  'app.obs.cameraScene': {
-    type: 'select',
-    key: 'app.obs.cameraScene',
-    label: 'obsCameraScene',
-    props: {
-      items: scenes.value.filter(
-        (s) =>
-          s !== prefs.value.app.obs.mediaScene &&
-          s !== prefs.value.app.obs.zoomScene &&
-          s !== prefs.value.app.obs.imageScene
-      ),
+    'meeting.weStartTime': {
+      type: 'time',
+      key: 'meeting.weStartTime',
     },
-  },
-  'app.obs.mediaScene': {
-    type: 'select',
-    key: 'app.obs.mediaScene',
-    label: 'obsMediaScene',
-    props: {
-      items: scenes.value.filter(
-        (s) =>
-          s !== prefs.value.app.obs.cameraScene &&
-          s !== prefs.value.app.obs.zoomScene &&
-          s !== prefs.value.app.obs.imageScene
-      ),
-    },
-  },
-  'media.lang': {
-    type: 'autocomplete',
-    label: 'mediaLang',
-    key: 'media.lang',
-    props: {
-      items: langs.value,
-      required: true,
-    },
-    onChange: (val: string) => {
-      if (!val) return
-      useDbStore().clear()
-      useMediaStore().clear()
-      getPubAvailability(val)
-      getJWLangs()
-      refreshBackgroundImgPreview(true)
-    },
-  },
-  'meeting.mwDay': {
-    type: 'btn-group',
-    key: 'meeting.mwDay',
-    props: {
-      groupLabel: 'mwDay',
-      groupItems: localeDays.value,
-    },
-  },
-  'meeting.mwStartTime': {
-    type: 'time',
-    key: 'meeting.mwStartTime',
-  },
-  'meeting.weDay': {
-    type: 'btn-group',
-    key: 'meeting.weDay',
-    props: {
-      groupLabel: 'weDay',
-      groupItems: localeDays.value,
-    },
-  },
-  'meeting.weStartTime': {
-    type: 'time',
-    key: 'meeting.weStartTime',
-  },
-} satisfies Record<string, Setting>
+  } satisfies Record<string, Setting>
+})
 
 const firstRunParams = ref<Record<string, boolean>>({})
 const setFirstRunParam = (param: string, value: boolean) => {
@@ -423,7 +425,7 @@ const firstRunSteps = computed((): FirstRunStep[] => {
       title: 'What language do you want the app to be displayed in?',
       subtitle:
         "This only affects the app itself, not the media we'll be downloading, so feel free to choose the language you understand best.",
-      settings: [requiredSettings['app.localAppLang']],
+      settings: [requiredSettings.value['app.localAppLang']],
     },
     {
       firstRunParam: 'usingAtKh',
@@ -437,7 +439,7 @@ const firstRunSteps = computed((): FirstRunStep[] => {
         : 'Choose a name for this profile',
       subtitle:
         'This will be used to quickly switch between profiles, if ever you decide create more than one in the future.',
-      settings: [requiredSettings['app.congregationName']],
+      settings: [requiredSettings.value['app.congregationName']],
     },
     {
       title: firstRunParams.value.usingAtKh
@@ -445,7 +447,7 @@ const firstRunSteps = computed((): FirstRunStep[] => {
         : 'In what language should we download media?',
       subtitle:
         'Media such as videos and pictures will be downloaded from publications in this language.',
-      settings: [requiredSettings['media.lang']],
+      settings: [requiredSettings.value['media.lang']],
       onComplete: () => {
         if (firstRunParams.value.usingAtKh) {
           enableExternalDisplayAndMusic()
@@ -463,10 +465,10 @@ const firstRunSteps = computed((): FirstRunStep[] => {
       subtitle:
         "We'll use this info to make sure that all media is categorized into dated folders for each meeting.",
       settings: [
-        requiredSettings['meeting.mwDay'],
-        requiredSettings['meeting.mwStartTime'],
-        requiredSettings['meeting.weDay'],
-        requiredSettings['meeting.weStartTime'],
+        requiredSettings.value['meeting.mwDay'],
+        requiredSettings.value['meeting.mwStartTime'],
+        requiredSettings.value['meeting.weDay'],
+        requiredSettings.value['meeting.weStartTime'],
       ],
       onComplete: () => {
         if (firstRunParams.value.usingAtKh) {
@@ -479,7 +481,7 @@ const firstRunSteps = computed((): FirstRunStep[] => {
         'Where should the prepared media for playback at meetings be saved?',
       subtitle:
         'This is the folder in which the dated folders will be created for each meeting.',
-      settings: [requiredSettings['app.localOutputPath']],
+      settings: [requiredSettings.value['app.localOutputPath']],
       onComplete: () => {
         startMediaSync()
       },
@@ -520,8 +522,8 @@ const firstRunSteps = computed((): FirstRunStep[] => {
       title:
         "Enter the port and password configured in OBS Studio's Websocket plugin.",
       settings: [
-        requiredSettings['app.obs.port'],
-        requiredSettings['app.obs.password'],
+        requiredSettings.value['app.obs.port'],
+        requiredSettings.value['app.obs.password'],
       ],
       onComplete: () => {
         enableObs()
@@ -534,7 +536,7 @@ const firstRunSteps = computed((): FirstRunStep[] => {
         !firstRunParams.value.integrateObs,
       title: 'Configure a scene in OBS Studio to show a stage wide shot.',
       subtitle: 'Once the scene has been created, select it here.',
-      settings: [requiredSettings['app.obs.cameraScene']],
+      settings: [requiredSettings.value['app.obs.cameraScene']],
     },
     {
       skip:
@@ -545,7 +547,7 @@ const firstRunSteps = computed((): FirstRunStep[] => {
         'Configure a scene in OBS Studio that will capture the media while it is displayed.',
       subtitle:
         'This can be either a "display capture" or a "window capture". Once the scene has been created, select it here.',
-      settings: [requiredSettings['app.obs.mediaScene']],
+      settings: [requiredSettings.value['app.obs.mediaScene']],
     },
     {
       skip: !firstRunParams.value.usingAtKh,
@@ -661,7 +663,7 @@ const groups = computed((): Settings[] => {
       id: 'general',
       label: 'General',
       settings: [
-        requiredSettings['app.congregationName'],
+        requiredSettings.value['app.congregationName'],
         {
           label: $i18n.t('enableMediaDisplayButton'),
           key: 'media.enableMediaDisplayButton',
@@ -684,7 +686,7 @@ const groups = computed((): Settings[] => {
             useStatStore().setShowMediaPlayback(val)
           },
         },
-        requiredSettings['app.localAppLang'],
+        requiredSettings.value['app.localAppLang'],
         {
           type: 'select',
           label: 'themePreference',
@@ -740,8 +742,8 @@ const groups = computed((): Settings[] => {
           },
         },
         { key: 'media.includePrinted' },
-        requiredSettings['media.lang'],
-        requiredSettings['app.localOutputPath'],
+        requiredSettings.value['media.lang'],
+        requiredSettings.value['app.localOutputPath'],
         { key: 'meeting.specialCong' },
         {
           type: 'group',
@@ -954,9 +956,9 @@ const groups = computed((): Settings[] => {
                 }
               },
             },
-            requiredSettings['app.obs.password'],
-            requiredSettings['app.obs.port'],
-            requiredSettings['app.obs.cameraScene'],
+            requiredSettings.value['app.obs.password'],
+            requiredSettings.value['app.obs.port'],
+            requiredSettings.value['app.obs.cameraScene'],
             {
               type: 'select',
               key: 'app.obs.imageScene',
@@ -970,7 +972,7 @@ const groups = computed((): Settings[] => {
                 ),
               },
             },
-            requiredSettings['app.obs.mediaScene'],
+            requiredSettings.value['app.obs.mediaScene'],
             {
               type: 'select',
               key: 'app.obs.zoomScene',
@@ -1248,10 +1250,10 @@ const groups = computed((): Settings[] => {
             ],
           },
         },
-        requiredSettings['meeting.mwDay'],
-        requiredSettings['meeting.mwStartTime'],
-        requiredSettings['meeting.weDay'],
-        requiredSettings['meeting.weStartTime'],
+        requiredSettings.value['meeting.mwDay'],
+        requiredSettings.value['meeting.mwStartTime'],
+        requiredSettings.value['meeting.weDay'],
+        requiredSettings.value['meeting.weStartTime'],
       ],
     },
   ]
