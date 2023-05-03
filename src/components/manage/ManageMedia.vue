@@ -4,10 +4,12 @@
     @cancel="type = 'custom'"
     @select="selectVideo"
   />
-  <v-app-bar>
-    <v-app-bar-title>{{ $t('plannedMedia') }}</v-app-bar-title>
-    <progress-bar :current="relativeDownloadProgress" :total="totalProgress" />
-    <template #extension>
+  <progress-bar :current="relativeDownloadProgress" :total="totalProgress" />
+  <v-card class="manage-media">
+    <v-card-title class="pa-0">
+      <v-overlay :model-value="dropping" class="align-center justify-center">
+        <v-chip variant="flat">Drop one or more files here!</v-chip>
+      </v-overlay>
       <v-tabs
         v-model="type"
         :disabled="loading || saving"
@@ -17,13 +19,6 @@
           {{ t.label }}
         </v-tab>
       </v-tabs>
-    </template>
-  </v-app-bar>
-  <v-card class="manage-media">
-    <v-card-title class="pa-0">
-      <v-overlay :model-value="dropping" class="align-center justify-center">
-        <v-chip variant="flat">Drop one or more files here!</v-chip>
-      </v-overlay>
       <v-row
         v-if="type && type !== 'jwOrg'"
         no-gutters
@@ -191,6 +186,9 @@ const removeFile = (index: number) => {
 
 // Save files
 const saving = ref(false)
+watch(saving, (val) => {
+  useStatStore().setNavDisabled(val)
+})
 const { online } = useOnline()
 const date = useRouteQuery<string>('date', '')
 const { client } = storeToRefs(useCongStore())
@@ -411,7 +409,7 @@ document.addEventListener('drop', (event) => {
 // List height
 const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
 const listHeight = computed(() => {
-  const TOOLBAR = 112
+  const TOOLBAR = 48
   const INPUT = 72
   const PREFIX = 72
   const EL_PADDING = 2
