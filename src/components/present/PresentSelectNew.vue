@@ -118,7 +118,7 @@ export default {
       $dayjs.extend(weekday)
       const todayDate = $dayjs().startOf('day')
       const weDay = getPrefs<number>('meeting.weDay')
-      const firstDay = todayDate.subtract(todayDate.weekday() + 1, 'day')
+      const firstDay = todayDate.subtract((todayDate.weekday() + 1) % 7, 'day')
       const lastDay = firstDay.add(2, 'weeks')
       const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
       for (let i = 0; i < 7; i++) {
