@@ -465,8 +465,8 @@ video,
   margin: auto;
   bottom: 0;
   right: 0;
-  font-size: 4vw;
-  line-height: 2vw;
+  font-size: 3.85vw;
+  line-height: 1.95vw;
   font-weight: 800;
 
   &.font-fallback {
