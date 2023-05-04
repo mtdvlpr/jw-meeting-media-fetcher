@@ -3,6 +3,7 @@
     :id="variant"
     ref="btn"
     v-click-outside="() => (clickedOnce = false)"
+    icon
     :aria-label="variant"
     v-bind="{ ...style.props, ...$attrs }"
     :color="clickedOnce ? 'error' : style.props.color"
@@ -25,13 +26,9 @@
       {{ $t('clickAgain') }}
     </v-tooltip>
     <v-icon
-      v-for="(icon, i) in style.icons"
-      v-bind="getIconProps(icon)"
-      :key="i"
-      :start="style.icons.length > 1 && i == 0"
-      :end="style.icons.length > 1 && i == 1"
-      :icon="getIcon(icon)"
-      :color="getIconColor(icon)"
+      v-bind="getIconProps(style.icon)"
+      :icon="getIcon(style.icon)"
+      :color="getIconColor(style.icon)"
     />
   </v-btn>
 </template>
@@ -108,7 +105,7 @@ const getIconProps = (
 interface Style {
   to?: string
   props: Record<string, any>
-  icons: (string | { text: string; props?: Record<string, any> })[]
+  icon: string | { text: string; props?: Record<string, any> }
 }
 
 const styles: Record<string, Style> = {
@@ -118,32 +115,28 @@ const styles: Record<string, Style> = {
       'min-width': '32px',
       color: 'btn',
     },
-    icons: [{ text: 'mdi-home', props: { color: 'white' } }],
+    icon: { text: 'mdi-home', props: { color: 'white' } },
   },
   cancel: {
     props: {
       'min-width': '32px',
       color: 'error',
     },
-    icons: [
-      {
-        text: 'mdi-arrow-left-bold-circle',
-        props: { color: 'white', size: 'medium' },
-      },
-    ],
+    icon: {
+      text: 'mdi-arrow-left-bold-circle',
+      props: { color: 'white', size: 'medium' },
+    },
   },
   play: {
     props: { color: 'primary' },
-    icons: [{ text: 'mdi-play', props: { size: 'x-large' } }],
+    icon: { text: 'mdi-play', props: { size: 'x-large' } },
   },
   stop: {
     props: { color: 'warning' },
-    icons: [
-      {
-        text: 'mdi-stop',
-        props: { size: 'x-large', color: 'black' },
-      },
-    ],
+    icon: {
+      text: 'mdi-stop',
+      props: { size: 'x-large', color: 'black' },
+    },
   },
 }
 

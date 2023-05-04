@@ -45,7 +45,7 @@
         :loading="loading"
         @click="updatePrefs()"
       >
-        <v-icon icon="mdi-check-bold" />
+        Save
       </v-btn>
     </v-card-actions>
   </v-card>

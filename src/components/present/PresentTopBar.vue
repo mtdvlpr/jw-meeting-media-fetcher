@@ -50,7 +50,7 @@
             :disabled="action.disabled ? mediaActive : false"
             @click="action.action()"
           >
-            <template #prepend>
+            <template #append>
               <v-icon :icon="action.icon" />
             </template>
             <v-list-item-title>{{ action.title }}</v-list-item-title>

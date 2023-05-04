@@ -39,22 +39,20 @@
           <v-chip
             v-if="titleParts[3]"
             color="song"
+            prepend-icon="mdi-music-note"
+            :text="titleParts[3]"
             class="mr-3 font-weight-bold text-subtitle-1 number-chip"
             :title="`${translate('song')} ${cleanTitle(titleParts[3])}`"
-          >
-            <v-icon size="x-small" class="me-1">mdi-music-note</v-icon>
-
-            {{ titleParts[3] }}
-          </v-chip>
+          />
+          <!-- format-pilcrow is paragraph sign in mdi -->
           <v-chip
             v-if="titleParts[5]"
             color="paragraph"
+            :text="titleParts[5]"
+            prepend-icon="mdi-image-text"
             class="mr-3 font-weight-bold text-subtitle-1 number-chip"
             :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
-          >
-            <v-icon size="medium" class="me-1">mdi-format-section</v-icon>
-            {{ titleParts[5] }}
-          </v-chip>
+          />
           <div
             class="clamp-lines text-regular"
             :title="cleanTitle(titleParts[6] + titleParts[7])"

@@ -64,6 +64,7 @@
       />
       <v-btn
         class="ml-2"
+        icon
         :color="
           online ? (error === 'success' ? 'success' : 'primary') : 'warning'
         "
@@ -84,7 +85,7 @@
           {{ $t('settingsLocked') }}
         </v-col>
         <v-col class="text-right pr-0">
-          <v-btn color="primary" @click="forcingPrefs = true">
+          <v-btn icon color="primary" @click="forcingPrefs = true">
             <v-icon icon="mdi-cloud-lock-open" />
           </v-btn>
         </v-col>
