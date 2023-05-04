@@ -10,16 +10,11 @@
     v-bind="$attrs"
     variant="outlined"
     density="compact"
-    :append-inner-icon="isLocked(id) ? 'mdi-lock' : ''"
     :rules="rules"
     :counted="max > 0 ? max : undefined"
   >
     <template v-if="!isLocked(id) && field === 'password'" #append-inner>
-      <v-icon
-        :icon="passIcon"
-        size="small"
-        @click="passwordVisible = !passwordVisible"
-      />
+      <v-icon :icon="passIcon" @click="passwordVisible = !passwordVisible" />
     </template>
     <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot :name="name" v-bind="slotData" />
@@ -187,7 +182,6 @@ const props = withDefaults(
     groupItems?: { title: string; value: any }[]
     required?: boolean
     labelSuffix?: string
-    appendOuter?: boolean
   }>(),
   {
     id: '',
