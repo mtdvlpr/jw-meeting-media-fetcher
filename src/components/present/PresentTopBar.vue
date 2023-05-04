@@ -9,6 +9,8 @@
       />
     </template>
     <v-app-bar-title>
+      {{ $t('mediaPlayback') }}
+      <v-icon size="small" icon="mdi-chevron-right" />
       {{ $dayjs(date, dateFormat).format('dddd, LL') }}
     </v-app-bar-title>
 
@@ -95,6 +97,7 @@ import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import { join } from 'upath'
 import LocalizedFormat from 'dayjs/plugin/LocalizedFormat'
+import { DateFormat } from '~~/types'
 
 defineProps<{
   mediaCount: number

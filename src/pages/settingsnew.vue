@@ -29,14 +29,15 @@
             />
           </template>
           <v-list>
-            <v-list-item
-              append-icon="mdi-file-image-remove"
-              @click="removeCache()"
-            >
-              {{ $t('cleanCache') }}
-              <!-- <template #append> -->
-              <v-chip :text="`${cache.toFixed(1)}MB`" />
-              <!-- </template> -->
+            <v-list-item @click="removeCache()">
+              {{ $t('cleanCache') }}<v-spacer></v-spacer>
+              <template #append>
+                <v-chip
+                  size="small"
+                  class="ms-2"
+                  :text="`${cache.toFixed(1)}MB`"
+                /><v-icon>mdi-file-image-remove</v-icon>
+              </template>
             </v-list-item>
             <v-divider></v-divider>
             <v-list-item

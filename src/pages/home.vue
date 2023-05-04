@@ -343,7 +343,7 @@ const getMidweekMedia = async () => {
   if (now.isSameOrBefore(mwDayObject.value)) {
     setDayColor(mwDay.value, 'warning')
     try {
-      await getMwMedia(mwFormatted.value, setProgress)
+      await getMwMedia(mwFormatted.value)
       setDayColor(mwDay.value, 'success')
     } catch (e) {
       error('errorGetMwMedia', e)
@@ -364,7 +364,7 @@ const getWeekendMedia = async () => {
   if (now.isSameOrBefore(weDayObject.value)) {
     setDayColor(weDay, 'warning')
     try {
-      await getWeMedia(weFormatted.value, setProgress)
+      await getWeMedia(weFormatted.value)
       setDayColor(weDay, 'success')
     } catch (e) {
       error('errorGetWeMedia', e)
@@ -468,11 +468,3 @@ const testApp = async () => {
   }
 }
 </script>
-<style lang="scss" scoped>
-.home-footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: calc(100% - 56px);
-}
-</style>

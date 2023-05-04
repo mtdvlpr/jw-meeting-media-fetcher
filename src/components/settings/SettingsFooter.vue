@@ -200,11 +200,3 @@ const removeCache = async () => {
   }
 }
 </script>
-<style lang="scss" scoped>
-.settings-footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: calc(100% - 56px);
-}
-</style>

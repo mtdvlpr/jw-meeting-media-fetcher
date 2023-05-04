@@ -1,5 +1,5 @@
 <template>
-  <v-footer v-if="date && obsEnabled" class="justify-end present-footer">
+  <v-footer v-if="date && obsEnabled">
     <v-col v-if="date && scene && zoomScene" cols="auto">
       <v-btn icon variant="text" size="medium" @click="emit('zoomPart')">
         <v-icon
@@ -190,12 +190,3 @@ const combinedScenesLength = computed(() => {
   )
 })
 </script>
-<style lang="scss" scoped>
-.present-footer {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  width: calc(100% - 56px);
-  height: 76px;
-}
-</style>

@@ -1,7 +1,7 @@
 <template>
   <div class="present-page">
     <v-app-bar v-if="!date">
-      <v-app-bar-title>{{ $t('selectDate') }}</v-app-bar-title>
+      <v-app-bar-title>{{ $t('mediaPlayback') }}</v-app-bar-title>
       <progress-bar
         v-if="
           globalDownloadProgress.percent > 0 &&
@@ -49,8 +49,10 @@
     <div id="zoomMeetingContainer" style="display: none">
       <div id="zoomMeeting" />
     </div>
-    <media-controls v-if="date" />
-    <present-select-new v-else />
+    <v-slide-x-transition>
+      <media-controls v-if="date" />
+      <present-select-new v-else />
+    </v-slide-x-transition>
     <present-footer
       :participant="participant"
       @zoom-part="toggleZoomPart()"
