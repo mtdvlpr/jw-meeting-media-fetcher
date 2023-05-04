@@ -1,26 +1,15 @@
 <template>
   <v-app-bar class="present-top-bar">
+    <template #prepend>
+      <v-btn
+        :disabled="navDisabled"
+        variant="tonal"
+        icon="mdi-arrow-left"
+        @click="clearDate()"
+      />
+    </template>
     <v-app-bar-title>
-      <v-breadcrumbs class="pl-0 ml-n1">
-        <v-breadcrumbs-item
-          v-for="breadcrumb in [
-            {
-              title: $t('selectDate'),
-              disabled: false,
-              click: clearDate,
-            },
-            {
-              title: date,
-              disabled: true,
-            },
-          ]"
-          :key="breadcrumb.title"
-          :disabled="breadcrumb.disabled"
-          @click="breadcrumb.click"
-        >
-          {{ breadcrumb.title }}
-        </v-breadcrumbs-item>
-      </v-breadcrumbs>
+      {{ date }}
     </v-app-bar-title>
 
     <template #append>
@@ -123,6 +112,7 @@ const { $i18n } = useNuxtApp()
 const mediaActive = inject(mediaActiveKey, ref(false))
 
 const date = useRouteQuery<string>('date', '')
+const { navDisabled } = storeToRefs(useStatStore())
 
 // const dayDownloadProgress = computed(() => {
 //   const { downloadProgress } = useMediaStore()
