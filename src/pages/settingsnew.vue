@@ -33,7 +33,10 @@
               append-icon="mdi-file-image-remove"
               @click="removeCache()"
             >
-              {{ $t('cleanCache') }} ({{ `${cache}MB` }})
+              {{ $t('cleanCache') }}
+              <!-- <template #append> -->
+              <v-chip :text="`${cache.toFixed(1)}MB`" />
+              <!-- </template> -->
             </v-list-item>
             <v-divider></v-divider>
             <v-list-item
@@ -179,17 +182,8 @@ const { scenes } = storeToRefs(useObsStore())
 const { client } = storeToRefs(useCongStore())
 const { screens, mediaScreenInit } = storeToRefs(usePresentStore())
 
-// Height
-// const contentHeight = computed(() => {
-//   const TOOLBAR_HEIGHT = 112
-//   const FOOTER_HEIGHT = 76
-//   return height.value - TOOLBAR_HEIGHT - FOOTER_HEIGHT
-// })
-
-// Control cache
+// Initialize cache
 const cache = ref(0)
-const refresh = ref(false)
-// const calcCache = () => (refresh.value = !refresh.value)
 
 // Validation
 const form = ref<VFormRef | null>()
@@ -1371,13 +1365,12 @@ const setShuffleMusicFiles = () => {
 const calcCache = async () => {
   loading.value = true
   setShuffleMusicFiles()
-  let size = 0
+  cache.value = 0
   if (prefs.value.app.localOutputPath || prefs.value.media.lang) {
     const folders = getCacheFolders()
-
     for (const folder of folders) {
       try {
-        size +=
+        cache.value +=
           (await getFolderSize.loose(folder, { ignore: /Recurring/ })) /
           1000 /
           1000
@@ -1386,12 +1379,8 @@ const calcCache = async () => {
       }
     }
   }
-  emit('cache', parseFloat(size.toFixed(1)))
   loading.value = false
 }
-const emit = defineEmits<{
-  (e: 'cache', cache: number): void
-}>()
 const getCacheFolders = (onlyDirs = false) => {
   const folders: string[] = []
   const pPath = pubPath()
