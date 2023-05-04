@@ -2,7 +2,14 @@
   <div class="present-page">
     <v-app-bar v-if="!date">
       <v-app-bar-title>{{ $t('selectDate') }}</v-app-bar-title>
-      <progress-bar :current="0" :total="globalDownloadProgress.percent" />
+      <progress-bar
+        v-if="
+          globalDownloadProgress.percent > 0 &&
+          globalDownloadProgress.percent < 100
+        "
+        :current="0"
+        :total="globalDownloadProgress.percent"
+      />
       <template #append>
         <v-progress-circular
           v-if="

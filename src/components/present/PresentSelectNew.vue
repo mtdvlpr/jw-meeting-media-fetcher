@@ -2,7 +2,7 @@
   <v-container class="calendar present-select pa-4 grow">
     <v-row no-gutters>
       <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">
-        <v-card :subtitle="day" variant="tonal" color="grey"></v-card>
+        <v-card :subtitle="day" variant="text" class="text-dark"></v-card>
       </v-col>
     </v-row>
     <v-row
@@ -48,8 +48,6 @@
         </v-card>
       </v-col>
     </v-row>
-    <h1>DAYS</h1>
-    {{ daysDownloadProgress }}
   </v-container>
 </template>
 

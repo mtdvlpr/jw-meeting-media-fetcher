@@ -9,7 +9,7 @@
       />
     </template>
     <v-app-bar-title>
-      {{ date }}
+      {{ $dayjs(date, dateFormat).format('dddd, LL') }}
     </v-app-bar-title>
 
     <template #append>
@@ -94,6 +94,7 @@
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import { join } from 'upath'
+import LocalizedFormat from 'dayjs/plugin/LocalizedFormat'
 
 defineProps<{
   mediaCount: number
@@ -113,6 +114,9 @@ const mediaActive = inject(mediaActiveKey, ref(false))
 
 const date = useRouteQuery<string>('date', '')
 const { navDisabled } = storeToRefs(useStatStore())
+const { $dayjs } = useNuxtApp()
+$dayjs.extend(LocalizedFormat)
+const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
 
 // const dayDownloadProgress = computed(() => {
 //   const { downloadProgress } = useMediaStore()
