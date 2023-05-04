@@ -8,7 +8,7 @@
       @confirm="quitApp()"
     />
     <navigation-drawer />
-    <v-main>
+    <v-main scrollable>
       <slot />
     </v-main>
   </v-app>
