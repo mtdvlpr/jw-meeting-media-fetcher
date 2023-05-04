@@ -34,7 +34,7 @@
       <v-btn
         v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
         icon="mdi-pencil"
-        size="x-small"
+        size="small"
         variant="text"
         aria-label="rename file"
         @click="emit('edit')"
@@ -86,8 +86,8 @@
                 (item.isLocal === undefined
                   ? 'plus'
                   : item.hidden
-                  ? '-check'
-                  : '-minus') +
+                  ? 'check'
+                  : 'minus') +
                 '-circle'
               "
               :loading="item.loading"
