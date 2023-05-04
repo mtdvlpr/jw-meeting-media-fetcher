@@ -1,13 +1,7 @@
 <template>
   <div class="present-page">
     <v-app-bar v-if="!date">
-      <v-app-bar-title>
-        <v-breadcrumbs>
-          <v-breadcrumbs-item>
-            {{ $t('selectDate') }}
-          </v-breadcrumbs-item>
-        </v-breadcrumbs>
-      </v-app-bar-title>
+      <v-app-bar-title>{{ $t('selectDate') }}</v-app-bar-title>
       <progress-bar :current="0" :total="globalDownloadProgress.percent" />
       <template #append>
         <v-progress-circular

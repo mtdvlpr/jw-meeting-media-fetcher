@@ -3,12 +3,14 @@
     <template #activator="{ props }">
       <v-btn
         v-bind="props"
+        icon
         color="warning"
         aria-label="Pause"
-        :icon="video ? pauseIcon : pauseImageIcon"
         :class="{ 'pulse-danger': toggled, 'pause-btn': true }"
         @click="emit('click')"
-      />
+      >
+        <v-icon size="x-large">{{ video ? pauseIcon : pauseImageIcon }}</v-icon>
+      </v-btn>
     </template>
   </v-tooltip>
 </template>
