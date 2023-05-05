@@ -1,57 +1,66 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <v-card>
-    <v-card-title class="justify-center">
-      {{ $t('settingsLocked') }}
-    </v-card-title>
-    <v-divider></v-divider>
-    <v-card-text class="overflow-auto">
-      <!-- <div>{{ $t('settingsLockedWhoAreYou') }}</div>
+  <v-dialog v-model="active" persistent>
+    <v-card>
+      <v-card-title class="justify-center">
+        {{ $t('settingsLocked') }}
+      </v-card-title>
+      <v-divider />
+      <v-card-text class="overflow-auto">
+        <!-- <div>{{ $t('settingsLockedWhoAreYou') }}</div>
       <br /> -->
-      <div class="text-caption text-grey-darken-1">
-        {{ $t('settingsLockedExplain') }}
-      </div>
-      <v-divider class="my-3"></v-divider>
-      <loading-icon v-if="loading" />
-      <template v-for="item in forcable" v-else :key="item.key">
-        <v-switch
-          v-if="item.value !== null"
-          v-model="item.forced"
-          hide-details="auto"
-          @update:model-value="change = true"
+        <div class="text-caption text-grey-darken-1">
+          {{ $t('settingsLockedExplain') }}
+        </div>
+        <v-divider class="my-3"></v-divider>
+        <loading-icon v-if="loading" />
+        <template v-for="item in forcable" v-else :key="item.key">
+          <v-switch
+            v-if="item.value !== null"
+            v-model="item.forced"
+            hide-details="auto"
+            @update:model-value="change = true"
+          >
+            <template #label>
+              <span>
+                <v-tooltip activator="parent" location="top">
+                  {{ item.key }}
+                </v-tooltip>
+                <v-chip :color="item.forced ? 'primary' : 'secondary'">{{
+                  $t(item.description)
+                }}</v-chip>
+              </span>
+              <v-chip>
+                {{ item.value }}
+              </v-chip>
+            </template>
+          </v-switch>
+        </template>
+      </v-card-text>
+      <v-divider />
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          color="primary"
+          variant="flat"
+          :loading="loading"
+          @click="updatePrefs()"
         >
-          <template #label>
-            <span>
-              <v-tooltip activator="parent" location="top">
-                {{ item.key }}
-              </v-tooltip>
-              <v-chip :color="item.forced ? 'primary' : 'secondary'">{{
-                $t(item.description)
-              }}</v-chip>
-            </span>
-            <v-chip>
-              {{ item.value }}
-            </v-chip>
-          </template>
-        </v-switch>
-      </template>
-    </v-card-text>
-    <v-divider></v-divider>
-    <v-card-actions>
-      <v-spacer></v-spacer>
-      <v-btn
-        color="primary"
-        variant="flat"
-        :loading="loading"
-        @click="updatePrefs()"
-      >
-        Save
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+          Save
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 <script setup lang="ts">
 import { join } from 'upath'
+
+const emit = defineEmits(['update:modelValue'])
+const props = defineProps<{
+  modelValue: boolean
+}>()
+
+const active = useVModel(props, 'modelValue', emit)
 
 const flattenObject = (ob: any) => {
   const toReturn: Record<string, any> = {}
@@ -128,11 +137,10 @@ onMounted(() => {
   loading.value = false
 })
 const change = ref(false)
-const emit = defineEmits(['done'])
 const updatePrefs = async () => {
   // If nothing changed, just close the modal
   if (!change.value || !store.client) {
-    emit('done')
+    active.value = false
     return
   }
   loading.value = true
@@ -172,7 +180,7 @@ const updatePrefs = async () => {
     )
   } finally {
     loading.value = false
-    emit('done')
+    active.value = false
   }
 }
 </script>
