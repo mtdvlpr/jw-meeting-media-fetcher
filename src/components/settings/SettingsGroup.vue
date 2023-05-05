@@ -1,12 +1,11 @@
 <template>
-  <v-form v-if="setting.type == 'group'" v-model="validGroups[setting.id]">
-    <v-list-group :value="setting.id">
+  <v-form v-if="setting.type == 'group'" @submit.prevent>
+    <v-list-group>
       <template #activator="{ props }">
         <v-list-item
           v-bind="props"
           :title="$t(setting.label)"
           variant="tonal"
-          :class="{ 'text-error': !validGroups[setting.id] }"
         />
       </template>
       <template v-for="(subSetting, index) in setting.value" :key="index">
@@ -32,44 +31,9 @@
   <settings-item v-else :setting="setting" />
 </template>
 <script setup lang="ts">
-import { Action, Group, Setting, SubGroupID } from '~~/types'
+import { Action, Group, Setting } from '~~/types'
 
 defineProps<{
   setting: Setting | Action | Group
 }>()
-
-const openGroups = ref<{ [key in SubGroupID]: boolean }>({
-  videos: false,
-  afterSync: false,
-  mediaAdvanced: false,
-  shortcuts: false,
-  obs: false,
-  webdav: false,
-  zoom: false,
-  playbackAdvanced: false,
-  music: false,
-})
-
-const validGroups = ref<{ [key in SubGroupID]: boolean }>({
-  videos: true,
-  afterSync: true,
-  mediaAdvanced: true,
-  shortcuts: true,
-  obs: true,
-  webdav: true,
-  zoom: true,
-  playbackAdvanced: true,
-  music: true,
-})
-watch(
-  validGroups,
-  (val) => {
-    for (const key in val) {
-      if (!val[key as SubGroupID]) {
-        openGroups.value[key as SubGroupID] = true
-      }
-    }
-  },
-  { deep: true }
-)
 </script>

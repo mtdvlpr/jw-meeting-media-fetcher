@@ -119,23 +119,20 @@
     <v-dialog v-model="forcingPrefs" fullscreen :scrim="false" persistent>
       <cong-forced-prefs @done="forcingPrefs = false" />
     </v-dialog>
-    {{ validGroups }}
-    {{ openGroups }}
     <v-row no-gutters justify="center" class="fill-height settings">
       <v-col cols="12">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
         <v-form ref="form" v-model="valid" @submit.prevent>
           <v-list density="compact">
             <template v-for="group in filteredGroups" :key="group.id">
-              <v-form v-model="validGroups[group.id]" @submit.prevent>
-                <v-list-group :value="group.id">
+              <v-form @submit.prevent>
+                <v-list-group>
                   <template #activator="{ props }">
                     <v-list-item
                       v-bind="props"
                       :title="group.label"
                       variant="tonal"
                       color="primary"
-                      :class="{ 'text-error': !validGroups[group.id] }"
                     />
                   </template>
                   <settings-group
@@ -164,7 +161,6 @@ import {
   Group,
   MeetingPrefs,
   Setting,
-  GroupID,
   Settings,
   ShortJWLang,
   VFormRef,
@@ -648,35 +644,6 @@ const updatePrefs = (key: string, value: any) => {
 provide(prefsKey, prefs)
 provide(updatePrefsKey, updatePrefs)
 
-const openGroups = ref<{ [key in GroupID]: boolean }>({
-  general: false,
-  media: false,
-  advanced: false,
-  integrations: false,
-  playback: false,
-  meetings: false,
-})
-const validGroups = ref<{ [key in GroupID]: boolean }>({
-  general: true,
-  media: true,
-  advanced: true,
-  integrations: true,
-  playback: true,
-  meetings: true,
-})
-watch(
-  validGroups,
-  (val) => {
-    console.log('valid', val)
-    for (const key in val) {
-      if (!val[key as GroupID]) {
-        console.log('open group', key)
-        openGroups.value[key as GroupID] = true
-      }
-    }
-  },
-  { deep: true }
-)
 const groups = computed((): Settings[] => {
   return [
     {

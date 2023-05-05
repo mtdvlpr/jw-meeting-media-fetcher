@@ -285,15 +285,5 @@ const typeIcon = (filename: string) => {
   &:hover {
     cursor: default;
   }
-
-  .tooltip-img {
-    content: '';
-    position: absolute;
-    min-height: 100px;
-    min-width: 200px;
-    top: 50%;
-    right: 10em;
-    transform: translateY(-50%);
-  }
 }
 </style>
