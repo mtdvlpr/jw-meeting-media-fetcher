@@ -45,30 +45,28 @@ useHead({
     date.value ? `Present ${date.value}` : 'Presentation Mode'
   ),
 })
-watch(date, (val) => {
-  if (val) {
-    initZoomIntegration()
-    if (getPrefs<boolean>('media.enablePp')) {
-      const ppForward = getPrefs<string>('media.ppForward')
-      const ppBackward = getPrefs<string>('media.ppBackward')
-      if (ppForward && ppBackward) {
-        setShortcut({ key: ppForward, fn: 'nextMediaItem', scope: 'present' })
-        setShortcut({
-          key: ppBackward,
-          fn: 'previousMediaItem',
-          scope: 'present',
-        })
-      } else {
-        warn('errorPpEnable')
-      }
-    }
-  }
-})
 
 // General state
 const firstChoice = ref(true)
 watch(date, (val) => {
   if (val) {
+    if (firstChoice.value) {
+      initZoomIntegration()
+      if (getPrefs<boolean>('media.enablePp')) {
+        const ppForward = getPrefs<string>('media.ppForward')
+        const ppBackward = getPrefs<string>('media.ppBackward')
+        if (ppForward && ppBackward) {
+          setShortcut({ key: ppForward, fn: 'nextMediaItem', scope: 'present' })
+          setShortcut({
+            key: ppBackward,
+            fn: 'previousMediaItem',
+            scope: 'present',
+          })
+        } else {
+          warn('errorPpEnable')
+        }
+      }
+    }
     firstChoice.value = false
   }
 })
