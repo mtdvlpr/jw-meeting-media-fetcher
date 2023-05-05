@@ -1,23 +1,17 @@
 <template>
-  <v-form v-if="setting.type == 'group'" @submit.prevent>
-    <v-list-group>
-      <template #activator="{ props }">
-        <v-list-item
-          v-bind="props"
-          :title="$t(setting.label)"
-          variant="tonal"
-        />
-      </template>
-      <template v-for="(subSetting, index) in setting.value" :key="index">
-        <v-list-item
-          v-if="subSetting.type == 'action'"
-          :title="$t(subSetting.label)"
-          @click="subSetting.type == 'action' && subSetting.action"
-        />
-        <settings-item v-else :setting="subSetting" />
-      </template>
-    </v-list-group>
-  </v-form>
+  <v-list-group v-if="setting.type == 'group'">
+    <template #activator="{ props }">
+      <v-list-item v-bind="props" :title="$t(setting.label)" variant="tonal" />
+    </template>
+    <template v-for="(subSetting, index) in setting.value" :key="index">
+      <v-list-item
+        v-if="subSetting.type == 'action'"
+        :title="$t(subSetting.label)"
+        @click="subSetting.type == 'action' && subSetting.action"
+      />
+      <settings-item v-else :setting="subSetting" />
+    </template>
+  </v-list-group>
   <v-list-item
     v-else-if="setting.type == 'action'"
     :title="$t(setting.label)"

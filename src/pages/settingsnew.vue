@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app-bar>
-      <v-app-bar-title :class="{ 'text-error': !valid }">
+      <v-app-bar-title>
         {{ $t('settings') }}
       </v-app-bar-title>
       <progress-bar
@@ -124,25 +124,21 @@
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
         <v-form ref="form" v-model="valid" @submit.prevent>
           <v-list density="compact">
-            <template v-for="group in filteredGroups" :key="group.id">
-              <v-form @submit.prevent>
-                <v-list-group>
-                  <template #activator="{ props }">
-                    <v-list-item
-                      v-bind="props"
-                      :title="group.label"
-                      variant="tonal"
-                      color="primary"
-                    />
-                  </template>
-                  <settings-group
-                    v-for="setting in group.settings"
-                    :key="setting.label"
-                    :setting="setting"
-                  />
-                </v-list-group>
-              </v-form>
-            </template>
+            <v-list-group v-for="group in filteredGroups" :key="group.id">
+              <template #activator="{ props }">
+                <v-list-item
+                  v-bind="props"
+                  :title="group.label"
+                  variant="tonal"
+                  color="primary"
+                />
+              </template>
+              <settings-group
+                v-for="setting in group.settings"
+                :key="setting.label"
+                :setting="setting"
+              />
+            </v-list-group>
           </v-list>
         </v-form>
       </v-col>
@@ -185,18 +181,6 @@ const cache = ref(0)
 // Validation
 const form = ref<VFormRef | null>()
 const valid = ref(true)
-watch(valid, (val) => {
-  if (val) calcCache()
-  useStatStore().setNavDisabled(!val)
-  if (prefs.value.media.enableMediaDisplayButton) {
-    const key = prefs.value.media.presentShortcut
-    if (val && key) {
-      setShortcut({ key, fn: 'openPresentMode' })
-    } else {
-      unsetShortcut('openPresentMode')
-    }
-  }
-})
 
 const congLoading = ref(false)
 const congError = ref('')
