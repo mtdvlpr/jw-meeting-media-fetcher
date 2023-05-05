@@ -18,7 +18,6 @@
       @show-prefix="togglePrefix()"
       @manage-media="managingMedia = true"
     />
-    <present-zoom-bar v-if="zoomIntegration" />
     <v-expand-transition>
       <loading-icon v-if="loading" />
       <media-list
@@ -60,9 +59,6 @@ const localMedia = computed((): LocalFile[] =>
     }
   })
 )
-
-// Zoom store
-const { client: zoomIntegration } = storeToRefs(useZoomStore())
 
 // Get media files
 type MediaItem = {

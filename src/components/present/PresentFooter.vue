@@ -1,5 +1,5 @@
 <template>
-  <v-footer v-if="date && obsEnabled">
+  <v-footer v-if="date && obsEnabled" app height="64">
     <v-col v-if="date && scene && zoomScene" cols="auto">
       <v-btn icon variant="text" size="medium" @click="emit('zoomPart')">
         <v-icon
@@ -12,8 +12,14 @@
       </v-btn>
     </v-col>
     <v-col v-else-if="date && obsEnabled && !scene">
-      <v-btn icon variant="text" :loading="obsLoading" @click="initOBS()">
-        <v-icon icon="mdi-rotate-right" size="medium" />
+      <v-btn
+        icon
+        variant="text"
+        size="small"
+        :loading="obsLoading"
+        @click="initOBS()"
+      >
+        <v-icon icon="mdi-rotate-right" />
         <v-tooltip location="top" activator="parent">
           {{ $t('obsRefresh') }}
         </v-tooltip>
@@ -151,42 +157,32 @@ const showShortButtons = computed(
 
 const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
 const availableWidth = computed(() => {
-  let BUTTONS = 172
+  let BUTTONS = 0
+  const SIDE_NAV = 56
   const FOOTER_PADDING = 32
-  const ZOOM_BUTTON = 65
-  const SHUFFLE_BUTTON = 72
+  const ZOOM_BUTTON = 50
   if (zoomScene.value) BUTTONS += ZOOM_BUTTON
-  if (getPrefs<boolean>('meeting.enableMusicButton')) BUTTONS += SHUFFLE_BUTTON
   const OBS_MENU_PADDING = 8
-  const WIDTH_OF_OTHER_ELEMENTS = FOOTER_PADDING + BUTTONS + OBS_MENU_PADDING
+  const WIDTH_OF_OTHER_ELEMENTS =
+    SIDE_NAV + FOOTER_PADDING + BUTTONS + OBS_MENU_PADDING
   return windowSize.width.value - WIDTH_OF_OTHER_ELEMENTS
 })
+const getSceneWidth = (sceneLength: number) => {
+  if (sceneLength <= 3) return 64
+  return 64 + (sceneLength - 3) * 6
+}
 const shortScenesLength = computed(() => {
-  let nrOfChars = 0
-  const PADDING_PER_SCENE = 25
-  const BORDER_WIDTH = 1
-  const WIDTH_PER_CHAR = 14
-
+  let combinedLength = 0
   for (const scene of scenes.value) {
-    nrOfChars += scene.shortText.length
+    combinedLength += getSceneWidth(scene.shortText.length)
   }
-  return (
-    WIDTH_PER_CHAR * nrOfChars +
-    (PADDING_PER_SCENE * scenes.value.length + BORDER_WIDTH)
-  )
+  return combinedLength
 })
 const combinedScenesLength = computed(() => {
-  let nrOfChars = 0
-  const PADDING_PER_SCENE = 25
-  const BORDER_WIDTH = 1
-  const WIDTH_PER_CHAR = 10
-
+  let combinedLength = 0
   for (const scene of scenes.value) {
-    nrOfChars += scene.value.length
+    combinedLength += getSceneWidth(scene.title.length)
   }
-  return (
-    WIDTH_PER_CHAR * nrOfChars +
-    (PADDING_PER_SCENE * scenes.value.length + BORDER_WIDTH)
-  )
+  return combinedLength
 })
 </script>
