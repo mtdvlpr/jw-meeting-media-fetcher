@@ -1,6 +1,6 @@
 <template>
-  <v-footer v-if="date && obsEnabled" app height="64">
-    <v-col v-if="date && scene && zoomScene" cols="auto">
+  <v-footer v-if="obsEnabled" app height="64">
+    <v-col v-if="scene && zoomScene" cols="auto">
       <v-btn icon variant="text" size="medium" @click="emit('zoomPart')">
         <v-icon
           :icon="zoomPart ? 'mdi-video-box' : 'mdi-lectern'"
@@ -11,7 +11,7 @@
         </v-tooltip>
       </v-btn>
     </v-col>
-    <v-col v-else-if="date && obsEnabled && !scene">
+    <v-col v-else-if="obsEnabled && !scene">
       <v-btn
         icon
         variant="text"
@@ -26,7 +26,7 @@
       </v-btn>
     </v-col>
     <v-col
-      v-if="date && scene && !zoomPart && scenes.length > 1"
+      v-if="scene && !zoomPart && scenes.length > 1"
       class="d-flex justify-end pa-1"
     >
       <v-btn-toggle v-if="showButtons" v-model="scene" mandatory>
@@ -56,7 +56,6 @@ import { useIpcRendererOn } from '@vueuse/electron'
 import type { Participant } from '@zoomus/websdk/embedded'
 import { ObsPrefs } from '~~/types'
 
-const date = computed(() => useRoute().query.date as string)
 const emit = defineEmits(['zoomPart'])
 defineProps<{
   participant: Participant | null
