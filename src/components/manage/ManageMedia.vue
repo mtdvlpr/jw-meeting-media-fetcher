@@ -48,7 +48,7 @@
       </v-row>
     </v-card-title>
     <v-divider></v-divider>
-    <v-card-text style="overflow-y: auto">
+    <v-card-text :style="`overflow-y: auto;${listHeight}`">
       <v-dialog v-if="files.length === 1" persistent :model-value="isLoneJwpub">
         <manage-select-document
           :file="files[0]"
@@ -111,11 +111,7 @@ const props = defineProps<{
 
 // File prefix
 const prefix = ref('')
-
 const { $i18n } = useNuxtApp()
-// const title = computed(() =>
-//   date.value === 'Recurring' ? $i18n.t('recurring') : date.value
-// )
 
 // Type of media to add
 const types = [
@@ -403,21 +399,21 @@ document.addEventListener('drop', (event) => {
 })
 
 // List height
-// const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
-// const listHeight = computed(() => {
-//   const TOOLBAR = 48
-//   const INPUT = 72
-//   const PREFIX = 72
-//   const EL_PADDING = 2
-//   const FOOTER = 52
-//   let otherElements = FOOTER + TOOLBAR + EL_PADDING
-//   if (!!type.value && type.value !== 'jwOrg') {
-//     otherElements += INPUT
-//   }
-//   if (!!jwFile.value || files.value.length > 0) {
-//     otherElements += PREFIX
-//   }
-//   const height = windowSize.height.value - otherElements
-//   return `min-height: ${height}px;max-height: ${height}px;`
-// })
+const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
+const listHeight = computed(() => {
+  const TOOLBAR = 48
+  const INPUT = 72
+  const PREFIX = 72
+  const EL_PADDING = 2
+  const FOOTER = 52
+  let otherElements = FOOTER + TOOLBAR + EL_PADDING
+  if (!!type.value && type.value !== 'jwOrg') {
+    otherElements += INPUT
+  }
+  if (!!jwFile.value || files.value.length > 0) {
+    otherElements += PREFIX
+  }
+  const height = windowSize.height.value - otherElements
+  return `height: ${height}px;`
+})
 </script>

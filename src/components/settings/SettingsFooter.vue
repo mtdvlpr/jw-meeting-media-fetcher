@@ -1,5 +1,5 @@
 <template>
-  <v-footer class="settings-footer justify-space-between">
+  <v-footer app class="settings-footer justify-space-between">
     <v-col cols="12" align-self="end" class="d-flex">
       <v-col class="d-flex pa-0 align-center" align-self="center">
         <v-btn
