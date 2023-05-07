@@ -104,7 +104,6 @@ import { LocalFile, MeetingFile, VideoFile } from '~~/types'
 const emit = defineEmits(['refresh', 'cancel'])
 const props = defineProps<{
   loading?: boolean
-  dialog?: boolean
   uploadMedia?: Boolean
   media: (MeetingFile | LocalFile)[]
 }>()

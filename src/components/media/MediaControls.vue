@@ -3,7 +3,6 @@
     <manage-media
       :media="localMedia"
       :loading="loading"
-      dialog
       @cancel="managingMedia = false"
     />
   </v-dialog>
