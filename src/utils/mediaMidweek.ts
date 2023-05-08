@@ -57,10 +57,17 @@ export async function getMwMedia(date: string) {
 
   // remove the last song if it's the co week
   if (isCoWeek(baseDate)) {
-    mms.splice(
-      mms.reverse().findIndex((m) => m.pub === useMediaStore().songPub),
-      1
-    )
+    let lastSongIdLookup = mms
+      .reverse()
+      .findIndex(
+        (m) => m.BeginParagraphOrdinal && m.BeginParagraphOrdinal >= 22
+      )
+    if (lastSongIdLookup === -1) {
+      lastSongIdLookup = mms
+        .reverse()
+        .findIndex((m) => m.pub === useMediaStore().songPub)
+    }
+    mms.splice(lastSongIdLookup, 1)
   }
   mms.forEach((mm) => {
     addMediaItemToPart(date, mm.BeginParagraphOrdinal ?? 0, mm, 'internal')
