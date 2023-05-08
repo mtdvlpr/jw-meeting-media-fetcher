@@ -4,16 +4,13 @@ import type { ElectronApplication, Page } from 'playwright'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { join } from 'upath'
+import { ipcRendererInvoke } from 'electron-playwright-helpers'
 import { version } from '../../package.json'
 import { delay, getDate, strip } from '../helpers/generalHelpers'
 import { MS_IN_SEC } from './../../src/constants/general'
 import locale from './../../src/locales/en.json'
 import prefs from './../mocks/prefs/prefsOld.json'
-import {
-  startApp,
-  openHomePage,
-  ipcRendererInvoke,
-} from './../helpers/electronHelpers'
+import { startApp, openHomePage } from './../helpers/electronHelpers'
 
 let electronApp: ElectronApplication
 let page: Page

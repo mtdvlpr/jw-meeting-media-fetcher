@@ -7,7 +7,7 @@ directories:
   output: build
 files:
   - filter:
-      - dist
+      - .output/public
       - dist-electron
 extraResources:
   - from: build/icons/media

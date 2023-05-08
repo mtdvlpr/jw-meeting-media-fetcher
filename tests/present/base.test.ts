@@ -6,12 +6,9 @@ import { expect, test } from '@playwright/test'
 import jimp from 'jimp'
 import type { ElectronApplication, Page } from 'playwright'
 import { join } from 'upath'
+import { ipcRendererInvoke } from 'electron-playwright-helpers'
 import { version } from '../../package.json'
-import {
-  startApp,
-  openHomePage,
-  ipcRendererInvoke,
-} from './../helpers/electronHelpers'
+import { startApp, openHomePage } from './../helpers/electronHelpers'
 import { delay, getDate } from './../helpers/generalHelpers'
 import prefs from './../mocks/prefs/prefsOld.json'
 import locale from './../../src/locales/en.json'

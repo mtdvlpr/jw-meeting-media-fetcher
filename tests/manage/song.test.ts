@@ -4,11 +4,8 @@ import type { ElectronApplication, Page } from 'playwright'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { join } from 'upath'
-import {
-  ipcRendererInvoke,
-  startApp,
-  openHomePage,
-} from './../helpers/electronHelpers'
+import { ipcRendererInvoke } from 'electron-playwright-helpers'
+import { startApp, openHomePage } from './../helpers/electronHelpers'
 import prefs from './../mocks/prefs/prefsOld.json'
 import { delay, strip } from './../helpers/generalHelpers'
 import locale from './../../src/locales/en.json'

@@ -75,6 +75,7 @@
     "dayjs": "^1.11.7",
     "electron": "24.2.0",
     "electron-builder": "23.6.0",
+    "electron-playwright-helpers": "^1.5.4",
     "esbuild": "^0.17.18",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",

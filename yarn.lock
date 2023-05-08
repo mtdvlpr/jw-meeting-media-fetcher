@@ -405,7 +405,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@electron/asar@npm:^3.2.4":
+"@electron/asar@npm:^3.2.2, @electron/asar@npm:^3.2.4":
   version: 3.2.4
   resolution: "@electron/asar@npm:3.2.4"
   dependencies:
@@ -5047,6 +5047,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"electron-playwright-helpers@npm:^1.5.4":
+  version: 1.5.4
+  resolution: "electron-playwright-helpers@npm:1.5.4"
+  dependencies:
+    "@electron/asar": ^3.2.2
+  checksum: ed37356f5e9130ecbea3a5a818a3001a4f8b75e5a885d4785ff18714aa5a00a9a3483ca88e2adbf69fe652536533376749bb896c3592d55422bddd5cabd9f6bb
+  languageName: node
+  linkType: hard
+
 "electron-publish@npm:23.6.0":
   version: 23.6.0
   resolution: "electron-publish@npm:23.6.0"
@@ -8307,6 +8316,7 @@ __metadata:
     dotenv: ^16.0.3
     electron: 24.2.0
     electron-builder: 23.6.0
+    electron-playwright-helpers: ^1.5.4
     electron-store: ^8.1.0
     electron-updater: ^5.3.0
     electron-window-state: ^5.0.3
