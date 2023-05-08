@@ -263,14 +263,18 @@ export default {
       if (!day.inPast) {
         // progress steps to be displayed here eventually, as a percent of current divided total steps
         // progress step calculation and incrementing should ideally be integrated into each function
-        const dayTotalSteps = [
-          congSync.value ? 2 : 0,
-          day.meetingType,
-          true,
-          true,
-          enableMp4Conversion,
-          enableVlcPlaylistCreation,
-        ].filter(Boolean).length
+        const dayTotalSteps = (
+          congSync.value || !!day.meetingType
+            ? [
+                congSync.value ? 2 : 0,
+                !!day.meetingType,
+                true,
+                true,
+                enableMp4Conversion,
+                enableVlcPlaylistCreation,
+              ]
+            : []
+        ).filter(Boolean).length
         day.progress.total = dayTotalSteps
         if (congSync.value) {
           await getCongMediaByDate(day.date, !!day.meetingType)
