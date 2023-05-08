@@ -35,7 +35,7 @@
     </v-card-text>
     <v-card-actions v-if="!loading">
       <v-btn @click="emit('empty')">Cancel</v-btn>
-      <v-spacer></v-spacer>
+      <v-spacer />
       <v-btn
         v-if="missingMedia.length > 0"
         color="primary"

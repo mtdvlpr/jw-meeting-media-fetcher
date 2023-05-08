@@ -27,6 +27,7 @@
     <media-controls v-if="date" />
     <present-select v-else :first-choice="firstChoice" />
     <present-footer
+      v-if="date"
       :participant="participant"
       @zoom-part="toggleZoomPart()"
       @clear-participant="participant = null"
@@ -49,6 +50,23 @@ useHead({
 const firstChoice = ref(true)
 watch(date, (val) => {
   if (val) {
+    if (firstChoice.value) {
+      initZoomIntegration()
+      if (getPrefs<boolean>('media.enablePp')) {
+        const ppForward = getPrefs<string>('media.ppForward')
+        const ppBackward = getPrefs<string>('media.ppBackward')
+        if (ppForward && ppBackward) {
+          setShortcut({ key: ppForward, fn: 'nextMediaItem', scope: 'present' })
+          setShortcut({
+            key: ppBackward,
+            fn: 'previousMediaItem',
+            scope: 'present',
+          })
+        } else {
+          warn('errorPpEnable')
+        }
+      }
+    }
     firstChoice.value = false
   }
 })
@@ -63,28 +81,6 @@ useIpcRendererOn('showingMedia', (_e, val: boolean[]) => {
 
 onMounted(() => {
   useIpcRenderer().send('allowQuit', false)
-  initZoomIntegration()
-  if (getPrefs<boolean>('media.enablePp')) {
-    const ppForward = getPrefs<string>('media.ppForward')
-    const ppBackward = getPrefs<string>('media.ppBackward')
-    if (ppForward && ppBackward) {
-      setShortcut({ key: ppForward, fn: 'nextMediaItem', scope: 'present' })
-      setShortcut({
-        key: ppBackward,
-        fn: 'previousMediaItem',
-        scope: 'present',
-      })
-    } else {
-      warn('errorPpEnable')
-    }
-  }
-  setTimeout(() => {
-    const socket = zoomSocket()
-    if (socket) {
-      log.debug('Found socket')
-      zoomStore.setWebsocket(socket)
-    }
-  }, MS_IN_SEC)
 })
 
 // OBS
@@ -157,6 +153,14 @@ const initZoomIntegration = async () => {
   }
 
   connectZoom()
+
+  setTimeout(() => {
+    const socket = zoomSocket()
+    if (socket) {
+      log.debug('Found socket')
+      zoomStore.setWebsocket(socket)
+    }
+  }, MS_IN_SEC)
 
   if (getPrefs<boolean>('app.zoom.autoStartMeeting')) {
     executeBeforeMeeting(

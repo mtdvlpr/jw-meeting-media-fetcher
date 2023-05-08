@@ -7,6 +7,7 @@ import duration from 'dayjs/plugin/duration'
 import isBetween from 'dayjs/plugin/isBetween'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import isoWeek from 'dayjs/plugin/isoWeek'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import localeData from 'dayjs/plugin/localeData'
 import updateLocale from 'dayjs/plugin/updateLocale'
 
@@ -49,6 +50,7 @@ dayjs.extend(isSameOrBefore)
 dayjs.extend(isoWeek)
 dayjs.extend(localeData)
 dayjs.extend(updateLocale)
+dayjs.extend(LocalizedFormat)
 
 const startOfWeek = DAYJS_LOCALES.map((l) => {
   return { lang: l, start: 1 }

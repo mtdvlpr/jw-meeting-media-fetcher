@@ -5,9 +5,7 @@
     class="text-left"
     @submit.prevent="submit()"
   >
-    <v-dialog :model-value="forcingPrefs" persistent>
-      <cong-forced-prefs @done="forcingPrefs = false" />
-    </v-dialog>
+    <cong-forced-prefs v-model="forcingPrefs" />
 
     <v-btn color="primary" class="mb-4">
       {{ $t('server') }}

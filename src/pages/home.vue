@@ -21,7 +21,7 @@
         </v-tabs>
       </template>
     </v-app-bar>
-    <v-row justify="center" class="pa-4">
+    <v-row no-gutters justify="center" class="pa-4">
       <v-window v-model="currentWeek">
         <v-window-item v-for="w in upcomingWeeks" :key="w.iso" :value="w.iso">
           <v-col cols="12">

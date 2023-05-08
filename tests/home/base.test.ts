@@ -2,13 +2,10 @@ import { platform } from 'os'
 import { expect, test } from '@playwright/test'
 import jimp from 'jimp'
 import type { ElectronApplication, Page } from 'playwright'
+import { ipcRendererInvoke } from 'electron-playwright-helpers'
 import { version } from '../../package.json'
 import { delay } from '../helpers/generalHelpers'
-import {
-  ipcRendererInvoke,
-  startApp,
-  openHomePage,
-} from './../helpers/electronHelpers'
+import { startApp, openHomePage } from './../helpers/electronHelpers'
 import prefs from './../mocks/prefs/prefsOld.json'
 
 let electronApp: ElectronApplication

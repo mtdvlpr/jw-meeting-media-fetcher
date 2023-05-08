@@ -1,151 +1,35 @@
 <template>
   <div>
-    <v-app-bar>
-      <v-app-bar-title :class="{ 'text-error': !valid }">
-        {{ $t('settings') }}
-      </v-app-bar-title>
-      <progress-bar
-        :current="relativeDownloadProgress"
-        :total="totalProgress"
-      />
-      <template #extension>
-        <v-text-field
-          v-model="filter"
-          label="Search"
-          hide-details="auto"
-          density="compact"
-          clearable
-        />
-      </template>
-      <template #append>
-        <v-menu location="top">
-          <template #activator="{ props }">
-            <v-btn
-              icon="mdi-dots-vertical"
-              variant="text"
-              v-bind="props"
-              aria-label="More actions"
-              class="mr-2"
-            />
-          </template>
-          <v-list>
-            <v-list-item @click="removeCache()">
-              {{ $t('cleanCache') }}<v-spacer></v-spacer>
-              <template #append>
-                <v-chip
-                  size="small"
-                  class="ms-2"
-                  :text="`${cache.toFixed(1)}MB`"
-                /><v-icon>mdi-file-image-remove</v-icon>
-              </template>
-            </v-list-item>
-            <v-divider></v-divider>
-            <v-list-item
-              append-icon="mdi-code-braces-box"
-              @click="openReleases()"
-            >
-              Open project page in GitHub
-            </v-list-item>
-            <v-list-item append-icon="mdi-bug" @click="report()">
-              {{ $t('reportIssue') }}
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </template>
-    </v-app-bar>
-    <v-btn color="primary" @click="launchFirstRun()">
-      Open First Time Wizard
-    </v-btn>
-    <v-dialog :model-value="!!isNew" persistent transition="fade-transition">
-      <v-window v-model="currentInitialSetting">
-        <v-window-item v-for="step in firstRunSteps" :key="step.title">
-          <v-card class="mx-auto">
-            <v-card-title>{{ step.title }}</v-card-title>
-            <v-card-subtitle></v-card-subtitle>
-            <v-card-text>
-              <settings-item
-                v-for="pref in step.settings"
-                :key="pref.key"
-                :setting="pref"
-              />
-              <span class="text-caption text-grey-darken-1">
-                {{ step.subtitle }}
-              </span>
-            </v-card-text>
-            <v-divider />
-            <v-card-actions>
-              <v-btn
-                v-if="currentInitialSetting > 0"
-                variant="text"
-                color="secondary"
-                @click="previousStep()"
-              >
-                Previous step
-              </v-btn>
-              <v-spacer />
-              <template v-if="step.firstRunParam">
-                <v-btn
-                  variant="flat"
-                  @click="setFirstRunParam(step.firstRunParam, false)"
-                >
-                  No
-                </v-btn>
-                <v-btn
-                  variant="flat"
-                  color="primary"
-                  @click="setFirstRunParam(step.firstRunParam, true)"
-                >
-                  Yes
-                </v-btn>
-              </template>
-              <template v-else>
-                <v-btn v-if="initialSettingsDone" @click="isNew = ''">
-                  Go to media calendar
-                </v-btn>
-                <v-btn
-                  variant="flat"
-                  color="primary"
-                  @click="nextStep(step.onComplete)"
-                >
-                  {{ initialSettingsDone ? 'Explore more settings' : 'Next' }}
-                </v-btn>
-              </template>
-            </v-card-actions>
-            <v-progress-linear :model-value="firstRunProgress" />
-          </v-card>
-        </v-window-item>
-      </v-window>
-    </v-dialog>
-    <v-dialog v-model="forcingPrefs" fullscreen :scrim="false" persistent>
-      <cong-forced-prefs @done="forcingPrefs = false" />
-    </v-dialog>
-    {{ validGroups }}
-    {{ openGroups }}
+    <settings-top-bar
+      v-model="filter"
+      :prefs="prefs"
+      :online="online"
+      :refresh-cache="refreshCache"
+      :current="relativeDownloadProgress"
+      :total="totalProgress"
+    />
+    <settings-wizard :required-settings="requiredSettings" />
+    <cong-forced-prefs v-model="forcingPrefs" />
     <v-row no-gutters justify="center" class="fill-height settings">
       <v-col cols="12">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
         <v-form ref="form" v-model="valid" @submit.prevent>
           <v-list density="compact">
-            <template v-for="group in filteredGroups" :key="group.id">
-              <v-form v-model="validGroups[group.id]" @submit.prevent>
-                <v-list-group :value="group.id">
-                  <template #activator="{ props }">
-                    <v-list-item
-                      v-bind="props"
-                      :title="group.label"
-                      variant="tonal"
-                      color="primary"
-                      :class="{ 'text-error': !validGroups[group.id] }"
-                    />
-                  </template>
-                  <settings-group
-                    v-for="setting in group.settings"
-                    :key="setting.label"
-                    :setting="setting"
-                  />
-                </v-list-group>
-              </v-form>
-            </template>
+            <v-list-group v-for="group in filteredGroups" :key="group.id">
+              <template #activator="{ props }">
+                <v-list-item
+                  v-bind="props"
+                  :title="group.label"
+                  variant="tonal"
+                  color="primary"
+                />
+              </template>
+              <settings-group
+                v-for="setting in group.settings"
+                :key="setting.label"
+                :setting="setting"
+              />
+            </v-list-group>
           </v-list>
         </v-form>
       </v-col>
@@ -157,14 +41,11 @@ import { ipcRenderer } from 'electron'
 import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { extname, join } from 'upath'
 import { readFile } from 'fs-extra'
-import { useRouteQuery } from '@vueuse/router'
-import getFolderSize from 'get-folder-size'
 import {
   Action,
   Group,
   MeetingPrefs,
   Setting,
-  GroupID,
   Settings,
   ShortJWLang,
   VFormRef,
@@ -183,24 +64,9 @@ const { scenes } = storeToRefs(useObsStore())
 const { client } = storeToRefs(useCongStore())
 const { screens, mediaScreenInit } = storeToRefs(usePresentStore())
 
-// Initialize cache
-const cache = ref(0)
-
 // Validation
 const form = ref<VFormRef | null>()
 const valid = ref(true)
-watch(valid, (val) => {
-  if (val) calcCache()
-  useStatStore().setNavDisabled(!val)
-  if (prefs.value.media.enableMediaDisplayButton) {
-    const key = prefs.value.media.presentShortcut
-    if (val && key) {
-      setShortcut({ key, fn: 'openPresentMode' })
-    } else {
-      unsetShortcut('openPresentMode')
-    }
-  }
-})
 
 const congLoading = ref(false)
 const congError = ref('')
@@ -237,11 +103,6 @@ const downloadSong = async (song: VideoFile) => {
   setProgress(++processed.value, NR_OF_KINGDOM_SONGS, true)
 }
 
-const launchFirstRun = () => {
-  currentInitialSetting.value = 0
-  isNew.value = 'true'
-}
-
 const jwLangs = ref<ShortJWLang[]>([])
 const langs = computed(() => {
   return jwLangs.value.map((lang) => {
@@ -275,7 +136,6 @@ const obsComplete = computed(() => {
 onMounted(() => {
   getLangs()
   form.value?.validate()
-  calcCache()
 })
 
 const locales = ref<{ name: string; code: string }[]>([])
@@ -286,7 +146,6 @@ locales.value = $i18n.locales.value.map((l) => {
     code: locale.code,
   }
 })
-const isNew = useRouteQuery<string>('new', '')
 
 const requiredSettings = computed(() => {
   return {
@@ -422,223 +281,8 @@ const requiredSettings = computed(() => {
   } satisfies Record<string, Setting>
 })
 
-const firstRunParams = ref<Record<string, boolean>>({})
-const setFirstRunParam = (param: string, value: boolean) => {
-  firstRunParams.value[param] = value
-  nextStep()
-}
-interface FirstRunStep {
-  skip?: boolean
-  title: string
-  subtitle?: string
-  firstRunParam?: string
-  settings?: Setting[]
-  onComplete?: () => void
-}
-const firstRunSteps = computed((): FirstRunStep[] => {
-  return [
-    {
-      title: 'Welcome!',
-      subtitle: "Let's configure a few things, and then we'll get on our way.",
-    },
-    {
-      title: 'What language do you want the app to be displayed in?',
-      subtitle:
-        "This only affects the app itself, not the media we'll be downloading, so feel free to choose the language you understand best.",
-      settings: [requiredSettings.value['app.localAppLang']],
-    },
-    {
-      firstRunParam: 'usingAtKh',
-      title: 'Are you using this app at a Kingdom Hall?',
-      subtitle:
-        "If so, we'll configure a few things for you right off the bat.",
-    },
-    {
-      title: firstRunParams.value.usingAtKh
-        ? 'What is the name of your congregation or group?'
-        : 'Choose a name for this profile',
-      subtitle:
-        'This will be used to quickly switch between profiles, if ever you decide create more than one in the future.',
-      settings: [requiredSettings.value['app.congregationName']],
-    },
-    {
-      title: firstRunParams.value.usingAtKh
-        ? 'What is the language of your congregation or group?'
-        : 'In what language should we download media?',
-      subtitle:
-        'Media such as videos and pictures will be downloaded from publications in this language.',
-      settings: [requiredSettings.value['media.lang']],
-      onComplete: () => {
-        if (firstRunParams.value.usingAtKh) {
-          enableExternalDisplayAndMusic()
-        }
-      },
-    },
-    {
-      skip: !firstRunParams.value.usingAtKh,
-      title: "Excellent! We're off to a good start.",
-      subtitle:
-        "You'll notice the yeartext is now being displayed on the external monitor! But let's keep going.",
-    },
-    {
-      title: 'What are your meeting days and times?',
-      subtitle:
-        "We'll use this info to make sure that all media is categorized into dated folders for each meeting.",
-      settings: [
-        requiredSettings.value['meeting.mwDay'],
-        requiredSettings.value['meeting.mwStartTime'],
-        requiredSettings.value['meeting.weDay'],
-        requiredSettings.value['meeting.weStartTime'],
-      ],
-      onComplete: () => {
-        if (firstRunParams.value.usingAtKh) {
-          enableExternalDisplayAndMusic()
-        }
-      },
-    },
-    {
-      title:
-        'Where should the prepared media for playback at meetings be saved?',
-      subtitle:
-        'This is the folder in which the dated folders will be created for each meeting.',
-      settings: [requiredSettings.value['app.localOutputPath']],
-      onComplete: () => {
-        startMediaSync()
-      },
-    },
-    {
-      title: 'Excellent!',
-      subtitle:
-        "We're almost done! We'll start fetching media while we wrap up with our initial setup.",
-    },
-    {
-      skip: !firstRunParams.value.usingAtKh,
-      firstRunParam: 'usingObs',
-      title: 'Does your Kingdom Hall use a program called OBS Studio?',
-      subtitle:
-        'OBS Studio is a free app used to manage camera and video feeds.',
-    },
-    {
-      skip: !firstRunParams.value.usingAtKh || !firstRunParams.value.usingObs,
-      firstRunParam: 'integrateObs',
-      title: 'Would you like to integrate M³ with OBS Studio?',
-      subtitle:
-        'Doing so will greatly simplify and facilitate sharing media during hybrid meetings.',
-    },
-    {
-      skip:
-        !firstRunParams.value.usingAtKh ||
-        !firstRunParams.value.usingObs ||
-        !firstRunParams.value.integrateObs,
-      title: 'Is OBS Studio configured properly?',
-      subtitle:
-        'Make sure that the OBS Studio Websocket plugin is configured with a port number and password, and that the OBS Studio virtual camera is installed on this computer. When this is done, click next.',
-    },
-    {
-      skip:
-        !firstRunParams.value.usingAtKh ||
-        !firstRunParams.value.usingObs ||
-        !firstRunParams.value.integrateObs,
-      title:
-        "Enter the port and password configured in OBS Studio's Websocket plugin.",
-      settings: [
-        requiredSettings.value['app.obs.port'],
-        requiredSettings.value['app.obs.password'],
-      ],
-      onComplete: () => {
-        enableObs()
-      },
-    },
-    {
-      skip:
-        !firstRunParams.value.usingAtKh ||
-        !firstRunParams.value.usingObs ||
-        !firstRunParams.value.integrateObs,
-      title: 'Configure a scene in OBS Studio to show a stage wide shot.',
-      subtitle: 'Once the scene has been created, select it here.',
-      settings: [requiredSettings.value['app.obs.cameraScene']],
-    },
-    {
-      skip:
-        !firstRunParams.value.usingAtKh ||
-        !firstRunParams.value.usingObs ||
-        !firstRunParams.value.integrateObs,
-      title:
-        'Configure a scene in OBS Studio that will capture the media while it is displayed.',
-      subtitle:
-        'This can be either a "display capture" or a "window capture". Once the scene has been created, select it here.',
-      settings: [requiredSettings.value['app.obs.mediaScene']],
-    },
-    {
-      skip: !firstRunParams.value.usingAtKh,
-      title:
-        'Make sure that the setting to "use dual monitors" in Zoom is enabled.',
-      subtitle:
-        "That way, you'll be able to quickly show and hide Zoom participants on the TV screens when needed.",
-    },
-    {
-      skip: !firstRunParams.value.usingAtKh,
-      title: 'How can I show Zoom on the TVs instead of the media or yeartext?',
-      subtitle:
-        "Look for this button in M³'s sidebar. Clicking it will temporarily hide the media and yeartext, and reveal the Zoom participants underneath. Once the Zoom part is over, you can show the yeartext again using the same button.",
-    },
-    {
-      skip: !firstRunParams.value.usingAtKh,
-      title: 'What about background music?',
-      subtitle:
-        "In the sidebar, you'll also find a button to start and stop background music playback. Note that background music will start playing automatically before a meeting is scheduled to start when M³ is launched, and will stop automatically one minute before the meeting. However, background music playback will need to be manually started after the concluding prayer.",
-    },
-    {
-      title: 'Congratulations!',
-      subtitle:
-        'M³ is now ready to be used. Feel free to browse around the other available options, or if you prefer you can head right to the media playback screen.',
-    },
-  ]
-})
-const currentInitialSetting = ref(0)
-const initialSettingsDone = computed(
-  () => currentInitialSetting.value === firstRunSteps.value.length - 1
-)
-const firstRunProgress = computed(
-  () => ((currentInitialSetting.value + 1) / firstRunSteps.value.length) * 100
-)
-const enableExternalDisplayAndMusic = () => {
-  // update prefs here
-  console.log('update prefs here')
-  // prefs.value.media.enableMediaDisplayButton = true
-  // prefs.value.media.enableMusicButton = true
-}
+const refreshCache = ref(false)
 
-const startMediaSync = () => {
-  // start media sync here
-  console.log('start media sync here')
-}
-
-const enableObs = () => {
-  // enable obs integration
-  // test port and pw
-  // if fail, go back a step
-}
-const previousStep = () => {
-  let stepSize = 1
-  while (firstRunSteps.value[currentInitialSetting.value - stepSize].skip) {
-    stepSize++
-  }
-  currentInitialSetting.value -= stepSize
-}
-
-const nextStep = (action?: () => void) => {
-  if (action) action()
-  if (initialSettingsDone.value) {
-    isNew.value = ''
-  } else {
-    let stepSize = 1
-    while (firstRunSteps.value[currentInitialSetting.value + stepSize].skip) {
-      stepSize++
-    }
-    currentInitialSetting.value += stepSize
-  }
-}
 // Prefs
 const filter = ref('')
 const prefs = ref({ ...(getAllPrefs() ?? PREFS) })
@@ -648,35 +292,6 @@ const updatePrefs = (key: string, value: any) => {
 provide(prefsKey, prefs)
 provide(updatePrefsKey, updatePrefs)
 
-const openGroups = ref<{ [key in GroupID]: boolean }>({
-  general: false,
-  media: false,
-  advanced: false,
-  integrations: false,
-  playback: false,
-  meetings: false,
-})
-const validGroups = ref<{ [key in GroupID]: boolean }>({
-  general: true,
-  media: true,
-  advanced: true,
-  integrations: true,
-  playback: true,
-  meetings: true,
-})
-watch(
-  validGroups,
-  (val) => {
-    console.log('valid', val)
-    for (const key in val) {
-      if (!val[key as GroupID]) {
-        console.log('open group', key)
-        openGroups.value[key as GroupID] = true
-      }
-    }
-  },
-  { deep: true }
-)
 const groups = computed((): Settings[] => {
   return [
     {
@@ -755,7 +370,7 @@ const groups = computed((): Settings[] => {
                 .forEach((s) => promises.push(downloadSong(s)))
 
               await Promise.allSettled(promises)
-              calcCache()
+              refreshCache.value = !refreshCache.value
             } catch (e: unknown) {
               console.log('error')
             }
@@ -1324,84 +939,6 @@ const filteredGroups = computed(() => {
   })
   return filtered
 })
-const { updateSuccess } = storeToRefs(useStatStore())
-const openReleases = () => {
-  const { repo, version } = useRuntimeConfig().public
-  window.open(
-    `${repo}/releases/${updateSuccess.value ? 'tag/' + version : ''}`,
-    '_blank'
-  )
-}
-const loading = ref(false)
-const removeCache = async () => {
-  loading.value = true
-  const mPath = mediaPath()
-  if (mPath && shuffleMusicFiles.value) rm(findAll(shuffleMusicFiles.value))
-  const folders = getCacheFolders(true)
-  rm(
-    findAll(folders, {
-      ignore: mPath ? [join(mPath, 'Recurring')] : [],
-      onlyDirectories: true,
-    })
-  )
-  if (online.value) {
-    await Promise.allSettled([getJWLangs(), getYearText()])
-  }
-  calcCache()
-  useMediaStore().clear()
-  useDbStore().clear()
-  loading.value = false
-}
-const shuffleMusicFiles = ref('')
-const isSignLanguage = () => useMediaStore().mediaLang?.isSignLanguage
-const setShuffleMusicFiles = () => {
-  const pPath = pubPath()
-  if (!pPath || !prefs.value.media.lang) return
-  shuffleMusicFiles.value = isSignLanguage()
-    ? join(pPath, '..', prefs.value.media.lang, 'sjj', '**', '*.mp4')
-    : prefs.value.media.lang === 'E'
-    ? ''
-    : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
-}
-const calcCache = async () => {
-  loading.value = true
-  setShuffleMusicFiles()
-  cache.value = 0
-  if (prefs.value.app.localOutputPath || prefs.value.media.lang) {
-    const folders = getCacheFolders()
-    for (const folder of folders) {
-      try {
-        cache.value +=
-          (await getFolderSize.loose(folder, { ignore: /Recurring/ })) /
-          1000 /
-          1000
-      } catch (e) {
-        log.error(folder, e)
-      }
-    }
-  }
-  loading.value = false
-}
-const getCacheFolders = (onlyDirs = false) => {
-  const folders: string[] = []
-  const pPath = pubPath()
-  const mPath = mediaPath()
-  const mediaLang = prefs.value.media.lang
-  if (mPath) folders.push(join(mPath, '..', mediaLang, onlyDirs ? '*' : ''))
-  if (pPath) {
-    folders.push(join(pPath, '..', mediaLang))
-    if (!onlyDirs && shuffleMusicFiles.value) {
-      folders.push(...findAll(shuffleMusicFiles.value))
-    }
-    const fallbackLang = prefs.value.media.langFallback
-    if (fallbackLang) {
-      const fallbackDir = join(pPath, '..', fallbackLang)
-      folders.push(fallbackDir)
-    }
-  }
-  return folders
-}
-const report = () => window.open(bugURL(), '_blank')
 </script>
 <style lang="scss" scoped>
 .settings {

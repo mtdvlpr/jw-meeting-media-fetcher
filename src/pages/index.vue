@@ -6,7 +6,7 @@
         {{ $t('selectCong') }}
       </v-app-bar-title>
     </v-app-bar>
-    <v-row justify="start" align="start" class="pa-4">
+    <v-row no-gutters justify="start" align="start" class="pa-4">
       <v-col cols="12">
         <loading-icon v-if="loading" />
         <v-list v-else>

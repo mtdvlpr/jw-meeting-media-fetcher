@@ -30,105 +30,86 @@
         </v-row>
       </v-card>
     </v-dialog>
-    <v-toolbar
-      id="zoom-app-bar"
-      height="56"
-      theme="dark"
-      color="primary"
-      class="text-left"
-    >
-      <v-app-bar-nav-icon>
-        <v-icon icon="mdi-alpha-z-box" size="small" />
-      </v-app-bar-nav-icon>
-      <v-col cols="auto">
-        <v-btn
-          icon
-          aria-label="Toggle zoom component"
-          @click="showZoomComponent = !showZoomComponent"
-        >
-          <v-tooltip activator="parent" location="bottom">
-            {{ $t('zoomToggleComponent') }}
-          </v-tooltip>
-          <v-icon
-            :icon="`mdi-eye${showZoomComponent ? '' : '-off'}`"
-            size="small"
-          />
-        </v-btn>
-        <v-btn
-          icon
-          :loading="loadingZoom"
-          aria-label="Toggle zoom meeting"
-          @click="toggleZoomMeeting()"
-        >
-          <v-tooltip activator="parent" location="bottom">
-            {{ $t(`zoom${started ? 'Stop' : 'Start'}Meeting`) }}
-          </v-tooltip>
-          <v-icon :icon="started ? 'mdi-stop' : 'mdi-play'" />
-        </v-btn>
-        <v-btn
-          icon
-          aria-label="Mute Zoom participants"
-          @click="muteParticipants(zoomSocket())"
-        >
-          <v-tooltip activator="parent" location="bottom">
-            {{ $t('zoomMuteParticipants') }}
-          </v-tooltip>
-          <v-icon icon="mdi-microphone-off" size="small" />
-        </v-btn>
-      </v-col>
-      <v-col class="d-flex flex-row pr-0">
-        <v-col class="d-flex align-center justify-end pr-0">
-          <form-input
-            v-model="participants"
-            v-model:search-input="participantSearch"
-            field="autocomplete"
-            color="white"
-            item-title="displayName"
-            item-value="userId"
-            :loading="allParticipants.length == 0"
-            :label="$t('spotlightParticipants')"
-            :disabled="spotlightActive"
-            :items="allParticipants"
-            style="max-width: 500px"
-            hide-details="auto"
-            chips
-            small-chips
-            deletable-chips
-            multiple
-            clearable
-            return-object
-            @change="participantSearch = ''"
-          >
-            <template #item="{ item }">
-              <v-list-item-action>
-                <v-checkbox-btn
-                  :value="participants.includes(item)"
-                  @click="toggleParticipant(item)"
-                />
-              </v-list-item-action>
-              <v-list-item-title>{{ item.displayName }}</v-list-item-title>
-              <v-list-item-action>
-                <v-btn icon @click.stop="atRename(item)">
-                  <v-icon icon="mdi-pencil" size="small" />
-                </v-btn>
-              </v-list-item-action>
-            </template>
-          </form-input>
-        </v-col>
-        <v-col cols="auto" class="px-0">
-          <v-btn
-            icon
-            :class="{ 'pulse-danger': spotlightActive }"
-            :disabled="participants.length == 0"
-            @click="spotlightParticipants()"
-          >
-            <v-icon
-              :icon="spotlightActive ? 'mdi-account-minus' : 'mdi-account-box'"
-              size="small"
+    <v-toolbar id="zoom-app-bar" theme="dark" color="primary" density="compact">
+      <v-app-bar-nav-icon icon="mdi-alpha-z-box" />
+      <v-btn
+        icon
+        aria-label="Toggle zoom component"
+        @click="showZoomComponent = !showZoomComponent"
+      >
+        <v-tooltip activator="parent" location="bottom">
+          {{ $t('zoomToggleComponent') }}
+        </v-tooltip>
+        <v-icon
+          :icon="`mdi-eye${showZoomComponent ? '' : '-off'}`"
+          size="small"
+        />
+      </v-btn>
+      <v-btn
+        icon
+        :loading="loadingZoom"
+        aria-label="Toggle zoom meeting"
+        @click="toggleZoomMeeting()"
+      >
+        <v-tooltip activator="parent" location="bottom">
+          {{ $t(`zoom${started ? 'Stop' : 'Start'}Meeting`) }}
+        </v-tooltip>
+        <v-icon :icon="started ? 'mdi-stop' : 'mdi-play'" />
+      </v-btn>
+      <v-btn
+        icon
+        aria-label="Mute Zoom participants"
+        @click="muteParticipants(zoomSocket())"
+      >
+        <v-tooltip activator="parent" location="bottom">
+          {{ $t('zoomMuteParticipants') }}
+        </v-tooltip>
+        <v-icon icon="mdi-microphone-off" size="small" />
+      </v-btn>
+      <v-spacer />
+      <form-input
+        v-model="participants"
+        v-model:search-input="participantSearch"
+        field="autocomplete"
+        color="white"
+        item-title="displayName"
+        item-value="userId"
+        :loading="allParticipants.length == 0"
+        :label="$t('spotlightParticipants')"
+        :disabled="spotlightActive"
+        :items="allParticipants"
+        style="max-width: 500px"
+        hide-details="auto"
+        chips
+        small-chips
+        deletable-chips
+        multiple
+        clearable
+        return-object
+        @change="participantSearch = ''"
+      >
+        <template #item="{ item }">
+          <v-list-item-action>
+            <v-checkbox-btn
+              :value="participants.includes(item)"
+              @click="toggleParticipant(item)"
             />
-          </v-btn>
-        </v-col>
-      </v-col>
+          </v-list-item-action>
+          <v-list-item-title>{{ item.displayName }}</v-list-item-title>
+          <v-list-item-action>
+            <v-btn icon @click.stop="atRename(item)">
+              <v-icon icon="mdi-pencil" size="small" />
+            </v-btn>
+          </v-list-item-action>
+        </template>
+      </form-input>
+      <v-btn
+        :icon="spotlightActive ? 'mdi-account-minus' : 'mdi-account-box'"
+        size="small"
+        :class="{ 'pulse-danger': spotlightActive }"
+        :disabled="participants.length == 0"
+        @click="spotlightParticipants()"
+      />
     </v-toolbar>
   </div>
 </template>
