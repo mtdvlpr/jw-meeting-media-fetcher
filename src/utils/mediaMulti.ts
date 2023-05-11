@@ -44,7 +44,7 @@ export async function getDocumentMultiMedia(
 
   const mmItems: MeetingFile[] = []
 
-  let select = `SELECT ${mmTable}.DocumentId, ${mmTable}.MultimediaId, Multimedia.MimeType, Multimedia.DataType, Multimedia.MajorType, Multimedia.FilePath, Multimedia.Label, Multimedia.Caption, Multimedia.CategoryType`
+  let select = `SELECT ${mmTable}.DocumentId, ${mmTable}.MultimediaId, Multimedia.MimeType, Multimedia.DataType, Multimedia.MajorType, Multimedia.MepsLanguageIndex, Multimedia.FilePath, Multimedia.Label, Multimedia.Caption, Multimedia.CategoryType`
   let from = `FROM ${mmTable} INNER JOIN Document ON ${mmTable}.DocumentId = Document.DocumentId`
   let where = `WHERE ${
     docId || docId === 0
@@ -122,7 +122,10 @@ async function processMultiMediaItem(
   memOnly: boolean,
   lang?: string
 ) {
-  if (mmItem.Link) {
+  if (mmItem.MepsLanguageIndex) {
+    const mepsLang = MEPS_IDS[mmItem.MepsLanguageIndex.toString()]
+    if (mepsLang) lang = mepsLang
+  } else if (mmItem.Link) {
     try {
       const matches = mmItem.Link.match(/\/(.*)\//)
       if (matches && matches.length > 0) {

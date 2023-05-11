@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/named
-import { pathExists, readFile, readFileSync } from 'fs-extra'
+import { pathExists, readFile } from 'fs-extra'
 import { join } from 'upath'
 import { ShortJWLang, JWLang, Filter } from '~~/types'
 
@@ -47,9 +46,9 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
 
   let langs: ShortJWLang[] = []
 
-  function readLangs(firstTry = true): string {
+  async function readLangs(firstTry = true): Promise<string> {
     try {
-      const fileContent = readFileSync(langPath, 'utf8')
+      const fileContent = await readFile(langPath, 'utf8')
       return fileContent
     } catch (e) {
       if (firstTry) {
@@ -61,7 +60,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
     }
   }
 
-  const fileContent = readLangs()
+  const fileContent = await readLangs()
   if (fileContent) {
     try {
       langs = <ShortJWLang[]>JSON.parse(fileContent)
@@ -127,6 +126,7 @@ export async function getPubAvailability(
 
   try {
     const langPath = join(appPath(), 'langs.json')
+    if (!(await pathExists(langPath))) return { lang, w, mwb }
     const langs = <ShortJWLang[]>(
       JSON.parse((await readFile(langPath, 'utf8')) ?? '[]')
     )
