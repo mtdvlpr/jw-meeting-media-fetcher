@@ -123,7 +123,7 @@ async function processMultiMediaItem(
   lang?: string
 ) {
   if (mmItem.MepsLanguageIndex) {
-    const mepsLang = MEPS_IDS[mmItem.MepsLanguageIndex.toString()]
+    const mepsLang = MEPS_IDS[mmItem.MepsLanguageIndex]
     if (mepsLang) lang = mepsLang
   } else if (mmItem.Link) {
     try {

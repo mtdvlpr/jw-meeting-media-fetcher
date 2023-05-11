@@ -157,7 +157,7 @@ export const LOCALES: LocaleObject[] = [
   },
 ]
 
-export const MEPS_IDS: Record<string, string> = {
+export const MEPS_IDS: Record<number, string> = {
   '0': 'E',
   '1': 'S',
   '2': 'X',

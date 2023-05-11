@@ -10,7 +10,7 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "markdownlint.ignore": ["LICENSE.md"],
-  "cSpell.ignoreWords": ["PDF", "transform"],
+  "cSpell.ignoreWords": ["PDF", "transform", "KI", "SHU"],
   "cSpell.ignorePaths": [
     ".github/workflows/*",
     ".vscode/*",
