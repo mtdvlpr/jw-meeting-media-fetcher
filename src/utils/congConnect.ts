@@ -1,5 +1,5 @@
 import { join, dirname, basename, resolve } from 'upath'
-import type { WebDAVClient, FileStat } from 'webdav/web/types'
+import type { WebDAVClient, FileStat } from 'webdav'
 import { CongPrefs, DateFormat } from '~~/types'
 
 export async function connect(
@@ -11,7 +11,7 @@ export async function connect(
   if (getPrefs<boolean>('app.offline')) return 'offline'
   const store = useCongStore()
   try {
-    const { createClient } = await import('webdav/web')
+    const { createClient } = await import('webdav')
     const client = createClient('https://' + host, {
       username,
       password,
