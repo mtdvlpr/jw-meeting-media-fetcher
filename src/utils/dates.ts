@@ -23,6 +23,7 @@ export function isCoWeek(baseDate?: Dayjs) {
   const coWeek = getPrefs<string>('meeting.coWeek')
   return (
     coWeek &&
+    $dayjs(coWeek).isValid() &&
     $dayjs(coWeek, 'YYYY-MM-DD').isBetween(
       baseDate,
       baseDate.add(6, 'days'),
