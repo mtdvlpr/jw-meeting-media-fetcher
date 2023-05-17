@@ -1,5 +1,10 @@
 <template>
   <div id="media-list-container" style="width: 100%">
+    <v-alert
+      v-if="$props.items.length > 0"
+      type="warning"
+      :text="$t('warnNoMediaFound')"
+    ></v-alert>
     <song-picker ref="songPicker" v-model="song" class="ma-4" clearable />
     <v-expand-transition>
       <v-list v-if="song" class="ma-4">
