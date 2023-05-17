@@ -59,7 +59,7 @@ export function createMediaNamesByDate(date: string) {
         heading = '02'
         i = 1
       }
-      let j = 1
+      let j = 0
       for (const item of media.filter((m) => !m.safeName)) {
         if (heading === '02' && item.pub?.includes('sjj')) {
           heading = '03'
