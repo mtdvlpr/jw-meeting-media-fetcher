@@ -16,7 +16,12 @@
       </v-list>
     </v-expand-transition>
     <v-expand-transition>
-      <div v-if="isMwDay">
+      <div v-if="$props.items.length === 0" class="ma-4">
+        {{ $t('warnNoMediaFound') }}
+      </div></v-expand-transition
+    >
+    <div v-if="isMwDay">
+      <template v-if="treasureItems.length > 0">
         <v-divider class="mx-4 mt-4 text-treasures" />
         <v-list-item-title class="mx-4 my-2 text-treasures text-overline">
           {{ mwbHeadings.treasures }}
@@ -43,33 +48,35 @@
             </template>
           </draggable>
         </v-list>
-        <template v-if="applyItems.length > 0">
-          <v-divider class="mx-4 text-apply" />
-          <v-list-item-title class="mx-4 my-2 text-apply text-overline">
-            {{ mwbHeadings.apply }}
-          </v-list-item-title>
-          <v-list class="ma-4">
-            <draggable
-              v-model="applyItems"
-              item-key="id"
-              tag="div"
-              group="media-items"
-              @start="dragging = true"
-              @end="dragging = false"
-            >
-              <template #item="{ element }">
-                <media-item
-                  :src="element.path"
-                  :play-now="element.play"
-                  :stop-now="element.stop"
-                  :deactivate="element.deactivate"
-                  @playing="setIndex(element.id)"
-                  @deactivated="resetDeactivate(element.id)"
-                />
-              </template>
-            </draggable>
-          </v-list>
-        </template>
+      </template>
+      <template v-if="applyItems.length > 0">
+        <v-divider class="mx-4 text-apply" />
+        <v-list-item-title class="mx-4 my-2 text-apply text-overline">
+          {{ mwbHeadings.apply }}
+        </v-list-item-title>
+        <v-list class="ma-4">
+          <draggable
+            v-model="applyItems"
+            item-key="id"
+            tag="div"
+            group="media-items"
+            @start="dragging = true"
+            @end="dragging = false"
+          >
+            <template #item="{ element }">
+              <media-item
+                :src="element.path"
+                :play-now="element.play"
+                :stop-now="element.stop"
+                :deactivate="element.deactivate"
+                @playing="setIndex(element.id)"
+                @deactivated="resetDeactivate(element.id)"
+              />
+            </template>
+          </draggable>
+        </v-list>
+      </template>
+      <template v-if="livingItems.length > 0">
         <v-divider class="mx-4 text-living" />
         <v-list-item-title class="mx-4 my-2 text-living text-overline">
           {{ mwbHeadings.living }}
@@ -95,61 +102,15 @@
             </template>
           </draggable>
         </v-list>
-      </div>
-      <div v-else-if="isWeDay">
-        <v-list-item-title class="mx-4 my-4 text-treasures text-overline">
-          {{ $t('publicTalk') }}
-        </v-list-item-title>
-        <v-list class="ma-4">
-          <draggable
-            v-model="publicTalkItems"
-            item-key="id"
-            tag="div"
-            group="media-items"
-            @start="dragging = true"
-            @end="dragging = false"
-          >
-            <template #item="{ element }">
-              <media-item
-                :src="element.path"
-                :play-now="element.play"
-                :stop-now="element.stop"
-                :deactivate="element.deactivate"
-                @playing="setIndex(element.id)"
-                @deactivated="resetDeactivate(element.id)"
-              />
-            </template>
-          </draggable>
-        </v-list>
-        <v-divider class="mx-4 living" />
-        <v-list-item-title class="mx-4 my-2 text-living text-overline">
-          {{ wtTitle }}
-        </v-list-item-title>
-        <v-list class="ma-4">
-          <draggable
-            v-model="wtItems"
-            item-key="id"
-            tag="div"
-            group="media-items"
-            @start="dragging = true"
-            @end="dragging = false"
-          >
-            <template #item="{ element }">
-              <media-item
-                :src="element.path"
-                :play-now="element.play"
-                :stop-now="element.stop"
-                :deactivate="element.deactivate"
-                @playing="setIndex(element.id)"
-                @deactivated="resetDeactivate(element.id)"
-              />
-            </template>
-          </draggable>
-        </v-list>
-      </div>
-      <v-list v-else class="ma-4">
+      </template>
+    </div>
+    <div v-else-if="isWeDay">
+      <v-list-item-title class="mx-4 my-4 text-treasures text-overline">
+        {{ $t('publicTalk') }}
+      </v-list-item-title>
+      <v-list class="ma-4">
         <draggable
-          v-model="mediaItems"
+          v-model="publicTalkItems"
           item-key="id"
           tag="div"
           group="media-items"
@@ -168,7 +129,53 @@
           </template>
         </draggable>
       </v-list>
-    </v-expand-transition>
+      <v-divider class="mx-4 living" />
+      <v-list-item-title class="mx-4 my-2 text-living text-overline">
+        {{ wtTitle }}
+      </v-list-item-title>
+      <v-list class="ma-4">
+        <draggable
+          v-model="wtItems"
+          item-key="id"
+          tag="div"
+          group="media-items"
+          @start="dragging = true"
+          @end="dragging = false"
+        >
+          <template #item="{ element }">
+            <media-item
+              :src="element.path"
+              :play-now="element.play"
+              :stop-now="element.stop"
+              :deactivate="element.deactivate"
+              @playing="setIndex(element.id)"
+              @deactivated="resetDeactivate(element.id)"
+            />
+          </template>
+        </draggable>
+      </v-list>
+    </div>
+    <v-list v-else class="ma-4">
+      <draggable
+        v-model="mediaItems"
+        item-key="id"
+        tag="div"
+        group="media-items"
+        @start="dragging = true"
+        @end="dragging = false"
+      >
+        <template #item="{ element }">
+          <media-item
+            :src="element.path"
+            :play-now="element.play"
+            :stop-now="element.stop"
+            :deactivate="element.deactivate"
+            @playing="setIndex(element.id)"
+            @deactivated="resetDeactivate(element.id)"
+          />
+        </template>
+      </draggable>
+    </v-list>
   </div>
 </template>
 <script setup lang="ts">
@@ -266,8 +273,10 @@ watch(
 )
 const setItems = (val: MediaItem[]) => {
   mediaItems.value = val
-  publicTalkItems.value = val.slice(0, firstWtSong.value)
-  wtItems.value = val.slice(firstWtSong.value)
+  if (firstWtSong.value !== -1) {
+    publicTalkItems.value = val.slice(0, firstWtSong.value)
+    wtItems.value = val.slice(firstWtSong.value)
+  }
   treasureItems.value = val.slice(
     0,
     firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
