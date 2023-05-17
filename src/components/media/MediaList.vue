@@ -1,7 +1,7 @@
 <template>
   <div id="media-list-container" style="width: 100%">
     <v-alert
-      v-if="$props.items.length > 0"
+      v-if="$props.items.length === 0"
       type="warning"
       :text="$t('warnNoMediaFound')"
     ></v-alert>
@@ -20,11 +20,6 @@
         />
       </v-list>
     </v-expand-transition>
-    <v-expand-transition>
-      <div v-if="$props.items.length === 0" class="ma-4">
-        {{ $t('warnNoMediaFound') }}
-      </div></v-expand-transition
-    >
     <div v-if="isMwDay">
       <template v-if="treasureItems.length > 0">
         <v-divider class="mx-4 mt-4 text-treasures" />
