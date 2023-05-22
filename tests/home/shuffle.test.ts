@@ -1,6 +1,5 @@
 import { platform } from 'os'
-import { expect, test } from '@playwright/test'
-import type { ElectronApplication, Page } from 'playwright'
+import { expect, test, ElectronApplication, Page } from '@playwright/test'
 import { version } from '../../package.json'
 import { MS_IN_SEC } from './../../src/constants/general'
 import { startApp, openHomePage } from './../helpers/electronHelpers'

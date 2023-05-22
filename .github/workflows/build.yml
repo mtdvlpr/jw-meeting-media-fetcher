@@ -87,7 +87,9 @@ jobs:
 
       - name: Run tests
         if: inputs.type == 'test'
-        run: yarn lint
+        run: |
+          npx playwright install --with-deps chromium
+          yarn lint
 
       - name: Upload screenshots to docs
         if: |

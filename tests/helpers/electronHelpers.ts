@@ -7,8 +7,7 @@ import {
   ipcRendererInvoke,
   parseElectronApp,
 } from 'electron-playwright-helpers'
-import { expect, Page } from '@playwright/test'
-import { _electron, ElectronApplication } from 'playwright'
+import { expect, Page, _electron, ElectronApplication } from '@playwright/test'
 import { sync } from 'fast-glob'
 import { name } from '../../package.json'
 import { delay } from './generalHelpers'
