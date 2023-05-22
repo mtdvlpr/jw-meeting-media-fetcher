@@ -146,10 +146,10 @@ import { extname, join } from 'upath'
 import { LocalFile, MeetingFile } from '~~/types'
 
 const emit = defineEmits<{
-  (e: 'refresh'): void
-  (e: 'atClick'): void
-  (e: 'edit'): void
-  (e: 'remove'): void
+  refresh: []
+  atClick: []
+  edit: []
+  remove: []
 }>()
 const props = defineProps<{
   date: string

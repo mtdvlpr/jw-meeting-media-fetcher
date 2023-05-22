@@ -72,7 +72,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'cache', cache: number): void
+  cache: [cache: number]
 }>()
 
 const isNew = useRouteQuery<string>('new', '')

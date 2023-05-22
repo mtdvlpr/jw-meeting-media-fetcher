@@ -46,8 +46,8 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (event: 'select', payload: VideoFile): void
-  (event: 'cancel'): void
+  cancel: []
+  select: [video: VideoFile]
 }>()
 
 onMounted(() => {

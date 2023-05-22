@@ -318,8 +318,8 @@ import { existsSync } from 'fs-extra'
 import { AppPrefs, VFormRef, PrefStore } from '~~/types'
 
 const emit = defineEmits<{
-  (e: 'valid', val: boolean): void
-  (e: 'refresh', val: AppPrefs): void
+  valid: [val: boolean]
+  refresh: [val: AppPrefs]
 }>()
 const props = defineProps<{
   prefs: PrefStore

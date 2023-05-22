@@ -61,7 +61,7 @@
           )
         "
       >
-        <template #activator="{ btnProps }">
+        <template #activator="{ props: btnProps }">
           <v-btn
             v-if="meeting.enableMusicButton"
             v-bind="btnProps"
@@ -162,9 +162,9 @@ const props = defineProps<{
   cache: number
 }>()
 const emit = defineEmits<{
-  (e: 'cache'): void
-  (e: 'valid', valid: boolean): void
-  (e: 'refresh', prefs: MeetingPrefs): void
+  cache: []
+  valid: [valid: boolean]
+  refresh: [prefs: MeetingPrefs]
 }>()
 
 const { $dayjs } = useNuxtApp()

@@ -95,8 +95,8 @@
 import { CongPrefs, Host, VFormRef } from '~~/types'
 
 const emit = defineEmits<{
-  (e: 'valid', valid: boolean): void
-  (e: 'refresh', prefs: CongPrefs): void
+  valid: [val: boolean]
+  refresh: [prefs: CongPrefs]
 }>()
 
 const store = useCongStore()

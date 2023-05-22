@@ -34,9 +34,9 @@
 <script setup lang="ts">
 import { LocalFile, VideoFile } from '~~/types'
 const emit = defineEmits<{
-  (e: 'click'): void
-  (e: 'reset'): void
-  (e: 'remove', index: number): void
+  click: []
+  reset: []
+  remove: [index: number]
 }>()
 defineProps<{
   type: string

@@ -24,7 +24,7 @@ interface TreeObj {
 }
 
 const emit = defineEmits<{
-  (e: 'open', filename: string): void
+  open: [filename: string]
 }>()
 const props = defineProps<{
   contents: CongFile[]

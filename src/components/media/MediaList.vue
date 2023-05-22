@@ -193,8 +193,8 @@ type MediaItem = {
   deactivate: boolean
 }
 const emit = defineEmits<{
-  (e: 'index', id: number): void
-  (e: 'deactivate', index: number): void
+  index: [id: number]
+  deactivate: [index: number]
 }>()
 
 const props = defineProps<{

@@ -91,9 +91,9 @@ import { useRouteQuery } from '@vueuse/router'
 import { Time, Times, TimeString } from '~~/types'
 
 const emit = defineEmits<{
-  (e: 'resetClipped'): void
-  (e: 'clipped', time: Times): void
-  (e: 'progress', percentage: number): void
+  resetClipped: []
+  clipped: [time: Times]
+  progress: [percentage: number]
 }>()
 const props = defineProps<{
   src: string

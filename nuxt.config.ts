@@ -40,7 +40,11 @@ export default defineNuxtConfig({
   srcDir: 'src/',
   ssr: false,
   telemetry: false,
-  typescript: { shim: false, typeCheck: false },
+  typescript: {
+    shim: false,
+    typeCheck: false,
+    tsConfig: { compilerOptions: { moduleResolution: 'bundler' } },
+  },
   build: {
     transpile: ['@vuepic/vue-datepicker'],
   },
