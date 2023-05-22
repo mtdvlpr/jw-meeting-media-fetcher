@@ -73,7 +73,7 @@ export async function getWeMedia(date: string) {
 
   const media = executeQuery<MultiMediaItem>(
     db,
-    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, BeginParagraphOrdinal, FilePath, Label, Caption, TargetParagraphNumberLabel
+    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, BeginParagraphOrdinal, FilePath, Label, Caption, TargetParagraphNumberLabel, KeySymbol, Track, IssueTagNumber
          FROM DocumentMultimedia
          INNER JOIN Multimedia
            ON DocumentMultimedia.MultimediaId = Multimedia.MultimediaId
@@ -83,11 +83,11 @@ export async function getWeMedia(date: string) {
          WHERE DocumentMultimedia.DocumentId = ${docId}
            AND CategoryType <> 9 
            AND CategoryType <> -1
-         GROUP BY DocumentMultimedia.MultimediaId`
+         GROUP BY DocumentMultimedia.MultimediaId
+         ORDER BY BeginParagraphOrdinal`
   )
 
-  const images = media.filter((m) => m.KeySymbol !== 'sjjm')
-  images.forEach((img) => promises.push(addImgToPart(date, issue, img)))
+  media.forEach((m) => promises.push(addMediaToPart(date, issue, m)))
 
   let songs = media.filter((m) => m.KeySymbol === 'sjjm')
 
@@ -114,8 +114,7 @@ export async function getWeMedia(date: string) {
            ON DocumentExtract.DocumentId = DocumentMultimedia.DocumentId
            AND DocumentExtract.BeginParagraphOrdinal = DocumentMultimedia.BeginParagraphOrdinal
          WHERE DocumentMultimedia.DocumentId = ${docId}
-           AND CategoryType <> 9
-           AND CategoryType <> 8
+           AND CategoryType = -1
          GROUP BY DocumentMultimedia.MultimediaId`
     ) as MultiMediaItem[]
   }
@@ -155,7 +154,7 @@ export async function getWeMedia(date: string) {
   await Promise.allSettled(promises)
 }
 
-async function addImgToPart(
+async function addMediaToPart(
   date: string,
   issue: string,
   img: MultiMediaItem
