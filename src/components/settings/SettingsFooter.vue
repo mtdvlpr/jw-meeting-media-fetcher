@@ -20,7 +20,12 @@
           </v-tooltip>
           <v-icon icon="mdi-bug" />
         </v-btn>
-        <v-btn :color="cacheColor" :loading="loading" @click="removeCache()">
+        <v-btn
+          v-click-outside="() => (cacheColor = 'warning')"
+          :color="cacheColor"
+          :loading="loading"
+          @click="removeCache()"
+        >
           <v-icon icon="mdi-file-image-remove" color="black" start />
           {{ `${cache}MB` }}
           <v-tooltip

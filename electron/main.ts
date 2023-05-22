@@ -13,7 +13,7 @@ import {
   RelaunchOptions,
   session,
 } from 'electron'
-import { init } from '@sentry/electron'
+import { init } from '@sentry/electron/main'
 import { initRenderer } from 'electron-store'
 import BrowserWinHandler from './BrowserWinHandler'
 import { initAutoUpdater } from './autoUpdater'

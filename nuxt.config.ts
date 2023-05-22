@@ -68,6 +68,7 @@ export default defineNuxtConfig({
     [
       'nuxt-electron',
       {
+        build: [{ entry: 'electron/main.ts' }],
         renderer: {
           // Fix for: https://github.com/caoxiemeihao/nuxt-electron/issues/16#issuecomment-1484776511
           resolve:
