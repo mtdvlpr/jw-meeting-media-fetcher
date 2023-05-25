@@ -39,13 +39,13 @@ export type GroupID =
   | 'advanced'
   | 'integrations'
   | 'playback'
+  | 'shortcuts'
   | 'meetings'
 
 export type SubGroupID =
-  | 'videos'
+  | 'subtitles'
   | 'afterSync'
   | 'mediaAdvanced'
-  | 'shortcuts'
   | 'obs'
   | 'webdav'
   | 'zoom'

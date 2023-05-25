@@ -27,12 +27,12 @@
       </v-tooltip>
     </template>
   </v-list-item>
-  <form-date-picker
-    v-else-if="setting.type == 'date'"
-    v-model="value"
-    :label="label"
-  />
-  <form-time-picker v-else-if="setting.type == 'time'" v-model="value" />
+  <v-list-item v-else-if="setting.type == 'date'" style="max-width: 550px">
+    <form-date-picker v-model="value" :label="label" />
+  </v-list-item>
+  <v-list-item v-else-if="setting.type == 'time'" style="max-width: 250px">
+    <form-time-picker v-model="value" />
+  </v-list-item>
   <v-list-item v-else-if="setting.type == 'path'" style="max-width: 550px">
     <span class="text-body-2" v-html="$t(label)" />
     <br />

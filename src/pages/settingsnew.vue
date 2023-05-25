@@ -345,28 +345,14 @@ const groups = computed((): Settings[] => {
       id: 'media',
       label: 'Media retrieval',
       settings: [
-        { key: 'media.includePrinted' },
         requiredSettings.value['media.lang'],
+        { key: 'media.includePrinted' },
         requiredSettings.value['app.localOutputPath'],
-        { key: 'meeting.specialCong' },
         {
           type: 'group',
-          id: 'videos',
-          label: $i18n.t('videos'),
+          id: 'subtitles',
+          label: $i18n.t('subtitles'),
           value: [
-            {
-              type: 'btn-group',
-              key: 'media.maxRes',
-              props: {
-                groupLabel: 'maxRes',
-                groupItems: RESOLUTIONS.map((r) => {
-                  return {
-                    title: r,
-                    value: r,
-                  }
-                }),
-              },
-            },
             {
               key: 'media.enableSubtitles',
             },
@@ -398,13 +384,17 @@ const groups = computed((): Settings[] => {
           label: $i18n.t('advanced'),
           value: [
             {
-              key: 'media.enableMp4Conversion',
-              explanation: 'enableMp4ConversionExplain',
+              type: 'select',
+              key: 'app.outputFolderDateFormat',
+              props: {
+                items: dateFormats.map((f) => {
+                  return {
+                    title: $dayjs().format(f),
+                    value: f,
+                  }
+                }),
+              },
             },
-            { key: 'media.keepOriginalsAfterConversion' },
-            { key: 'media.enableVlcPlaylistCreation' },
-            { key: 'media.excludeTh' },
-            { key: 'media.excludeLffImages' },
             {
               type: 'autocomplete',
               key: 'media.langFallback',
@@ -424,15 +414,208 @@ const groups = computed((): Settings[] => {
               },
             },
             {
-              type: 'select',
-              key: 'app.outputFolderDateFormat',
+              type: 'btn-group',
+              key: 'media.maxRes',
               props: {
-                items: dateFormats.map((f) => {
+                groupLabel: 'maxRes',
+                groupItems: RESOLUTIONS.map((r) => {
                   return {
-                    title: $dayjs().format(f),
-                    value: f,
+                    title: r,
+                    value: r,
                   }
                 }),
+              },
+            },
+            { key: 'media.excludeTh' },
+            { key: 'media.excludeLffImages' },
+            { key: 'media.enableVlcPlaylistCreation' },
+            {
+              key: 'media.enableMp4Conversion',
+              explanation: 'enableMp4ConversionExplain',
+            },
+            {
+              key: 'media.keepOriginalsAfterConversion',
+              depends: 'media.enableMp4Conversion',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'playback',
+      label: 'Media playback',
+      settings: [
+        {
+          type: 'select',
+          key: 'media.preferredOutput',
+          depends: 'media.enableMediaDisplayButton',
+          props: {
+            items: [
+              { title: $i18n.t('window'), value: 'window' },
+              ...screens.value.map((s) => {
+                return {
+                  title: s.title,
+                  value: s.id,
+                }
+              }),
+            ],
+          },
+          onChange: () => {
+            if (prefs.value.media.enableMediaDisplayButton) {
+              getMediaWindowDestination().then((dest) => {
+                ipcRenderer.send('showMediaWindow', dest)
+              })
+            }
+          },
+        },
+        {
+          type: 'group',
+          id: 'music',
+          label: $i18n.t('backgroundMusic'),
+          value: [
+            {
+              key: 'meeting.enableMusicButton',
+              onChange: (val: boolean) => {
+                useStatStore().setShowMusicButton(val)
+              },
+            },
+            {
+              type: 'action',
+              label: 'downloadShuffleMusic',
+              depends: 'meeting.enableMusicButton',
+              action: async () => {
+                if (!prefs.value.media.lang) {
+                  return
+                }
+
+                const isSign = useMediaStore().mediaLang?.isSignLanguage
+
+                try {
+                  const songs = (await getMediaLinks({
+                    pubSymbol: isSign ? 'sjj' : 'sjjm',
+                    format: isSign ? 'MP4' : 'MP3',
+                    lang: isSign ? prefs.value.media.lang : 'E',
+                  })) as VideoFile[]
+
+                  const promises: Promise<void>[] = []
+
+                  songs
+                    .filter(
+                      (item) => extname(item.url) === (isSign ? '.mp4' : '.mp3')
+                    )
+                    .forEach((s) => promises.push(downloadSong(s)))
+
+                  await Promise.allSettled(promises)
+                  refreshCache.value = !refreshCache.value
+                } catch (e: unknown) {
+                  console.log('error')
+                }
+              },
+            },
+            {
+              type: 'slider',
+              key: 'meeting.musicVolume',
+              depends: 'meeting.enableMusicButton',
+            },
+            {
+              key: 'meeting.autoStartMusic',
+              depends: 'meeting.enableMusicButton',
+            },
+            {
+              key: 'meeting.enableMusicFadeOut',
+              depends: 'meeting.enableMusicButton',
+            },
+            {
+              type: 'btn-group',
+              key: 'meeting.musicFadeOutType',
+              depends: 'meeting.enableMusicFadeOut',
+
+              prepend: {
+                type: 'slider',
+                key: 'meeting.musicFadeOutTime',
+              },
+              props: {
+                groupItems: [
+                  {
+                    title: useComputedLabel<MeetingPrefs>(
+                      'musicFadeOutSmart',
+                      prefs.value.meeting,
+                      'musicFadeOutTime',
+                      PREFS.meeting.musicFadeOutTime
+                    ),
+                    value: 'smart',
+                  },
+                  {
+                    title: useComputedLabel<MeetingPrefs>(
+                      'musicFadeOutTimer',
+                      prefs.value.meeting,
+                      'musicFadeOutTime',
+                      PREFS.meeting.musicFadeOutTime
+                    ),
+                    value: 'timer',
+                  },
+                ],
+              },
+            },
+          ],
+        },
+        {
+          type: 'group',
+          id: 'playbackAdvanced',
+          label: $i18n.t('advanced'),
+          value: [
+            {
+              key: 'media.hideMediaLogo',
+              depends: 'media.enableMediaDisplayButton',
+              onChange: () => {
+                refreshBackgroundImgPreview()
+              },
+            },
+            {
+              key: 'media.hideWinAfterMedia',
+              depends: 'media.enableMediaDisplayButton',
+            },
+            {
+              key: 'media.autoPlayFirst',
+              depends: 'media.enableMediaDisplayButton',
+            },
+            {
+              type: 'action',
+              label: 'mediaWindowBackground',
+              depends: 'media.enableMediaDisplayButton',
+              action: async () => {
+                const result = await ipcRenderer.invoke('openDialog', {
+                  properties: ['openFile'],
+                  filters: [
+                    {
+                      name: 'Image',
+                      extensions: ['jpg', 'png', 'jpeg', 'gif', 'svg'],
+                    },
+                  ],
+                })
+                if (!result || result.canceled) return
+                if (isImage(result.filePaths[0])) {
+                  const background = result.filePaths[0]
+                  const filename = `custom-background-image-${prefs.value.app.congregationName}`
+                  const extension = extname(background)
+                  rm(findAll(join(appPath(), filename + '*')))
+                  copy(background, join(appPath(), filename + extension))
+
+                  // Upload the background to the cong server
+                  if (client.value && prefs.value.cong.dir) {
+                    await client.value.putFileContents(
+                      join(prefs.value.cong.dir, filename + extension),
+                      await readFile(background),
+                      {
+                        overwrite: true,
+                      }
+                    )
+                  }
+
+                  refreshBackgroundImgPreview()
+                } else {
+                  warn('notAnImage')
+                }
               },
             },
           ],
@@ -440,107 +623,16 @@ const groups = computed((): Settings[] => {
       ],
     },
     {
-      id: 'advanced',
-      label: 'Advanced Settings',
+      id: 'meetings',
+      label: 'Scheduled meetings',
       settings: [
-        { key: 'app.autoRunAtBoot' },
-        { key: 'app.autoStartSync' },
-        { key: 'app.betaUpdates' },
+        requiredSettings.value['meeting.mwDay'],
+        requiredSettings.value['meeting.mwStartTime'],
+        requiredSettings.value['meeting.weDay'],
+        requiredSettings.value['meeting.weStartTime'],
         {
-          type: 'action',
-          label: 'clean cache',
-          action: () => {
-            console.log('clean cache')
-          },
-        },
-        {
-          type: 'path',
-          key: 'app.customCachePath',
-          onChange: (val: string, oldVal: string) => {
-            const defaultPath = (folder: string) => join(appPath(), folder)
-            if (val && !oldVal) {
-              move(defaultPath('Publications'), join(val, 'Publications'))
-              move(defaultPath('Fonts'), join(val, 'Fonts'))
-            } else if (!val && oldVal) {
-              move(
-                join(oldVal, 'Publications'),
-                defaultPath('Publications'),
-                true
-              )
-              move(join(oldVal, 'Fonts'), defaultPath('Fonts'), true)
-            } else {
-              move(join(oldVal, 'Publications'), join(val, 'Publications'))
-              move(join(oldVal, 'Fonts'), join(val, 'Fonts'))
-            }
-          },
-        },
-        { key: 'app.disableAutoUpdate' },
-        { key: 'app.disableHardwareAcceleration' },
-        {
-          key: 'media.hideMediaLogo',
-          depends: 'media.enableMediaDisplayButton',
-          onChange: () => {
-            refreshBackgroundImgPreview()
-          },
-        },
-        {
-          key: 'media.hideWinAfterMedia',
-          depends: 'media.enableMediaDisplayButton',
-        },
-        { key: 'app.offlineMode' },
-        {
-          type: 'group',
-          id: 'shortcuts',
-          label: $i18n.t('keyboardShortcuts'),
-          value: [
-            {
-              type: 'text',
-              key: 'media.mediaWinShortcut',
-              depends: 'media.enableMediaDisplayButton',
-              onChange: (val: string) => {
-                changeShortcut(val, 'toggleMediaWindow')
-                const store = useStatStore()
-                store.setShowMediaPlayback(false)
-                store.setShowMediaPlayback(true)
-              },
-            },
-            {
-              type: 'text',
-              key: 'media.presentShortcut',
-              depends: 'media.enableMediaDisplayButton',
-              onChange: (val: string) => {
-                changeShortcut(val, 'openPresentMode')
-                const store = useStatStore()
-                store.setShowMediaPlayback(false)
-                store.setShowMediaPlayback(true)
-              },
-            },
-            {
-              type: 'text',
-              key: 'media.shuffleShortcut',
-              depends: 'meeting.enableMusicButton',
-              onChange: (val: string) => {
-                changeShortcut(val, 'toggleMusicShuffle')
-                const store = useStatStore()
-                store.setShowMusicButton(false)
-                store.setShowMusicButton(true)
-              },
-            },
-            {
-              key: 'media.enablePp',
-              depends: 'media.enableMediaDisplayButton',
-            },
-            {
-              type: 'text',
-              key: 'media.ppBackward',
-              depends: 'media.enablePp',
-            },
-            {
-              type: 'text',
-              key: 'media.ppForward',
-              depends: 'media.enablePp',
-            },
-          ],
+          type: 'date',
+          key: 'meeting.coWeek',
         },
       ],
     },
@@ -709,15 +801,6 @@ const groups = computed((): Settings[] => {
           label: 'Zoom',
           value: [
             {
-              type: 'list',
-              key: 'app.zoom.autoRename',
-              label: 'zoomAutoRename',
-            },
-            {
-              key: 'autoStartMeeting',
-              label: 'zoomAutoStartMeeting',
-            },
-            {
               type: 'text',
               key: 'app.zoom.id',
               label: 'zoomId',
@@ -727,201 +810,112 @@ const groups = computed((): Settings[] => {
               key: 'app.zoom.password',
             },
             {
-              key: 'app.zoom.spotlight',
-              label: 'zoomSpotlight',
-            },
-            {
               type: 'text',
               key: 'app.zoom.name',
               label: 'zoomName',
             },
+            {
+              key: 'autoStartMeeting',
+              label: 'zoomAutoStartMeeting',
+            },
+            {
+              key: 'app.zoom.spotlight',
+              label: 'zoomSpotlight',
+            },
+            {
+              type: 'list',
+              key: 'app.zoom.autoRename',
+              label: 'zoomAutoRename',
+            },
           ],
         },
       ],
     },
     {
-      id: 'playback',
-      label: 'Media playback',
+      id: 'shortcuts',
+      label: $i18n.t('keyboardShortcuts'),
       settings: [
         {
-          key: 'media.autoPlayFirst',
+          type: 'text',
+          key: 'media.mediaWinShortcut',
+          depends: 'media.enableMediaDisplayButton',
+          onChange: (val: string) => {
+            changeShortcut(val, 'toggleMediaWindow')
+            const store = useStatStore()
+            store.setShowMediaPlayback(false)
+            store.setShowMediaPlayback(true)
+          },
+        },
+        {
+          type: 'text',
+          key: 'media.presentShortcut',
+          depends: 'media.enableMediaDisplayButton',
+          onChange: (val: string) => {
+            changeShortcut(val, 'openPresentMode')
+            const store = useStatStore()
+            store.setShowMediaPlayback(false)
+            store.setShowMediaPlayback(true)
+          },
+        },
+        {
+          type: 'text',
+          key: 'media.shuffleShortcut',
+          depends: 'meeting.enableMusicButton',
+          onChange: (val: string) => {
+            changeShortcut(val, 'toggleMusicShuffle')
+            const store = useStatStore()
+            store.setShowMusicButton(false)
+            store.setShowMusicButton(true)
+          },
+        },
+        {
+          key: 'media.enablePp',
           depends: 'media.enableMediaDisplayButton',
         },
         {
-          type: 'select',
-          key: 'media.preferredOutput',
-          depends: 'media.enableMediaDisplayButton',
-          props: {
-            items: [
-              { title: $i18n.t('window'), value: 'window' },
-              ...screens.value.map((s) => {
-                return {
-                  title: s.title,
-                  value: s.id,
-                }
-              }),
-            ],
-          },
-          onChange: () => {
-            if (prefs.value.media.enableMediaDisplayButton) {
-              getMediaWindowDestination().then((dest) => {
-                ipcRenderer.send('showMediaWindow', dest)
-              })
+          type: 'text',
+          key: 'media.ppBackward',
+          depends: 'media.enablePp',
+        },
+        {
+          type: 'text',
+          key: 'media.ppForward',
+          depends: 'media.enablePp',
+        },
+      ],
+    },
+    {
+      id: 'advanced',
+      label: 'Advanced',
+      settings: [
+        { key: 'app.offlineMode' },
+        { key: 'app.disableHardwareAcceleration' },
+        { key: 'app.disableAutoUpdate' },
+        { key: 'app.betaUpdates' },
+        { key: 'meeting.specialCong' },
+        { key: 'app.autoRunAtBoot' },
+        { key: 'app.autoStartSync' },
+        {
+          type: 'path',
+          key: 'app.customCachePath',
+          onChange: (val: string, oldVal: string) => {
+            const defaultPath = (folder: string) => join(appPath(), folder)
+            if (val && !oldVal) {
+              move(defaultPath('Publications'), join(val, 'Publications'))
+              move(defaultPath('Fonts'), join(val, 'Fonts'))
+            } else if (!val && oldVal) {
+              move(
+                join(oldVal, 'Publications'),
+                defaultPath('Publications'),
+                true
+              )
+              move(join(oldVal, 'Fonts'), defaultPath('Fonts'), true)
+            } else {
+              move(join(oldVal, 'Publications'), join(val, 'Publications'))
+              move(join(oldVal, 'Fonts'), join(val, 'Fonts'))
             }
           },
         },
-
-        {
-          type: 'group',
-          id: 'playbackAdvanced',
-          label: $i18n.t('advanced'),
-          value: [
-            {
-              type: 'action',
-              label: 'mediaWindowBackground',
-              depends: 'media.enableMediaDisplayButton',
-              action: async () => {
-                const result = await ipcRenderer.invoke('openDialog', {
-                  properties: ['openFile'],
-                  filters: [
-                    {
-                      name: 'Image',
-                      extensions: ['jpg', 'png', 'jpeg', 'gif', 'svg'],
-                    },
-                  ],
-                })
-                if (!result || result.canceled) return
-                if (isImage(result.filePaths[0])) {
-                  const background = result.filePaths[0]
-                  const filename = `custom-background-image-${prefs.value.app.congregationName}`
-                  const extension = extname(background)
-                  rm(findAll(join(appPath(), filename + '*')))
-                  copy(background, join(appPath(), filename + extension))
-
-                  // Upload the background to the cong server
-                  if (client.value && prefs.value.cong.dir) {
-                    await client.value.putFileContents(
-                      join(prefs.value.cong.dir, filename + extension),
-                      await readFile(background),
-                      {
-                        overwrite: true,
-                      }
-                    )
-                  }
-
-                  refreshBackgroundImgPreview()
-                } else {
-                  warn('notAnImage')
-                }
-              },
-            },
-          ],
-        },
-        {
-          type: 'group',
-          id: 'music',
-          label: $i18n.t('backgroundMusic'),
-          value: [
-            {
-              key: 'meeting.enableMusicButton',
-              onChange: (val: boolean) => {
-                useStatStore().setShowMusicButton(val)
-              },
-            },
-            {
-              type: 'action',
-              label: 'downloadShuffleMusic',
-              depends: 'meeting.enableMusicButton',
-              action: async () => {
-                if (!prefs.value.media.lang) {
-                  return
-                }
-
-                const isSign = useMediaStore().mediaLang?.isSignLanguage
-
-                try {
-                  const songs = (await getMediaLinks({
-                    pubSymbol: isSign ? 'sjj' : 'sjjm',
-                    format: isSign ? 'MP4' : 'MP3',
-                    lang: isSign ? prefs.value.media.lang : 'E',
-                  })) as VideoFile[]
-
-                  const promises: Promise<void>[] = []
-
-                  songs
-                    .filter(
-                      (item) => extname(item.url) === (isSign ? '.mp4' : '.mp3')
-                    )
-                    .forEach((s) => promises.push(downloadSong(s)))
-
-                  await Promise.allSettled(promises)
-                  refreshCache.value = !refreshCache.value
-                } catch (e: unknown) {
-                  console.log('error')
-                }
-              },
-            },
-            {
-              type: 'slider',
-              key: 'meeting.musicVolume',
-              depends: 'meeting.enableMusicButton',
-            },
-            {
-              key: 'meeting.autoStartMusic',
-              depends: 'meeting.enableMusicButton',
-            },
-            {
-              key: 'meeting.enableMusicFadeOut',
-              depends: 'meeting.enableMusicButton',
-            },
-            {
-              type: 'btn-group',
-              key: 'meeting.musicFadeOutType',
-              depends: 'meeting.enableMusicFadeOut',
-
-              prepend: {
-                type: 'slider',
-                key: 'meeting.musicFadeOutTime',
-              },
-              props: {
-                groupItems: [
-                  {
-                    title: useComputedLabel<MeetingPrefs>(
-                      'musicFadeOutSmart',
-                      prefs.value.meeting,
-                      'musicFadeOutTime',
-                      PREFS.meeting.musicFadeOutTime
-                    ),
-                    value: 'smart',
-                  },
-                  {
-                    title: useComputedLabel<MeetingPrefs>(
-                      'musicFadeOutTimer',
-                      prefs.value.meeting,
-                      'musicFadeOutTime',
-                      PREFS.meeting.musicFadeOutTime
-                    ),
-                    value: 'timer',
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'meetings',
-      label: 'Scheduled meetings',
-      settings: [
-        {
-          type: 'date',
-          key: 'meeting.coWeek',
-        },
-        requiredSettings.value['meeting.mwDay'],
-        requiredSettings.value['meeting.mwStartTime'],
-        requiredSettings.value['meeting.weDay'],
-        requiredSettings.value['meeting.weStartTime'],
       ],
     },
   ]

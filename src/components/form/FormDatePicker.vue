@@ -1,4 +1,5 @@
 <template>
+  <span class="text-body-2" v-html="$t(label)" />
   <VueDatePicker
     v-model="value"
     :locale="locale"
@@ -13,7 +14,6 @@
     :teleport="true"
     :state="required && !value ? false : undefined"
     :clearable="!required"
-    :placeholder="label"
     :select-text="$t('confirm')"
     :cancel-text="$t('cancel')"
     :disabled-dates="disabledDates"
