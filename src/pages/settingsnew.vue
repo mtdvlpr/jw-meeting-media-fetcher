@@ -14,14 +14,15 @@
       <v-col cols="12">
         <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
         <v-form ref="form" v-model="valid" @submit.prevent>
-          <v-list density="compact">
+          <v-list class="">
             <v-list-group v-for="group in filteredGroups" :key="group.id">
               <template #activator="{ props }">
                 <v-list-item
                   v-bind="props"
                   :title="group.label"
-                  variant="tonal"
-                  color="primary"
+                  variant="elevated"
+                  color="blue-grey-lighten-4"
+                  style="background-color: #eceff1"
                 />
               </template>
               <settings-group
@@ -89,7 +90,7 @@ const dateFormats = [
 ]
 
 const localeDays = computed(() => {
-  return $dayjs.weekdaysMin(true).map((day, i) => {
+  return $dayjs.weekdaysShort(true).map((day, i) => {
     return {
       title: day,
       value: i,

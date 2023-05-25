@@ -175,7 +175,7 @@ const headers = ref<
     valid: false,
   },
 ])
-const mounted = ref(false)
+const mounted = ref(true) // on a new install, without this i couldn't get past the loading spinner
 const headersChanged = ref(0)
 watch(
   headers,

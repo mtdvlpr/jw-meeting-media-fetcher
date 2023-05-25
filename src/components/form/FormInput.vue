@@ -11,6 +11,7 @@
     variant="outlined"
     density="compact"
     :rules="rules"
+    style="max-width: 500px"
     :counted="max > 0 ? max : undefined"
   >
     <template v-if="!isLocked(id) && field === 'password'" #append-inner>
@@ -31,6 +32,7 @@
     :rules="rules"
     density="compact"
     variant="outlined"
+    style="max-width: 500px"
     :counted="max > 0 ? max : undefined"
     hide-no-data
   >
@@ -45,6 +47,7 @@
     v-model="value"
     variant="outlined"
     density="compact"
+    style="max-width: 500px"
     :disabled="!!$attrs.disabled || isLocked(id)"
     :class="{ 'py-1': true, 'mb-2': required }"
     v-bind="$attrs"
@@ -71,9 +74,10 @@
     v-else-if="field == 'btn-group'"
     no-gutters
     class="py-1"
+    style="max-width: 500px"
     justify="space-between"
   >
-    <v-col align-self="center" class="text-left">
+    <!-- <v-col align-self="center" class="text-left">
       <v-tooltip v-if="isLocked(id)" location="top">
         {{ $t('settingLocked') }}
         <template #activator="{ props: attrs }">
@@ -83,31 +87,32 @@
       <span v-else-if="groupLabel">{{ $t(groupLabel) }}</span>
       <slot v-else name="prepend" />
     </v-col>
-    <v-col align-self="center" class="text-right">
-      <v-btn-toggle
-        :id="safeId"
-        ref="field"
-        v-model="value"
-        density="comfortable"
-        variant="outlined"
-        :border="required && value === null ? 'error' : undefined"
-        :color="required && value === null ? 'error' : 'primary'"
-        v-bind="$attrs"
-        :class="{ 'btn-group-error': required && value === null }"
+    <v-col align-self="center" class="text-right"> -->
+    <v-btn-toggle
+      :id="safeId"
+      ref="field"
+      v-model="value"
+      density="comfortable"
+      variant="outlined"
+      :border="required && value === null ? 'error' : undefined"
+      :color="required && value === null ? 'error' : 'primary'"
+      v-bind="$attrs"
+      :class="{ 'btn-group-error': required && value === null }"
+    >
+      <v-btn
+        v-for="(item, key) in groupItems"
+        :id="safeId + '-' + key"
+        :key="key"
+        :value="item.value"
+        :disabled="!!$attrs.disabled || isLocked(id)"
+        class="text-none"
       >
-        <v-btn
-          v-for="(item, key) in groupItems"
-          :id="safeId + '-' + key"
-          :key="key"
-          :value="item.value"
-          :disabled="!!$attrs.disabled || isLocked(id)"
-        >
-          {{ item.title }}
-        </v-btn>
-        <v-btn v-if="isLocked(id)" icon="mdi-lock" size="small" disabled />
-      </v-btn-toggle>
-    </v-col>
-    <v-col
+        {{ item.title }}
+      </v-btn>
+      <v-btn v-if="isLocked(id)" icon="mdi-lock" size="small" disabled />
+    </v-btn-toggle>
+    <!-- </v-col> -->
+    <!-- <v-col
       v-if="hasSlot()"
       cols="2"
       class="d-flex justify-end"
@@ -115,17 +120,20 @@
       style="min-width: 130px; max-width: 130px"
     >
       <slot />
-    </v-col>
+    </v-col> -->
   </v-row>
   <v-row v-else-if="field == 'slider'" class="mb-4" justify="space-between">
-    <v-col cols="auto" align-self="center" class="text-left">
-      {{ groupLabel }}
-    </v-col>
+    <template v-if="groupLabel"
+      ><v-col cols="auto" align-self="center" class="text-left">
+        {{ groupLabel }}
+      </v-col>
+    </template>
     <v-col align-self="center" class="text-right">
       <v-slider
         :id="safeId"
         ref="field"
         v-model="value"
+        style="max-width: 500px"
         :disabled="!!$attrs.disabled || isLocked(id)"
         v-bind="$attrs"
         density="compact"

@@ -1,15 +1,14 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
+  <v-divider></v-divider>
   <v-list-item
     v-if="setting.type == 'switch' || setting.type == undefined"
     @click="value = !value"
   >
-    <span v-html="$t(label)" />
-    <template #prepend>
-      <v-list-item-action start>
-        <v-switch :model-value="value" hide-details />
-      </v-list-item-action>
-    </template>
+    <span class="text-body-2" v-html="$t(label)" />
+    <v-list-item-action>
+      <v-switch inset :model-value="value" density="compact" hide-details />
+    </v-list-item-action>
     <template v-if="setting.explanation || isLocked(setting.key)" #append>
       <v-tooltip location="top" activator="parent">
         <template #activator="{ props: attrs }">
@@ -34,31 +33,30 @@
     :label="label"
   />
   <form-time-picker v-else-if="setting.type == 'time'" v-model="value" />
-  <v-list-item v-else-if="setting.type == 'path'">
-    <v-row>
-      <v-col cols="auto" class="pr-0 text-left">
-        <v-btn
-          color="primary"
-          style="height: 40px"
-          class="mt-1"
-          :disabled="isLocked(setting.key)"
-          @click="setPath"
-        >
-          {{ $t('browse') }}
-        </v-btn>
-      </v-col>
-      <v-col class="pl-0">
-        <form-input
-          :id="setting.key"
-          :model-value="value"
-          readonly
-          class="py-1"
-          :label="$t(label)"
-          hide-details="auto"
-          v-bind="setting.props"
-        />
-      </v-col>
-    </v-row>
+  <v-list-item v-else-if="setting.type == 'path'" style="max-width: 550px">
+    <span class="text-body-2" v-html="$t(label)" />
+    <br />
+    <v-btn
+      variant="tonal"
+      color="primary"
+      style="height: 40px"
+      class="mt-1 text-none"
+      :disabled="isLocked(setting.key)"
+      @click="setPath"
+    >
+      {{ value || $t('browse') }}
+    </v-btn>
+    <!-- <form-input
+      :id="setting.key"
+      :model-value="value"
+      readonly
+      class="py-1"
+      style="cursor: pointer"
+      hide-details="auto"
+      v-bind="setting.props"
+      :disabled="isLocked(setting.key)"
+      @click="setPath"
+    /> -->
   </v-list-item>
   <v-list-item v-else-if="setting.type === 'list'">
     <v-col class="d-flex pa-0 pb-2 align-center">
@@ -114,11 +112,11 @@
     </v-col>
   </v-list-item>
   <v-list-item v-else>
+    <span class="text-body-2" v-html="$t(label)" />
     <form-input
       :id="setting.key"
       v-model="value"
       :field="setting.type"
-      :label="$t(label)"
       hide-details="auto"
       v-bind="setting.props"
     >
