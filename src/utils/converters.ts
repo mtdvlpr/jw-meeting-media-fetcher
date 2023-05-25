@@ -474,7 +474,7 @@ function createVideo(
                   ) {
                     rm(file)
                   }
-                  increaseProgress(setProgress!)
+                  if (setProgress) increaseProgress(setProgress)
                   return resolve()
                 }
                 img.src = pathToFileURL(file).href

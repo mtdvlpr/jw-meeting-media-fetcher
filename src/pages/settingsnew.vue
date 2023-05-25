@@ -931,17 +931,11 @@ const filteredGroups = computed(() => {
       const filteredSettings: (Setting | Action | Group)[] = []
       group.settings.forEach((setting) => {
         if (setting.type === 'group') {
-          const filteredSubSettings: (Setting | Action)[] = []
-          setting.value.forEach((subSetting) => {
-            if (
-              $i18n
-                // @ts-expect-error
-                .t(subSetting.label ?? subSetting.key.split('.').pop())
-                .toLowerCase()
-                .includes(filter.value.toLowerCase())
-            ) {
-              filteredSubSettings.push(subSetting)
-            }
+          const filteredSubSettings = setting.value.filter((subSetting) => {
+            const label = $i18n.t(
+              subSetting.label ?? subSetting.key.split('.').pop()
+            )
+            return label.toLowerCase().includes(filter.value.toLowerCase())
           })
           if (filteredSubSettings.length > 0) {
             filteredSettings.push({
@@ -949,18 +943,18 @@ const filteredGroups = computed(() => {
               value: filteredSubSettings,
             })
           }
-        } else if (
-          $i18n
-            // @ts-expect-error
-            .t(setting.label ?? setting.key.split('.').pop())
-            .toLowerCase()
-            .includes(filter.value.toLowerCase())
-        ) {
-          filteredSettings.push(setting)
+        } else {
+          const label = $i18n.t(setting.label ?? setting.key.split('.').pop())
+          if (label.toLowerCase().includes(filter.value.toLowerCase())) {
+            filteredSettings.push(setting)
+          }
         }
       })
       if (filteredSettings.length > 0) {
-        filtered.push(group)
+        filtered.push({
+          ...group,
+          settings: filteredSettings,
+        })
       }
     }
   })
