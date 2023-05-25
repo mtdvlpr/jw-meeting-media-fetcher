@@ -345,38 +345,6 @@ const groups = computed((): Settings[] => {
       id: 'media',
       label: 'Media retrieval',
       settings: [
-        {
-          type: 'action',
-          label: 'downloadShuffleMusic',
-          action: async () => {
-            if (!prefs.value.media.lang) {
-              return
-            }
-
-            const isSign = useMediaStore().mediaLang?.isSignLanguage
-
-            try {
-              const songs = (await getMediaLinks({
-                pubSymbol: isSign ? 'sjj' : 'sjjm',
-                format: isSign ? 'MP4' : 'MP3',
-                lang: isSign ? prefs.value.media.lang : 'E',
-              })) as VideoFile[]
-
-              const promises: Promise<void>[] = []
-
-              songs
-                .filter(
-                  (item) => extname(item.url) === (isSign ? '.mp4' : '.mp3')
-                )
-                .forEach((s) => promises.push(downloadSong(s)))
-
-              await Promise.allSettled(promises)
-              refreshCache.value = !refreshCache.value
-            } catch (e: unknown) {
-              console.log('error')
-            }
-          },
-        },
         { key: 'media.includePrinted' },
         requiredSettings.value['media.lang'],
         requiredSettings.value['app.localOutputPath'],
@@ -405,6 +373,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'autocomplete',
               key: 'media.langSubs',
+              depends: 'media.enableSubtitles',
               props: {
                 items: langs.value.filter((l) => !l.isSignLanguage),
               },
@@ -509,11 +478,15 @@ const groups = computed((): Settings[] => {
         { key: 'app.disableHardwareAcceleration' },
         {
           key: 'media.hideMediaLogo',
+          depends: 'media.enableMediaDisplayButton',
           onChange: () => {
             refreshBackgroundImgPreview()
           },
         },
-        { key: 'media.hideWinAfterMedia' },
+        {
+          key: 'media.hideWinAfterMedia',
+          depends: 'media.enableMediaDisplayButton',
+        },
         { key: 'app.offlineMode' },
         {
           type: 'group',
@@ -523,6 +496,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'text',
               key: 'media.mediaWinShortcut',
+              depends: 'media.enableMediaDisplayButton',
               onChange: (val: string) => {
                 changeShortcut(val, 'toggleMediaWindow')
                 const store = useStatStore()
@@ -533,6 +507,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'text',
               key: 'media.presentShortcut',
+              depends: 'media.enableMediaDisplayButton',
               onChange: (val: string) => {
                 changeShortcut(val, 'openPresentMode')
                 const store = useStatStore()
@@ -543,6 +518,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'text',
               key: 'media.shuffleShortcut',
+              depends: 'meeting.enableMusicButton',
               onChange: (val: string) => {
                 changeShortcut(val, 'toggleMusicShuffle')
                 const store = useStatStore()
@@ -550,14 +526,19 @@ const groups = computed((): Settings[] => {
                 store.setShowMusicButton(true)
               },
             },
-            { key: 'media.enablePp' },
+            {
+              key: 'media.enablePp',
+              depends: 'media.enableMediaDisplayButton',
+            },
             {
               type: 'text',
               key: 'media.ppBackward',
+              depends: 'media.enablePp',
             },
             {
               type: 'text',
               key: 'media.ppForward',
+              depends: 'media.enablePp',
             },
           ],
         },
@@ -581,6 +562,7 @@ const groups = computed((): Settings[] => {
         {
           type: 'group',
           id: 'obs',
+          depends: 'app.obs.enable',
           label: 'OBS Studio',
           value: [
             {
@@ -632,6 +614,7 @@ const groups = computed((): Settings[] => {
           type: 'group',
           id: 'webdav',
           label: 'WebDAV',
+          depends: 'cong.enable',
           value: [
             {
               type: 'text',
@@ -717,10 +700,12 @@ const groups = computed((): Settings[] => {
         },
         {
           key: 'app.zoom.enable',
+          label: 'Zoom',
         },
         {
           type: 'group',
           id: 'zoom',
+          depends: 'app.zoom.enable',
           label: 'Zoom',
           value: [
             {
@@ -758,11 +743,14 @@ const groups = computed((): Settings[] => {
       id: 'playback',
       label: 'Media playback',
       settings: [
-        { key: 'meeting.autoStartMusic' },
-        { key: 'media.autoPlayFirst' },
+        {
+          key: 'media.autoPlayFirst',
+          depends: 'media.enableMediaDisplayButton',
+        },
         {
           type: 'select',
           key: 'media.preferredOutput',
+          depends: 'media.enableMediaDisplayButton',
           props: {
             items: [
               { title: $i18n.t('window'), value: 'window' },
@@ -791,6 +779,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'action',
               label: 'mediaWindowBackground',
+              depends: 'media.enableMediaDisplayButton',
               action: async () => {
                 const result = await ipcRenderer.invoke('openDialog', {
                   properties: ['openFile'],
@@ -840,8 +829,82 @@ const groups = computed((): Settings[] => {
               },
             },
             {
+              type: 'action',
+              label: 'downloadShuffleMusic',
+              depends: 'meeting.enableMusicButton',
+              action: async () => {
+                if (!prefs.value.media.lang) {
+                  return
+                }
+
+                const isSign = useMediaStore().mediaLang?.isSignLanguage
+
+                try {
+                  const songs = (await getMediaLinks({
+                    pubSymbol: isSign ? 'sjj' : 'sjjm',
+                    format: isSign ? 'MP4' : 'MP3',
+                    lang: isSign ? prefs.value.media.lang : 'E',
+                  })) as VideoFile[]
+
+                  const promises: Promise<void>[] = []
+
+                  songs
+                    .filter(
+                      (item) => extname(item.url) === (isSign ? '.mp4' : '.mp3')
+                    )
+                    .forEach((s) => promises.push(downloadSong(s)))
+
+                  await Promise.allSettled(promises)
+                  refreshCache.value = !refreshCache.value
+                } catch (e: unknown) {
+                  console.log('error')
+                }
+              },
+            },
+            {
               type: 'slider',
               key: 'meeting.musicVolume',
+              depends: 'meeting.enableMusicButton',
+            },
+            {
+              key: 'meeting.autoStartMusic',
+              depends: 'meeting.enableMusicButton',
+            },
+            {
+              key: 'meeting.enableMusicFadeOut',
+              depends: 'meeting.enableMusicButton',
+            },
+            {
+              type: 'btn-group',
+              key: 'meeting.musicFadeOutType',
+              depends: 'meeting.enableMusicFadeOut',
+
+              prepend: {
+                type: 'slider',
+                key: 'meeting.musicFadeOutTime',
+              },
+              props: {
+                groupItems: [
+                  {
+                    title: useComputedLabel<MeetingPrefs>(
+                      'musicFadeOutSmart',
+                      prefs.value.meeting,
+                      'musicFadeOutTime',
+                      PREFS.meeting.musicFadeOutTime
+                    ),
+                    value: 'smart',
+                  },
+                  {
+                    title: useComputedLabel<MeetingPrefs>(
+                      'musicFadeOutTimer',
+                      prefs.value.meeting,
+                      'musicFadeOutTime',
+                      PREFS.meeting.musicFadeOutTime
+                    ),
+                    value: 'timer',
+                  },
+                ],
+              },
             },
           ],
         },
@@ -854,37 +917,6 @@ const groups = computed((): Settings[] => {
         {
           type: 'date',
           key: 'meeting.coWeek',
-        },
-        { key: 'meeting.enableMusicFadeOut' },
-        {
-          type: 'btn-group',
-          key: 'meeting.musicFadeOutType',
-          prepend: {
-            type: 'slider',
-            key: 'meeting.musicFadeOutTime',
-          },
-          props: {
-            groupItems: [
-              {
-                title: useComputedLabel<MeetingPrefs>(
-                  'musicFadeOutSmart',
-                  prefs.value.meeting,
-                  'musicFadeOutTime',
-                  PREFS.meeting.musicFadeOutTime
-                ),
-                value: 'smart',
-              },
-              {
-                title: useComputedLabel<MeetingPrefs>(
-                  'musicFadeOutTimer',
-                  prefs.value.meeting,
-                  'musicFadeOutTime',
-                  PREFS.meeting.musicFadeOutTime
-                ),
-                value: 'timer',
-              },
-            ],
-          },
         },
         requiredSettings.value['meeting.mwDay'],
         requiredSettings.value['meeting.mwStartTime'],

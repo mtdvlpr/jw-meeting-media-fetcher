@@ -21,6 +21,7 @@ export interface Setting extends SubSetting {
   prepend?: SubSetting
   append?: Action
   explanation?: string
+  depends?: string
 }
 
 export interface Action {
@@ -29,6 +30,7 @@ export interface Action {
   icon?: boolean
   props?: { [key: string]: any }
   action: () => void
+  depends?: string
 }
 
 export type GroupID =
@@ -54,6 +56,7 @@ export interface Group {
   id: SubGroupID
   label: string
   value: (Setting | Action)[]
+  depends?: string
 }
 
 export interface Settings {
