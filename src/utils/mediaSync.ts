@@ -342,7 +342,7 @@ async function syncMediaItemByDate(date: string, item: MeetingFile) {
   if (item.filesize && (item.url || item.filepath)) {
     if (
       await pathExists(
-        join(getPrefs('cloudsync.path'), item.folder, item.safeName)
+        join(getPrefs('cloudsync.path'), 'Hidden', item.folder, item.safeName)
       )
     ) {
       log.info(

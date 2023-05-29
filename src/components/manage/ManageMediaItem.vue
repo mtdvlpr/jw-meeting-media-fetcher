@@ -30,22 +30,6 @@
           </v-avatar>
         </template>
         <template #append>
-          <template v-if="getPrefs('cloudsync.enable')">
-            <v-btn
-              v-if="item.cloudHidden"
-              icon="mdi-cloud-off"
-              size="small"
-              variant="text"
-              @click="unhide(item)"
-            />
-            <v-btn
-              v-else
-              icon="mdi-cloud-check-variant"
-              size="small"
-              variant="text"
-              @click="hide(item)"
-            />
-          </template>
           <v-icon
             v-if="item.recurring"
             icon="mdi-repeat-variant"
@@ -59,8 +43,24 @@
             aria-label="rename file"
             @click="emit('edit')"
           />
+          <template v-if="getPrefs('cloudsync.enable')">
+            <v-btn
+              v-if="item.cloudHidden"
+              icon="mdi-eye-off"
+              size="small"
+              variant="text"
+              @click="unhide(item)"
+            />
+            <v-btn
+              v-else
+              icon="mdi-eye"
+              size="small"
+              variant="text"
+              @click="hide(item)"
+            />
+          </template>
           <template
-            v-if="!item.recurring && (item.isLocal || item.congSpecific)"
+            v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
           >
             <v-tooltip
               v-if="clickedOnce"
@@ -188,7 +188,7 @@ const unhide = (item: { filepath: string; cloudHidden: boolean }) => {
   mv(
     normalize(item.filepath),
     normalize(item.filepath).replace(
-      normalize(getPrefs('cloudsync.path')),
+      join(getPrefs('cloudsync.path'), 'Hidden'),
       normalize(mediaPath()!)
     )
   )
@@ -200,7 +200,7 @@ const hide = (item: { filepath: string; cloudHidden: boolean }) => {
     normalize(item.filepath),
     normalize(item.filepath).replace(
       normalize(mediaPath()!),
-      normalize(getPrefs('cloudsync.path'))
+      join(getPrefs('cloudsync.path'), 'Hidden')
     )
   )
   item.cloudHidden = true

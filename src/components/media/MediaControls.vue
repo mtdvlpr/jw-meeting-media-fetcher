@@ -59,14 +59,16 @@ const localMedia = computed((): LocalFile[] =>
       }
     })
     .concat(
-      findAll(join(getPrefs('cloudsync.path'), date.value, '*')).map((item) => {
-        return {
-          safeName: basename(item),
-          filepath: item,
-          cloudHidden: true,
-          isLocal: true,
+      findAll(join(getPrefs('cloudsync.path'), 'Hidden', date.value, '*')).map(
+        (item) => {
+          return {
+            safeName: basename(item),
+            filepath: item,
+            cloudHidden: true,
+            isLocal: true,
+          }
         }
-      })
+      )
     )
     .sort((a, b) => {
       const nameA = a.safeName.toUpperCase()
