@@ -181,11 +181,14 @@ onMounted(() => {
           alwaysStat: true,
           ignorePermissionErrors: true,
         })
-        .on('add', (path) => {
-          copy(path, join(mPath, date.value, sanitize(basename(path), true)))
+        .on('add', (additionalFile) => {
+          copy(
+            additionalFile,
+            join(mPath, date.value, sanitize(basename(additionalFile), true))
+          )
         })
-        .on('unlink', (path) => {
-          rm(join(mPath, date.value, sanitize(basename(path), true)))
+        .on('unlink', (additionalFile) => {
+          rm(join(mPath, date.value, sanitize(basename(additionalFile), true)))
         })
     )
     // hidden files
@@ -197,24 +200,31 @@ onMounted(() => {
           alwaysStat: true,
           ignorePermissionErrors: true,
         })
-        .on('add', (path) => {
-          rm(join(mPath, date.value, sanitize(basename(path), true)))
+        .on('add', (hiddenFile) => {
+          rm(join(mPath, date.value, sanitize(basename(hiddenFile), true)))
         })
     )
     // recurring files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudsync.path'), 'Recurring', date.value), {
+        .watch(join(getPrefs('cloudsync.path'), 'Recurring'), {
           awaitWriteFinish: true,
           depth: 1,
           alwaysStat: true,
           ignorePermissionErrors: true,
         })
-        .on('add', (path) => {
-          // copy to all media date folders // copy(path, join(mPath, "*", sanitize(basename(path), true)))
+        .on('add', (recurringFile) => {
+          findAll(join(mPath, '*'), {
+            onlyDirectories: true,
+          }).forEach((dateFolder) => {
+            copy(
+              recurringFile,
+              join(dateFolder, sanitize(basename(recurringFile), true))
+            )
+          })
         })
-        .on('unlink', (path) => {
-          // remove from all media date folders // rm(path, join(mPath, "*", sanitize(basename(path), true)))
+        .on('unlink', (recurringFile) => {
+          rm(findAll(join(mPath, '*', basename(recurringFile))))
         })
     )
   }

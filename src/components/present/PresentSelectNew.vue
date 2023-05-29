@@ -232,7 +232,6 @@ export default {
         .flat()
         .flat()
         .find((day) => day.isToday && !!day.meetingType)
-      console.log('cloudsync', getPrefs('cloudsync.enable'))
 
       if (meetingToday) await this.processDay(meetingToday)
       await Promise.all(
@@ -271,7 +270,6 @@ export default {
                 congSync.value ? 2 : 0,
                 !!day.meetingType,
                 true,
-                true,
                 enableMp4Conversion,
                 enableVlcPlaylistCreation,
               ]
@@ -285,11 +283,11 @@ export default {
         await Promise.allSettled([
           day.meetingType && syncJWMediaByDate(day.date, day.meetingType),
           congSync.value && syncCongMediaByDate(day.date),
-          syncLocalRecurringMediaByDate(day.date),
+          // syncLocalRecurringMediaByDate(day.date),
         ])
         day.meetingType && increaseProgress(day)
         congSync.value && increaseProgress(day)
-        increaseProgress(day)
+        // increaseProgress(day)
         await convertUnusableFilesByDate(day.date)
         increaseProgress(day)
         if (enableMp4Conversion) {

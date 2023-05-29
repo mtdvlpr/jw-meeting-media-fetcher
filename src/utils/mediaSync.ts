@@ -4,38 +4,38 @@ import { pathExists, stat, emptyDir } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
 import { MeetingFile, SmallMediaFile, VideoFile, DateFormat } from '~~/types'
 
-export function syncLocalRecurringMedia(baseDate: Dayjs) {
-  const path = mediaPath()
-  if (!path) return
+// export function syncLocalRecurringMedia(baseDate: Dayjs) {
+//   const path = mediaPath()
+//   if (!path) return
 
-  const meetings = useMediaStore().meetings
+//   const meetings = useMediaStore().meetings
 
-  const dates = [...meetings.keys()].filter((date) => {
-    if (date === 'Recurring') return false
-    const day = useNuxtApp().$dayjs(
-      date,
-      getPrefs<DateFormat>('app.outputFolderDateFormat')
-    )
-    return (
-      day.isValid() &&
-      day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]')
-    )
-  })
+//   const dates = [...meetings.keys()].filter((date) => {
+//     if (date === 'Recurring') return false
+//     const day = useNuxtApp().$dayjs(
+//       date,
+//       getPrefs<DateFormat>('app.outputFolderDateFormat')
+//     )
+//     return (
+//       day.isValid() &&
+//       day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]')
+//     )
+//   })
 
-  findAll(join(path, 'Recurring', '*')).forEach((recurringItem: string) => {
-    dates.forEach((date) => {
-      copy(recurringItem, join(path, date, basename(recurringItem)))
-    })
-  })
-}
+//   findAll(join(path, 'Recurring', '*')).forEach((recurringItem: string) => {
+//     dates.forEach((date) => {
+//       copy(recurringItem, join(path, date, basename(recurringItem)))
+//     })
+//   })
+// }
 
-export async function syncLocalRecurringMediaByDate(date: string) {
-  const path = mediaPath()
-  if (!path || !(await pathExists(join(path, date)))) return
-  findAll(join(path, 'Recurring', '*')).forEach((recurringItem: string) => {
-    copy(recurringItem, join(path, date, basename(recurringItem)))
-  })
-}
+// export async function syncLocalRecurringMediaByDate(date: string) {
+//   const path = mediaPath()
+//   if (!path || !(await pathExists(join(path, date)))) return
+//   findAll(join(path, 'Recurring', '*')).forEach((recurringItem: string) => {
+//     copy(recurringItem, join(path, date, basename(recurringItem)))
+//   })
+// }
 
 export function createMediaNamesByDate(date: string) {
   const statStore = useStatStore()
