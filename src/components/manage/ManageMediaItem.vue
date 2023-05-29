@@ -162,7 +162,7 @@
 </template>
 <script setup lang="ts">
 import { pathToFileURL } from 'url'
-import { extname, join } from 'upath'
+import { extname, join, normalize } from 'upath'
 import { LocalFile, MeetingFile } from '~~/types'
 
 const emit = defineEmits<{
@@ -186,16 +186,22 @@ const { client, contents } = storeToRefs(useCongStore())
 
 const unhide = (item: { filepath: string; cloudHidden: boolean }) => {
   mv(
-    item.filepath,
-    item.filepath.replace(getPrefs('cloudsync.path'), mediaPath())
+    normalize(item.filepath),
+    normalize(item.filepath).replace(
+      normalize(getPrefs('cloudsync.path')),
+      normalize(mediaPath()!)
+    )
   )
   item.cloudHidden = false
 }
 
 const hide = (item: { filepath: string; cloudHidden: boolean }) => {
   mv(
-    item.filepath,
-    item.filepath.replace(mediaPath(), getPrefs('cloudsync.path'))
+    normalize(item.filepath),
+    normalize(item.filepath).replace(
+      normalize(mediaPath()!),
+      normalize(getPrefs('cloudsync.path'))
+    )
   )
   item.cloudHidden = true
 }

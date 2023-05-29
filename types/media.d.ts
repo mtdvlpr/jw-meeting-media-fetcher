@@ -68,6 +68,7 @@ export interface LocalFile {
   objectUrl?: string
   subtitles?: undefined
   markers?: undefined
+  cloudHidden?: boolean
 }
 
 export declare type MeetingFile = ImageFile | VideoFile

@@ -50,13 +50,35 @@ provide(ccEnableKey, ccEnable)
 // Manage media dialog
 const managingMedia = ref(false)
 const localMedia = computed((): LocalFile[] =>
-  items.value.map((item) => {
-    return {
-      safeName: basename(item.path),
-      filepath: item.path,
-      isLocal: true,
-    }
-  })
+  items.value
+    .map((item) => {
+      return {
+        safeName: basename(item.path),
+        filepath: item.path,
+        isLocal: true,
+      }
+    })
+    .concat(
+      findAll(join(getPrefs('cloudsync.path'), date.value, '*')).map((item) => {
+        return {
+          safeName: basename(item),
+          filepath: item,
+          cloudHidden: true,
+          isLocal: true,
+        }
+      })
+    )
+    .sort((a, b) => {
+      const nameA = a.safeName.toUpperCase()
+      const nameB = b.safeName.toUpperCase()
+      if (nameA < nameB) {
+        return -1
+      }
+      if (nameA > nameB) {
+        return 1
+      }
+      return 0
+    })
 )
 
 // Get media files
