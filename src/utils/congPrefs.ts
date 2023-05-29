@@ -1,3 +1,4 @@
+import { readFileSync } from 'fs-extra'
 import { join } from 'upath'
 import {
   ObsPrefs,
@@ -7,6 +8,7 @@ import {
   MeetingPrefs,
   PrefStore,
   ZoomPrefs,
+  CloudSyncPrefs,
 } from '~~/types'
 
 export function isLocked(key: string) {
@@ -14,8 +16,8 @@ export function isLocked(key: string) {
   // If no forced prefs, don't lock
   if (!store.prefs) return false
 
-  // If pref is not forcable, don't lock
-  if (!FORCABLE.includes(key)) return false
+  // If pref is not forceable, don't lock
+  if (!FORCEABLE.includes(key)) return false
 
   const keys = key.split('.')
 
@@ -42,20 +44,25 @@ export function isLocked(key: string) {
 export async function forcePrefs(refresh = false) {
   const store = useCongStore()
   const client = store.client
-  if (!client) return null
+  const cloudsync = getPrefs('cloudsync.enable')
+  if (!client && !cloudsync) return null
   if (!refresh && store.prefs) {
     return store.prefs
   }
 
-  const dir = getPrefs<string>('cong.dir')
+  const dir = cloudsync
+    ? join(getPrefs('cloudsync.path'), 'Settings')
+    : getPrefs<string>('cong.dir')
   if (!dir) return undefined
 
   try {
     const path = join(dir, 'forcedPrefs.json')
     if (store.contents.find(({ filename }) => filename === path)) {
-      const json = await client.getFileContents(path, {
-        format: 'text',
-      })
+      const json = cloudsync
+        ? readFileSync(path)
+        : await client?.getFileContents(path, {
+            format: 'text',
+          })
 
       const prefs = JSON.parse(<string>json)
 
@@ -110,13 +117,16 @@ export async function forcePrefs(refresh = false) {
       const newPrefs = {
         app: Object.assign(getPrefs<AppPrefs>('app'), prefs.app ?? {}),
         cong: Object.assign(getPrefs<CongPrefs>('cong'), prefs.cong ?? {}),
+        cloudsync: Object.assign(
+          getPrefs<CloudSyncPrefs>('cloudsync'),
+          prefs.cloudsync ?? {}
+        ),
         media: Object.assign(getPrefs<MediaPrefs>('media'), prefs.media ?? {}),
         meeting: Object.assign(
           getPrefs<MeetingPrefs>('meeting'),
           prefs.meeting ?? {}
         ),
       }
-
       setAllPrefs(newPrefs)
       store.setPrefs(JSON.parse(JSON.stringify(forcedPrefs)))
     }

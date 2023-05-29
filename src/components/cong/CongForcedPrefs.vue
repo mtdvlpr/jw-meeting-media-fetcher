@@ -14,7 +14,7 @@
         </div>
         <v-divider class="my-3"></v-divider>
         <loading-icon v-if="loading" />
-        <template v-for="item in forcable" v-else :key="item.key">
+        <template v-for="item in forceable" v-else :key="item.key">
           <v-switch
             v-if="item.value !== null"
             v-model="item.forced"
@@ -121,8 +121,8 @@ const getDescription = (key: string) => {
   }
 }
 
-const forcable = ref([
-  ...FORCABLE.map((key) => {
+const forceable = ref([
+  ...FORCEABLE.map((key) => {
     return {
       key,
       value: getPrefs(key),
@@ -139,7 +139,7 @@ onMounted(() => {
 const change = ref(false)
 const updatePrefs = async () => {
   // If nothing changed, just close the modal
-  if (!change.value || !store.client) {
+  if (!change.value || (!getPrefs('cloudsync.enable') && !store.client)) {
     active.value = false
     return
   }
@@ -147,7 +147,7 @@ const updatePrefs = async () => {
   const forcedPrefs = {} as any
 
   try {
-    forcable.value
+    forceable.value
       .filter(({ forced }) => forced)
       .forEach((pref) => {
         const keys = pref.key.split('.')
@@ -167,10 +167,17 @@ const updatePrefs = async () => {
 
     // Update forcedPrefs.json
     log.debug('prefs', JSON.stringify(forcedPrefs))
-    await store.client.putFileContents(
-      join(getPrefs<string>('cong.dir'), 'forcedPrefs.json'),
-      JSON.stringify(forcedPrefs, null, 2)
-    )
+    if (getPrefs('cloudsync.enable')) {
+      write(
+        join(getPrefs('cloudsync.path'), 'Settings', 'forcedPrefs.json'),
+        JSON.stringify(forcedPrefs, null, 2)
+      )
+    } else if (store.client) {
+      await store.client.putFileContents(
+        join(getPrefs<string>('cong.dir'), 'forcedPrefs.json'),
+        JSON.stringify(forcedPrefs, null, 2)
+      )
+    }
     await forcePrefs(true)
   } catch (e) {
     error(

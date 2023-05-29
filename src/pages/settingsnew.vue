@@ -9,6 +9,7 @@
       :total="totalProgress"
     />
     <settings-wizard :required-settings="requiredSettings" />
+    {{ forcingPrefs }}
     <cong-forced-prefs v-model="forcingPrefs" />
     <v-row no-gutters justify="center" class="fill-height settings">
       <v-col cols="12">
@@ -715,6 +716,13 @@ const groups = computed((): Settings[] => {
               label: 'cloudSyncFolder',
               props: {
                 required: getPrefs('cloudsync.enable'),
+              },
+            },
+            {
+              type: 'action',
+              label: 'settingsLocked',
+              action: () => {
+                forcingPrefs.value = true
               },
             },
           ],
