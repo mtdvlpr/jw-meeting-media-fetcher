@@ -55,7 +55,14 @@ const localMedia = computed((): LocalFile[] =>
       return {
         safeName: basename(item.path),
         filepath: item.path,
-        isLocal: true,
+        isLocal: !!findOne(
+          join(
+            getPrefs('cloudsync.path'),
+            'Additional',
+            date.value,
+            basename(item.path)
+          )
+        ),
       }
     })
     .concat(

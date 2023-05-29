@@ -43,21 +43,33 @@
             aria-label="rename file"
             @click="emit('edit')"
           />
-          <template v-if="getPrefs('cloudsync.enable') && !item.recurring">
-            <v-btn
-              v-if="item.hidden"
-              icon="mdi-eye-off"
-              size="small"
-              variant="text"
-              @click="unhide(item)"
-            />
-            <v-btn
-              v-else
-              icon="mdi-eye"
-              size="small"
-              variant="text"
-              @click="hide(item)"
-            />
+          <template v-if="getPrefs('cloudsync.enable')">
+            <template v-if="!item.recurring && !item.isLocal">
+              <v-btn
+                v-if="item.hidden"
+                icon="mdi-eye-off"
+                size="small"
+                variant="text"
+                @click="unhide(item)"
+              />
+              <v-btn
+                v-else
+                icon="mdi-eye"
+                size="small"
+                variant="text"
+                @click="hide(item)"
+              />
+            </template>
+            <template v-else>
+              <v-btn
+                color="red-lighten-1"
+                icon="mdi-delete"
+                variant="text"
+                :loading="item.loading"
+                v-bind="attrs"
+                @click="remove(item)"
+              />
+            </template>
           </template>
           <template
             v-else-if="!item.recurring && (item.isLocal || item.congSpecific)"
@@ -204,6 +216,15 @@ const hide = (item: { filepath: string; hidden: boolean }) => {
     )
   )
   item.hidden = true
+}
+
+const remove = (item: { filepath: string }) => {
+  rm(
+    normalize(item.filepath).replace(
+      normalize(mediaPath()!),
+      join(getPrefs('cloudsync.path'), 'Additional')
+    )
+  )
 }
 
 const getPreview = (item: MeetingFile | LocalFile) => {
