@@ -14,14 +14,17 @@
         )"
         :key="index"
       >
-        <v-list-item v-if="subSetting.type == 'action'"
-          ><v-btn
-            variant="tonal"
-            color="primary"
-            @click="subSetting.type == 'action' && subSetting.action"
-            >{{ $t(subSetting.label) }}
-          </v-btn>
-        </v-list-item>
+        <template v-if="subSetting.type == 'action'">
+          <v-divider></v-divider>
+          <v-list-item>
+            <v-btn
+              variant="tonal"
+              color="primary"
+              @click="subSetting.type == 'action' && subSetting.action"
+              >{{ $t(subSetting.label) }}
+            </v-btn>
+          </v-list-item>
+        </template>
         <settings-item v-else :setting="subSetting" />
       </template>
     </v-list-group>

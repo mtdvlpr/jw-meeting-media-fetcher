@@ -15,6 +15,7 @@
       @previous="previous()"
       @next="next()"
       @show-prefix="togglePrefix()"
+      @toggle-quick-song="toggleQuickSong()"
       @manage-media="managingMedia = true"
     />
     <v-expand-transition>
@@ -25,6 +26,7 @@
         :media-active="mediaActive"
         :zoom-part="zoomPart"
         :cc-enable="ccEnable"
+        :show-quick-song="showQuickSong"
         @index="setIndex"
         @deactivate="resetDeactivate"
       />
@@ -299,6 +301,12 @@ const togglePrefix = () => {
   setTimeout(() => {
     showPrefix.value = false
   }, 3 * MS_IN_SEC)
+}
+
+// Quick song
+const showQuickSong = ref(false)
+const toggleQuickSong = () => {
+  showQuickSong.value = !showQuickSong.value
 }
 
 // Media playback with shortcuts

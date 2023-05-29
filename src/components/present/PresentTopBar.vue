@@ -103,6 +103,7 @@ const emit = defineEmits([
   'next',
   'manageMedia',
   'showPrefix',
+  'toggleQuickSong',
 ])
 
 const { $i18n } = useNuxtApp()
@@ -208,6 +209,14 @@ const actions = [
     icon: 'mdi-movie-open-edit',
     action: () => {
       emit('manageMedia')
+    },
+  },
+  // toggleQuickSong
+  {
+    title: $i18n.t('toggleQuickSong'),
+    icon: 'mdi-music',
+    action: () => {
+      emit('toggleQuickSong')
     },
   },
   {

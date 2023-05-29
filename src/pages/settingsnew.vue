@@ -383,6 +383,7 @@ const groups = computed((): Settings[] => {
           id: 'mediaAdvanced',
           label: $i18n.t('advanced'),
           value: [
+            { key: 'app.autoStartSync' },
             {
               type: 'select',
               key: 'app.outputFolderDateFormat',
@@ -908,13 +909,12 @@ const groups = computed((): Settings[] => {
       id: 'advanced',
       label: 'Advanced',
       settings: [
+        { key: 'app.autoRunAtBoot' },
         { key: 'app.offlineMode' },
         { key: 'app.disableHardwareAcceleration' },
         { key: 'app.disableAutoUpdate' },
         { key: 'app.betaUpdates' },
         { key: 'meeting.specialCong' },
-        { key: 'app.autoRunAtBoot' },
-        { key: 'app.autoStartSync' },
         {
           type: 'path',
           key: 'app.customCachePath',

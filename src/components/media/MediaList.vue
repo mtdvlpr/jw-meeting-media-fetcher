@@ -5,9 +5,17 @@
       type="warning"
       :text="$t('warnNoMediaFound')"
     ></v-alert>
-    <song-picker ref="songPicker" v-model="song" class="ma-4" clearable />
     <v-expand-transition>
-      <v-list v-if="song" class="ma-4">
+      <song-picker
+        v-if="showQuickSong"
+        ref="songPicker"
+        v-model="song"
+        class="ma-4"
+        clearable
+      />
+    </v-expand-transition>
+    <v-expand-transition>
+      <v-list v-if="song && showQuickSong" class="ma-4">
         <media-item
           :key="song.url"
           :src="song.url"
@@ -199,6 +207,7 @@ const emit = defineEmits<{
 
 const props = defineProps<{
   items: MediaItem[]
+  showQuickSong: boolean
 }>()
 
 const dragging = ref(false)
