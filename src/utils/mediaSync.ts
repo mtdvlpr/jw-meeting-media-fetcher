@@ -340,37 +340,48 @@ export async function syncJWMedia(
 
 async function syncMediaItemByDate(date: string, item: MeetingFile) {
   if (item.filesize && (item.url || item.filepath)) {
-    log.info(
-      `%c[jwOrg] [${date}] ${item.safeName}`,
-      'background-color: #cce5ff; color: #004085;'
-    )
-    // Set markers for sign language videos
-    const path = mediaPath()
-    if (item.markers && path && item.folder && item.safeName) {
-      const markers = Array.from(
-        new Set(
-          item.markers.markers.map(
-            ({ duration, label, startTime, endTransitionDuration }) =>
-              JSON.stringify({
-                duration,
-                label,
-                startTime,
-                endTransitionDuration,
-              })
-          )
-        )
-      ).map((m) => JSON.parse(m))
-      write(
-        join(path, item.folder, changeExt(item.safeName, 'json')),
-        JSON.stringify(markers)
+    if (
+      await pathExists(
+        join(getPrefs('cloudsync.path'), item.folder, item.safeName)
       )
-    }
-    if (item.url) {
-      const newItem = JSON.parse(JSON.stringify(item))
-      await downloadIfRequired({ file: newItem, date })
-    } else if (path && item.filepath && item.folder && item.safeName) {
-      const dest = join(path, item.folder, item.safeName)
-      await copy(item.filepath, dest)
+    ) {
+      log.info(
+        `%c[HIDDEN] [${date}] ${item.safeName}`,
+        'background-color: #aae5aa; color: #004085;'
+      )
+    } else {
+      log.info(
+        `%c[jwOrg] [${date}] ${item.safeName}`,
+        'background-color: #cce5ff; color: #004085;'
+      )
+      // Set markers for sign language videos
+      const path = mediaPath()
+      if (item.markers && path && item.folder && item.safeName) {
+        const markers = Array.from(
+          new Set(
+            item.markers.markers.map(
+              ({ duration, label, startTime, endTransitionDuration }) =>
+                JSON.stringify({
+                  duration,
+                  label,
+                  startTime,
+                  endTransitionDuration,
+                })
+            )
+          )
+        ).map((m) => JSON.parse(m))
+        write(
+          join(path, item.folder, changeExt(item.safeName, 'json')),
+          JSON.stringify(markers)
+        )
+      }
+      if (item.url) {
+        const newItem = JSON.parse(JSON.stringify(item))
+        await downloadIfRequired({ file: newItem, date })
+      } else if (path && item.filepath && item.folder && item.safeName) {
+        const dest = join(path, item.folder, item.safeName)
+        await copy(item.filepath, dest)
+      }
     }
   } else {
     warn(
