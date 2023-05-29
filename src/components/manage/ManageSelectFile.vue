@@ -12,7 +12,7 @@
   </v-col>
   <v-col cols="10">
     <v-slide-group v-if="files.length > 0" show-arrows>
-      <v-slide-group-item v-for="(file, i) in files" :key="file.filepath">
+      <v-slide-group-item v-for="(file, i) in files" :key="file.safeName">
         <v-chip
           size="small"
           class="ml-2 my-1"

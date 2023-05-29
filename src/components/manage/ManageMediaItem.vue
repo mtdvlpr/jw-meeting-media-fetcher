@@ -15,9 +15,9 @@
             :color="
               item.congSpecific
                 ? 'info'
-                : item.isLocal
-                ? 'secondary'
-                : 'primary'
+                : item.isLocal === undefined || item.isLocal
+                ? 'primary'
+                : 'secondary'
             "
           >
             <v-img
@@ -37,38 +37,41 @@
           />
           <v-btn
             v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
-            icon="mdi-pencil"
+            icon="mdi-form-textbox"
             size="small"
             variant="text"
             aria-label="rename file"
             @click="emit('edit')"
           />
           <template v-if="getPrefs('cloudsync.enable')">
-            <template v-if="!item.recurring && !item.isLocal">
-              <v-btn
-                v-if="item.hidden"
-                icon="mdi-eye-off"
-                size="small"
-                variant="text"
-                @click="unhide(item)"
-              />
-              <v-btn
-                v-else
-                icon="mdi-eye"
-                size="small"
-                variant="text"
-                @click="hide(item)"
-              />
-            </template>
-            <template v-else>
-              <v-btn
-                color="red-lighten-1"
-                icon="mdi-delete"
-                variant="text"
-                :loading="item.loading"
-                v-bind="attrs"
-                @click="remove(item)"
-              />
+            <template v-if="item.isLocal !== undefined">
+              <template v-if="!item.recurring && !item.isLocal">
+                <v-btn
+                  v-if="item.hidden"
+                  icon="mdi-eye-off"
+                  size="small"
+                  variant="text"
+                  @click="unhide(item)"
+                />
+                <v-btn
+                  v-else
+                  icon="mdi-eye"
+                  size="small"
+                  variant="text"
+                  @click="hide(item)"
+                />
+              </template>
+              <template v-else>
+                <v-btn
+                  color="red-lighten-1"
+                  icon="mdi-delete"
+                  variant="text"
+                  size="small"
+                  :loading="item.loading"
+                  v-bind="attrs"
+                  @click="remove(item)"
+                />
+              </template>
             </template>
           </template>
           <template

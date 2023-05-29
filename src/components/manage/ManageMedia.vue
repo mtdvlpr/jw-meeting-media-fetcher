@@ -172,7 +172,9 @@ const addFiles = async (multi = true, ...exts: string[]) => {
   }
 }
 const removeFile = (index: number) => {
+  console.log('removeFile', files.value, index)
   files.value.splice(index, 1)
+  console.log('removeFile', files.value)
 }
 
 // Save files
