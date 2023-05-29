@@ -49,6 +49,11 @@ export interface AppPrefs {
   zoom: ZoomPrefs
 }
 
+export interface CloudSyncPrefs {
+  enable: boolean
+  path: string | null
+}
+
 export interface CongPrefs {
   enable: boolean
   server: string | null
@@ -117,6 +122,7 @@ export interface MeetingPrefs {
 
 export interface PrefStore {
   app: AppPrefs
+  cloudsync: CloudSyncPrefs
   cong: CongPrefs
   media: MediaPrefs
   meeting: MeetingPrefs

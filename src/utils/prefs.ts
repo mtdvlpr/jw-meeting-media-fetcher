@@ -155,6 +155,19 @@ const schema: Schema<PrefStore> = {
       },
     },
   },
+  cloudsync: {
+    type: 'object',
+    properties: {
+      enable: {
+        type: 'boolean',
+        default: PREFS.cloudsync.enable,
+      },
+      path: {
+        type: ['string', 'null'],
+        default: PREFS.cloudsync.path,
+      },
+    },
+  },
   cong: {
     type: 'object',
     properties: {

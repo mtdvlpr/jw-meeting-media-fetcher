@@ -13,7 +13,11 @@
           <v-avatar
             v-if="item.safeName"
             :color="
-              item.congSpecific ? 'info' : item.isLocal ? undefined : 'primary'
+              item.congSpecific
+                ? 'info'
+                : item.isLocal
+                ? 'secondary'
+                : 'primary'
             "
           >
             <v-img
@@ -26,6 +30,22 @@
           </v-avatar>
         </template>
         <template #append>
+          <template v-if="getPrefs('cloudsync.enable')">
+            <v-btn
+              v-if="item.cloudHidden"
+              icon="mdi-cloud-off"
+              size="small"
+              variant="text"
+              @click="unhide(item)"
+            />
+            <v-btn
+              v-else
+              icon="mdi-cloud-check-variant"
+              size="small"
+              variant="text"
+              @click="hide(item)"
+            />
+          </template>
           <v-icon
             v-if="item.recurring"
             icon="mdi-repeat-variant"
@@ -163,6 +183,22 @@ const preview = ref('')
 const { online } = useOnline()
 const previewName = ref('')
 const { client, contents } = storeToRefs(useCongStore())
+
+const unhide = (item: { filepath: string; cloudHidden: boolean }) => {
+  mv(
+    item.filepath,
+    item.filepath.replace(getPrefs('cloudsync.path'), mediaPath())
+  )
+  item.cloudHidden = false
+}
+
+const hide = (item: { filepath: string; cloudHidden: boolean }) => {
+  mv(
+    item.filepath,
+    item.filepath.replace(mediaPath(), getPrefs('cloudsync.path'))
+  )
+  item.cloudHidden = true
+}
 
 const getPreview = (item: MeetingFile | LocalFile) => {
   if (previewName.value === item.safeName) {

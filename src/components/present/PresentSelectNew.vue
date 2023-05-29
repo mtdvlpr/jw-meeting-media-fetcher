@@ -232,6 +232,8 @@ export default {
         .flat()
         .flat()
         .find((day) => day.isToday && !!day.meetingType)
+      console.log('cloudsync', getPrefs('cloudsync.enable'))
+
       if (meetingToday) await this.processDay(meetingToday)
       await Promise.all(
         weeks.map(async (week) => {

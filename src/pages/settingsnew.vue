@@ -699,6 +699,26 @@ const groups = computed((): Settings[] => {
           ],
         },
         {
+          key: 'cloudsync.enable',
+          label: 'cloudSync',
+        },
+        {
+          type: 'group',
+          id: 'cloudsync',
+          label: 'cloudsync',
+          depends: 'cloudsync.enable',
+          value: [
+            {
+              type: 'path',
+              key: 'cloudsync.path',
+              label: 'cloudSyncFolder',
+              props: {
+                required: getPrefs('cloudsync.enable'),
+              },
+            },
+          ],
+        },
+        {
           key: 'cong.enable',
           label: 'webdavEnable',
         },

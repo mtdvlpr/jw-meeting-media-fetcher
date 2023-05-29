@@ -49,6 +49,7 @@ export interface ImageFile extends MeetingFileBase {
 }
 
 export interface LocalFile {
+  cloudHidden?: boolean
   color?: string
   congSpecific?: boolean
   contents?: Buffer

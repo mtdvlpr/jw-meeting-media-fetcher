@@ -13,6 +13,7 @@ import {
   readdir,
   ensureFile,
   copyFile,
+  moveSync,
 } from 'fs-extra'
 import { sync, type Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
@@ -56,6 +57,15 @@ export function rm(files: string | string[]) {
       warn('errorWebdavRm', { identifier: file }, e)
     }
   })
+}
+
+export function mv(src: string, dst: string) {
+  try {
+    ensureFileSync(dst)
+    moveSync(src, dst, { overwrite: true })
+  } catch (e) {
+    warn('errorMoveFile', { identifier: dirname(src) }, e)
+  }
 }
 
 export function write(file: string, data: string | NodeJS.ArrayBufferView) {
@@ -103,7 +113,7 @@ export async function copy(src: string, dest: string) {
     //   })
     // })
     // rstream.on('end', function () {
-    //   console.log('CHUNKER DONE')
+    //   console.log('CHUNK DONE')
     // })
     // rstream.pipe(wstream)
   } catch (e) {

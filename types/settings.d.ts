@@ -47,6 +47,7 @@ export type SubGroupID =
   | 'afterSync'
   | 'mediaAdvanced'
   | 'obs'
+  | 'cloudsync'
   | 'webdav'
   | 'zoom'
   | 'playbackAdvanced'
