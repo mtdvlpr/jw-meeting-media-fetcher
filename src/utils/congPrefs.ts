@@ -16,8 +16,8 @@ export function isLocked(key: string) {
   // If no forced prefs, don't lock
   if (!store.prefs) return false
 
-  // If pref is not forceable, don't lock
-  if (!FORCEABLE.includes(key)) return false
+  // If pref is not forcible, don't lock
+  if (!FORCIBLE.includes(key)) return false
 
   const keys = key.split('.')
 

@@ -102,7 +102,7 @@ export const ENUMS = {
   maxRes: ['240p', '360p', '480p', '720p'],
 }
 
-export const FORCEABLE = [
+export const FORCIBLE = [
   'app.congregationName',
   'app.obs.cameraScene',
   'app.obs.enable',
@@ -157,5 +157,5 @@ export const FORCEABLE = [
 module.exports = {
   PREFS,
   ENUMS,
-  FORCEABLE,
+  FORCIBLE,
 }

@@ -14,7 +14,7 @@
         </div>
         <v-divider class="my-3"></v-divider>
         <loading-icon v-if="loading" />
-        <template v-for="item in forceable" v-else :key="item.key">
+        <template v-for="item in forcible" v-else :key="item.key">
           <v-switch
             v-if="item.value !== null"
             v-model="item.forced"
@@ -121,8 +121,8 @@ const getDescription = (key: string) => {
   }
 }
 
-const forceable = ref([
-  ...FORCEABLE.map((key) => {
+const forcible = ref([
+  ...FORCIBLE.map((key) => {
     return {
       key,
       value: getPrefs(key),
@@ -147,7 +147,7 @@ const updatePrefs = async () => {
   const forcedPrefs = {} as any
 
   try {
-    forceable.value
+    forcible.value
       .filter(({ forced }) => forced)
       .forEach((pref) => {
         const keys = pref.key.split('.')
