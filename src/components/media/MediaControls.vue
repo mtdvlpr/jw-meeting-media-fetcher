@@ -64,7 +64,19 @@ const localMedia = computed((): LocalFile[] =>
           return {
             safeName: basename(item),
             filepath: item,
-            cloudHidden: true,
+            hidden: true,
+            isLocal: true,
+          }
+        }
+      )
+    )
+    .concat(
+      findAll(join(getPrefs('cloudsync.path'), 'Recurring', '*')).map(
+        (item) => {
+          return {
+            safeName: basename(item),
+            filepath: item,
+            recurring: true,
             isLocal: true,
           }
         }
@@ -93,59 +105,112 @@ type MediaItem = {
 }
 const mPath = mediaPath()
 const items = reactive(ref<MediaItem[]>([]))
-const watcher = ref<fileWatcher.FSWatcher | null>(null)
+const watchers = ref<fileWatcher.FSWatcher[]>([])
 onBeforeUnmount(() => {
-  watcher.value?.close()
+  watchers.value?.forEach((watcher) => {
+    watcher.close()
+  })
 })
 onMounted(() => {
-  watcher.value = fileWatcher
-    .watch(join(mPath, date.value), {
-      awaitWriteFinish: true,
-      depth: 1,
-      alwaysStat: true,
-      ignorePermissionErrors: true,
-    })
-    .on('add', (path) => {
-      if (isImage(path) || isVideo(path) || isAudio(path)) {
-        const cleanName = sanitize(basename(path), true)
-        const filename = basename(path)
-        if (filename !== cleanName) {
-          rename(path, filename, cleanName)
+  watchers.value.push(
+    fileWatcher
+      .watch(join(mPath, date.value), {
+        awaitWriteFinish: true,
+        depth: 1,
+        alwaysStat: true,
+        ignorePermissionErrors: true,
+      })
+      .on('add', (path) => {
+        if (isImage(path) || isVideo(path) || isAudio(path)) {
+          const cleanName = sanitize(basename(path), true)
+          const filename = basename(path)
+          if (filename !== cleanName) {
+            rename(path, filename, cleanName)
+          }
+          items.value.push({
+            id: strip('mediaitem-' + cleanName),
+            path: join(dirname(path), cleanName),
+            play: false,
+            stop: false,
+            deactivate: false,
+          })
+          items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
         }
-        items.value.push({
-          id: strip('mediaitem-' + cleanName),
-          path: join(dirname(path), cleanName),
-          play: false,
-          stop: false,
-          deactivate: false,
-        })
-        items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
-      }
-    })
-    .on('change', (path) => {
-      const cleanName = sanitize(basename(path), true)
-      const index = items.value.findIndex((item) => {
-        return item.id === strip(`mediaitem-${cleanName}`)
       })
-      if (index !== -1) {
-        items.value.splice(index, 1, {
-          id: strip('mediaitem-' + cleanName),
-          path: join(dirname(path), cleanName),
-          play: false,
-          stop: false,
-          deactivate: false,
+      .on('change', (path) => {
+        const cleanName = sanitize(basename(path), true)
+        const index = items.value.findIndex((item) => {
+          return item.id === strip(`mediaitem-${cleanName}`)
         })
-        items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
-      }
-    })
-    .on('unlink', (path) => {
-      const index = items.value.findIndex((item) => {
-        return item.id === strip(`mediaitem-${sanitize(basename(path), true)}`)
+        if (index !== -1) {
+          items.value.splice(index, 1, {
+            id: strip('mediaitem-' + cleanName),
+            path: join(dirname(path), cleanName),
+            play: false,
+            stop: false,
+            deactivate: false,
+          })
+          items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
+        }
       })
-      if (index !== -1) {
-        items.value.splice(index, 1)
-      }
-    })
+      .on('unlink', (path) => {
+        const index = items.value.findIndex((item) => {
+          return (
+            item.id === strip(`mediaitem-${sanitize(basename(path), true)}`)
+          )
+        })
+        if (index !== -1) {
+          items.value.splice(index, 1)
+        }
+      })
+  )
+  if (getPrefs('cloudsync.enable')) {
+    // additional files
+    watchers.value?.push(
+      fileWatcher
+        .watch(join(getPrefs('cloudsync.path'), 'Additional', date.value), {
+          awaitWriteFinish: true,
+          depth: 1,
+          alwaysStat: true,
+          ignorePermissionErrors: true,
+        })
+        .on('add', (path) => {
+          copy(path, join(mPath, date.value, sanitize(basename(path), true)))
+        })
+        .on('unlink', (path) => {
+          rm(join(mPath, date.value, sanitize(basename(path), true)))
+        })
+    )
+    // hidden files
+    watchers.value?.push(
+      fileWatcher
+        .watch(join(getPrefs('cloudsync.path'), 'Hidden', date.value), {
+          awaitWriteFinish: true,
+          depth: 1,
+          alwaysStat: true,
+          ignorePermissionErrors: true,
+        })
+        .on('add', (path) => {
+          rm(join(mPath, date.value, sanitize(basename(path), true)))
+        })
+    )
+    // recurring files
+    watchers.value?.push(
+      fileWatcher
+        .watch(join(getPrefs('cloudsync.path'), 'Recurring', date.value), {
+          awaitWriteFinish: true,
+          depth: 1,
+          alwaysStat: true,
+          ignorePermissionErrors: true,
+        })
+        .on('add', (path) => {
+          // copy to all media date folders // copy(path, join(mPath, "*", sanitize(basename(path), true)))
+        })
+        .on('unlink', (path) => {
+          // remove from all media date folders // rm(path, join(mPath, "*", sanitize(basename(path), true)))
+        })
+    )
+  }
 
   // Auto play first media item
   if (getPrefs<boolean>('media.autoPlayFirst')) {

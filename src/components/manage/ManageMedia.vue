@@ -243,7 +243,13 @@ const processFile = async (file: LocalFile | VideoFile) => {
   }
 
   const congPromises: Promise<void>[] = []
-  const path = join(mediaPath(), date.value, file.safeName)
+  const path = join(
+    getPrefs('cloudsync.enable')
+      ? join(getPrefs('cloudsync.path'), 'Additional')
+      : mediaPath(),
+    date.value,
+    file.safeName
+  )
 
   // JWPUB extract
   if (file.contents) {
@@ -262,6 +268,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
     file.folder = date.value
     await downloadIfRequired({
       file: file as VideoFile,
+      additional: true,
     })
 
     if (file.subtitles) {
@@ -285,7 +292,9 @@ const processFile = async (file: LocalFile | VideoFile) => {
       ).map((m) => JSON.parse(m))
 
       const markerPath = join(
-        mediaPath(),
+        getPrefs('cloudsync.enable')
+          ? join(getPrefs('cloudsync.path'), 'Additional')
+          : mediaPath(),
         file.folder,
         changeExt(file.safeName, 'json')
       )

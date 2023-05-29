@@ -43,9 +43,9 @@
             aria-label="rename file"
             @click="emit('edit')"
           />
-          <template v-if="getPrefs('cloudsync.enable')">
+          <template v-if="getPrefs('cloudsync.enable') && !item.recurring">
             <v-btn
-              v-if="item.cloudHidden"
+              v-if="item.hidden"
               icon="mdi-eye-off"
               size="small"
               variant="text"
@@ -184,7 +184,7 @@ const { online } = useOnline()
 const previewName = ref('')
 const { client, contents } = storeToRefs(useCongStore())
 
-const unhide = (item: { filepath: string; cloudHidden: boolean }) => {
+const unhide = (item: { filepath: string; hidden: boolean }) => {
   mv(
     normalize(item.filepath),
     normalize(item.filepath).replace(
@@ -192,10 +192,10 @@ const unhide = (item: { filepath: string; cloudHidden: boolean }) => {
       normalize(mediaPath()!)
     )
   )
-  item.cloudHidden = false
+  item.hidden = false
 }
 
-const hide = (item: { filepath: string; cloudHidden: boolean }) => {
+const hide = (item: { filepath: string; hidden: boolean }) => {
   mv(
     normalize(item.filepath),
     normalize(item.filepath).replace(
@@ -203,7 +203,7 @@ const hide = (item: { filepath: string; cloudHidden: boolean }) => {
       join(getPrefs('cloudsync.path'), 'Hidden')
     )
   )
-  item.cloudHidden = true
+  item.hidden = true
 }
 
 const getPreview = (item: MeetingFile | LocalFile) => {

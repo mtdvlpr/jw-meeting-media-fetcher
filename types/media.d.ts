@@ -49,7 +49,6 @@ export interface ImageFile extends MeetingFileBase {
 }
 
 export interface LocalFile {
-  cloudHidden?: boolean
   color?: string
   congSpecific?: boolean
   contents?: Buffer
@@ -68,7 +67,6 @@ export interface LocalFile {
   objectUrl?: string
   subtitles?: undefined
   markers?: undefined
-  cloudHidden?: boolean
 }
 
 export declare type MeetingFile = ImageFile | VideoFile

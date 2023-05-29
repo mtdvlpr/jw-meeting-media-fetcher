@@ -163,9 +163,11 @@ export function createMediaNames() {
 export async function downloadIfRequired({
   file,
   date,
+  additional,
 }: {
   file: VideoFile
   date?: string
+  additional?: boolean
 }): Promise<string> {
   const progressMap = useMediaStore().progress
   const downloadInProgress = progressMap.get(file.url)
@@ -188,7 +190,16 @@ export async function downloadIfRequired({
       if (extname(file.cacheFile) === '.jwpub') {
         await emptyDir(file.cacheDir)
       }
-      const filePath = file.folder ? mediaPath(file) : undefined
+      const filePath = file.folder
+        ? additional
+          ? join(
+              (getPrefs('cloudsync.path'),
+              'Additional',
+              file.folder!,
+              file.destFilename ?? file.safeName)
+            )
+          : mediaPath(file)
+        : undefined
       const destinations = [file.cacheFile]
       if (filePath) destinations.push(filePath)
       await fetchFile({ url: file.url, dest: destinations, date })
@@ -220,7 +231,14 @@ export async function downloadIfRequired({
     }
   } else {
     if (file.folder) {
-      const filePath = mediaPath(file)
+      const filePath = additional
+        ? join(
+            getPrefs('cloudsync.path'),
+            'Additional',
+            file.folder!,
+            file.destFilename ?? file.safeName
+          )
+        : mediaPath(file)
       if (filePath) {
         copy(file.cacheFile, filePath)
         if (subtitlesEnabled && subsLang && file.subtitles) {
