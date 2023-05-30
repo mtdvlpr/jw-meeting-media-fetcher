@@ -916,7 +916,7 @@ const groups = computed((): Settings[] => {
       label: $i18n.t('keyboardShortcuts'),
       settings: [
         {
-          type: 'text',
+          type: 'shortcut',
           key: 'media.mediaWinShortcut',
           depends: 'media.enableMediaDisplayButton',
           onChange: (val: string) => {
@@ -927,7 +927,7 @@ const groups = computed((): Settings[] => {
           },
         },
         {
-          type: 'text',
+          type: 'shortcut',
           key: 'media.presentShortcut',
           depends: 'media.enableMediaDisplayButton',
           onChange: (val: string) => {
@@ -938,7 +938,7 @@ const groups = computed((): Settings[] => {
           },
         },
         {
-          type: 'text',
+          type: 'shortcut',
           key: 'media.shuffleShortcut',
           depends: 'meeting.enableMusicButton',
           onChange: (val: string) => {
@@ -953,12 +953,12 @@ const groups = computed((): Settings[] => {
           depends: 'media.enableMediaDisplayButton',
         },
         {
-          type: 'text',
+          type: 'shortcut',
           key: 'media.ppBackward',
           depends: 'media.enablePp',
         },
         {
-          type: 'text',
+          type: 'shortcut',
           key: 'media.ppForward',
           depends: 'media.enablePp',
         },

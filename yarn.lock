@@ -656,6 +656,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hcfy/bk2ea@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "@hcfy/bk2ea@npm:0.0.1"
+  checksum: 5500c7386321f1811c0ee8430b162e9eaace96ed70dc7ef3b631cd76ba2760cd268e53f5d87a1491f67336084c7e83cc113e124d50cd23b753c7bf8e51f9313f
+  languageName: node
+  linkType: hard
+
 "@humanwhocodes/config-array@npm:^0.11.8":
   version: 0.11.8
   resolution: "@humanwhocodes/config-array@npm:0.11.8"
@@ -8233,6 +8240,7 @@ __metadata:
   resolution: "meeting-media-manager@workspace:."
   dependencies:
     "@electron/asar": ^3.2.4
+    "@hcfy/bk2ea": ^0.0.1
     "@mdi/font": ^7.2.96
     "@nuxtjs/eslint-config-typescript": ^12.0.0
     "@nuxtjs/i18n": 8.0.0-beta.10

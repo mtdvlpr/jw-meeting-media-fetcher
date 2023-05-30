@@ -5,7 +5,7 @@
     v-if="setting.type == 'switch' || setting.type == undefined"
     @click="value = !value"
   >
-    <span class="text-body-2" v-html="$t(label)" />
+    <div class="text-body-2 mb-2" v-html="$t(label)" />
     <v-list-item-action>
       <v-switch inset :model-value="value" density="compact" hide-details />
     </v-list-item-action>
@@ -34,29 +34,29 @@
     <form-time-picker v-model="value" />
   </v-list-item>
   <v-list-item v-else-if="setting.type == 'path'" style="max-width: 550px">
-    <span class="text-body-2" v-html="$t(label)" />
-    <br />
+    <div class="text-body-2 mb-2" v-html="$t(label)" />
     <v-btn
       variant="tonal"
       color="primary"
       style="height: 40px"
-      class="mt-1 text-none"
+      class="text-none"
       :disabled="isLocked(setting.key)"
       @click="setPath"
     >
       {{ value || $t('browse') }}
     </v-btn>
-    <!-- <form-input
-      :id="setting.key"
-      :model-value="value"
-      readonly
-      class="py-1"
-      style="cursor: pointer"
-      hide-details="auto"
-      v-bind="setting.props"
-      :disabled="isLocked(setting.key)"
-      @click="setPath"
-    /> -->
+  </v-list-item>
+  <v-list-item v-else-if="setting.type == 'shortcut'" style="max-width: 550px">
+    <div class="text-body-2 mb-2" v-html="$t(label)" />
+    <v-btn
+      variant="tonal"
+      class="text-none"
+      :disabled="recording || isLocked(setting.key)"
+      @click="recordShortcut()"
+    >
+      {{ value || $t('clickToSetShortcut') }}
+      <v-icon v-if="value" end @click.stop="clearShortcut"> mdi-close </v-icon>
+    </v-btn>
   </v-list-item>
   <v-list-item v-else-if="setting.type === 'list'">
     <v-col class="d-flex pa-0 pb-2 align-center">
@@ -112,7 +112,7 @@
     </v-col>
   </v-list-item>
   <v-list-item v-else>
-    <span class="text-body-2" v-html="$t(label)" />
+    <div class="text-body-2 mb-2" v-html="$t(label)" />
     <form-input
       :id="setting.key"
       v-model="value"
@@ -168,6 +168,7 @@
 </template>
 <script setup lang="ts">
 import { ipcRenderer } from 'electron'
+import { convert as keyCodeConvert } from '@hcfy/bk2ea'
 import { Setting } from '~~/types'
 
 const props = defineProps<{
@@ -233,6 +234,65 @@ const setPath = async () => {
   })
   if (result && !result.canceled) {
     value.value = result.filePaths[0]
+  }
+}
+
+const recording = ref(false)
+let keysPressed: string[] = []
+
+const recordShortcut = () => {
+  recording.value = true
+  window.addEventListener('keydown', handleKeyPress)
+}
+const clearShortcut = () => {
+  recording.value = false
+  value.value = ''
+  // TODO: unset existing shortcut
+}
+const stopRecording = () => {
+  recording.value = false
+  keysPressed = []
+  window.removeEventListener('keydown', handleKeyPress)
+}
+const handleKeyPress = (event: {
+  preventDefault: () => void
+  key: any
+  ctrlKey: any
+  shiftKey: any
+  altKey: any
+  metaKey: any
+  code: any
+}) => {
+  if (recording.value) {
+    event.preventDefault()
+    if (!keysPressed.includes(keyCodeConvert(event.code)!)) {
+      keysPressed.push(keyCodeConvert(event.code)!)
+    }
+    if (
+      keysPressed.length >= 2 &&
+      keysPressed.length <= 4 &&
+      keysPressed.filter(
+        (key) => !['Control', 'Shift', 'Alt', 'Meta'].includes(key)
+      ).length === 1 &&
+      keysPressed.some((key) =>
+        ['Control', 'Shift', 'Alt', 'Meta'].includes(key)
+      )
+    ) {
+      value.value = keysPressed.join('+')
+      // TODO: unset existing shortcut
+      stopRecording()
+    } else if (
+      keysPressed.length >= 4 &&
+      (keysPressed.filter(
+        (key) => !['Control', 'Shift', 'Alt', 'Meta'].includes(key)
+      ).length !== 1 ||
+        keysPressed.some((key) =>
+          ['Control', 'Shift', 'Alt', 'Meta'].includes(key)
+        ))
+    ) {
+      stopRecording()
+    }
+    // TODO: catch error. on error: unset existing shortcut, clear value
   }
 }
 </script>

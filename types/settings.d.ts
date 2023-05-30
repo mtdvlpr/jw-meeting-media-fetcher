@@ -16,7 +16,7 @@ export interface SubSetting {
   onChange?: (val: any, oldVal: any) => void
 }
 export interface Setting extends SubSetting {
-  type?: Field | 'path' | 'date' | 'time' | 'list'
+  type?: Field | 'path' | 'date' | 'time' | 'list' | 'shortcut'
   label?: string
   prepend?: SubSetting
   append?: Action
