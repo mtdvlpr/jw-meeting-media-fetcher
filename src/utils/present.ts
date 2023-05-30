@@ -136,56 +136,7 @@ export function unsetShortcuts(filter: ShortcutScope | 'all' = 'all') {
 }
 
 const watchers = ref<fileWatcher.FSWatcher[]>([])
-watchers.value.push(
-  fileWatcher
-    .watch(
-      join(
-        appPath(),
-        `custom-background-image-${getPrefs<string>('app.congregationName')}*`
-      ),
-      {
-        awaitWriteFinish: true,
-        depth: 1,
-        alwaysStat: true,
-        ignorePermissionErrors: true,
-      }
-    )
-    .on('add', () => {
-      refreshBackgroundImgPreview()
-    })
-    .on('change', () => {
-      refreshBackgroundImgPreview()
-    })
-    .on('unlink', () => {
-      refreshBackgroundImgPreview()
-    })
-)
-// custom background image
-watchers.value.push(
-  fileWatcher
-    .watch(
-      join(
-        getPrefs('cloudsync.path'),
-        'Settings',
-        `custom-background-image-${getPrefs<string>('app.congregationName')}*`
-      ),
-      {
-        awaitWriteFinish: true,
-        depth: 1,
-        alwaysStat: true,
-        ignorePermissionErrors: true,
-      }
-    )
-    .on('add', (backgroundImg) => {
-      copy(backgroundImg, join(appPath(), basename(backgroundImg)))
-    })
-    .on('change', (backgroundImg) => {
-      copy(backgroundImg, join(appPath(), basename(backgroundImg)))
-    })
-    .on('unlink', (backgroundImg) => {
-      rm(join(appPath(), basename(backgroundImg)))
-    })
-)
+
 export async function showMediaWindow() {
   ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
   setShortcut({
@@ -196,6 +147,56 @@ export async function showMediaWindow() {
     key: getPrefs<string>('media.mediaWinShortcut'),
     fn: 'toggleMediaWindow',
   })
+  watchers.value.push(
+    fileWatcher
+      .watch(
+        join(
+          appPath(),
+          `custom-background-image-${getPrefs<string>('app.congregationName')}*`
+        ),
+        {
+          awaitWriteFinish: true,
+          depth: 1,
+          alwaysStat: true,
+          ignorePermissionErrors: true,
+        }
+      )
+      .on('add', () => {
+        refreshBackgroundImgPreview()
+      })
+      .on('change', () => {
+        refreshBackgroundImgPreview()
+      })
+      .on('unlink', () => {
+        refreshBackgroundImgPreview()
+      })
+  )
+  // custom background image
+  watchers.value.push(
+    fileWatcher
+      .watch(
+        join(
+          getPrefs('cloudsync.path'),
+          'Settings',
+          `custom-background-image-${getPrefs<string>('app.congregationName')}*`
+        ),
+        {
+          awaitWriteFinish: true,
+          depth: 1,
+          alwaysStat: true,
+          ignorePermissionErrors: true,
+        }
+      )
+      .on('add', (backgroundImg) => {
+        copy(backgroundImg, join(appPath(), basename(backgroundImg)))
+      })
+      .on('change', (backgroundImg) => {
+        copy(backgroundImg, join(appPath(), basename(backgroundImg)))
+      })
+      .on('unlink', (backgroundImg) => {
+        rm(join(appPath(), basename(backgroundImg)))
+      })
+  )
 }
 
 export function closeMediaWindow() {
