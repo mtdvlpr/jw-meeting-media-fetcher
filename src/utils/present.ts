@@ -1,6 +1,7 @@
 import { pathToFileURL } from 'url'
 import { ipcRenderer } from 'electron'
 import { join, basename } from 'upath'
+import * as fileWatcher from 'chokidar'
 import { ShortcutScope } from './../../types/electron.d'
 import {
   MediaPrefs,
@@ -134,6 +135,57 @@ export function unsetShortcuts(filter: ShortcutScope | 'all' = 'all') {
   store.setShortcuts(keepers)
 }
 
+const watchers = ref<fileWatcher.FSWatcher[]>([])
+watchers.value.push(
+  fileWatcher
+    .watch(
+      join(
+        appPath(),
+        `custom-background-image-${getPrefs<string>('app.congregationName')}*`
+      ),
+      {
+        awaitWriteFinish: true,
+        depth: 1,
+        alwaysStat: true,
+        ignorePermissionErrors: true,
+      }
+    )
+    .on('add', () => {
+      refreshBackgroundImgPreview()
+    })
+    .on('change', () => {
+      refreshBackgroundImgPreview()
+    })
+    .on('unlink', () => {
+      refreshBackgroundImgPreview()
+    })
+)
+// custom background image
+watchers.value.push(
+  fileWatcher
+    .watch(
+      join(
+        getPrefs('cloudsync.path'),
+        'Settings',
+        `custom-background-image-${getPrefs<string>('app.congregationName')}*`
+      ),
+      {
+        awaitWriteFinish: true,
+        depth: 1,
+        alwaysStat: true,
+        ignorePermissionErrors: true,
+      }
+    )
+    .on('add', (backgroundImg) => {
+      copy(backgroundImg, join(appPath(), basename(backgroundImg)))
+    })
+    .on('change', (backgroundImg) => {
+      copy(backgroundImg, join(appPath(), basename(backgroundImg)))
+    })
+    .on('unlink', (backgroundImg) => {
+      rm(join(appPath(), basename(backgroundImg)))
+    })
+)
 export async function showMediaWindow() {
   ipcRenderer.send('showMediaWindow', await getMediaWindowDestination())
   setShortcut({
@@ -150,6 +202,9 @@ export function closeMediaWindow() {
   unsetShortcuts('mediaWin')
   ipcRenderer.send('closeMediaWindow')
   usePresentStore().setMediaScreenInit(false)
+  watchers.value?.forEach((watcher) => {
+    watcher.close()
+  })
 }
 
 export async function toggleMediaWindow(action?: string) {
@@ -160,7 +215,6 @@ export async function toggleMediaWindow(action?: string) {
   }
   if (action === 'open') {
     await showMediaWindow()
-    await refreshBackgroundImgPreview()
   } else {
     closeMediaWindow()
     if (action === 'reopen') toggleMediaWindow()

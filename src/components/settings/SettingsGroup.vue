@@ -17,10 +17,7 @@
         <template v-if="subSetting.type == 'action'">
           <v-divider></v-divider>
           <v-list-item>
-            <v-btn
-              variant="tonal"
-              color="primary"
-              @click="subSetting.type == 'action' && subSetting.action"
+            <v-btn variant="tonal" color="primary" @click="subSetting.action"
               >{{ $t(subSetting.label) }}
             </v-btn>
           </v-list-item>

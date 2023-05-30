@@ -40,9 +40,9 @@
 </template>
 <script setup lang="ts">
 import { ipcRenderer } from 'electron'
-import { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { extname, join } from 'upath'
 import { readFile } from 'fs-extra'
+import { LocaleObject } from 'vue-i18n-routing'
 import {
   Action,
   Group,
@@ -141,7 +141,7 @@ onMounted(() => {
 })
 
 const locales = ref<{ name: string; code: string }[]>([])
-locales.value = $i18n.locales.value.map((l) => {
+locales.value = $i18n.locales.value.map((l: LocaleObject) => {
   const locale = l as LocaleObject
   return {
     name: locale.name!,
@@ -155,7 +155,7 @@ const requiredSettings = computed(() => {
       type: 'select',
       key: 'app.localAppLang',
       props: {
-        items: $i18n.locales.value.map((l) => {
+        items: $i18n.locales.value.map((l: LocaleObject) => {
           const locale = l as LocaleObject
           return {
             title: locale.name!,
@@ -290,6 +290,7 @@ const filter = ref('')
 const prefs = ref({ ...(getAllPrefs() ?? PREFS) })
 const updatePrefs = (key: string, value: any) => {
   prefs.value = setPrefs(key, value)
+  return {}
 }
 provide(prefsKey, prefs)
 provide(updatePrefsKey, updatePrefs)
@@ -601,10 +602,22 @@ const groups = computed((): Settings[] => {
                   const filename = `custom-background-image-${prefs.value.app.congregationName}`
                   const extension = extname(background)
                   rm(findAll(join(appPath(), filename + '*')))
-                  copy(background, join(appPath(), filename + extension))
-
-                  // Upload the background to the cong server
-                  if (client.value && prefs.value.cong.dir) {
+                  if (
+                    getPrefs('cloudsync.enable') &&
+                    getPrefs('cloudsync.path')
+                  ) {
+                    // Copy the background to cloud sync
+                    copy(
+                      background,
+                      join(
+                        getPrefs('cloudsync.path'),
+                        'Settings',
+                        filename + extension
+                      )
+                    )
+                  } else if (client.value && prefs.value.cong.dir) {
+                    // Upload the background to the cong server
+                    copy(background, join(appPath(), filename + extension))
                     await client.value.putFileContents(
                       join(prefs.value.cong.dir, filename + extension),
                       await readFile(background),
@@ -613,11 +626,50 @@ const groups = computed((): Settings[] => {
                       }
                     )
                   }
-
-                  refreshBackgroundImgPreview()
                 } else {
                   warn('notAnImage')
                 }
+              },
+            },
+            {
+              type: 'action',
+              label: 'mediaWindowBackgroundReset',
+              depends: 'media.enableMediaDisplayButton',
+              action: async () => {
+                const filename = `custom-background-image-${prefs.value.app.congregationName}`
+                const background = findAll(join(appPath(), filename + '*'))
+                if (
+                  getPrefs('cloudsync.enable') &&
+                  getPrefs('cloudsync.path')
+                ) {
+                  // Remove the background from cloud sync
+                  rm(
+                    findAll(
+                      join(
+                        getPrefs('cloudsync.path'),
+                        'Settings',
+                        filename + '*'
+                      )
+                    )
+                  )
+                } else if (client.value && prefs.value.cong.dir) {
+                  // Remove the background from the cong server
+                  const extension = extname(background[0])
+                  try {
+                    await client.value.deleteFile(
+                      join(prefs.value.cong.dir, filename + extension)
+                    )
+                  } catch (e: any) {
+                    if (e.message.includes(LOCKED.toString())) {
+                      warn('errorWebdavLocked', {
+                        identifier: filename + extension,
+                      })
+                    } else if (e.status !== NOT_FOUND) {
+                      error('errorWebdavRm', e, filename + extension)
+                    }
+                  }
+                }
+                rm(background)
               },
             },
           ],
