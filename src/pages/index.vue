@@ -39,11 +39,12 @@
 </template>
 <script setup lang="ts">
 import { platform, userInfo } from 'os'
-import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
 import { basename, join } from 'upath'
 import { pathExists } from 'fs-extra'
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
+import * as fileWatcher from 'chokidar'
+import { LocaleObject } from 'vue-i18n-routing'
 import { CongPrefs, ObsPrefs, Theme } from '~~/types'
 
 interface Cong {
@@ -280,6 +281,83 @@ const initPrefs = async (name: string, isNew = false) => {
     }
   }
 
+  const watchers = ref<fileWatcher.FSWatcher[]>([])
+  watchers.value.push(
+    fileWatcher
+      .watch(
+        join(
+          appPath(),
+          `custom-background-image-${getPrefs<string>('app.congregationName')}*`
+        ),
+        {
+          awaitWriteFinish: true,
+          depth: 1,
+          alwaysStat: true,
+          ignorePermissionErrors: true,
+        }
+      )
+      .on('add', () => {
+        refreshBackgroundImgPreview()
+      })
+      .on('change', () => {
+        refreshBackgroundImgPreview()
+      })
+      .on('unlink', () => {
+        refreshBackgroundImgPreview()
+      })
+  )
+  if (getPrefs('cloudsync.enable') && getPrefs('cloudsync.path')) {
+    // custom background image
+    watchers.value.push(
+      fileWatcher
+        .watch(
+          join(
+            getPrefs('cloudsync.path'),
+            'Settings',
+            `custom-background-image-${getPrefs<string>(
+              'app.congregationName'
+            )}*`
+          ),
+          {
+            awaitWriteFinish: true,
+            depth: 1,
+            alwaysStat: true,
+            ignorePermissionErrors: true,
+          }
+        )
+        .on('add', (backgroundImg) => {
+          copy(backgroundImg, join(appPath(), basename(backgroundImg)))
+        })
+        .on('change', (backgroundImg) => {
+          copy(backgroundImg, join(appPath(), basename(backgroundImg)))
+        })
+        .on('unlink', (backgroundImg) => {
+          rm(join(appPath(), basename(backgroundImg)))
+        })
+    )
+    // enforced settings
+    watchers.value.push(
+      fileWatcher
+        .watch(
+          join(getPrefs('cloudsync.path'), 'Settings', 'forcedPrefs.json'),
+          {
+            awaitWriteFinish: true,
+            depth: 1,
+            alwaysStat: true,
+            ignorePermissionErrors: true,
+          }
+        )
+        .on('add', () => {
+          forcePrefs()
+        })
+        .on('change', () => {
+          forcePrefs()
+        })
+        .on('unlink', () => {
+          forcePrefs()
+        })
+    )
+  }
   // Connect to OBS depending on prefs
   useObsStore().clear()
   const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')
@@ -289,5 +367,10 @@ const initPrefs = async (name: string, isNew = false) => {
 
   // Regular Cleanup
   cleanup()
+  onBeforeUnmount(() => {
+    watchers.value?.forEach((watcher) => {
+      watcher.close()
+    })
+  })
 }
 </script>

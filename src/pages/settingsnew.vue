@@ -9,7 +9,6 @@
       :total="totalProgress"
     />
     <settings-wizard :required-settings="requiredSettings" />
-    {{ forcingPrefs }}
     <cong-forced-prefs v-model="forcingPrefs" />
     <v-row no-gutters justify="center" class="fill-height settings">
       <v-col cols="12">
@@ -1013,7 +1012,7 @@ const filteredGroups = computed(() => {
         if (setting.type === 'group') {
           const filteredSubSettings = setting.value.filter((subSetting) => {
             const label = $i18n.t(
-              subSetting.label ?? subSetting.key.split('.').pop()
+              subSetting.label ?? (subSetting as Setting).key.split('.').pop()
             )
             return label.toLowerCase().includes(filter.value.toLowerCase())
           })
@@ -1024,7 +1023,9 @@ const filteredGroups = computed(() => {
             })
           }
         } else {
-          const label = $i18n.t(setting.label ?? setting.key.split('.').pop())
+          const label = $i18n.t(
+            setting.label ?? (setting as Setting).key.split('.').pop()
+          )
           if (label.toLowerCase().includes(filter.value.toLowerCase())) {
             filteredSettings.push(setting)
           }

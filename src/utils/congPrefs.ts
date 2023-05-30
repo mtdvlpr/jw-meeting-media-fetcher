@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs-extra'
+import { pathExists, readFileSync } from 'fs-extra'
 import { join } from 'upath'
 import {
   ObsPrefs,
@@ -57,7 +57,11 @@ export async function forcePrefs(refresh = false) {
 
   try {
     const path = join(dir, 'forcedPrefs.json')
-    if (store.contents.find(({ filename }) => filename === path)) {
+    if (
+      cloudsync
+        ? await pathExists(path)
+        : store.contents.find(({ filename }) => filename === path)
+    ) {
       const json = cloudsync
         ? readFileSync(path)
         : await client?.getFileContents(path, {
