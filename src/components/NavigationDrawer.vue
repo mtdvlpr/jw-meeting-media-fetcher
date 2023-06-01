@@ -138,13 +138,13 @@ const navItems = computed(() => {
       tooltip: getPrefs<string>('media.presentShortcut'),
       aria: 'present',
     })
-    items.splice(1, 0, {
-      title: $i18n.t('settings') + ' DEV',
-      icon: 'mdi-cog',
-      to: localePath('/settingsnew'),
-      tooltip: '',
-      aria: 'settings',
-    })
+    // items.splice(1, 0, {
+    //   title: $i18n.t('settings') + ' DEV',
+    //   icon: 'mdi-cog',
+    //   to: localePath('/settingsnew'),
+    //   tooltip: '',
+    //   aria: 'settings',
+    // })
   }
   return items
 })

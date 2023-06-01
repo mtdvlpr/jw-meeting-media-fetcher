@@ -31,14 +31,14 @@
             <template v-if="step.firstRunParam">
               <v-btn
                 variant="flat"
-                @click="setFirstRunParam(step.firstRunParam, false)"
+                @click="setFirstRunParam(step.firstRunParam!, false)"
               >
                 No
               </v-btn>
               <v-btn
                 variant="flat"
                 color="primary"
-                @click="setFirstRunParam(step.firstRunParam, true)"
+                @click="setFirstRunParam(step.firstRunParam!, true)"
               >
                 Yes
               </v-btn>
@@ -99,7 +99,7 @@ const firstRunSteps = computed((): FirstRunStep[] => {
     {
       title: 'What language do you want the app to be displayed in?',
       subtitle:
-        "This only affects the app itself, not the media we'll be downloading, so feel free to choose the language you understand best.",
+        'M³ will display helpful tips and information in this language. Choose the language you understand best.',
       settings: [props.requiredSettings['app.localAppLang']],
     },
     {
@@ -107,6 +107,13 @@ const firstRunSteps = computed((): FirstRunStep[] => {
       title: 'Are you using this app at a Kingdom Hall?',
       subtitle:
         "If so, we'll configure a few things for you right off the bat.",
+    },
+    {
+      skip: !firstRunParams.value.usingAtKh,
+      firstRunParam: 'companionToJw',
+      title: 'Will you be using this app as a companion to JW Library?',
+      subtitle:
+        "Select 'No' if you plan on using M³ to display all meeting media. This will activate fully automated meeting media retrieval, yeartext display, background music playback, and other practical features. Close JW Library before proceeding if you select 'No'!",
     },
     {
       title: firstRunParams.value.usingAtKh
@@ -119,9 +126,9 @@ const firstRunSteps = computed((): FirstRunStep[] => {
     {
       title: firstRunParams.value.usingAtKh
         ? 'What is the language of your congregation or group?'
-        : 'In what language should we download media?',
+        : 'In what language should media be downloaded?',
       subtitle:
-        'Media such as videos and pictures will be downloaded from publications in this language.',
+        'Media such as videos and pictures will be downloaded from publications in this language from jw.org.',
       settings: [props.requiredSettings['media.lang']],
       onComplete: () => {
         if (firstRunParams.value.usingAtKh) {
@@ -130,12 +137,13 @@ const firstRunSteps = computed((): FirstRunStep[] => {
       },
     },
     {
-      skip: !firstRunParams.value.usingAtKh,
+      skip: firstRunParams.value.companionToJw,
       title: "Excellent! We're off to a good start.",
       subtitle:
         "You'll notice the yeartext is now being displayed on the external monitor! But let's keep going.",
     },
     {
+      skip: firstRunParams.value.companionToJw,
       title: 'What are your meeting days and times?',
       subtitle:
         "We'll use this info to make sure that all media is categorized into dated folders for each meeting.",
@@ -152,48 +160,47 @@ const firstRunSteps = computed((): FirstRunStep[] => {
       },
     },
     {
-      title:
-        'Where should the prepared media for playback at meetings be saved?',
+      title: 'Where should media be stored?',
       subtitle:
-        'This is the folder in which the dated folders will be created for each meeting.',
+        'Choose the folder in which media to be played at meetings should be saved on this computer.',
       settings: [props.requiredSettings['app.localOutputPath']],
       onComplete: () => {
-        startMediaSync()
+        if (!firstRunParams.value.companionToJw) startMediaSync()
       },
     },
     {
+      skip:
+        !firstRunParams.value.usingAtKh || firstRunParams.value.companionToJw,
       title: 'Excellent!',
       subtitle:
         "We're almost done! We'll start fetching media while we wrap up with our initial setup.",
     },
     {
-      skip: !firstRunParams.value.usingAtKh,
+      skip:
+        !firstRunParams.value.usingAtKh || firstRunParams.value.companionToJw,
       firstRunParam: 'usingObs',
       title: 'Does your Kingdom Hall use a program called OBS Studio?',
       subtitle:
         'OBS Studio is a free app used to manage camera and video feeds.',
     },
     {
-      skip: !firstRunParams.value.usingAtKh || !firstRunParams.value.usingObs,
+      skip:
+        !firstRunParams.value.usingAtKh ||
+        firstRunParams.value.companionToJw ||
+        !firstRunParams.value.usingObs,
       firstRunParam: 'integrateObs',
       title: 'Would you like to integrate M³ with OBS Studio?',
       subtitle:
         'Doing so will greatly simplify and facilitate sharing media during hybrid meetings.',
     },
     {
-      skip:
-        !firstRunParams.value.usingAtKh ||
-        !firstRunParams.value.usingObs ||
-        !firstRunParams.value.integrateObs,
+      skip: !firstRunParams.value.integrateObs,
       title: 'Is OBS Studio configured properly?',
       subtitle:
         'Make sure that the OBS Studio Websocket plugin is configured with a port number and password, and that the OBS Studio virtual camera is installed on this computer. When this is done, click next.',
     },
     {
-      skip:
-        !firstRunParams.value.usingAtKh ||
-        !firstRunParams.value.usingObs ||
-        !firstRunParams.value.integrateObs,
+      skip: !firstRunParams.value.integrateObs,
       title:
         "Enter the port and password configured in OBS Studio's Websocket plugin.",
       settings: [
@@ -205,19 +212,13 @@ const firstRunSteps = computed((): FirstRunStep[] => {
       },
     },
     {
-      skip:
-        !firstRunParams.value.usingAtKh ||
-        !firstRunParams.value.usingObs ||
-        !firstRunParams.value.integrateObs,
+      skip: !firstRunParams.value.integrateObs,
       title: 'Configure a scene in OBS Studio to show a stage wide shot.',
       subtitle: 'Once the scene has been created, select it here.',
       settings: [props.requiredSettings['app.obs.cameraScene']],
     },
     {
-      skip:
-        !firstRunParams.value.usingAtKh ||
-        !firstRunParams.value.usingObs ||
-        !firstRunParams.value.integrateObs,
+      skip: !firstRunParams.value.integrateObs,
       title:
         'Configure a scene in OBS Studio that will capture the media while it is displayed.',
       subtitle:
@@ -225,20 +226,20 @@ const firstRunSteps = computed((): FirstRunStep[] => {
       settings: [props.requiredSettings['app.obs.mediaScene']],
     },
     {
-      skip: !firstRunParams.value.usingAtKh,
+      skip: firstRunParams.value.companionToJw,
       title:
         'Make sure that the setting to "use dual monitors" in Zoom is enabled.',
       subtitle:
         "That way, you'll be able to quickly show and hide Zoom participants on the TV screens when needed.",
     },
     {
-      skip: !firstRunParams.value.usingAtKh,
+      skip: firstRunParams.value.companionToJw,
       title: 'How can I show Zoom on the TVs instead of the media or yeartext?',
       subtitle:
         "Look for this button in M³'s sidebar. Clicking it will temporarily hide the media and yeartext, and reveal the Zoom participants underneath. Once the Zoom part is over, you can show the yeartext again using the same button.",
     },
     {
-      skip: !firstRunParams.value.usingAtKh,
+      skip: firstRunParams.value.companionToJw,
       title: 'What about background music?',
       subtitle:
         "In the sidebar, you'll also find a button to start and stop background music playback. Note that background music will start playing automatically before a meeting is scheduled to start when M³ is launched, and will stop automatically one minute before the meeting. However, background music playback will need to be manually started after the concluding prayer.",
@@ -259,9 +260,18 @@ const firstRunProgress = computed(
 )
 const enableExternalDisplayAndMusic = () => {
   // update prefs here
-  console.log('update prefs here')
-  // prefs.value.media.enableMediaDisplayButton = true
-  // prefs.value.media.enableMusicButton = true
+  setPrefs('media.enableMediaDisplayButton', !!firstRunParams.value.usingAtKh)
+  setPrefs('media.enableMusicButton', !!firstRunParams.value.companionToJw)
+  setPrefs('meeting.companionToJw', !firstRunParams.value.companionToJw)
+  setPrefs('media.hideWinAfterMedia', !firstRunParams.value.companionToJw)
+
+  console.log('enableExternalDisplayAndMusic')
+  if (firstRunParams.value.companionToJw) {
+    console.log('enableMusicButton = true')
+  } else {
+    console.log('specialCong = true')
+    console.log('media.hideWinAfterMedia = true')
+  }
 }
 
 const startMediaSync = () => {

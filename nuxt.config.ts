@@ -10,7 +10,7 @@ const isDev = process.env.NODE_ENV === 'development'
 
 const ignorePages: string[] = []
 if (!isDev) {
-  ignorePages.push(...['/presentnew', '/settingsnew'])
+  ignorePages.push(...['/presentnew' /*, '/settingsnew' */])
 }
 
 const vitePlugins: PluginOption[] = []
