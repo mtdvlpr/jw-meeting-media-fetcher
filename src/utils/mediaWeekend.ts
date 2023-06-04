@@ -73,7 +73,7 @@ export async function getWeMedia(date: string) {
 
   const media = executeQuery<MultiMediaItem>(
     db,
-    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, BeginParagraphOrdinal, FilePath, Label, Caption, TargetParagraphNumberLabel, KeySymbol, Track, IssueTagNumber
+    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, MepsDocumentId, BeginParagraphOrdinal, FilePath, Label, Caption, TargetParagraphNumberLabel, KeySymbol, Track, IssueTagNumber
          FROM DocumentMultimedia
          INNER JOIN Multimedia
            ON DocumentMultimedia.MultimediaId = Multimedia.MultimediaId
@@ -82,7 +82,7 @@ export async function getWeMedia(date: string) {
            AND Question.TargetParagraphOrdinal = DocumentMultimedia.BeginParagraphOrdinal
          WHERE DocumentMultimedia.DocumentId = ${docId}
            AND CategoryType <> 9 
-           AND CategoryType <> -1
+           AND (KeySymbol != "sjjm" OR KeySymbol IS NULL)
          GROUP BY DocumentMultimedia.MultimediaId
          ORDER BY BeginParagraphOrdinal`
   )
@@ -157,10 +157,10 @@ export async function getWeMedia(date: string) {
 async function addMediaToPart(
   date: string,
   issue: string,
-  img: MultiMediaItem
+  mediaItem: MultiMediaItem
 ): Promise<void> {
-  if (isImage(img.FilePath)) {
-    let LocalPath = join(pubPath(), 'w', issue, '0', img.FilePath)
+  if (isImage(mediaItem.FilePath)) {
+    let LocalPath = join(pubPath(), 'w', issue, '0', mediaItem.FilePath)
     if (!(await pathExists(LocalPath))) {
       LocalPath = join(
         pubPath({
@@ -168,26 +168,31 @@ async function addMediaToPart(
           issue,
           url: `url_${getPrefs<string>('media.langFallback')}.jpg`,
         } as MeetingFile),
-        img.FilePath
+        mediaItem.FilePath
       )
     }
     const FileName = sanitize(
-      img.Caption.length > img.Label.length ? img.Caption : img.Label
+      mediaItem.Caption.length > mediaItem.Label.length
+        ? mediaItem.Caption
+        : mediaItem.Label
     )
     const pictureObj: ImageFile = {
       title: FileName,
       filepath: LocalPath,
       filesize: (await stat(LocalPath)).size,
-      queryInfo: img,
+      queryInfo: mediaItem,
     }
     addMediaItemToPart(date, 1, pictureObj)
   } else {
     const media = await getMediaLinks({
-      pubSymbol: img.KeySymbol ?? '',
-      track: img.Track ?? 0,
-      issue: img.IssueTagNumber?.toString(),
+      pubSymbol: mediaItem.KeySymbol ?? undefined,
+      docId: mediaItem.MepsDocumentId ?? undefined,
+      track: mediaItem.Track!,
+      issue: mediaItem.IssueTagNumber?.toString(),
     })
-    if (media?.length > 0) addMediaItemToPart(date, 1, media[0])
+    if (media?.length > 0) {
+      addMediaItemToPart(date, 1, { ...media[0], queryInfo: mediaItem })
+    }
   }
 }
 

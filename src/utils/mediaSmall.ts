@@ -2,7 +2,7 @@ import { SmallMediaFile, MediaFile, Publication, Res } from '~~/types'
 
 export async function getMediaLinks(
   mediaItem: {
-    pubSymbol: string
+    pubSymbol?: string
     docId?: number
     track?: number
     issue?: string
@@ -102,7 +102,7 @@ export async function getMediaLinks(
 
 export async function getSmallMediaFiles(
   mediaItem: {
-    pubSymbol: string
+    pubSymbol?: string
     docId?: number
     track?: number
     issue?: string
@@ -174,7 +174,10 @@ export async function getSmallMediaFiles(
 
       try {
         const validOptions = ['iasn'] // Has an alternative pub with an extra m
-        if (!validOptions.includes(mediaItem.pubSymbol)) {
+        if (
+          !mediaItem.pubSymbol ||
+          !validOptions.includes(mediaItem.pubSymbol)
+        ) {
           throw e
         }
         log.debug('result1', result ?? e.message)
@@ -204,7 +207,10 @@ export async function getSmallMediaFiles(
 
             try {
               const validOptions = ['iasn'] // Has an alternative pub with an extra m
-              if (!validOptions.includes(mediaItem.pubSymbol)) {
+              if (
+                !mediaItem.pubSymbol ||
+                !validOptions.includes(mediaItem.pubSymbol)
+              ) {
                 throw e
               }
               log.debug('result3', result ?? e.message)
