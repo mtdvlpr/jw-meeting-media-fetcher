@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <span class="text-body-2" v-html="$t(label)" />
   <VueDatePicker

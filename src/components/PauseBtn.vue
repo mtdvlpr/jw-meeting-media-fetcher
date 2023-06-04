@@ -1,8 +1,8 @@
 <template>
   <v-tooltip :location="tooltip" :text="$t(video ? 'pause' : 'pauseImg')">
-    <template #activator="{ props }">
+    <template #activator="{ props: attrs }">
       <v-btn
-        v-bind="props"
+        v-bind="attrs"
         icon
         color="warning"
         aria-label="Pause"
