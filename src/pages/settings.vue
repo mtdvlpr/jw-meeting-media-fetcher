@@ -19,7 +19,7 @@
               <template #activator="{ props }">
                 <v-list-item
                   v-bind="props"
-                  :title="group.label"
+                  :title="$t(group.label)"
                   variant="elevated"
                 />
               </template>
@@ -342,7 +342,7 @@ const groups = computed((): Settings[] => {
     },
     {
       id: 'media',
-      label: 'Media retrieval',
+      label: 'mediaRetrieval',
       settings: [
         requiredSettings.value['media.lang'],
         { key: 'media.includePrinted' },
@@ -443,7 +443,7 @@ const groups = computed((): Settings[] => {
     },
     {
       id: 'playback',
-      label: 'Media playback',
+      label: 'mediaPlayback',
       settings: [
         {
           type: 'select',
@@ -682,7 +682,7 @@ const groups = computed((): Settings[] => {
     },
     {
       id: 'meetings',
-      label: 'Scheduled meetings',
+      label: 'meetingsScheduled',
       settings: [
         requiredSettings.value['meeting.mwDay'],
         requiredSettings.value['meeting.mwStartTime'],
@@ -696,7 +696,7 @@ const groups = computed((): Settings[] => {
     },
     {
       id: 'integrations',
-      label: 'Integrations',
+      label: 'integrations',
       settings: [
         {
           key: 'app.obs.enable',
@@ -971,7 +971,7 @@ const groups = computed((): Settings[] => {
     },
     {
       id: 'advanced',
-      label: 'Advanced',
+      label: 'advanced',
       settings: [
         { key: 'app.autoRunAtBoot' },
         { key: 'app.offlineMode' },

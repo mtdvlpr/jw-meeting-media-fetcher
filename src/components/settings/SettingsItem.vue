@@ -120,7 +120,7 @@
     </v-col>
   </v-list-item>
   <v-list-item v-else>
-    <div class="text-body-2 mb-2" v-html="$t(label)" />
+    <div v-if="label" class="text-body-2 mb-2" v-html="$t(label)" />
     <form-input
       :id="setting.key"
       v-model="value"
