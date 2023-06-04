@@ -2,37 +2,41 @@
   <v-dialog :model-value="active" @click:outside="emit('cancel')">
     <v-sheet class="pa-2">
       <h2 class="text-center">{{ $t('selectVideo') }}</h2>
+      <v-text-field
+        v-model="searchQuery"
+        :label="`Search through all ${allVideos.length} videos`"
+      />
       <loading-icon v-if="loading" />
       <v-row v-else style="width: 100%" class="ma-0">
-        <v-col
-          v-for="video in videos"
-          :key="video.guid"
-          class="d-flex align-center"
-          sm="6"
-          md="4"
-          lg="3"
-        >
-          <v-card
-            hover
-            ripple
-            rounded
-            style="width: 100%; height: 100%"
-            @click="selectVideo(video)"
-          >
-            <v-img
-              :src="getVideoImg(video.images)"
-              :aspect-ratio="2 / 1"
-              width="100%"
-              cover
-              class="text-white align-end"
-              gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+        <template v-for="video in filteredVideos" :key="video.guid">
+          <template v-if="filteredVideos.length > 30">
+            <v-lazy :options="{ threshold: 0.5 }">
+              <v-chip class="me-1 mb-1" @click="selectVideo(video)">{{
+                video.title
+              }}</v-chip>
+            </v-lazy>
+          </template>
+          <v-col v-else sm="4" md="3" lg="2">
+            <v-card
+              hover
+              ripple
+              aspect-ratio="16 / 9"
+              rounded
+              @click="selectVideo(video)"
             >
-              <v-card-title style="word-break: normal; user-select: none">
-                {{ video.title }}
-              </v-card-title>
-            </v-img>
-          </v-card>
-        </v-col>
+              <v-img
+                :src="getVideoImg(video.images)"
+                aspect-ratio="16 / 9"
+                class="text-white align-end"
+                gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+              >
+                <v-card-title style="word-break: normal; user-select: none">
+                  {{ video.title }}
+                </v-card-title>
+              </v-img>
+            </v-card>
+          </v-col>
+        </template>
       </v-row>
     </v-sheet>
   </v-dialog>
@@ -53,17 +57,46 @@ const emit = defineEmits<{
 onMounted(() => {
   getVideos()
 })
-
+const latestCategories = [
+  'FeaturedLibraryLanding',
+  'FeaturedLibraryVideos',
+  'LatestVideos',
+]
+const allCategories = [
+  // 'FeaturedLibraryLandingUnpubLangs',
+  'GovtOfficialVideos',
+  'VODConvMusic',
+  'VODStudio',
+  'VODChildren',
+  'VODTeenagers',
+  'VODFamily',
+  'VODProgramsEvents',
+  'VODOurActivities',
+  'VODMinistry',
+  'VODOurOrganization',
+  'VODBible',
+  'VODMovies',
+  'VODSeries',
+  'VODMusicVideos',
+  'VODIntExp',
+  'VODAudioDescriptions',
+]
 const loading = ref(false)
 const videos = ref<MediaItem[]>([])
+const latestVideos = ref<MediaItem[]>([])
+const allVideos = ref<MediaItem[]>([])
 const getVideos = async () => {
   loading.value = true
   try {
-    videos.value = await getLatestJWMedia()
+    latestVideos.value = await getLatestJWMedia(latestCategories)
+    videos.value = latestVideos.value
+    loading.value = false
+    allVideos.value = await getLatestJWMedia(allCategories)
   } catch (e: unknown) {
     log.error(e)
+  } finally {
+    loading.value = false
   }
-  loading.value = false
 }
 
 const getVideoImg = (images: Images) => {
@@ -108,4 +141,14 @@ const selectVideo = (video: MediaItem) => {
   }
   loading.value = false
 }
+const searchQuery = ref('')
+const filteredVideos = computed(() => {
+  const query = searchQuery.value.toLowerCase().trim()
+  if (!query) {
+    return latestVideos.value
+  }
+  return allVideos.value.filter((video) =>
+    video.title.toLowerCase().includes(query)
+  )
+})
 </script>

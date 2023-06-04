@@ -1,11 +1,6 @@
 import { MediaItem } from '~~/types'
 
-export async function getLatestJWMedia() {
-  const categories = [
-    'FeaturedLibraryLanding',
-    'FeaturedLibraryVideos',
-    'LatestVideos',
-  ]
+export async function getLatestJWMedia(categories: string[]) {
   const promises: Promise<MediaItem[]>[] = []
   const media: MediaItem[] = []
 
@@ -54,13 +49,15 @@ async function getCategoryMedia(
     const result = await fetchMediaCategories(
       (lang ?? getPrefs<string>('media.lang')) + `/${category}`,
       {
-        params: {
-          detailed: 0,
-        },
+        detailed: 1,
       }
     )
-
-    const items = result.category.media ?? []
+    const categoryMedia = result.category?.media || []
+    const subcategoriesMedia =
+      result.category.subcategories
+        ?.filter((subcategory) => subcategory.media)
+        .flatMap((subcategory) => subcategory.media) || []
+    const items = categoryMedia.concat(subcategoriesMedia)
     const enableSubs = getPrefs<boolean>('media.enableSubtitles')
     const subsLang = getPrefs<string>('media.langSubs')
     const newItems = []
