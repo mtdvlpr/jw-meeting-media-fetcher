@@ -18,7 +18,6 @@ export interface SubSetting {
 export interface Setting extends SubSetting {
   type?: Field | 'path' | 'date' | 'time' | 'list' | 'shortcut'
   label?: string
-  prepend?: SubSetting
   append?: Action
   explanation?: string
   depends?: string

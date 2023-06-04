@@ -120,16 +120,6 @@
       hide-details="auto"
       v-bind="setting.props"
     >
-      <template v-if="setting.prepend" #prepend>
-        <form-input
-          v-if="setting.prepend"
-          :id="setting.prepend.key"
-          v-model="prependValue"
-          :field="setting.prepend.type"
-          hide-details="auto"
-          v-bind="setting.prepend.props"
-        />
-      </template>
       <template
         v-if="
           (setting.explanation || isLocked(setting.key)) &&
@@ -200,18 +190,6 @@ if (props.setting.type === 'text') {
     update(props.setting.key, val)
     if (props.setting.onChange) {
       props.setting.onChange(val, oldVal)
-    }
-  })
-}
-
-// Prepend input
-const prependValue = ref(getPrefs<any>(props.setting.prepend?.key ?? ''))
-if (props.setting.prepend) {
-  watch(prependValue, (val, oldVal) => {
-    if (!props.setting.prepend) return
-    update(props.setting.prepend.key, val)
-    if (props.setting.prepend.onChange) {
-      props.setting.prepend.onChange(val, oldVal)
     }
   })
 }

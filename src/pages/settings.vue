@@ -21,8 +21,6 @@
                   v-bind="props"
                   :title="group.label"
                   variant="elevated"
-                  color="blue-grey-lighten-4"
-                  style="background-color: #eceff1"
                 />
               </template>
               <settings-group
@@ -528,14 +526,16 @@ const groups = computed((): Settings[] => {
               depends: 'meeting.enableMusicButton',
             },
             {
+              type: 'slider',
+              label: '',
+              key: 'meeting.musicFadeOutTime',
+              depends: 'meeting.enableMusicFadeOut',
+            },
+            {
               type: 'btn-group',
               key: 'meeting.musicFadeOutType',
+              label: '',
               depends: 'meeting.enableMusicFadeOut',
-
-              prepend: {
-                type: 'slider',
-                key: 'meeting.musicFadeOutTime',
-              },
               props: {
                 groupItems: [
                   {
