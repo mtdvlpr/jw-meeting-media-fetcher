@@ -178,7 +178,7 @@ const requiredSettings = computed(() => {
     },
     'app.localOutputPath': {
       type: 'path',
-      label: $i18n.t('mediaSaveFolder'),
+      label: 'mediaSaveFolder',
       key: 'app.localOutputPath',
       props: { required: true },
       onChange: (val: string) => {
@@ -297,11 +297,10 @@ const groups = computed((): Settings[] => {
   return [
     {
       id: 'general',
-      label: 'General',
+      label: 'general',
       settings: [
         requiredSettings.value['app.congregationName'],
         {
-          label: $i18n.t('enableMediaDisplayButton'),
           key: 'media.enableMediaDisplayButton',
           onChange: (val: boolean) => {
             if (val !== mediaScreenInit.value) {
@@ -351,7 +350,7 @@ const groups = computed((): Settings[] => {
         {
           type: 'group',
           id: 'subtitles',
-          label: $i18n.t('subtitles'),
+          label: 'subtitles',
           value: [
             {
               key: 'media.enableSubtitles',
@@ -372,7 +371,7 @@ const groups = computed((): Settings[] => {
         {
           type: 'group',
           id: 'afterSync',
-          label: $i18n.t('actionsToUndertakeAfterMediaSync'),
+          label: 'actionsAfterMediaSync',
           value: [
             { key: 'app.autoOpenFolderWhenDone' },
             { key: 'app.autoQuitWhenDone' },
@@ -381,7 +380,7 @@ const groups = computed((): Settings[] => {
         {
           type: 'group',
           id: 'mediaAdvanced',
-          label: $i18n.t('advanced'),
+          label: 'advanced',
           value: [
             { key: 'app.autoStartSync' },
             {
@@ -472,7 +471,7 @@ const groups = computed((): Settings[] => {
         {
           type: 'group',
           id: 'music',
-          label: $i18n.t('backgroundMusic'),
+          label: 'shuffleMusic',
           value: [
             {
               key: 'meeting.enableMusicButton',
@@ -570,7 +569,7 @@ const groups = computed((): Settings[] => {
         {
           type: 'group',
           id: 'playbackAdvanced',
-          label: $i18n.t('advanced'),
+          label: 'advanced',
           value: [
             {
               key: 'media.hideMediaLogo',
@@ -638,7 +637,7 @@ const groups = computed((): Settings[] => {
             },
             {
               type: 'action',
-              label: 'mediaWindowBackgroundReset',
+              label: 'clear',
               depends: 'media.enableMediaDisplayButton',
               action: async () => {
                 const filename = `custom-background-image-${prefs.value.app.congregationName}`
@@ -878,7 +877,7 @@ const groups = computed((): Settings[] => {
         },
         {
           key: 'app.zoom.enable',
-          label: 'Zoom',
+          label: 'zoomEnable',
         },
         {
           type: 'group',
@@ -919,7 +918,7 @@ const groups = computed((): Settings[] => {
     },
     {
       id: 'shortcuts',
-      label: $i18n.t('keyboardShortcuts'),
+      label: 'keyboardShortcuts',
       settings: [
         {
           type: 'shortcut',

@@ -51,7 +51,7 @@
       variant="tonal"
       @click="clearPath"
     >
-      Clear
+      {{ $t('clear') }}
     </v-btn>
   </v-list-item>
   <v-list-item v-else-if="setting.type == 'shortcut'" style="max-width: 550px">
@@ -62,7 +62,7 @@
       :disabled="recording || isLocked(setting.key)"
       @click="recordShortcut()"
     >
-      {{ value || $t('clickToSetShortcut') }}
+      {{ value || $t('keyboardShortcutSet') }}
       <v-icon v-if="value" end @click.stop="clearShortcut"> mdi-close </v-icon>
     </v-btn>
   </v-list-item>
