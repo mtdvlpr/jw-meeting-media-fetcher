@@ -12,6 +12,7 @@ build/*
 !build/icons
 dist
 dist-electron
+output
 
 # Jekyll
 _site

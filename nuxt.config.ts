@@ -1,4 +1,5 @@
 import { platform } from 'os'
+import { join } from 'path'
 import type { PluginOption } from 'vite'
 import vuetify from 'vite-plugin-vuetify'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
@@ -25,7 +26,7 @@ if (sentryInit && !process.env.SENTRY_DISABLE) {
     sentryVitePlugin({
       dryRun: isDev || !process.env.SENTRY_SOURCE_MAPS,
       telemetry: false,
-      include: '.',
+      include: 'output',
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -57,10 +58,10 @@ export default defineNuxtConfig({
     },
   },
   sourcemap: {
-    client: true,
+    client: false,
   },
   modules: [
-    '@nuxtjs/i18n',
+    '@nuxtjs/i18n-edge',
     '@vueuse/nuxt',
     'nuxt-lodash',
     [
@@ -107,7 +108,7 @@ export default defineNuxtConfig({
   vite: {
     root: process.cwd(), // Fix for: https://github.com/electron-vite/vite-plugin-electron-renderer/issues/32
     build: {
-      sourcemap: true,
+      sourcemap: false,
       cssCodeSplit: true,
       target: 'chrome110',
     },
@@ -117,9 +118,8 @@ export default defineNuxtConfig({
     plugins: vitePlugins,
   },
   nitro: {
-    prerender: {
-      ignore: ignorePages,
-    },
+    output: { publicDir: join(__dirname, 'output') },
+    prerender: { ignore: ignorePages },
   },
   runtimeConfig: {
     public: {

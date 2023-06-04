@@ -14,7 +14,7 @@ process.env.ROOT = join(__dirname, '..')
 process.env.DIST = join(process.env.ROOT, 'dist-electron')
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
   ? join(process.env.ROOT, 'src/public')
-  : join(process.env.ROOT, '.output/public')
+  : join(process.env.ROOT, 'output')
 
 export default class BrowserWinHandler {
   _eventEmitter: EventEmitter

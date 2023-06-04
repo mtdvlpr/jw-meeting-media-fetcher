@@ -5,9 +5,10 @@ buildDependenciesFromSource: true
 generateUpdatesFilesForAllChannels: true
 directories:
   output: build
+  buildResources: output
 files:
   - filter:
-      - .output/public
+      - output
       - dist-electron
 extraResources:
   - from: build/icons/media
