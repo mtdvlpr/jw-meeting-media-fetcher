@@ -45,6 +45,14 @@
     >
       {{ value || $t('browse') }}
     </v-btn>
+    <v-btn
+      v-if="value && (!setting.props || !setting.props.required)"
+      color="error"
+      variant="tonal"
+      @click="clearPath"
+    >
+      Clear
+    </v-btn>
   </v-list-item>
   <v-list-item v-else-if="setting.type == 'shortcut'" style="max-width: 550px">
     <div class="text-body-2 mb-2" v-html="$t(label)" />
@@ -213,6 +221,10 @@ const setPath = async () => {
   if (result && !result.canceled) {
     value.value = result.filePaths[0]
   }
+}
+
+const clearPath = () => {
+  value.value = ''
 }
 
 const recording = ref(false)

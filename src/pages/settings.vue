@@ -180,6 +180,7 @@ const requiredSettings = computed(() => {
       type: 'path',
       label: $i18n.t('mediaSaveFolder'),
       key: 'app.localOutputPath',
+      props: { required: true },
       onChange: (val: string) => {
         if (!val) return
         const badCharacters = val.match(/(\\?)([()*?[\]{|}]|^!|[!+@](?=\())/g)
@@ -530,6 +531,11 @@ const groups = computed((): Settings[] => {
               label: '',
               key: 'meeting.musicFadeOutTime',
               depends: 'meeting.enableMusicFadeOut',
+              props: {
+                min: 5,
+                max: 60,
+                step: 5,
+              },
             },
             {
               type: 'btn-group',
@@ -766,7 +772,7 @@ const groups = computed((): Settings[] => {
               key: 'cloudsync.path',
               label: 'cloudSyncFolder',
               props: {
-                required: getPrefs('cloudsync.enable'),
+                required: prefs.value.cloudsync.enable,
               },
             },
             {

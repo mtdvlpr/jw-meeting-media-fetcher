@@ -123,8 +123,8 @@
     </v-col> -->
   </v-row>
   <v-row v-else-if="field == 'slider'" class="mb-4" justify="space-between">
-    <template v-if="groupLabel"
-      ><v-col cols="auto" align-self="center" class="text-left">
+    <template v-if="groupLabel">
+      <v-col cols="auto" align-self="center" class="text-left">
         {{ groupLabel }}
       </v-col>
     </template>
@@ -135,12 +135,12 @@
         v-model="value"
         style="max-width: 500px"
         :disabled="!!$attrs.disabled || isLocked(id)"
-        v-bind="$attrs"
         density="compact"
         :max="max > 0 ? max : '100'"
         class="align-center"
         :step="customInput ? 0.01 : 1"
         :label="customInput ? undefined : value + labelSuffix"
+        v-bind="$attrs"
         hide-details="auto"
       >
         <template v-if="!isLocked(id) && customInput" #append>
