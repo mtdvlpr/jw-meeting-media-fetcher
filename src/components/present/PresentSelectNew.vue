@@ -212,6 +212,8 @@ export default {
         progress: { current: number; total: number; percent: number }
       }[][]
     ) {
+      useMediaStore().clear()
+
       // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
       // for (const week of weeks) {
       //   await Promise.all(

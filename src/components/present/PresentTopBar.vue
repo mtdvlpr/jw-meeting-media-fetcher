@@ -56,7 +56,7 @@
       "
       indeterminate
       color="primary"
-      class="ms-3"
+      class="mx-3"
     />
     <v-menu v-else location="bottom">
       <template #activator="{ props }">

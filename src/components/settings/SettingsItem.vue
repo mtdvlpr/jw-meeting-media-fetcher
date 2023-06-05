@@ -44,14 +44,7 @@
       @click="setPath"
     >
       {{ value || $t('browse') }}
-    </v-btn>
-    <v-btn
-      v-if="value && (!setting.props || !setting.props.required)"
-      color="error"
-      variant="tonal"
-      @click="clearPath"
-    >
-      {{ $t('clear') }}
+      <v-icon v-if="value" end @click.stop="clearPath"> mdi-close </v-icon>
     </v-btn>
   </v-list-item>
   <v-list-item v-else-if="setting.type == 'shortcut'" style="max-width: 550px">
@@ -62,7 +55,12 @@
       :disabled="recording || isLocked(setting.key)"
       @click="recordShortcut()"
     >
-      {{ value || $t('keyboardShortcutSet') }}
+      <template v-if="value">
+        <v-kbd v-for="key in value.split('+')" :key="key" class="me-1">
+          {{ key }}
+        </v-kbd>
+      </template>
+      <template v-else> {{ value || $t('keyboardShortcutSet') }} </template>
       <v-icon v-if="value" end @click.stop="clearShortcut"> mdi-close </v-icon>
     </v-btn>
   </v-list-item>
