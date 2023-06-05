@@ -99,3 +99,10 @@ export interface Publication {
   specialty: string
   track: number | null
 }
+
+export interface PublicationListResult {
+  choices: {
+    optionName: string
+    optionValue: string
+  }[]
+}
