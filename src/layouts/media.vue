@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main scrollable>
+    <v-main>
       <slot />
     </v-main>
   </v-app>
