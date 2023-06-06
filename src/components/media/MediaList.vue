@@ -338,104 +338,82 @@ const saveFileOrder = async () => {
     }
   }
 }
-// const loadFileOrder = async (val) => {
-//   try {
-//     const data = await readFile(
-//       join(dirname(props.items[0].path), 'file-order.json'),
-//       'utf-8'
-//     )
-//     const fileOrder = JSON.parse(data)
-//     const orderedFiles = fileOrder
-//       .sort((a: { order: number }, b: { order: number }) => a.order - b.order)
-//       .map((file: { name: string }) => ({
-//         name: file.name,
-//         // Other file properties here
-//       }))
-//     // files.value = orderedFiles
-//     const sortedVal = val.sort((a, b) => {
-//       const pathA = a.path
-//       const pathB = b.path
-
-//       const orderA = orderedFiles.findIndex(
-//         (file: { name: string }) => file.name === pathA
-//       )
-//       const orderB = orderedFiles.findIndex(
-//         (file: { name: string }) => file.name === pathB
-//       )
-
-//       return orderA - orderB
-//     })
-//     console.log('sortedVal', sortedVal)
-//     return sortedVal
-//   } catch (error) {
-//     console.error('Error loading file order:', error)
-//     return val
-//   }
-// }
 const setItems = async (val: MediaItem[]) => {
   mediaItems.value = val
-  console.log(val)
+  try {
+    const orderFile =
+      val && val[0]?.path ? join(dirname(val[0].path), 'file-order.json') : ''
+    if (orderFile && (await pathExists(orderFile))) {
+      const order = JSON.parse(await readFile(orderFile, 'utf-8'))
+      const existingItems = [
+        ...order.treasureItems,
+        ...order.livingItems,
+        ...order.applyItems,
+        ...order.publicTalkItems,
+        ...order.wtItems,
+      ]
 
-  const orderFile =
-    val && val[0]?.path ? join(dirname(val[0].path), 'file-order.json') : ''
-  if (orderFile && (await pathExists(orderFile))) {
-    const order = JSON.parse(await readFile(orderFile, 'utf-8'))
+      // Remove items that don't exist in folder
+      const nonExistentItems = existingItems.filter(
+        (item) => !pathExistsSync(item.path)
+      )
+      order.treasureItems = order.treasureItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+      order.livingItems = order.livingItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+      order.applyItems = order.applyItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+      order.publicTalkItems = order.publicTalkItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+      order.wtItems = order.wtItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
 
-    const existingItems = [
-      ...order.treasureItems,
-      ...order.livingItems,
-      ...order.applyItems,
-      ...order.publicTalkItems,
-      ...order.wtItems,
-    ]
+      // Add new items to top
+      const newItems = val.filter(
+        (item) =>
+          !existingItems.some((existingItem) => existingItem.id === item.id)
+      )
+      order.treasureItems = [...newItems, ...order.treasureItems]
 
-    const nonExistantItems = existingItems.filter(
-      (item) => !pathExistsSync(item.path)
-    )
-
-    order.treasureItems = order.treasureItems.filter(
-      (item) => !nonExistantItems.includes(item)
-    )
-    order.livingItems = order.livingItems.filter(
-      (item) => !nonExistantItems.includes(item)
-    )
-    order.applyItems = order.applyItems.filter(
-      (item) => !nonExistantItems.includes(item)
-    )
-    order.publicTalkItems = order.publicTalkItems.filter(
-      (item) => !nonExistantItems.includes(item)
-    )
-    order.wtItems = order.wtItems.filter(
-      (item) => !nonExistantItems.includes(item)
-    )
-
-    // Add new items to top
-    const newItems = val.filter(
-      (item) =>
-        !existingItems.some((existingItem) => existingItem.id === item.id)
-    )
-    order.treasureItems = [...newItems, ...order.treasureItems]
-
-    treasureItems.value = order.treasureItems
-    livingItems.value = order.livingItems
-    applyItems.value = order.applyItems
-    publicTalkItems.value = order.publicTalkItems
-    wtItems.value = order.wtItems
-  } else {
-    if (firstWtSong.value !== -1) {
-      publicTalkItems.value = val.slice(0, firstWtSong.value)
-      wtItems.value = val.slice(firstWtSong.value)
-    }
-    treasureItems.value = val.slice(
-      0,
-      firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
-    )
-    livingItems.value = val.slice(secondMwbSong.value)
-    if (firstApplyItem.value === -1) {
-      applyItems.value = []
+      treasureItems.value = order.treasureItems
+      livingItems.value = order.livingItems
+      applyItems.value = order.applyItems
+      publicTalkItems.value = order.publicTalkItems
+      wtItems.value = order.wtItems
     } else {
-      applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
+      defaultOrder(val)
     }
+  } catch {
+    defaultOrder(val)
+  }
+}
+const defaultOrder = (
+  val: {
+    id: string
+    path: string
+    play: boolean
+    stop: boolean
+    deactivate: boolean
+  }[]
+) => {
+  if (firstWtSong.value !== -1) {
+    publicTalkItems.value = val.slice(0, firstWtSong.value)
+    wtItems.value = val.slice(firstWtSong.value)
+  }
+  treasureItems.value = val.slice(
+    0,
+    firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
+  )
+  livingItems.value = val.slice(secondMwbSong.value)
+  if (firstApplyItem.value === -1) {
+    applyItems.value = []
+  } else {
+    applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
   }
 }
 const dragEnd = () => {
