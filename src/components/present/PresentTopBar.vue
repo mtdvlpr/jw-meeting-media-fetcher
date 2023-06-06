@@ -7,7 +7,7 @@
         @click="clearDate()"
       />
     </template>
-    <v-app-bar-title :text="date" />
+    <v-app-bar-title>{{ $dayjs(date).format('LL - dddd') }}</v-app-bar-title>
     <v-spacer />
 
     <v-btn
@@ -91,6 +91,10 @@
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import { join } from 'upath'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+
+const { $dayjs } = useNuxtApp()
+$dayjs.extend(LocalizedFormat)
 
 defineProps<{
   mediaCount: number

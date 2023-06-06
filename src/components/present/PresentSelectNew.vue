@@ -1,5 +1,4 @@
 <template>
-  Syncing: {{ syncing }}
   <v-container class="calendar present-select pa-4 grow">
     <v-row no-gutters>
       <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">

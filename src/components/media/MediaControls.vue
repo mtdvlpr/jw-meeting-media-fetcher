@@ -18,6 +18,7 @@
       @toggle-quick-song="toggleQuickSong()"
       @manage-media="managingMedia = true"
     />
+    Syncing: {{ syncing }}
     <v-expand-transition>
       <loading-icon v-if="loading" />
       <media-list
@@ -39,7 +40,10 @@ import { useRouteQuery } from '@vueuse/router'
 import { basename, dirname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
 import { LocalFile } from '~~/types'
-
+const props = defineProps({
+  syncing: Boolean,
+})
+const { syncing } = toRefs(props) // should be a global ref/state lookup i guess?
 const loading = ref(false)
 
 // Current meeting date

@@ -12,7 +12,7 @@
       />
       <template #append>
         <v-progress-circular
-          v-if="presentSelect.syncing"
+          v-if="syncing"
           indeterminate
           color="primary"
           class="mx-3"
@@ -52,7 +52,7 @@
       <div id="zoomMeeting" />
     </div>
     <v-slide-x-transition>
-      <media-controls v-if="date" />
+      <media-controls v-if="date" :syncing="syncing" />
       <present-select-new v-else ref="presentSelect" />
     </v-slide-x-transition>
     <present-footer
@@ -229,6 +229,9 @@ const presentSelect = ref()
 const refreshMedia = () => {
   presentSelect.value.syncMedia()
 }
+const syncing = computed(() => {
+  return !!presentSelect?.value?.syncing
+})
 </script>
 <style lang="scss">
 .present-page {
