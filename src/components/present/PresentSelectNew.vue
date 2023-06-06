@@ -161,7 +161,7 @@ export default {
       }
       const lastPage = useRouter().options.history.state.back?.toString()
       if (!lastPage || !lastPage.includes('present')) {
-        this.syncMedia(this.weeks)
+        this.syncMedia()
         if (
           (todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
           (todayDate.day() + 6) % 7 === weDay
@@ -199,19 +199,7 @@ export default {
     }
   },
   methods: {
-    async syncMedia(
-      weeks: {
-        date: string
-        dayOfMonth: string
-        month: string
-        meetingType: string | undefined
-        currentMonth: boolean
-        nonMeetingMedia: number | boolean
-        isToday: boolean
-        inPast: boolean
-        progress: { current: number; total: number; percent: number }
-      }[][]
-    ) {
+    async syncMedia() {
       useMediaStore().clear()
 
       // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
@@ -230,14 +218,14 @@ export default {
       // }
 
       // THIS IS IF WE WANT ALL WEEKS TO BE ASYNC
-      const meetingToday = weeks
+      const meetingToday = this.weeks
         .flat()
         .flat()
         .find((day) => day.isToday && !!day.meetingType)
 
       if (meetingToday) await this.processDay(meetingToday)
       await Promise.all(
-        weeks.map(async (week) => {
+        this.weeks.map(async (week) => {
           await Promise.all(
             week.flatMap(async (day) => {
               if (!(day.isToday && !!day.meetingType))
