@@ -149,21 +149,23 @@ const selectVideo = (video: VideoFile) => (jwFile.value = video)
 // Add media from JW.org publication
 const jwOrgPub = ref({ pub: '' })
 watch(jwOrgPub, async (val) => {
-  const jwpub = (
-    await getMediaLinks({
-      pubSymbol: val.pub,
-      format: 'JWPUB',
+  if (val) {
+    const jwpub = (
+      await getMediaLinks({
+        pubSymbol: val.pub,
+        format: 'JWPUB',
+      })
+    )[0] as MeetingFileBase
+    const store = useMediaStore()
+    store.setProgress({
+      key: jwpub.url,
+      promise: downloadIfRequired({
+        file: jwpub,
+      }),
     })
-  )[0] as MeetingFileBase
-  const store = useMediaStore()
-  store.setProgress({
-    key: jwpub.url,
-    promise: downloadIfRequired({
-      file: jwpub,
-    }),
-  })
-  await store.progress.get(jwpub.url)
-  files.value = [{ filepath: jwpub.cacheFile } as LocalFile]
+    await store.progress.get(jwpub.url)
+    files.value = [{ filepath: jwpub.cacheFile } as LocalFile]
+  }
 })
 
 // Add media from JWPUB

@@ -64,6 +64,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   if (fileContent) {
     try {
       langs = <ShortJWLang[]>JSON.parse(fileContent)
+      if (langs.length === 0) return getJWLangs(true)
     } catch (e: any) {
       if (e.message.includes('Unexpected token')) {
         log.debug(`Invalid JSON: ${fileContent}`)

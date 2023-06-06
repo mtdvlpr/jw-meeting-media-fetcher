@@ -48,6 +48,7 @@
         <v-icon icon="mdi-skip-forward" />
       </v-btn>
     </template>
+    {{ customSort }}
 
     <v-progress-circular
       v-if="
@@ -68,17 +69,17 @@
         />
       </template>
       <v-list>
-        <v-list-item
-          v-for="(action, i) in actions"
-          :key="i"
-          :disabled="action.disabled ? mediaActive : false"
-          @click="action.action()"
-        >
-          <template #append>
-            <v-icon :icon="action.icon" />
-          </template>
-          <v-list-item-title>{{ action.title }}</v-list-item-title>
-        </v-list-item>
+        <template v-for="(action, i) in actions" :key="i">
+          <v-list-item
+            :disabled="action.disabled ? mediaActive : false"
+            @click="action.action()"
+          >
+            <template #append>
+              <v-icon :icon="action.icon" />
+            </template>
+            <v-list-item-title>{{ action.title }}</v-list-item-title>
+          </v-list-item>
+        </template>
       </v-list>
     </v-menu>
 
@@ -96,9 +97,10 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 const { $dayjs } = useNuxtApp()
 $dayjs.extend(LocalizedFormat)
 
-defineProps<{
+const props = defineProps<{
   mediaCount: number
   currentIndex: number
+  customSort: boolean
 }>()
 
 const emit = defineEmits([
@@ -108,6 +110,7 @@ const emit = defineEmits([
   'manageMedia',
   'showPrefix',
   'toggleQuickSong',
+  'resetSort',
 ])
 
 const { $i18n } = useNuxtApp()
@@ -116,33 +119,6 @@ const { client: zoomIntegration } = storeToRefs(useZoomStore())
 
 const date = useRouteQuery<string>('date', '')
 const { navDisabled } = storeToRefs(useStatStore())
-
-// const dayDownloadProgress = computed(() => {
-//   const { downloadProgress } = useMediaStore()
-//   const progressByDate = new Map()
-//   for (const [, progress] of downloadProgress) {
-//     const { current, total, date } = progress
-//     if (!date) continue
-//     const existingProgress = progressByDate.get(date) ?? {
-//       current: 0,
-//       total: 0,
-//       percent: 0,
-//     }
-//     const updatedProgress = {
-//       current: existingProgress.current + current,
-//       total: existingProgress.total + total,
-//       percent:
-//         ((existingProgress.current + current) /
-//           (existingProgress.total + total)) *
-//         100,
-//     }
-//     progressByDate.set(date, updatedProgress)
-//   }
-//   return (
-//     progressByDate.get(date.value) ?? { current: 0, total: 0, percent: 100 }
-//   )
-// })
-
 const globalDownloadProgress = computed(() => {
   const progressArray = Array.from(useMediaStore().downloadProgress) /* .filter(
         ([, d]) => d.current !== d.total
@@ -205,6 +181,14 @@ const openWebsite = () => {
     `https://www.jw.org/${getPrefs<string>('app.localAppLang')}/`
   )
 }
+const resetSort = () => {
+  try {
+    rm(join(mediaPath(), date.value, 'file-order.json'))
+    emit('resetSort')
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 // More actions
 const actions = [
@@ -227,6 +211,11 @@ const actions = [
     title: $i18n.t('openFolder'),
     icon: 'mdi-folder-open',
     action: openFolder,
+  },
+  {
+    title: $i18n.t('resetSort'),
+    icon: 'mdi-folder',
+    action: resetSort,
   },
   {
     title: $i18n.t('showPrefix'),

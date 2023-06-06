@@ -1,38 +1,44 @@
 <template>
-  <v-dialog v-model="managingMedia" persistent fullscreen>
-    <manage-media
-      :media="localMedia"
-      :loading="loading"
-      @cancel="managingMedia = false"
-    />
-  </v-dialog>
-  <v-row no-gutters class="media-controls">
-    <!-- :media-active="mediaActive" -->
-    <present-top-bar
-      :current-index="currentIndex"
-      :media-count="items.length"
-      @cc="ccEnable = !ccEnable"
-      @previous="previous()"
-      @next="next()"
-      @show-prefix="togglePrefix()"
-      @toggle-quick-song="toggleQuickSong()"
-      @manage-media="managingMedia = true"
-    />
-    Syncing: {{ syncing }}
-    <v-expand-transition>
-      <loading-icon v-if="loading" />
-      <media-list
-        v-else
-        :items="items"
-        :media-active="mediaActive"
-        :zoom-part="zoomPart"
-        :cc-enable="ccEnable"
-        :show-quick-song="showQuickSong"
-        @index="setIndex"
-        @deactivate="resetDeactivate"
+  <div>
+    <v-dialog v-model="managingMedia" persistent fullscreen>
+      <manage-media
+        :media="localMedia"
+        :loading="loading"
+        @cancel="managingMedia = false"
       />
-    </v-expand-transition>
-  </v-row>
+    </v-dialog>
+    <v-row no-gutters class="media-controls">
+      <!-- :media-active="mediaActive" -->
+      <present-top-bar
+        :current-index="currentIndex"
+        :media-count="items.length"
+        :custom-sort="customSort"
+        @cc="ccEnable = !ccEnable"
+        @previous="previous()"
+        @next="next()"
+        @show-prefix="togglePrefix()"
+        @toggle-quick-song="toggleQuickSong()"
+        @reset-sort="customSort = false"
+        @manage-media="managingMedia = true"
+      />
+      Syncing: {{ syncing }}; Custom sort: {{ customSort }}
+      <v-expand-transition>
+        <loading-icon v-if="loading" />
+        <media-list
+          v-else
+          :items="items"
+          :media-active="mediaActive"
+          :zoom-part="zoomPart"
+          :cc-enable="ccEnable"
+          :show-quick-song="showQuickSong"
+          :custom-sort="customSort"
+          @index="setIndex"
+          @deactivate="resetDeactivate"
+          @custom-sort="customSort = true"
+        />
+      </v-expand-transition>
+    </v-row>
+  </div>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
@@ -312,7 +318,6 @@ const showQuickSong = ref(false)
 const toggleQuickSong = () => {
   showQuickSong.value = !showQuickSong.value
 }
-
 // Media playback with shortcuts
 const currentIndex = ref(-1)
 useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
@@ -322,7 +327,7 @@ useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
     previous()
   }
 })
-
+const customSort = ref(false)
 const setIndex = (index: number) => {
   const previousItem = items.value[currentIndex.value]
   if (previousItem && currentIndex.value !== index) {

@@ -205,11 +205,13 @@ type MediaItem = {
 const emit = defineEmits<{
   index: [id: number]
   deactivate: [index: number]
+  customSort: [boolean]
 }>()
 
 const props = defineProps<{
   items: MediaItem[]
   showQuickSong: boolean
+  customSort: boolean
 }>()
 
 const dragging = ref(false)
@@ -286,38 +288,13 @@ watch(
   },
   { deep: true }
 )
-// watch(
-//   [treasureItems, applyItems, livingItems, publicTalkItems, wtItems],
-//   () => {
-//     // Combine the values of all variables as needed
-//     const combinedItems = {
-//       treasureItems: treasureItems.value,
-//       applyItems: applyItems.value,
-//       livingItems: livingItems.value,
-//       publicTalkItems: publicTalkItems.value,
-//       wtItems: wtItems.value,
-//     }
-
-//     // [
-//     //   ...treasure.map((item) => ({ ...item, parent: 'treasure' })),
-//     //   ...apply.map((item) => ({ ...item, parent: 'apply' })),
-//     //   ...living.map((item) => ({ ...item, parent: 'living' })),
-//     //   ...publicTalk.map((item) => ({ ...item, parent: 'publicTalk' })),
-//     //   ...wt.map((item) => ({ ...item, parent: 'wt' })),
-//     // ]
-//     // const seenIds: string[] = []
-//     // const uniqueItems = combinedItems.filter((item) => {
-//     //   if (seenIds.includes(item.id)) {
-//     //     return false
-//     //   }
-//     //   seenIds.push(item.id)
-//     //   return true
-//     // })
-//     // saveFileOrder(combinedItems)
-//     console.log(combinedItems)
-//   },
-//   { deep: true }
-// )
+watch(
+  () => props.customSort,
+  (customSort) => {
+    if (!customSort) defaultOrder(props.items)
+  },
+  { deep: true }
+)
 const saveFileOrder = async () => {
   const combinedItems = {
     treasureItems: treasureItems.value,
@@ -333,6 +310,7 @@ const saveFileOrder = async () => {
         join(destPath, 'file-order.json'),
         JSON.stringify(combinedItems, null, 2)
       )
+      emit('customSort', true)
     } catch (error) {
       console.error('Error saving file order:', error)
     }
@@ -352,6 +330,16 @@ const setItems = async (val: MediaItem[]) => {
         ...order.publicTalkItems,
         ...order.wtItems,
       ]
+
+      // Add new items to top
+      const newItems = val.filter(
+        (item) =>
+          !existingItems.some((existingItem) => {
+            return existingItem.id === item.id
+          })
+      )
+
+      order.treasureItems = [...newItems, ...order.treasureItems]
 
       // Remove items that don't exist in folder
       const nonExistentItems = existingItems.filter(
@@ -373,18 +361,12 @@ const setItems = async (val: MediaItem[]) => {
         (item: any) => !nonExistentItems.includes(item)
       )
 
-      // Add new items to top
-      const newItems = val.filter(
-        (item) =>
-          !existingItems.some((existingItem) => existingItem.id === item.id)
-      )
-      order.treasureItems = [...newItems, ...order.treasureItems]
-
       treasureItems.value = order.treasureItems
       livingItems.value = order.livingItems
       applyItems.value = order.applyItems
       publicTalkItems.value = order.publicTalkItems
       wtItems.value = order.wtItems
+      emit('customSort', true)
     } else {
       defaultOrder(val)
     }
