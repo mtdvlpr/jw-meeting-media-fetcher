@@ -16,12 +16,12 @@
         @cc="ccEnable = !ccEnable"
         @previous="previous()"
         @next="next()"
-        @show-prefix="togglePrefix()"
         @toggle-quick-song="toggleQuickSong()"
         @reset-sort="customSort = false"
         @manage-media="managingMedia = true"
       />
-      Syncing: {{ syncing }}; Custom sort: {{ customSort }}
+      <!-- @show-prefix="togglePrefix()" -->
+      Currently syncing (not working yet): {{ syncing }}
       <v-expand-transition>
         <loading-icon v-if="loading" />
         <media-list
@@ -304,14 +304,14 @@ watch(mediaActive, (val) => {
 })
 
 // File prefix
-const showPrefix = ref(false)
-provide(showPrefixKey, showPrefix)
-const togglePrefix = () => {
-  showPrefix.value = true
-  setTimeout(() => {
-    showPrefix.value = false
-  }, 3 * MS_IN_SEC)
-}
+// const showPrefix = ref(false)
+// provide(showPrefixKey, showPrefix)
+// const togglePrefix = () => {
+//   showPrefix.value = true
+//   setTimeout(() => {
+//     showPrefix.value = false
+//   }, 3 * MS_IN_SEC)
+// }
 
 // Quick song
 const showQuickSong = ref(false)

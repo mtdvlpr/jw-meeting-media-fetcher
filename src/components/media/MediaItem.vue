@@ -447,19 +447,19 @@ const getMarkers = async () => {
 }
 
 // Show prefix
-const showPrefix = inject(showPrefixKey, ref(false))
-watch(showPrefix, (val) => {
-  const prefix = document.querySelector<HTMLSpanElement>(
-    `#${id.value} .sort-prefix`
-  )
-  if (prefix) {
-    if (val) {
-      prefix.style.display = 'inline'
-    } else {
-      prefix.style.display = 'none'
-    }
-  }
-})
+// const showPrefix = inject(showPrefixKey, ref(false))
+// watch(showPrefix, (val) => {
+//   const prefix = document.querySelector<HTMLSpanElement>(
+//     `#${id.value} .sort-prefix`
+//   )
+//   if (prefix) {
+//     if (val) {
+//       prefix.style.display = 'inline'
+//     } else {
+//       prefix.style.display = 'none'
+//     }
+//   }
+// })
 
 // Zoom and pan image
 const panzoom = ref<PanzoomObject | null>(null)

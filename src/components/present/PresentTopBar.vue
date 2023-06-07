@@ -48,7 +48,6 @@
         <v-icon icon="mdi-skip-forward" />
       </v-btn>
     </template>
-    {{ customSort }}
     <v-progress-circular
       v-if="
         globalDownloadProgress.percent > 0 &&
@@ -69,7 +68,9 @@
       </template>
       <v-list>
         <template v-for="(action, i) in actions" :key="i">
+          <v-divider v-if="action.divider" />
           <v-list-item
+            v-if="action.title !== $i18n.t('resetSort') || customSort"
             :disabled="action.disabled ? mediaActive : false"
             @click="action.action()"
           >
@@ -107,7 +108,7 @@ const emit = defineEmits([
   'previous',
   'next',
   'manageMedia',
-  'showPrefix',
+  // 'showPrefix',
   'toggleQuickSong',
   'resetSort',
 ])
@@ -198,7 +199,6 @@ const actions = [
       emit('manageMedia')
     },
   },
-  // toggleQuickSong
   {
     title: $i18n.t('toggleQuickSong'),
     icon: 'mdi-music',
@@ -207,23 +207,26 @@ const actions = [
     },
   },
   {
+    title: $i18n.t('resetSort'),
+    icon: 'mdi-sort-alphabetical-variant',
+    divider: true,
+    action: resetSort,
+  },
+  // toggleQuickSong
+  {
     title: $i18n.t('openFolder'),
     icon: 'mdi-folder-open',
     action: openFolder,
   },
-  {
-    title: $i18n.t('resetSort'),
-    icon: 'mdi-folder',
-    action: resetSort,
-  },
-  {
-    title: $i18n.t('showPrefix'),
-    icon: 'mdi-numeric',
-    action: () => emit('showPrefix'),
-  },
+  // {
+  //   title: $i18n.t('showPrefix'),
+  //   icon: 'mdi-numeric',
+  //   action: () => emit('showPrefix'),
+  // },
   {
     title: $i18n.t('openJWorg') + ' [BETA]',
     icon: 'mdi-web',
+    divider: true,
     action: openWebsite,
     disabled: true,
   },
