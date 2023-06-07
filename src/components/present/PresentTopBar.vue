@@ -49,7 +49,6 @@
       </v-btn>
     </template>
     {{ customSort }}
-
     <v-progress-circular
       v-if="
         globalDownloadProgress.percent > 0 &&
@@ -97,7 +96,7 @@ import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 const { $dayjs } = useNuxtApp()
 $dayjs.extend(LocalizedFormat)
 
-const props = defineProps<{
+defineProps<{
   mediaCount: number
   currentIndex: number
   customSort: boolean

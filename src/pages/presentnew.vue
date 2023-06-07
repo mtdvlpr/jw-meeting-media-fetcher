@@ -24,6 +24,7 @@
               v-bind="props"
               icon="mdi-refresh"
               variant="text"
+              :disabled="!online"
               @click="refreshMedia"
             />
           </template>
@@ -80,7 +81,7 @@ watch(date, (val) => {
     firstChoice.value = false
   }
 })
-
+const { online } = storeToRefs(useStatStore())
 const mediaActive = ref(false)
 provide(mediaActiveKey, mediaActive)
 const videoActive = ref(false)

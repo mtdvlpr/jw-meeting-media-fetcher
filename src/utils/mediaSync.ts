@@ -269,37 +269,41 @@ export async function downloadIfRequired({
   }
   return file.cacheFile
 }
+const statStore = useStatStore()
+const { online } = storeToRefs(statStore)
 export async function syncJWMediaByDate(
   date: string,
   meetingType: string | undefined
 ) {
-  if (meetingType === 'mw') {
-    await getMwMedia(date)
-  } else if (meetingType === 'we') {
-    await getWeMedia(date)
-  }
+  if (online.value) {
+    if (meetingType === 'mw') {
+      await getMwMedia(date)
+    } else if (meetingType === 'we') {
+      await getWeMedia(date)
+    }
 
-  createMediaNamesByDate(date)
-  const meetingMedia = Object.fromEntries(
-    Array.from(useMediaStore().meetings)
-      .filter(([meetingMediaDate]) => meetingMediaDate === date)
-      .map(([date, parts]) => [
-        date,
-        Object.fromEntries(
-          Array.from(parts).map(([part, media]) => [
-            part,
-            media.filter(
-              ({ congSpecific, hidden, isLocal }) =>
-                !congSpecific && !hidden && !isLocal
-            ),
-          ])
-        ),
-      ])
-  )
-  for (const [date, parts] of Object.entries(meetingMedia)) {
-    for (const [, media] of Object.entries(parts)) {
-      for (const item of media) {
-        await syncMediaItemByDate(date, item)
+    createMediaNamesByDate(date)
+    const meetingMedia = Object.fromEntries(
+      Array.from(useMediaStore().meetings)
+        .filter(([meetingMediaDate]) => meetingMediaDate === date)
+        .map(([date, parts]) => [
+          date,
+          Object.fromEntries(
+            Array.from(parts).map(([part, media]) => [
+              part,
+              media.filter(
+                ({ congSpecific, hidden, isLocal }) =>
+                  !congSpecific && !hidden && !isLocal
+              ),
+            ])
+          ),
+        ])
+    )
+    for (const [date, parts] of Object.entries(meetingMedia)) {
+      for (const [, media] of Object.entries(parts)) {
+        for (const item of media) {
+          await syncMediaItemByDate(date, item)
+        }
       }
     }
   }

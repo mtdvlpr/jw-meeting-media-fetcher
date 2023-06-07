@@ -1,4 +1,7 @@
 <template>
+  <v-expand-transition>
+    <v-alert v-if="!online" type="warning" :text="$t('errorOffline')"></v-alert>
+  </v-expand-transition>
   <v-container class="calendar present-select pa-4 grow">
     <v-row no-gutters>
       <v-col v-for="(day, j) in dayNames" :key="j" class="ma-1">
@@ -25,7 +28,7 @@
               ? 'primary'
               : day.nonMeetingMedia
               ? 'blue-lighten-4'
-              : 'white'
+              : 'bg'
           "
           :class="{
             inPast: day.inPast,
@@ -195,10 +198,10 @@ onMounted(() => {
       })
   }
 })
+const { online } = storeToRefs(useStatStore())
 const syncMedia = async () => {
   syncing.value = true
   useMediaStore().clear()
-
   // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
   // for (const week of weeks) {
   //   await Promise.all(
