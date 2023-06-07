@@ -8,6 +8,7 @@
           :prepend-icon="setting.icon"
           variant="flat"
           :title="$t(setting.label)"
+          class="bg-grey-lighten-3"
         />
       </template>
       <template

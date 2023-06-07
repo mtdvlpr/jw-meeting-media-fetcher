@@ -11,27 +11,32 @@
     <cong-forced-prefs v-model="forcingPrefs" />
     <v-row no-gutters justify="center" class="fill-height settings">
       <v-col cols="12">
-        <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
-        <v-form ref="form" v-model="valid" @submit.prevent>
-          <v-list class="">
-            <v-list-group v-for="group in filteredGroups" :key="group.id">
-              <template #activator="{ props }">
-                <v-list-item
-                  v-bind="props"
-                  :title="$t(group.label)"
-                  variant="tonal"
-                  color="primary"
-                  :prepend-icon="group.icon"
+        <v-expand-transition>
+          <v-skeleton-loader
+            v-if="!mounted"
+            type="list-item-avatar,list-item-avatar,list-item-avatar,list-item-avatar,list-item-avatar"
+          />
+          <v-form v-else ref="form" v-model="valid" @submit.prevent>
+            <v-list class="">
+              <v-list-group v-for="group in filteredGroups" :key="group.id">
+                <template #activator="{ props }">
+                  <v-list-item
+                    v-bind="props"
+                    :title="$t(group.label)"
+                    variant="flat"
+                    class="bg-grey-lighten-2"
+                    :prepend-icon="group.icon"
+                  />
+                </template>
+                <settings-group
+                  v-for="setting in group.settings"
+                  :key="setting.label"
+                  :setting="setting"
                 />
-              </template>
-              <settings-group
-                v-for="setting in group.settings"
-                :key="setting.label"
-                :setting="setting"
-              />
-            </v-list-group>
-          </v-list>
-        </v-form>
+              </v-list-group>
+            </v-list>
+          </v-form>
+        </v-expand-transition>
       </v-col>
     </v-row>
     <settings-wizard :required-settings="requiredSettings" />
@@ -42,6 +47,7 @@ import { ipcRenderer } from 'electron'
 import { extname, join } from 'upath'
 import { readFile } from 'fs-extra'
 import { LocaleObject } from 'vue-i18n-routing'
+import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
 import {
   Action,
   Group,
@@ -133,10 +139,11 @@ const obsComplete = computed(() => {
     !!prefs.value.app.obs.password
   )
 })
-
+const mounted = ref(false)
 onMounted(() => {
   getLangs()
   form.value?.validate()
+  mounted.value = true
 })
 
 const locales = ref<{ name: string; code: string }[]>([])

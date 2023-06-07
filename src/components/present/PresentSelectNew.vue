@@ -199,7 +199,7 @@ onMounted(() => {
       })
   }
 })
-const { online } = storeToRefs(useStatStore())
+const { online } = useOnline()
 const syncMedia = async () => {
   syncing.value = true
   useMediaStore().clear()

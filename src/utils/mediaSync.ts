@@ -269,12 +269,11 @@ export async function downloadIfRequired({
   }
   return file.cacheFile
 }
-const statStore = useStatStore()
-const { online } = storeToRefs(statStore)
 export async function syncJWMediaByDate(
   date: string,
   meetingType: string | undefined
 ) {
+  const { online } = useOnline()
   if (online.value) {
     if (meetingType === 'mw') {
       await getMwMedia(date)
