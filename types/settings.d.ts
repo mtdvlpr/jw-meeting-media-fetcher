@@ -55,6 +55,7 @@ export interface Group {
   type: 'group'
   id: SubGroupID
   label: string
+  icon?: string
   value: (Setting | Action)[]
   depends?: string
 }
@@ -62,5 +63,6 @@ export interface Group {
 export interface Settings {
   id: GroupID
   label: string
+  icon?: string
   settings: (Setting | Group | Action)[]
 }

@@ -10,6 +10,7 @@
         label="Search"
         hide-details="auto"
         density="compact"
+        prepend-inner-icon="mdi-text-search"
         clearable
       />
     </template>
@@ -41,7 +42,7 @@
           />
           <v-list-item
             :title="$t('reportIssue')"
-            append-icon="mdi-bug"
+            append-icon="mdi-alert"
             @click="report()"
           />
         </v-list>

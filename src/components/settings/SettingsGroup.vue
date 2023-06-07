@@ -1,8 +1,14 @@
 <template>
   <template v-if="!setting?.depends || !!getPrefs(setting.depends)">
+    <v-divider v-if="setting.type == 'group'" />
     <v-list-group v-if="setting.type == 'group'">
       <template #activator="{ props }">
-        <v-list-item v-bind="props" :title="$t(setting.label)" />
+        <v-list-item
+          v-bind="props"
+          :prepend-icon="setting.icon"
+          variant="flat"
+          :title="$t(setting.label)"
+        />
       </template>
       <template
         v-for="(subSetting, index) in setting.value.filter(
