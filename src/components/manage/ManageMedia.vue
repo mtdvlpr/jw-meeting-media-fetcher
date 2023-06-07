@@ -147,7 +147,7 @@ watch(jwFile, (val) => (prefix.value = val ? '00-00' : prefix.value))
 const selectVideo = (video: VideoFile) => (jwFile.value = video)
 
 // Add media from JW.org publication
-const jwOrgPub = ref({ pub: '' })
+const jwOrgPub = ref()
 watch(jwOrgPub, async (val) => {
   if (val) {
     const jwpub = (

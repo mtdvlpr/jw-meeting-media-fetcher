@@ -21,7 +21,7 @@ const props = defineProps<{
 const loading = ref(true)
 const emit = defineEmits(['update:modelValue'])
 const value = useVModel(props, 'modelValue', emit)
-const publications = ref([])
+const publications = ref()
 const loadPublications = async () => {
   loading.value = true
   publications.value = await getPublications()

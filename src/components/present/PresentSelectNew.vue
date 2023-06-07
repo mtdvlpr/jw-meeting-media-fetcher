@@ -20,7 +20,6 @@
           :variant="day.inPast ? 'tonal' : undefined"
           :subtitle="day.month"
           :title="day.dayOfMonth"
-          class="ma-1"
           :color="
             day.inPast
               ? 'grey'
@@ -32,6 +31,8 @@
           "
           :class="{
             inPast: day.inPast,
+            'ma-1': true,
+            border: !day.inPast && !day.meetingType,
           }"
           @click="day.inPast ? null : selectDate(day.date)"
         >
