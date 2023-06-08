@@ -160,6 +160,7 @@ const requiredSettings = computed(() => {
     'app.localAppLang': {
       type: 'select',
       key: 'app.localAppLang',
+      explanation: 'localAppLangExplain',
       props: {
         items: $i18n.locales.value.map((l: LocaleObject) => {
           const locale = l as LocaleObject
@@ -250,6 +251,7 @@ const requiredSettings = computed(() => {
       type: 'autocomplete',
       label: 'mediaLang',
       key: 'media.lang',
+      explanation: 'mediaLangExplain',
       props: {
         items: langs.value,
         required: true,
@@ -312,6 +314,7 @@ const groups = computed((): Settings[] => {
         requiredSettings.value['app.congregationName'],
         {
           key: 'media.enableMediaDisplayButton',
+          explanation: 'enableMediaDisplayButtonExplain',
           onChange: (val: boolean) => {
             if (val !== mediaScreenInit.value) {
               toggleMediaWindow(val ? 'open' : 'close')
@@ -356,7 +359,7 @@ const groups = computed((): Settings[] => {
       icon: 'mdi-download',
       settings: [
         requiredSettings.value['media.lang'],
-        { key: 'media.includePrinted' },
+        { key: 'media.includePrinted', explanation: 'includePrintedExplain' },
         requiredSettings.value['app.localOutputPath'],
         {
           type: 'group',
@@ -387,7 +390,10 @@ const groups = computed((): Settings[] => {
           icon: 'mdi-check-all',
           value: [
             { key: 'app.autoOpenFolderWhenDone' },
-            { key: 'app.autoQuitWhenDone' },
+            {
+              key: 'app.autoQuitWhenDone',
+              explanation: 'autoQuitWhenDoneExplain',
+            },
           ],
         },
         {
@@ -396,7 +402,7 @@ const groups = computed((): Settings[] => {
           label: 'advanced',
           icon: 'mdi-cogs',
           value: [
-            { key: 'app.autoStartSync' },
+            //            { key: 'app.autoStartSync' },
             {
               type: 'select',
               key: 'app.outputFolderDateFormat',
@@ -412,6 +418,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'autocomplete',
               key: 'media.langFallback',
+              explanation: 'langFallbackExplain',
               props: {
                 items: langs.value.filter(
                   (l) =>
@@ -430,6 +437,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'btn-group',
               key: 'media.maxRes',
+              explanation: 'maxResExplain',
               props: {
                 groupLabel: 'maxRes',
                 groupItems: RESOLUTIONS.map((r) => {
@@ -440,9 +448,15 @@ const groups = computed((): Settings[] => {
                 }),
               },
             },
-            { key: 'media.excludeTh' },
-            { key: 'media.excludeLffImages' },
-            { key: 'media.enableVlcPlaylistCreation' },
+            { key: 'media.excludeTh', explanation: 'excludeThExplain' },
+            {
+              key: 'media.excludeLffImages',
+              explanation: 'excludeLffImagesExplain',
+            },
+            {
+              key: 'media.enableVlcPlaylistCreation',
+              explanation: 'enableVlcPlaylistCreationExplain',
+            },
             {
               key: 'media.enableMp4Conversion',
               explanation: 'enableMp4ConversionExplain',
@@ -463,6 +477,7 @@ const groups = computed((): Settings[] => {
         {
           type: 'select',
           key: 'media.preferredOutput',
+          explanation: 'preferredOutputExplain',
           depends: 'media.enableMediaDisplayButton',
           props: {
             items: [
@@ -491,6 +506,7 @@ const groups = computed((): Settings[] => {
           value: [
             {
               key: 'meeting.enableMusicButton',
+              explanation: 'enableMusicButtonExplain',
               onChange: (val: boolean) => {
                 useStatStore().setShowMusicButton(val)
               },
@@ -498,6 +514,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'action',
               label: 'downloadShuffleMusic',
+              explanation: 'downloadShuffleMusicExplain',
               depends: 'meeting.enableMusicButton',
               action: async () => {
                 if (!prefs.value.media.lang) {
@@ -535,17 +552,19 @@ const groups = computed((): Settings[] => {
             },
             {
               key: 'meeting.autoStartMusic',
+              explanation: 'autoStartMusicExplain',
               depends: 'meeting.enableMusicButton',
             },
             {
               key: 'meeting.enableMusicFadeOut',
+              explanation: 'enableMusicFadeOutExplain',
               depends: 'meeting.enableMusicButton',
             },
             {
               type: 'slider',
               label: '',
               key: 'meeting.musicFadeOutTime',
-              depends: 'meeting.enableMusicFadeOut',
+              depends: 'meeting.enableMusicButton,meeting.enableMusicFadeOut',
               props: {
                 min: 5,
                 max: 60,
@@ -556,7 +575,7 @@ const groups = computed((): Settings[] => {
               type: 'btn-group',
               key: 'meeting.musicFadeOutType',
               label: '',
-              depends: 'meeting.enableMusicFadeOut',
+              depends: 'meeting.enableMusicButton,meeting.enableMusicFadeOut',
               props: {
                 groupItems: [
                   {
@@ -598,14 +617,17 @@ const groups = computed((): Settings[] => {
             {
               key: 'media.hideWinAfterMedia',
               depends: 'media.enableMediaDisplayButton',
+              explanation: 'hideWinAfterMediaExplain',
             },
             {
               key: 'media.autoPlayFirst',
+              explanation: 'autoPlayFirstExplain',
               depends: 'media.enableMediaDisplayButton',
             },
             {
               type: 'action',
               label: 'mediaWindowBackground',
+              explanation: 'mediaWindowBackgroundExplain',
               depends: 'media.enableMediaDisplayButton',
               action: async () => {
                 const result = await ipcRenderer.invoke('openDialog', {
@@ -624,14 +646,14 @@ const groups = computed((): Settings[] => {
                   const extension = extname(background)
                   rm(findAll(join(appPath(), filename + '*')))
                   if (
-                    getPrefs('cloudsync.enable') &&
-                    getPrefs('cloudsync.path')
+                    getPrefs('cloudSync.enable') &&
+                    getPrefs('cloudSync.path')
                   ) {
                     // Copy the background to cloud sync
                     copy(
                       background,
                       join(
-                        getPrefs('cloudsync.path'),
+                        getPrefs('cloudSync.path'),
                         'Settings',
                         filename + extension
                       )
@@ -654,20 +676,20 @@ const groups = computed((): Settings[] => {
             },
             {
               type: 'action',
-              label: 'clear',
+              label: 'clearMediaWindowBackground',
               depends: 'media.enableMediaDisplayButton',
               action: async () => {
                 const filename = `custom-background-image-${prefs.value.app.congregationName}`
                 const background = findAll(join(appPath(), filename + '*'))
                 if (
-                  getPrefs('cloudsync.enable') &&
-                  getPrefs('cloudsync.path')
+                  getPrefs('cloudSync.enable') &&
+                  getPrefs('cloudSync.path')
                 ) {
                   // Remove the background from cloud sync
                   rm(
                     findAll(
                       join(
-                        getPrefs('cloudsync.path'),
+                        getPrefs('cloudSync.path'),
                         'Settings',
                         filename + '*'
                       )
@@ -709,6 +731,7 @@ const groups = computed((): Settings[] => {
         {
           type: 'date',
           key: 'meeting.coWeek',
+          explanation: 'coWeekExplain',
         },
       ],
     },
@@ -719,26 +742,27 @@ const groups = computed((): Settings[] => {
       settings: [
         {
           type: 'group',
-          id: 'cloudsync',
-          label: 'cloudsync',
+          id: 'cloudSync',
+          label: 'cloudSync',
           icon: 'mdi-cloud-sync',
           value: [
             {
-              key: 'cloudsync.enable',
-              label: 'cloudSync',
+              key: 'cloudSync.enable',
+              label: 'cloudSyncEnable',
+              explanation: 'cloudSyncExplain',
             },
             {
               type: 'path',
-              key: 'cloudsync.path',
-              depends: 'cloudsync.enable',
+              key: 'cloudSync.path',
+              depends: 'cloudSync.enable',
               label: 'cloudSyncFolder',
               props: {
-                required: prefs.value.cloudsync.enable,
+                required: prefs.value.cloudSync.enable,
               },
             },
             {
               type: 'action',
-              depends: 'cloudsync.enable',
+              depends: 'cloudSync.enable',
               label: 'settingsLocked',
               action: () => {
                 forcingPrefs.value = true
@@ -755,6 +779,7 @@ const groups = computed((): Settings[] => {
             {
               key: 'app.obs.enable',
               label: 'obsEnable',
+              explanation: 'obsEnableExplain',
               onChange: (val: boolean) => {
                 if (val && obsComplete.value) {
                   getScenes()
@@ -767,6 +792,7 @@ const groups = computed((): Settings[] => {
               key: 'app.obs.useV4',
               depends: 'app.obs.enable',
               label: 'obsUseV4',
+              explanation: 'obsUseV4Explain',
               onChange: () => {
                 if (obsComplete.value) {
                   getScenes()

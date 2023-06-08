@@ -361,7 +361,7 @@ const disableOptions: (keyof AppPrefs)[] = [
   'disableHardwareAcceleration',
 ]
 const automationOptions: (keyof AppPrefs | 'div')[] = [
-  'autoStartSync',
+  // 'autoStartSync',
   'div',
   'autoOpenFolderWhenDone',
   'autoQuitWhenDone',

@@ -4,7 +4,7 @@ export const PREFS = {
     autoOpenFolderWhenDone: false,
     autoQuitWhenDone: false,
     autoRunAtBoot: false,
-    autoStartSync: false,
+    // autoStartSync: false,
     betaUpdates: false,
     congregationName: null,
     customCachePath: null,
@@ -36,7 +36,7 @@ export const PREFS = {
       autoStartTime: 1,
     },
   },
-  cloudsync: {
+  cloudSync: {
     enable: false,
     path: null,
   },

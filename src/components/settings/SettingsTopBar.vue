@@ -36,7 +36,7 @@
           </v-list-item>
           <v-divider />
           <v-list-item
-            title="Open project page in GitHub"
+            :title="$t('openGithub')"
             append-icon="mdi-code-braces-box"
             @click="openReleases()"
           />

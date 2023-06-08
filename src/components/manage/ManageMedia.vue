@@ -278,8 +278,8 @@ const processFile = async (file: LocalFile | VideoFile) => {
 
   const congPromises: Promise<void>[] = []
   const path = join(
-    getPrefs('cloudsync.enable')
-      ? join(getPrefs('cloudsync.path'), 'Additional')
+    getPrefs('cloudSync.enable')
+      ? join(getPrefs('cloudSync.path'), 'Additional')
       : mediaPath(),
     date.value,
     file.safeName
@@ -326,8 +326,8 @@ const processFile = async (file: LocalFile | VideoFile) => {
       ).map((m) => JSON.parse(m))
 
       const markerPath = join(
-        getPrefs('cloudsync.enable')
-          ? join(getPrefs('cloudsync.path'), 'Additional')
+        getPrefs('cloudSync.enable')
+          ? join(getPrefs('cloudSync.path'), 'Additional')
           : mediaPath(),
         file.folder,
         changeExt(file.safeName, 'json')

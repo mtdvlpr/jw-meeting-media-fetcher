@@ -58,10 +58,10 @@ const schema: Schema<PrefStore> = {
         enum: ENUMS.outputFolderDateFormat,
         default: PREFS.app.outputFolderDateFormat,
       },
-      autoStartSync: {
-        type: 'boolean',
-        default: PREFS.app.autoStartSync,
-      },
+      // autoStartSync: {
+      //   type: 'boolean',
+      //   default: PREFS.app.autoStartSync,
+      // },
       autoRunAtBoot: {
         type: 'boolean',
         default: PREFS.app.autoRunAtBoot,
@@ -155,16 +155,16 @@ const schema: Schema<PrefStore> = {
       },
     },
   },
-  cloudsync: {
+  cloudSync: {
     type: 'object',
     properties: {
       enable: {
         type: 'boolean',
-        default: PREFS.cloudsync.enable,
+        default: PREFS.cloudSync.enable,
       },
       path: {
         type: ['string', 'null'],
-        default: PREFS.cloudsync.path,
+        default: PREFS.cloudSync.path,
       },
     },
   },

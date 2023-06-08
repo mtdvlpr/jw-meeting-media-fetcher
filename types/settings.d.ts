@@ -27,6 +27,7 @@ export interface Action {
   type: 'action'
   label: string
   icon?: boolean
+  explanation?: string
   props?: { [key: string]: any }
   action: () => void
   depends?: string
@@ -46,7 +47,7 @@ export type SubGroupID =
   | 'afterSync'
   | 'mediaAdvanced'
   | 'obs'
-  | 'cloudsync'
+  | 'cloudSync'
   | 'webdav'
   | 'zoom'
   | 'playbackAdvanced'

@@ -27,7 +27,24 @@
       </v-tooltip>
     </template>
   </v-list-item>
-  <v-list-item v-else-if="setting.type == 'date'" style="max-width: 550px">
+  <v-list-item v-else-if="setting.type == 'date'">
+    <template v-if="setting.explanation || isLocked(setting.key)" #append>
+      <v-tooltip location="top" activator="parent">
+        <template #activator="{ props: attrs }">
+          <v-icon
+            :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
+            size="small"
+            v-bind="attrs"
+            style="margin-top: 2px; pointer-events: auto"
+          />
+        </template>
+        {{
+          $t(
+            isLocked(setting.key) ? 'settingLocked' : setting.explanation ?? ''
+          )
+        }}
+      </v-tooltip>
+    </template>
     <form-date-picker v-model="value" :label="label" />
   </v-list-item>
   <v-list-item v-else-if="setting.type == 'time'" style="max-width: 250px">
@@ -126,40 +143,47 @@
       hide-details="auto"
       v-bind="setting.props"
     >
-      <template
-        v-if="
-          (setting.explanation || isLocked(setting.key)) &&
-          (setting.type === 'text' || setting.type === 'password')
-        "
-        #append-inner
-      >
-        <v-icon
-          :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
-          size="small"
-          style="margin-top: 2px; pointer-events: auto"
-        >
-          <v-tooltip location="top" activator="parent">
-            $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
-          </v-tooltip>
-        </v-icon>
-      </template>
-      <template
-        v-else-if="setting.explanation || isLocked(setting.key)"
-        #append
-      >
-        <v-icon
-          :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
-          size="small"
-          style="margin-top: 2px; pointer-events: auto"
-        >
-          <v-tooltip location="top" activator="parent">
-            {{
-              $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
-            }}
-          </v-tooltip>
-        </v-icon>
-      </template>
     </form-input>
+    <template
+      v-if="
+        (setting.explanation || isLocked(setting.key)) &&
+        (setting.type === 'text' || setting.type === 'password')
+      "
+      #append-inner
+    >
+      <v-tooltip
+        location="top"
+        :text="
+          $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
+        "
+      >
+        <template #activator="{ props }">
+          <v-icon
+            v-bind="props"
+            :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
+            size="small"
+            style="pointer-events: auto"
+          ></v-icon>
+        </template>
+      </v-tooltip>
+    </template>
+    <template v-else-if="setting.explanation || isLocked(setting.key)" #append>
+      <v-tooltip
+        location="top"
+        :text="
+          $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
+        "
+      >
+        <template #activator="{ props }">
+          <v-icon
+            v-bind="props"
+            :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
+            size="small"
+            style="pointer-events: auto"
+          ></v-icon>
+        </template>
+      </v-tooltip>
+    </template>
   </v-list-item>
 </template>
 <script setup lang="ts">

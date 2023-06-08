@@ -61,15 +61,15 @@ provide(ccEnableKey, ccEnable)
 
 // Manage media dialog
 const managingMedia = ref(false)
-const localMedia = computed((): LocalFile[] =>
-  items.value
+const localMedia = computed((): LocalFile[] => [
+  ...items.value
     .map((item) => {
       return {
         safeName: basename(item.path),
         filepath: item.path,
         isLocal: !!findOne(
           join(
-            getPrefs('cloudsync.path'),
+            getPrefs('cloudSync.path'),
             'Additional',
             date.value,
             basename(item.path)
@@ -78,7 +78,7 @@ const localMedia = computed((): LocalFile[] =>
       }
     })
     .concat(
-      findAll(join(getPrefs('cloudsync.path'), 'Hidden', date.value, '*')).map(
+      findAll(join(getPrefs('cloudSync.path'), 'Hidden', date.value, '*')).map(
         (item) => {
           return {
             safeName: basename(item),
@@ -90,7 +90,7 @@ const localMedia = computed((): LocalFile[] =>
       )
     )
     .concat(
-      findAll(join(getPrefs('cloudsync.path'), 'Recurring', '*')).map(
+      findAll(join(getPrefs('cloudSync.path'), 'Recurring', '*')).map(
         (item) => {
           return {
             safeName: basename(item),
@@ -112,7 +112,13 @@ const localMedia = computed((): LocalFile[] =>
       }
       return 0
     })
-)
+    .reverse()
+    .reduceRight((map, item) => {
+      map.set(item.safeName, item)
+      return map
+    }, new Map())
+    .values(),
+])
 
 // Get media files
 type MediaItem = {
@@ -183,11 +189,11 @@ onMounted(() => {
         }
       })
   )
-  if (getPrefs('cloudsync.enable')) {
+  if (getPrefs('cloudSync.enable')) {
     // additional files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudsync.path'), 'Additional', date.value), {
+        .watch(join(getPrefs('cloudSync.path'), 'Additional', date.value), {
           awaitWriteFinish: true,
           depth: 1,
           alwaysStat: true,
@@ -206,7 +212,7 @@ onMounted(() => {
     // hidden files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudsync.path'), 'Hidden', date.value), {
+        .watch(join(getPrefs('cloudSync.path'), 'Hidden', date.value), {
           awaitWriteFinish: true,
           depth: 1,
           alwaysStat: true,
@@ -219,7 +225,7 @@ onMounted(() => {
     // recurring files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudsync.path'), 'Recurring'), {
+        .watch(join(getPrefs('cloudSync.path'), 'Recurring'), {
           awaitWriteFinish: true,
           depth: 1,
           alwaysStat: true,

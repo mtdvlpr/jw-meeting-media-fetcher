@@ -1,5 +1,10 @@
 <template>
-  <template v-if="!setting?.depends || !!getPrefs(setting.depends)">
+  <template
+    v-if="
+      !setting?.depends ||
+      setting.depends.split(',').every((depend) => !!getPrefs(depend))
+    "
+  >
     <v-divider v-if="setting.type == 'group'" />
     <v-list-group v-if="setting.type == 'group'">
       <template #activator="{ props }">
@@ -13,7 +18,9 @@
       </template>
       <template
         v-for="(subSetting, index) in setting.value.filter(
-          (subSetting) => !subSetting?.depends || !!getPrefs(subSetting.depends)
+          (subSetting) =>
+            !subSetting?.depends ||
+            subSetting.depends.split(',').every((depend) => !!getPrefs(depend))
         )"
         :key="index"
       >
@@ -23,6 +30,19 @@
             <v-btn variant="tonal" color="primary" @click="subSetting.action"
               >{{ $t(subSetting.label) }}
             </v-btn>
+            <template v-if="subSetting.explanation" #append>
+              <v-tooltip location="top" activator="parent">
+                <template #activator="{ props: attrs }">
+                  <v-icon
+                    icon="mdi-help-circle"
+                    size="small"
+                    v-bind="attrs"
+                    style="margin-top: 2px; pointer-events: auto"
+                  />
+                </template>
+                {{ $t(subSetting.explanation ?? '') }}
+              </v-tooltip>
+            </template>
           </v-list-item>
         </template>
         <settings-item v-else :setting="subSetting" />

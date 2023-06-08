@@ -78,7 +78,6 @@ const weeks = ref<
     }>
   >
 >([])
-const today = ref<string>('')
 const daysDownloadProgress = computed(() => {
   const progressArray = Array.from(useMediaStore().downloadProgress)
   const progressByDate = new Map()
@@ -167,7 +166,7 @@ onMounted(() => {
         (todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
         (todayDate.day() + 6) % 7 === weDay
       ) {
-        selectDate($dayjs(today.value).format(dateFormat))
+        selectDate(todayDate.format(dateFormat))
       }
     }
     watcher.value = fileWatcher
