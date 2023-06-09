@@ -306,13 +306,13 @@ const initPrefs = async (name: string, isNew = false) => {
         refreshBackgroundImgPreview()
       })
   )
-  if (getPrefs('cloudsync.enable') && getPrefs('cloudsync.path')) {
+  if (getPrefs('cloudSync.enable') && getPrefs('cloudSync.path')) {
     // custom background image
     watchers.value.push(
       fileWatcher
         .watch(
           join(
-            getPrefs('cloudsync.path'),
+            getPrefs('cloudSync.path'),
             'Settings',
             `custom-background-image-${getPrefs<string>(
               'app.congregationName'
@@ -339,7 +339,7 @@ const initPrefs = async (name: string, isNew = false) => {
     watchers.value.push(
       fileWatcher
         .watch(
-          join(getPrefs('cloudsync.path'), 'Settings', 'forcedPrefs.json'),
+          join(getPrefs('cloudSync.path'), 'Settings', 'forcedPrefs.json'),
           {
             awaitWriteFinish: true,
             depth: 1,

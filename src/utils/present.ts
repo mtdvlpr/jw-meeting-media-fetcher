@@ -29,7 +29,7 @@ export async function setShortcut({ key, fn, scope }: Shortcut) {
   } catch (e) {
     log.error(e)
   } finally {
-    if (!res) {
+    if (!res && key) {
       notify('infoShortcutSetFail', { identifier: key })
     }
   }

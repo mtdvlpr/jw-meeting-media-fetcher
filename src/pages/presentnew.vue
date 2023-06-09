@@ -12,18 +12,21 @@
       />
       <template #append>
         <v-progress-circular
-          v-if="
-            globalDownloadProgress.percent > 0 &&
-            globalDownloadProgress.percent < 100
-          "
+          v-if="syncing"
           indeterminate
           color="primary"
-          class="ms-3"
+          class="mx-3"
           size="small"
         />
         <v-tooltip v-else text="Refresh all media">
           <template #activator="{ props }">
-            <v-btn v-bind="props" icon="mdi-refresh" variant="text" />
+            <v-btn
+              v-bind="props"
+              icon="mdi-refresh"
+              variant="text"
+              :disabled="!online"
+              @click="refreshMedia"
+            />
           </template>
         </v-tooltip>
       </template>
@@ -50,8 +53,8 @@
       <div id="zoomMeeting" />
     </div>
     <v-slide-x-transition>
-      <media-controls v-if="date" />
-      <present-select-new v-else />
+      <media-controls v-if="date" :syncing="syncing" />
+      <present-select-new v-else ref="presentSelect" />
     </v-slide-x-transition>
     <present-footer
       :participant="participant"
@@ -78,7 +81,7 @@ watch(date, (val) => {
     firstChoice.value = false
   }
 })
-
+const { online } = storeToRefs(useStatStore())
 const mediaActive = ref(false)
 provide(mediaActiveKey, mediaActive)
 const videoActive = ref(false)
@@ -186,7 +189,6 @@ const initZoomIntegration = async () => {
       .init({
         debug: true,
         zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
-        // @ts-expect-error
         language: useNuxtApp().$i18n.localeProperties.value.iso,
       })
       .catch(() => {
@@ -224,6 +226,13 @@ const listenToZoomSocket = () => {
     return originalSend.call(this, ...args)
   }
 }
+const presentSelect = ref()
+const refreshMedia = () => {
+  presentSelect.value.syncMedia()
+}
+const syncing = computed(() => {
+  return !!presentSelect?.value?.syncing
+})
 </script>
 <style lang="scss">
 .present-page {

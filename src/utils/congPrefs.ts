@@ -44,25 +44,25 @@ export function isLocked(key: string) {
 export async function forcePrefs(refresh = false) {
   const store = useCongStore()
   const client = store.client
-  const cloudsync = getPrefs('cloudsync.enable')
-  if (!client && !cloudsync) return null
+  const cloudSync = getPrefs('cloudSync.enable')
+  if (!client && !cloudSync) return null
   if (!refresh && store.prefs) {
     return store.prefs
   }
 
-  const dir = cloudsync
-    ? join(getPrefs('cloudsync.path'), 'Settings')
+  const dir = cloudSync
+    ? join(getPrefs('cloudSync.path'), 'Settings')
     : getPrefs<string>('cong.dir')
   if (!dir) return undefined
 
   try {
     const path = join(dir, 'forcedPrefs.json')
     if (
-      cloudsync
+      cloudSync
         ? await pathExists(path)
         : store.contents.find(({ filename }) => filename === path)
     ) {
-      const json = cloudsync
+      const json = cloudSync
         ? await readFile(path)
         : await client?.getFileContents(path, {
             format: 'text',
@@ -121,9 +121,9 @@ export async function forcePrefs(refresh = false) {
       const newPrefs = {
         app: Object.assign(getPrefs<AppPrefs>('app'), prefs.app ?? {}),
         cong: Object.assign(getPrefs<CongPrefs>('cong'), prefs.cong ?? {}),
-        cloudsync: Object.assign(
-          getPrefs<CloudSyncPrefs>('cloudsync'),
-          prefs.cloudsync ?? {}
+        cloudSync: Object.assign(
+          getPrefs<CloudSyncPrefs>('cloudSync'),
+          prefs.cloudSync ?? {}
         ),
         media: Object.assign(getPrefs<MediaPrefs>('media'), prefs.media ?? {}),
         meeting: Object.assign(

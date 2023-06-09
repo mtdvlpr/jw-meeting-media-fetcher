@@ -10,6 +10,7 @@
         label="Search"
         hide-details="auto"
         density="compact"
+        prepend-inner-icon="mdi-text-search"
         clearable
       />
     </template>
@@ -35,13 +36,13 @@
           </v-list-item>
           <v-divider />
           <v-list-item
-            title="Open project page in GitHub"
+            :title="$t('openGithub')"
             append-icon="mdi-code-braces-box"
             @click="openReleases()"
           />
           <v-list-item
             :title="$t('reportIssue')"
-            append-icon="mdi-bug"
+            append-icon="mdi-alert"
             @click="report()"
           />
         </v-list>

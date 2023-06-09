@@ -3,7 +3,7 @@
     "autoOpenFolderWhenDone": false,
     "autoQuitWhenDone": false,
     "autoRunAtBoot": false,
-    "autoStartSync": false,
+    // "autoStartSync": false,
     "congregationName": "[TEST] old cong",
     "disableHardwareAcceleration": false,
     "localAppLang": "en",
@@ -30,7 +30,7 @@
     "outputFolderDateFormat": "YYYY-MM-DD",
     "theme": "system"
   },
-  "cloudsync": {
+  "cloudSync": {
     "enable": false,
     "path": null
   },

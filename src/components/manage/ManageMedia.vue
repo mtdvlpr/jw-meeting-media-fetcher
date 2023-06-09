@@ -1,6 +1,6 @@
 <template>
   <manage-select-video
-    :active="type === 'jwOrg' && !jwFile"
+    :active="type === 'jwOrgVideo' && !jwFile"
     @cancel="type = 'custom'"
     @select="selectVideo"
   />
@@ -20,7 +20,7 @@
         </v-tab>
       </v-tabs>
       <v-row
-        v-if="type && type !== 'jwOrg'"
+        v-if="type && type !== 'jwOrgVideo'"
         no-gutters
         class="pa-4 align-center"
       >
@@ -28,6 +28,14 @@
           v-if="type === 'song'"
           v-model="jwFile"
           :disabled="loading || saving"
+        />
+        <publication-picker
+          v-else-if="type === 'jwOrgPub'"
+          v-model="jwOrgPub"
+          :disabled="loading || saving"
+          @select="
+            !isLoneJwpub ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')
+          "
         />
         <manage-select-file
           v-else
@@ -65,7 +73,7 @@
           :new-files="files"
           :prefix="prefix"
           :media="media"
-          :show-input="!!type && type !== 'jwOrg'"
+          :show-input="!!type && type !== 'jwOrgVideo'"
           :show-prefix="!!jwFile || files.length > 0"
           @refresh="emit('refresh')"
         />
@@ -99,7 +107,7 @@ import { ipcRenderer } from 'electron'
 
 import { readFile, stat } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
-import { LocalFile, MeetingFile, VideoFile } from '~~/types'
+import { LocalFile, MeetingFile, MeetingFileBase, VideoFile } from '~~/types'
 
 const emit = defineEmits(['refresh', 'cancel'])
 const props = defineProps<{
@@ -124,7 +132,11 @@ const types = [
   },
   {
     label: $i18n.t('selectVideo'),
-    value: 'jwOrg',
+    value: 'jwOrgVideo',
+  },
+  {
+    label: $i18n.t('selectPublication'),
+    value: 'jwOrgPub',
   },
 ]
 const type = ref('custom')
@@ -133,6 +145,28 @@ const type = ref('custom')
 const jwFile = ref<VideoFile | null>(null)
 watch(jwFile, (val) => (prefix.value = val ? '00-00' : prefix.value))
 const selectVideo = (video: VideoFile) => (jwFile.value = video)
+
+// Add media from JW.org publication
+const jwOrgPub = ref()
+watch(jwOrgPub, async (val) => {
+  if (val) {
+    const jwpub = (
+      await getMediaLinks({
+        pubSymbol: val.pub,
+        format: 'JWPUB',
+      })
+    )[0] as MeetingFileBase
+    const store = useMediaStore()
+    store.setProgress({
+      key: jwpub.url,
+      promise: downloadIfRequired({
+        file: jwpub,
+      }),
+    })
+    await store.progress.get(jwpub.url)
+    files.value = [{ filepath: jwpub.cacheFile } as LocalFile]
+  }
+})
 
 // Add media from JWPUB
 const files = ref<(LocalFile | VideoFile)[]>([])
@@ -244,8 +278,8 @@ const processFile = async (file: LocalFile | VideoFile) => {
 
   const congPromises: Promise<void>[] = []
   const path = join(
-    getPrefs('cloudsync.enable')
-      ? join(getPrefs('cloudsync.path'), 'Additional')
+    getPrefs('cloudSync.enable')
+      ? join(getPrefs('cloudSync.path'), 'Additional')
       : mediaPath(),
     date.value,
     file.safeName
@@ -292,8 +326,8 @@ const processFile = async (file: LocalFile | VideoFile) => {
       ).map((m) => JSON.parse(m))
 
       const markerPath = join(
-        getPrefs('cloudsync.enable')
-          ? join(getPrefs('cloudsync.path'), 'Additional')
+        getPrefs('cloudSync.enable')
+          ? join(getPrefs('cloudSync.path'), 'Additional')
           : mediaPath(),
         file.folder,
         changeExt(file.safeName, 'json')
@@ -415,7 +449,7 @@ const listHeight = computed(() => {
   const EL_PADDING = 2
   const FOOTER = 52
   let otherElements = FOOTER + TOOLBAR + EL_PADDING
-  if (!!type.value && type.value !== 'jwOrg') {
+  if (!!type.value && !type.value.includes('jwOrg')) {
     otherElements += INPUT
   }
   if (!!jwFile.value || files.value.length > 0) {

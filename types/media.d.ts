@@ -1,6 +1,6 @@
 import { MultiMediaItem, SmallMediaFile } from './jw'
 
-export interface MeetingFileBase {
+export interface MeetingFileBase extends SmallMediaFile {
   cacheDir?: string
   cacheFile?: string
   cacheFilename?: string

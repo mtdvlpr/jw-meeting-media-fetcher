@@ -34,7 +34,7 @@ export interface AppPrefs {
   autoOpenFolderWhenDone: boolean
   autoQuitWhenDone: boolean
   autoRunAtBoot: boolean
-  autoStartSync: boolean
+  // autoStartSync: boolean
   betaUpdates: boolean
   congregationName: string | null
   customCachePath: string | null
@@ -122,7 +122,7 @@ export interface MeetingPrefs {
 
 export interface PrefStore {
   app: AppPrefs
-  cloudsync: CloudSyncPrefs
+  cloudSync: CloudSyncPrefs
   cong: CongPrefs
   media: MediaPrefs
   meeting: MeetingPrefs

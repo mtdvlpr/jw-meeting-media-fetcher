@@ -8,31 +8,38 @@
       :current="relativeDownloadProgress"
       :total="totalProgress"
     />
-    <settings-wizard :required-settings="requiredSettings" />
     <cong-forced-prefs v-model="forcingPrefs" />
     <v-row no-gutters justify="center" class="fill-height settings">
       <v-col cols="12">
-        <!--<v-skeleton-loader v-if="!mounted" type="list-item@4" />-->
-        <v-form ref="form" v-model="valid" @submit.prevent>
-          <v-list class="">
-            <v-list-group v-for="group in filteredGroups" :key="group.id">
-              <template #activator="{ props }">
-                <v-list-item
-                  v-bind="props"
-                  :title="$t(group.label)"
-                  variant="elevated"
+        <v-expand-transition>
+          <v-skeleton-loader
+            v-if="!mounted"
+            type="list-item-avatar,list-item-avatar,list-item-avatar,list-item-avatar,list-item-avatar"
+          />
+          <v-form v-else ref="form" v-model="valid" @submit.prevent>
+            <v-list class="">
+              <v-list-group v-for="group in filteredGroups" :key="group.id">
+                <template #activator="{ props }">
+                  <v-list-item
+                    v-bind="props"
+                    :title="$t(group.label)"
+                    variant="flat"
+                    class="bg-grey-lighten-2"
+                    :prepend-icon="group.icon"
+                  />
+                </template>
+                <settings-group
+                  v-for="setting in group.settings"
+                  :key="setting.label"
+                  :setting="setting"
                 />
-              </template>
-              <settings-group
-                v-for="setting in group.settings"
-                :key="setting.label"
-                :setting="setting"
-              />
-            </v-list-group>
-          </v-list>
-        </v-form>
+              </v-list-group>
+            </v-list>
+          </v-form>
+        </v-expand-transition>
       </v-col>
     </v-row>
+    <settings-wizard :required-settings="requiredSettings" />
   </div>
 </template>
 <script setup lang="ts">
@@ -40,6 +47,7 @@ import { ipcRenderer } from 'electron'
 import { extname, join } from 'upath'
 import { readFile } from 'fs-extra'
 import { LocaleObject } from 'vue-i18n-routing'
+import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
 import {
   Action,
   Group,
@@ -131,10 +139,11 @@ const obsComplete = computed(() => {
     !!prefs.value.app.obs.password
   )
 })
-
+const mounted = ref(false)
 onMounted(() => {
   getLangs()
   form.value?.validate()
+  mounted.value = true
 })
 
 const locales = ref<{ name: string; code: string }[]>([])
@@ -151,6 +160,7 @@ const requiredSettings = computed(() => {
     'app.localAppLang': {
       type: 'select',
       key: 'app.localAppLang',
+      explanation: 'localAppLangExplain',
       props: {
         items: $i18n.locales.value.map((l: LocaleObject) => {
           const locale = l as LocaleObject
@@ -241,6 +251,7 @@ const requiredSettings = computed(() => {
       type: 'autocomplete',
       label: 'mediaLang',
       key: 'media.lang',
+      explanation: 'mediaLangExplain',
       props: {
         items: langs.value,
         required: true,
@@ -298,10 +309,12 @@ const groups = computed((): Settings[] => {
     {
       id: 'general',
       label: 'general',
+      icon: 'mdi-list-status',
       settings: [
         requiredSettings.value['app.congregationName'],
         {
           key: 'media.enableMediaDisplayButton',
+          explanation: 'enableMediaDisplayButtonExplain',
           onChange: (val: boolean) => {
             if (val !== mediaScreenInit.value) {
               toggleMediaWindow(val ? 'open' : 'close')
@@ -343,14 +356,16 @@ const groups = computed((): Settings[] => {
     {
       id: 'media',
       label: 'mediaRetrieval',
+      icon: 'mdi-download',
       settings: [
         requiredSettings.value['media.lang'],
-        { key: 'media.includePrinted' },
+        { key: 'media.includePrinted', explanation: 'includePrintedExplain' },
         requiredSettings.value['app.localOutputPath'],
         {
           type: 'group',
           id: 'subtitles',
           label: 'subtitles',
+          icon: 'mdi-closed-caption',
           value: [
             {
               key: 'media.enableSubtitles',
@@ -372,17 +387,22 @@ const groups = computed((): Settings[] => {
           type: 'group',
           id: 'afterSync',
           label: 'actionsAfterMediaSync',
+          icon: 'mdi-check-all',
           value: [
             { key: 'app.autoOpenFolderWhenDone' },
-            { key: 'app.autoQuitWhenDone' },
+            {
+              key: 'app.autoQuitWhenDone',
+              explanation: 'autoQuitWhenDoneExplain',
+            },
           ],
         },
         {
           type: 'group',
           id: 'mediaAdvanced',
           label: 'advanced',
+          icon: 'mdi-cogs',
           value: [
-            { key: 'app.autoStartSync' },
+            //            { key: 'app.autoStartSync' },
             {
               type: 'select',
               key: 'app.outputFolderDateFormat',
@@ -398,6 +418,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'autocomplete',
               key: 'media.langFallback',
+              explanation: 'langFallbackExplain',
               props: {
                 items: langs.value.filter(
                   (l) =>
@@ -416,6 +437,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'btn-group',
               key: 'media.maxRes',
+              explanation: 'maxResExplain',
               props: {
                 groupLabel: 'maxRes',
                 groupItems: RESOLUTIONS.map((r) => {
@@ -426,9 +448,15 @@ const groups = computed((): Settings[] => {
                 }),
               },
             },
-            { key: 'media.excludeTh' },
-            { key: 'media.excludeLffImages' },
-            { key: 'media.enableVlcPlaylistCreation' },
+            { key: 'media.excludeTh', explanation: 'excludeThExplain' },
+            {
+              key: 'media.excludeLffImages',
+              explanation: 'excludeLffImagesExplain',
+            },
+            {
+              key: 'media.enableVlcPlaylistCreation',
+              explanation: 'enableVlcPlaylistCreationExplain',
+            },
             {
               key: 'media.enableMp4Conversion',
               explanation: 'enableMp4ConversionExplain',
@@ -444,10 +472,12 @@ const groups = computed((): Settings[] => {
     {
       id: 'playback',
       label: 'mediaPlayback',
+      icon: 'mdi-play-box-multiple',
       settings: [
         {
           type: 'select',
           key: 'media.preferredOutput',
+          explanation: 'preferredOutputExplain',
           depends: 'media.enableMediaDisplayButton',
           props: {
             items: [
@@ -471,10 +501,12 @@ const groups = computed((): Settings[] => {
         {
           type: 'group',
           id: 'music',
+          icon: 'mdi-music',
           label: 'shuffleMusic',
           value: [
             {
               key: 'meeting.enableMusicButton',
+              explanation: 'enableMusicButtonExplain',
               onChange: (val: boolean) => {
                 useStatStore().setShowMusicButton(val)
               },
@@ -482,6 +514,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'action',
               label: 'downloadShuffleMusic',
+              explanation: 'downloadShuffleMusicExplain',
               depends: 'meeting.enableMusicButton',
               action: async () => {
                 if (!prefs.value.media.lang) {
@@ -519,17 +552,19 @@ const groups = computed((): Settings[] => {
             },
             {
               key: 'meeting.autoStartMusic',
+              explanation: 'autoStartMusicExplain',
               depends: 'meeting.enableMusicButton',
             },
             {
               key: 'meeting.enableMusicFadeOut',
+              explanation: 'enableMusicFadeOutExplain',
               depends: 'meeting.enableMusicButton',
             },
             {
               type: 'slider',
               label: '',
               key: 'meeting.musicFadeOutTime',
-              depends: 'meeting.enableMusicFadeOut',
+              depends: 'meeting.enableMusicButton,meeting.enableMusicFadeOut',
               props: {
                 min: 5,
                 max: 60,
@@ -540,7 +575,7 @@ const groups = computed((): Settings[] => {
               type: 'btn-group',
               key: 'meeting.musicFadeOutType',
               label: '',
-              depends: 'meeting.enableMusicFadeOut',
+              depends: 'meeting.enableMusicButton,meeting.enableMusicFadeOut',
               props: {
                 groupItems: [
                   {
@@ -570,6 +605,7 @@ const groups = computed((): Settings[] => {
           type: 'group',
           id: 'playbackAdvanced',
           label: 'advanced',
+          icon: 'mdi-cogs',
           value: [
             {
               key: 'media.hideMediaLogo',
@@ -581,14 +617,17 @@ const groups = computed((): Settings[] => {
             {
               key: 'media.hideWinAfterMedia',
               depends: 'media.enableMediaDisplayButton',
+              explanation: 'hideWinAfterMediaExplain',
             },
             {
               key: 'media.autoPlayFirst',
+              explanation: 'autoPlayFirstExplain',
               depends: 'media.enableMediaDisplayButton',
             },
             {
               type: 'action',
               label: 'mediaWindowBackground',
+              explanation: 'mediaWindowBackgroundExplain',
               depends: 'media.enableMediaDisplayButton',
               action: async () => {
                 const result = await ipcRenderer.invoke('openDialog', {
@@ -607,14 +646,14 @@ const groups = computed((): Settings[] => {
                   const extension = extname(background)
                   rm(findAll(join(appPath(), filename + '*')))
                   if (
-                    getPrefs('cloudsync.enable') &&
-                    getPrefs('cloudsync.path')
+                    getPrefs('cloudSync.enable') &&
+                    getPrefs('cloudSync.path')
                   ) {
                     // Copy the background to cloud sync
                     copy(
                       background,
                       join(
-                        getPrefs('cloudsync.path'),
+                        getPrefs('cloudSync.path'),
                         'Settings',
                         filename + extension
                       )
@@ -637,20 +676,20 @@ const groups = computed((): Settings[] => {
             },
             {
               type: 'action',
-              label: 'clear',
+              label: 'clearMediaWindowBackground',
               depends: 'media.enableMediaDisplayButton',
               action: async () => {
                 const filename = `custom-background-image-${prefs.value.app.congregationName}`
                 const background = findAll(join(appPath(), filename + '*'))
                 if (
-                  getPrefs('cloudsync.enable') &&
-                  getPrefs('cloudsync.path')
+                  getPrefs('cloudSync.enable') &&
+                  getPrefs('cloudSync.path')
                 ) {
                   // Remove the background from cloud sync
                   rm(
                     findAll(
                       join(
-                        getPrefs('cloudsync.path'),
+                        getPrefs('cloudSync.path'),
                         'Settings',
                         filename + '*'
                       )
@@ -683,6 +722,7 @@ const groups = computed((): Settings[] => {
     {
       id: 'meetings',
       label: 'meetingsScheduled',
+      icon: 'mdi-lectern',
       settings: [
         requiredSettings.value['meeting.mwDay'],
         requiredSettings.value['meeting.mwStartTime'],
@@ -691,33 +731,68 @@ const groups = computed((): Settings[] => {
         {
           type: 'date',
           key: 'meeting.coWeek',
+          explanation: 'coWeekExplain',
         },
       ],
     },
     {
       id: 'integrations',
       label: 'integrations',
+      icon: 'mdi-tools',
       settings: [
         {
-          key: 'app.obs.enable',
-          label: 'obsEnable',
-          onChange: (val: boolean) => {
-            if (val && obsComplete.value) {
-              getScenes()
-            } else {
-              resetOBS()
-            }
-          },
+          type: 'group',
+          id: 'cloudSync',
+          label: 'cloudSync',
+          icon: 'mdi-cloud-sync',
+          value: [
+            {
+              key: 'cloudSync.enable',
+              label: 'cloudSyncEnable',
+              explanation: 'cloudSyncExplain',
+            },
+            {
+              type: 'path',
+              key: 'cloudSync.path',
+              depends: 'cloudSync.enable',
+              label: 'cloudSyncFolder',
+              props: {
+                required: prefs.value.cloudSync.enable,
+              },
+            },
+            {
+              type: 'action',
+              depends: 'cloudSync.enable',
+              label: 'settingsLocked',
+              action: () => {
+                forcingPrefs.value = true
+              },
+            },
+          ],
         },
         {
           type: 'group',
           id: 'obs',
-          depends: 'app.obs.enable',
           label: 'OBS Studio',
+          icon: 'mdi-alpha-o-box',
           value: [
             {
+              key: 'app.obs.enable',
+              label: 'obsEnable',
+              explanation: 'obsEnableExplain',
+              onChange: (val: boolean) => {
+                if (val && obsComplete.value) {
+                  getScenes()
+                } else {
+                  resetOBS()
+                }
+              },
+            },
+            {
               key: 'app.obs.useV4',
+              depends: 'app.obs.enable',
               label: 'obsUseV4',
+              explanation: 'obsUseV4Explain',
               onChange: () => {
                 if (obsComplete.value) {
                   getScenes()
@@ -731,6 +806,7 @@ const groups = computed((): Settings[] => {
               type: 'select',
               key: 'app.obs.imageScene',
               label: 'obsImageScene',
+              depends: 'app.obs.enable',
               props: {
                 items: scenes.value.filter(
                   (s) =>
@@ -745,6 +821,7 @@ const groups = computed((): Settings[] => {
               type: 'select',
               key: 'app.obs.zoomScene',
               label: 'obsZoomScene',
+              depends: 'app.obs.enable',
               props: {
                 items: scenes.value.filter(
                   (s) =>
@@ -757,45 +834,64 @@ const groups = computed((): Settings[] => {
           ],
         },
         {
-          key: 'cloudsync.enable',
-          label: 'cloudSync',
-        },
-        {
           type: 'group',
-          id: 'cloudsync',
-          label: 'cloudsync',
-          depends: 'cloudsync.enable',
+          id: 'zoom',
+          label: 'Zoom',
+          icon: 'mdi-alpha-z-box',
           value: [
             {
-              type: 'path',
-              key: 'cloudsync.path',
-              label: 'cloudSyncFolder',
-              props: {
-                required: prefs.value.cloudsync.enable,
-              },
+              key: 'app.zoom.enable',
+              label: 'zoomEnable',
             },
             {
-              type: 'action',
-              label: 'settingsLocked',
-              action: () => {
-                forcingPrefs.value = true
-              },
+              type: 'text',
+              key: 'app.zoom.id',
+              label: 'zoomId',
+              depends: 'app.zoom.enable',
+            },
+            {
+              type: 'password',
+              key: 'app.zoom.password',
+              depends: 'app.zoom.enable',
+            },
+            {
+              type: 'text',
+              key: 'app.zoom.name',
+              label: 'zoomName',
+              depends: 'app.zoom.enable',
+            },
+            {
+              key: 'autoStartMeeting',
+              label: 'zoomAutoStartMeeting',
+              depends: 'app.zoom.enable',
+            },
+            {
+              key: 'app.zoom.spotlight',
+              label: 'zoomSpotlight',
+              depends: 'app.zoom.enable',
+            },
+            {
+              type: 'list',
+              key: 'app.zoom.autoRename',
+              label: 'zoomAutoRename',
+              depends: 'app.zoom.enable',
             },
           ],
-        },
-        {
-          key: 'cong.enable',
-          label: 'webdavEnable',
         },
         {
           type: 'group',
           id: 'webdav',
           label: 'WebDAV',
-          depends: 'cong.enable',
+          icon: 'mdi-alpha-w-box',
           value: [
+            {
+              key: 'cong.enable',
+              label: 'webdavEnable',
+            },
             {
               type: 'text',
               key: 'cong.server',
+              depends: 'cong.enable',
               props: {
                 prefix: 'https://',
                 rules: [
@@ -809,6 +905,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'text',
               key: 'cong.username',
+              depends: 'cong.enable',
               props: {
                 rules: [
                   () =>
@@ -819,6 +916,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'password',
               key: 'cong.password',
+              depends: 'cong.enable',
               props: {
                 rules: [
                   () =>
@@ -829,6 +927,7 @@ const groups = computed((): Settings[] => {
             {
               type: 'text',
               key: 'cong.dir',
+              depends: 'cong.enable',
               label: 'webdavFolder',
               append: {
                 type: 'action',
@@ -868,49 +967,11 @@ const groups = computed((): Settings[] => {
             },
             {
               type: 'action',
+              depends: 'cong.enable',
               label: 'settingsLocked',
               action: () => {
                 forcingPrefs.value = true
               },
-            },
-          ],
-        },
-        {
-          key: 'app.zoom.enable',
-          label: 'zoomEnable',
-        },
-        {
-          type: 'group',
-          id: 'zoom',
-          depends: 'app.zoom.enable',
-          label: 'Zoom',
-          value: [
-            {
-              type: 'text',
-              key: 'app.zoom.id',
-              label: 'zoomId',
-            },
-            {
-              type: 'password',
-              key: 'app.zoom.password',
-            },
-            {
-              type: 'text',
-              key: 'app.zoom.name',
-              label: 'zoomName',
-            },
-            {
-              key: 'autoStartMeeting',
-              label: 'zoomAutoStartMeeting',
-            },
-            {
-              key: 'app.zoom.spotlight',
-              label: 'zoomSpotlight',
-            },
-            {
-              type: 'list',
-              key: 'app.zoom.autoRename',
-              label: 'zoomAutoRename',
             },
           ],
         },
@@ -919,6 +980,7 @@ const groups = computed((): Settings[] => {
     {
       id: 'shortcuts',
       label: 'keyboardShortcuts',
+      icon: 'mdi-keyboard',
       settings: [
         {
           type: 'shortcut',
@@ -972,6 +1034,7 @@ const groups = computed((): Settings[] => {
     {
       id: 'advanced',
       label: 'advanced',
+      icon: 'mdi-cogs',
       settings: [
         { key: 'app.autoRunAtBoot' },
         { key: 'app.offlineMode' },

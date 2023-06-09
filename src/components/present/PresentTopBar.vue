@@ -7,7 +7,7 @@
         @click="clearDate()"
       />
     </template>
-    <v-app-bar-title :text="date" />
+    <v-app-bar-title>{{ $dayjs(date).format('LL - dddd') }}</v-app-bar-title>
     <v-spacer />
 
     <v-btn
@@ -48,7 +48,6 @@
         <v-icon icon="mdi-skip-forward" />
       </v-btn>
     </template>
-
     <v-progress-circular
       v-if="
         globalDownloadProgress.percent > 0 &&
@@ -56,7 +55,7 @@
       "
       indeterminate
       color="primary"
-      class="ms-3"
+      class="mx-3"
     />
     <v-menu v-else location="bottom">
       <template #activator="{ props }">
@@ -68,17 +67,19 @@
         />
       </template>
       <v-list>
-        <v-list-item
-          v-for="(action, i) in actions"
-          :key="i"
-          :disabled="action.disabled ? mediaActive : false"
-          @click="action.action()"
-        >
-          <template #append>
-            <v-icon :icon="action.icon" />
-          </template>
-          <v-list-item-title>{{ action.title }}</v-list-item-title>
-        </v-list-item>
+        <template v-for="(action, i) in actions" :key="i">
+          <v-divider v-if="action.divider" />
+          <v-list-item
+            v-if="action.title !== $i18n.t('resetSort') || customSort"
+            :disabled="action.disabled ? mediaActive : false"
+            @click="action.action()"
+          >
+            <template #append>
+              <v-icon :icon="action.icon" />
+            </template>
+            <v-list-item-title>{{ action.title }}</v-list-item-title>
+          </v-list-item>
+        </template>
       </v-list>
     </v-menu>
 
@@ -91,10 +92,15 @@
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import { join } from 'upath'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+
+const { $dayjs } = useNuxtApp()
+$dayjs.extend(LocalizedFormat)
 
 defineProps<{
   mediaCount: number
   currentIndex: number
+  customSort: boolean
 }>()
 
 const emit = defineEmits([
@@ -102,8 +108,9 @@ const emit = defineEmits([
   'previous',
   'next',
   'manageMedia',
-  'showPrefix',
+  // 'showPrefix',
   'toggleQuickSong',
+  'resetSort',
 ])
 
 const { $i18n } = useNuxtApp()
@@ -112,33 +119,6 @@ const { client: zoomIntegration } = storeToRefs(useZoomStore())
 
 const date = useRouteQuery<string>('date', '')
 const { navDisabled } = storeToRefs(useStatStore())
-
-// const dayDownloadProgress = computed(() => {
-//   const { downloadProgress } = useMediaStore()
-//   const progressByDate = new Map()
-//   for (const [, progress] of downloadProgress) {
-//     const { current, total, date } = progress
-//     if (!date) continue
-//     const existingProgress = progressByDate.get(date) ?? {
-//       current: 0,
-//       total: 0,
-//       percent: 0,
-//     }
-//     const updatedProgress = {
-//       current: existingProgress.current + current,
-//       total: existingProgress.total + total,
-//       percent:
-//         ((existingProgress.current + current) /
-//           (existingProgress.total + total)) *
-//         100,
-//     }
-//     progressByDate.set(date, updatedProgress)
-//   }
-//   return (
-//     progressByDate.get(date.value) ?? { current: 0, total: 0, percent: 100 }
-//   )
-// })
-
 const globalDownloadProgress = computed(() => {
   const progressArray = Array.from(useMediaStore().downloadProgress) /* .filter(
         ([, d]) => d.current !== d.total
@@ -201,6 +181,14 @@ const openWebsite = () => {
     `https://www.jw.org/${getPrefs<string>('app.localAppLang')}/`
   )
 }
+const resetSort = () => {
+  try {
+    rm(join(mediaPath(), date.value, 'file-order.json'))
+    emit('resetSort')
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 // More actions
 const actions = [
@@ -211,7 +199,6 @@ const actions = [
       emit('manageMedia')
     },
   },
-  // toggleQuickSong
   {
     title: $i18n.t('toggleQuickSong'),
     icon: 'mdi-music',
@@ -220,18 +207,26 @@ const actions = [
     },
   },
   {
+    title: $i18n.t('resetSort'),
+    icon: 'mdi-sort-alphabetical-variant',
+    divider: true,
+    action: resetSort,
+  },
+  // toggleQuickSong
+  {
     title: $i18n.t('openFolder'),
     icon: 'mdi-folder-open',
     action: openFolder,
   },
-  {
-    title: $i18n.t('showPrefix'),
-    icon: 'mdi-numeric',
-    action: () => emit('showPrefix'),
-  },
+  // {
+  //   title: $i18n.t('showPrefix'),
+  //   icon: 'mdi-numeric',
+  //   action: () => emit('showPrefix'),
+  // },
   {
     title: $i18n.t('openJWorg') + ' [BETA]',
     icon: 'mdi-web',
+    divider: true,
     action: openWebsite,
     disabled: true,
   },

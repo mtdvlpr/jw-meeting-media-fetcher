@@ -4,30 +4,30 @@ import { pathExists, stat, emptyDir } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
 import { MeetingFile, SmallMediaFile, VideoFile, DateFormat } from '~~/types'
 
-// export function syncLocalRecurringMedia(baseDate: Dayjs) {
-//   const path = mediaPath()
-//   if (!path) return
+export function syncLocalRecurringMedia(baseDate: Dayjs) {
+  const path = mediaPath()
+  if (!path) return
 
-//   const meetings = useMediaStore().meetings
+  const meetings = useMediaStore().meetings
 
-//   const dates = [...meetings.keys()].filter((date) => {
-//     if (date === 'Recurring') return false
-//     const day = useNuxtApp().$dayjs(
-//       date,
-//       getPrefs<DateFormat>('app.outputFolderDateFormat')
-//     )
-//     return (
-//       day.isValid() &&
-//       day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]')
-//     )
-//   })
+  const dates = [...meetings.keys()].filter((date) => {
+    if (date === 'Recurring') return false
+    const day = useNuxtApp().$dayjs(
+      date,
+      getPrefs<DateFormat>('app.outputFolderDateFormat')
+    )
+    return (
+      day.isValid() &&
+      day.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]')
+    )
+  })
 
-//   findAll(join(path, 'Recurring', '*')).forEach((recurringItem: string) => {
-//     dates.forEach((date) => {
-//       copy(recurringItem, join(path, date, basename(recurringItem)))
-//     })
-//   })
-// }
+  findAll(join(path, 'Recurring', '*')).forEach((recurringItem: string) => {
+    dates.forEach((date) => {
+      copy(recurringItem, join(path, date, basename(recurringItem)))
+    })
+  })
+}
 
 // export async function syncLocalRecurringMediaByDate(date: string) {
 //   const path = mediaPath()
@@ -193,7 +193,7 @@ export async function downloadIfRequired({
       const filePath = file.folder
         ? additional
           ? join(
-              (getPrefs('cloudsync.path'),
+              (getPrefs('cloudSync.path'),
               'Additional',
               file.folder!,
               file.destFilename ?? file.safeName)
@@ -233,7 +233,7 @@ export async function downloadIfRequired({
     if (file.folder) {
       const filePath = additional
         ? join(
-            getPrefs('cloudsync.path'),
+            getPrefs('cloudSync.path'),
             'Additional',
             file.folder!,
             file.destFilename ?? file.safeName
@@ -273,33 +273,36 @@ export async function syncJWMediaByDate(
   date: string,
   meetingType: string | undefined
 ) {
-  if (meetingType === 'mw') {
-    await getMwMedia(date)
-  } else if (meetingType === 'we') {
-    await getWeMedia(date)
-  }
+  const { online } = useOnline()
+  if (online.value) {
+    if (meetingType === 'mw') {
+      await getMwMedia(date)
+    } else if (meetingType === 'we') {
+      await getWeMedia(date)
+    }
 
-  createMediaNamesByDate(date)
-  const meetingMedia = Object.fromEntries(
-    Array.from(useMediaStore().meetings)
-      .filter(([meetingMediaDate]) => meetingMediaDate === date)
-      .map(([date, parts]) => [
-        date,
-        Object.fromEntries(
-          Array.from(parts).map(([part, media]) => [
-            part,
-            media.filter(
-              ({ congSpecific, hidden, isLocal }) =>
-                !congSpecific && !hidden && !isLocal
-            ),
-          ])
-        ),
-      ])
-  )
-  for (const [date, parts] of Object.entries(meetingMedia)) {
-    for (const [, media] of Object.entries(parts)) {
-      for (const item of media) {
-        await syncMediaItemByDate(date, item)
+    createMediaNamesByDate(date)
+    const meetingMedia = Object.fromEntries(
+      Array.from(useMediaStore().meetings)
+        .filter(([meetingMediaDate]) => meetingMediaDate === date)
+        .map(([date, parts]) => [
+          date,
+          Object.fromEntries(
+            Array.from(parts).map(([part, media]) => [
+              part,
+              media.filter(
+                ({ congSpecific, hidden, isLocal }) =>
+                  !congSpecific && !hidden && !isLocal
+              ),
+            ])
+          ),
+        ])
+    )
+    for (const [date, parts] of Object.entries(meetingMedia)) {
+      for (const [, media] of Object.entries(parts)) {
+        for (const item of media) {
+          await syncMediaItemByDate(date, item)
+        }
       }
     }
   }
@@ -360,7 +363,7 @@ async function syncMediaItemByDate(date: string, item: MeetingFile) {
   if (item.filesize && (item.url || item.filepath)) {
     if (
       await pathExists(
-        join(getPrefs('cloudsync.path'), 'Hidden', item.folder, item.safeName)
+        join(getPrefs('cloudSync.path'), 'Hidden', item.folder, item.safeName)
       )
     ) {
       log.info(

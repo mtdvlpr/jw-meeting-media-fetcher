@@ -7,8 +7,6 @@
       </v-card-title>
       <v-divider />
       <v-card-text class="overflow-auto">
-        <!-- <div>{{ $t('settingsLockedWhoAreYou') }}</div>
-      <br /> -->
         <div class="text-caption text-grey-darken-1">
           {{ $t('settingsLockedExplain') }}
         </div>
@@ -19,6 +17,7 @@
             v-if="item.value !== null"
             v-model="item.forced"
             hide-details="auto"
+            true-icon="mdi-shield-lock"
             @update:model-value="change = true"
           >
             <template #label>
@@ -139,7 +138,7 @@ onMounted(() => {
 const change = ref(false)
 const updatePrefs = async () => {
   // If nothing changed, just close the modal
-  if (!change.value || (!getPrefs('cloudsync.enable') && !store.client)) {
+  if (!change.value || (!getPrefs('cloudSync.enable') && !store.client)) {
     active.value = false
     return
   }
@@ -167,9 +166,9 @@ const updatePrefs = async () => {
 
     // Update forcedPrefs.json
     log.debug('prefs', JSON.stringify(forcedPrefs))
-    if (getPrefs('cloudsync.enable')) {
+    if (getPrefs('cloudSync.enable')) {
       write(
-        join(getPrefs('cloudsync.path'), 'Settings', 'forcedPrefs.json'),
+        join(getPrefs('cloudSync.path'), 'Settings', 'forcedPrefs.json'),
         JSON.stringify(forcedPrefs, null, 2)
       )
     } else if (store.client) {

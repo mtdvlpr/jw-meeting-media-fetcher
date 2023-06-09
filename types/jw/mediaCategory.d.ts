@@ -8,7 +8,7 @@ export interface MediaCategory {
   tags: { [key: number]: string }
   images: Images
   parentCategory?: MediaCategory | null
-  subCategories?: MediaCategory[]
+  subcategories?: MediaCategory[]
   media?: MediaItem[]
 }
 

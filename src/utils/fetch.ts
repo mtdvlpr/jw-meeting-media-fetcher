@@ -6,6 +6,7 @@ import {
   Release,
   MediaItemResult,
   MediaCategoryResult,
+  PublicationListResult,
 } from '~~/types'
 
 export async function fetchFile({
@@ -59,34 +60,6 @@ export async function fetchHead(baseUrl: string) {
   return await fetch(baseUrl, { method: 'HEAD' })
 }
 
-// export async function fetchFile(url: string, dest: string | string[]) {
-//   const response = await fetch(url)
-//   const contentLength = response.headers.get('content-length')
-//   if (response.ok && response.body && contentLength) {
-//     const total = parseInt(contentLength, 10)
-//     let current = 0
-//     const downloadWriteStream = []
-//     const store = useMediaStore()
-//     const stream = new WritableStream({
-//       write(chunk) {
-//         dest.forEach((file: string) => {
-//           downloadWriteStream.push(createWriteStream(file))
-//           downloadWriteStream.write(chunk)
-//         })
-//         current = current + chunk.byteLength
-//         store.setDownloadProgress(url, {
-//           current,
-//           total,
-//         })
-//       },
-//     })
-//     const body = await response.body
-//     await body.pipeTo(stream)
-//   } else {
-//     throw new Error(`Unable to fetch file! Status: ${response.status}`)
-//   }
-// }
-
 export async function fetchJson<T>(
   baseUrl: string,
   options?: Record<string, any>
@@ -135,6 +108,13 @@ export const fetchMediaCategories = async (
   return await fetchJson<MediaCategoryResult>(
     'https://b.jw-cdn.org/apis/mediator/v1/categories/' + appendToPath,
     options
+  )
+}
+
+export const fetchPublicationList = async (langsymbol: string) => {
+  return await fetchJson<PublicationListResult>(
+    'https://www.jw.org/en/library/books/json/filters/PseudoSearchViewsFilter/?contentLanguageFilter=' +
+      langsymbol
   )
 }
 

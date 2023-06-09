@@ -30,11 +30,18 @@
           </v-avatar>
         </template>
         <template #append>
-          <v-icon
-            v-if="item.recurring"
-            icon="mdi-repeat-variant"
-            color="info"
-          />
+          <template v-if="item.recurring">
+            <v-tooltip :text="$t('recurringMediaItem')">
+              <template #activator="{ props }">
+                <v-icon
+                  v-bind="props"
+                  icon="mdi-calendar-sync"
+                  class="mx-2"
+                  color="secondary"
+                ></v-icon>
+              </template>
+            </v-tooltip>
+          </template>
           <v-btn
             v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
             icon="mdi-form-textbox"
@@ -43,9 +50,9 @@
             aria-label="rename file"
             @click="emit('edit')"
           />
-          <template v-if="getPrefs('cloudsync.enable')">
-            <template v-if="item.isLocal !== undefined">
-              <template v-if="!item.recurring && !item.isLocal">
+          <template v-if="getPrefs('cloudSync.enable')">
+            <template v-if="item.isLocal !== undefined && !item.recurring">
+              <template v-if="!item.isLocal">
                 <v-btn
                   v-if="item.hidden"
                   icon="mdi-eye-off"
@@ -68,7 +75,6 @@
                   variant="text"
                   size="small"
                   :loading="item.loading"
-                  v-bind="attrs"
                   @click="remove(item)"
                 />
               </template>
@@ -203,7 +209,7 @@ const unhide = (item: { filepath: string; hidden: boolean }) => {
   mv(
     normalize(item.filepath),
     normalize(item.filepath).replace(
-      join(getPrefs('cloudsync.path'), 'Hidden'),
+      join(getPrefs('cloudSync.path'), 'Hidden'),
       normalize(mediaPath()!)
     )
   )
@@ -215,7 +221,7 @@ const hide = (item: { filepath: string; hidden: boolean }) => {
     normalize(item.filepath),
     normalize(item.filepath).replace(
       normalize(mediaPath()!),
-      join(getPrefs('cloudsync.path'), 'Hidden')
+      join(getPrefs('cloudSync.path'), 'Hidden')
     )
   )
   item.hidden = true
@@ -225,7 +231,7 @@ const remove = (item: { filepath: string }) => {
   rm(
     normalize(item.filepath).replace(
       normalize(mediaPath()!),
-      join(getPrefs('cloudsync.path'), 'Additional')
+      join(getPrefs('cloudSync.path'), 'Additional')
     )
   )
 }

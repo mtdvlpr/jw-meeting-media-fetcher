@@ -1,37 +1,44 @@
 <template>
-  <v-dialog v-model="managingMedia" persistent fullscreen>
-    <manage-media
-      :media="localMedia"
-      :loading="loading"
-      @cancel="managingMedia = false"
-    />
-  </v-dialog>
-  <v-row no-gutters class="media-controls">
-    <!-- :media-active="mediaActive" -->
-    <present-top-bar
-      :current-index="currentIndex"
-      :media-count="items.length"
-      @cc="ccEnable = !ccEnable"
-      @previous="previous()"
-      @next="next()"
-      @show-prefix="togglePrefix()"
-      @toggle-quick-song="toggleQuickSong()"
-      @manage-media="managingMedia = true"
-    />
-    <v-expand-transition>
-      <loading-icon v-if="loading" />
-      <media-list
-        v-else
-        :items="items"
-        :media-active="mediaActive"
-        :zoom-part="zoomPart"
-        :cc-enable="ccEnable"
-        :show-quick-song="showQuickSong"
-        @index="setIndex"
-        @deactivate="resetDeactivate"
+  <div>
+    <v-dialog v-model="managingMedia" persistent fullscreen>
+      <manage-media
+        :media="localMedia"
+        :loading="loading"
+        @cancel="managingMedia = false"
       />
-    </v-expand-transition>
-  </v-row>
+    </v-dialog>
+    <v-row no-gutters class="media-controls">
+      <!-- :media-active="mediaActive" -->
+      <present-top-bar
+        :current-index="currentIndex"
+        :media-count="items.length"
+        :custom-sort="customSort"
+        @cc="ccEnable = !ccEnable"
+        @previous="previous()"
+        @next="next()"
+        @toggle-quick-song="toggleQuickSong()"
+        @reset-sort="customSort = false"
+        @manage-media="managingMedia = true"
+      />
+      <!-- @show-prefix="togglePrefix()" -->
+      Currently syncing (not working yet): {{ syncing }}
+      <v-expand-transition>
+        <loading-icon v-if="loading" />
+        <media-list
+          v-else
+          :items="items"
+          :media-active="mediaActive"
+          :zoom-part="zoomPart"
+          :cc-enable="ccEnable"
+          :show-quick-song="showQuickSong"
+          :custom-sort="customSort"
+          @index="setIndex"
+          @deactivate="resetDeactivate"
+          @custom-sort="customSort = true"
+        />
+      </v-expand-transition>
+    </v-row>
+  </div>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
@@ -39,7 +46,10 @@ import { useRouteQuery } from '@vueuse/router'
 import { basename, dirname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
 import { LocalFile } from '~~/types'
-
+const props = defineProps({
+  syncing: Boolean,
+})
+const { syncing } = toRefs(props) // should be a global ref/state lookup i guess?
 const loading = ref(false)
 
 // Current meeting date
@@ -51,15 +61,15 @@ provide(ccEnableKey, ccEnable)
 
 // Manage media dialog
 const managingMedia = ref(false)
-const localMedia = computed((): LocalFile[] =>
-  items.value
+const localMedia = computed((): LocalFile[] => [
+  ...items.value
     .map((item) => {
       return {
         safeName: basename(item.path),
         filepath: item.path,
         isLocal: !!findOne(
           join(
-            getPrefs('cloudsync.path'),
+            getPrefs('cloudSync.path'),
             'Additional',
             date.value,
             basename(item.path)
@@ -68,7 +78,7 @@ const localMedia = computed((): LocalFile[] =>
       }
     })
     .concat(
-      findAll(join(getPrefs('cloudsync.path'), 'Hidden', date.value, '*')).map(
+      findAll(join(getPrefs('cloudSync.path'), 'Hidden', date.value, '*')).map(
         (item) => {
           return {
             safeName: basename(item),
@@ -80,7 +90,7 @@ const localMedia = computed((): LocalFile[] =>
       )
     )
     .concat(
-      findAll(join(getPrefs('cloudsync.path'), 'Recurring', '*')).map(
+      findAll(join(getPrefs('cloudSync.path'), 'Recurring', '*')).map(
         (item) => {
           return {
             safeName: basename(item),
@@ -102,7 +112,13 @@ const localMedia = computed((): LocalFile[] =>
       }
       return 0
     })
-)
+    .reverse()
+    .reduceRight((map, item) => {
+      map.set(item.safeName, item)
+      return map
+    }, new Map())
+    .values(),
+])
 
 // Get media files
 type MediaItem = {
@@ -173,11 +189,11 @@ onMounted(() => {
         }
       })
   )
-  if (getPrefs('cloudsync.enable')) {
+  if (getPrefs('cloudSync.enable')) {
     // additional files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudsync.path'), 'Additional', date.value), {
+        .watch(join(getPrefs('cloudSync.path'), 'Additional', date.value), {
           awaitWriteFinish: true,
           depth: 1,
           alwaysStat: true,
@@ -196,7 +212,7 @@ onMounted(() => {
     // hidden files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudsync.path'), 'Hidden', date.value), {
+        .watch(join(getPrefs('cloudSync.path'), 'Hidden', date.value), {
           awaitWriteFinish: true,
           depth: 1,
           alwaysStat: true,
@@ -209,7 +225,7 @@ onMounted(() => {
     // recurring files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudsync.path'), 'Recurring'), {
+        .watch(join(getPrefs('cloudSync.path'), 'Recurring'), {
           awaitWriteFinish: true,
           depth: 1,
           alwaysStat: true,
@@ -294,21 +310,20 @@ watch(mediaActive, (val) => {
 })
 
 // File prefix
-const showPrefix = ref(false)
-provide(showPrefixKey, showPrefix)
-const togglePrefix = () => {
-  showPrefix.value = true
-  setTimeout(() => {
-    showPrefix.value = false
-  }, 3 * MS_IN_SEC)
-}
+// const showPrefix = ref(false)
+// provide(showPrefixKey, showPrefix)
+// const togglePrefix = () => {
+//   showPrefix.value = true
+//   setTimeout(() => {
+//     showPrefix.value = false
+//   }, 3 * MS_IN_SEC)
+// }
 
 // Quick song
 const showQuickSong = ref(false)
 const toggleQuickSong = () => {
   showQuickSong.value = !showQuickSong.value
 }
-
 // Media playback with shortcuts
 const currentIndex = ref(-1)
 useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
@@ -318,7 +333,7 @@ useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
     previous()
   }
 })
-
+const customSort = ref(false)
 const setIndex = (index: number) => {
   const previousItem = items.value[currentIndex.value]
   if (previousItem && currentIndex.value !== index) {

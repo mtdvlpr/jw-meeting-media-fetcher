@@ -1,10 +1,12 @@
 <template>
   <div id="media-list-container" style="width: 100%">
-    <v-alert
-      v-if="$props.items.length === 0"
-      type="warning"
-      :text="$t('warnNoMediaFound')"
-    ></v-alert>
+    <v-expand-transition>
+      <v-alert
+        v-if="initialTimerPassed && $props.items.length === 0"
+        type="warning"
+        :text="$t('warnNoMediaFound')"
+      ></v-alert>
+    </v-expand-transition>
     <v-expand-transition>
       <song-picker
         v-if="showQuickSong"
@@ -41,7 +43,7 @@
             tag="div"
             group="media-items"
             @start="dragging = true"
-            @end="dragging = false"
+            @end="dragEnd"
           >
             <template #item="{ element }">
               <media-item
@@ -69,7 +71,7 @@
             tag="div"
             group="media-items"
             @start="dragging = true"
-            @end="dragging = false"
+            @end="dragEnd"
           >
             <template #item="{ element }">
               <media-item
@@ -96,7 +98,7 @@
             tag="div"
             group="media-items"
             @start="dragging = true"
-            @end="dragging = false"
+            @end="dragEnd"
           >
             <template #item="{ element }">
               <media-item
@@ -123,7 +125,7 @@
           tag="div"
           group="media-items"
           @start="dragging = true"
-          @end="dragging = false"
+          @end="dragEnd"
         >
           <template #item="{ element }">
             <media-item
@@ -148,7 +150,7 @@
           tag="div"
           group="media-items"
           @start="dragging = true"
-          @end="dragging = false"
+          @end="dragEnd"
         >
           <template #item="{ element }">
             <media-item
@@ -170,7 +172,7 @@
         tag="div"
         group="media-items"
         @start="dragging = true"
-        @end="dragging = false"
+        @end="dragEnd"
       >
         <template #item="{ element }">
           <media-item
@@ -189,8 +191,8 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 
-import { readFile } from 'fs-extra'
-import { basename, join } from 'upath'
+import { pathExists, pathExistsSync, readFile, writeFile } from 'fs-extra'
+import { basename, dirname, join } from 'upath'
 import draggable from 'vuedraggable'
 import { DateFormat, VideoFile } from '~~/types'
 type MediaItem = {
@@ -203,15 +205,18 @@ type MediaItem = {
 const emit = defineEmits<{
   index: [id: number]
   deactivate: [index: number]
+  customSort: [boolean]
 }>()
 
 const props = defineProps<{
   items: MediaItem[]
   showQuickSong: boolean
+  customSort: boolean
 }>()
 
 const dragging = ref(false)
 const date = useRouteQuery<string>('date', '')
+const initialTimerPassed = ref(false)
 
 // Meeting day
 const meetingDay = ref('')
@@ -228,6 +233,9 @@ onMounted(() => {
       getPrefs<DateFormat>('app.outputFolderDateFormat')
     )
   )
+  setTimeout(() => {
+    initialTimerPassed.value = true
+  }, 1000)
 })
 
 // Meeting headings
@@ -280,8 +288,101 @@ watch(
   },
   { deep: true }
 )
-const setItems = (val: MediaItem[]) => {
+watch(
+  () => props.customSort,
+  (customSort) => {
+    if (!customSort) defaultOrder(props.items)
+  },
+  { deep: true }
+)
+const saveFileOrder = async () => {
+  const combinedItems = {
+    treasureItems: treasureItems.value,
+    applyItems: applyItems.value,
+    livingItems: livingItems.value,
+    publicTalkItems: publicTalkItems.value,
+    wtItems: wtItems.value,
+  }
+  if (Object.values(combinedItems).flat().length > 0) {
+    const destPath = dirname(Object.values(combinedItems).flat()[0].path)
+    try {
+      await writeFile(
+        join(destPath, 'file-order.json'),
+        JSON.stringify(combinedItems, null, 2)
+      )
+      emit('customSort', true)
+    } catch (error) {
+      console.error('Error saving file order:', error)
+    }
+  }
+}
+const setItems = async (val: MediaItem[]) => {
   mediaItems.value = val
+  try {
+    const orderFile =
+      val && val[0]?.path ? join(dirname(val[0].path), 'file-order.json') : ''
+    if (orderFile && (await pathExists(orderFile))) {
+      const order = JSON.parse(await readFile(orderFile, 'utf-8'))
+      const existingItems = [
+        ...order.treasureItems,
+        ...order.livingItems,
+        ...order.applyItems,
+        ...order.publicTalkItems,
+        ...order.wtItems,
+      ]
+
+      // Add new items to top
+      const newItems = val.filter(
+        (item) =>
+          !existingItems.some((existingItem) => {
+            return existingItem.id === item.id
+          })
+      )
+
+      order.treasureItems = [...newItems, ...order.treasureItems]
+
+      // Remove items that don't exist in folder
+      const nonExistentItems = existingItems.filter(
+        (item) => !pathExistsSync(item.path)
+      )
+      order.treasureItems = order.treasureItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+      order.livingItems = order.livingItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+      order.applyItems = order.applyItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+      order.publicTalkItems = order.publicTalkItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+      order.wtItems = order.wtItems.filter(
+        (item: any) => !nonExistentItems.includes(item)
+      )
+
+      treasureItems.value = order.treasureItems
+      livingItems.value = order.livingItems
+      applyItems.value = order.applyItems
+      publicTalkItems.value = order.publicTalkItems
+      wtItems.value = order.wtItems
+      emit('customSort', true)
+    } else {
+      defaultOrder(val)
+    }
+  } catch {
+    defaultOrder(val)
+  }
+}
+const defaultOrder = (
+  val: {
+    id: string
+    path: string
+    play: boolean
+    stop: boolean
+    deactivate: boolean
+  }[]
+) => {
   if (firstWtSong.value !== -1) {
     publicTalkItems.value = val.slice(0, firstWtSong.value)
     wtItems.value = val.slice(firstWtSong.value)
@@ -297,7 +398,10 @@ const setItems = (val: MediaItem[]) => {
     applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
   }
 }
-
+const dragEnd = () => {
+  dragging.value = false
+  saveFileOrder()
+}
 const resetDeactivate = (id: string) => {
   emit(
     'deactivate',
