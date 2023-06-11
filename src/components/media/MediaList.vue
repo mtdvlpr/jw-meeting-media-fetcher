@@ -320,47 +320,36 @@ const setItems = async (val: MediaItem[]) => {
   mediaItems.value = val
   try {
     const orderFile =
-      val && val[0]?.path ? join(dirname(val[0].path), 'file-order.json') : ''
+      val && val[0]?.path
+        ? join(dirname(val[0].path), 'file-order.json')
+        : undefined
     if (orderFile && (await pathExists(orderFile))) {
-      const order = JSON.parse(await readFile(orderFile, 'utf-8'))
-      const existingItems = [
-        ...order.treasureItems,
-        ...order.livingItems,
-        ...order.applyItems,
-        ...order.publicTalkItems,
-        ...order.wtItems,
-      ]
-
+      const order = Object.fromEntries(
+        Object.entries(JSON.parse(await readFile(orderFile, 'utf-8'))).map(
+          ([key, value]) => [
+            key,
+            (value as MediaItem[]).filter((item: { path: string }) =>
+              pathExistsSync(item.path)
+            ),
+          ]
+        )
+      )
       // Add new items to top
       const newItems = val.filter(
         (item) =>
-          !existingItems.some((existingItem) => {
-            return existingItem.id === item.id
-          })
+          !Object.values(order)
+            .flat()
+            .some((existingItem: { id: string }) => {
+              return existingItem.id === item.id
+            })
       )
-
-      order.treasureItems = [...newItems, ...order.treasureItems]
-
-      // Remove items that don't exist in folder
-      const nonExistentItems = existingItems.filter(
-        (item) => !pathExistsSync(item.path)
-      )
-      order.treasureItems = order.treasureItems.filter(
-        (item: any) => !nonExistentItems.includes(item)
-      )
-      order.livingItems = order.livingItems.filter(
-        (item: any) => !nonExistentItems.includes(item)
-      )
-      order.applyItems = order.applyItems.filter(
-        (item: any) => !nonExistentItems.includes(item)
-      )
-      order.publicTalkItems = order.publicTalkItems.filter(
-        (item: any) => !nonExistentItems.includes(item)
-      )
-      order.wtItems = order.wtItems.filter(
-        (item: any) => !nonExistentItems.includes(item)
-      )
-
+      if (newItems.length > 0) {
+        if (order.wtItems.length > 0) {
+          order.publicTalkItems = [...newItems, ...order.publicTalkItems]
+        } else {
+          order.treasureItems = [...newItems, ...order.treasureItems]
+        }
+      }
       treasureItems.value = order.treasureItems
       livingItems.value = order.livingItems
       applyItems.value = order.applyItems

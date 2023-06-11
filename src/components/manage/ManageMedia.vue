@@ -8,7 +8,7 @@
   <v-card class="manage-media">
     <v-card-title class="pa-0">
       <v-overlay :model-value="dropping" class="align-center justify-center">
-        <v-chip variant="flat">Drop one or more files here!</v-chip>
+        <v-chip variant="flat">{{ $t('dropFiles') }}</v-chip>
       </v-overlay>
       <v-tabs
         v-model="type"

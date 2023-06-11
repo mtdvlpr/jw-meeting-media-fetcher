@@ -7,6 +7,18 @@
         @cancel="managingMedia = false"
       />
     </v-dialog>
+    <v-dialog
+      v-if="droppedFiles?.length === 1"
+      persistent
+      :model-value="isLoneJwpub"
+    >
+      <manage-select-document
+        :file="droppedFiles[0]"
+        :set-progress="setProgress"
+        @select="processFiles($event)"
+        @empty="reset()"
+      />
+    </v-dialog>
     <v-row no-gutters class="media-controls">
       <!-- :media-active="mediaActive" -->
       <present-top-bar
@@ -37,20 +49,131 @@
           @custom-sort="customSort = true"
         />
       </v-expand-transition>
+      <v-overlay :model-value="dropping" class="align-center justify-center">
+        <v-chip variant="flat">{{ $t('dropFiles') }}</v-chip>
+      </v-overlay>
     </v-row>
   </div>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
-import { basename, dirname, join } from 'upath'
+import { basename, changeExt, dirname, extname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
-import { LocalFile } from '~~/types'
+import * as JSZip from 'jszip'
+import { LocalFile, VideoFile } from '~~/types'
+
+const { setProgress } = useProgress()
 const props = defineProps({
   syncing: Boolean,
 })
 const { syncing } = toRefs(props) // should be a global ref/state lookup i guess?
 const loading = ref(false)
+const droppedFiles = ref()
+const isLoneJwpub = ref(false)
+const dropping = ref(false)
+watch(droppedFiles, () => {
+  if (droppedFiles.value.length > 0) {
+    isLoneJwpub.value =
+      Array.isArray(droppedFiles.value) &&
+      droppedFiles.value.length === 1 &&
+      droppedFiles.value[0].filepath &&
+      extname(droppedFiles.value[0].filepath) === '.jwpub'
+    if (!isLoneJwpub.value) {
+      processFiles(droppedFiles.value)
+    }
+  }
+})
+const processFiles = async (files: (LocalFile | VideoFile)[]) => {
+  for (const file of files) {
+    // const congPromises: Promise<void>[] = []
+    const path = join(
+      getPrefs('cloudSync.enable')
+        ? join(getPrefs('cloudSync.path'), 'Additional')
+        : mediaPath(),
+      date.value,
+      file.safeName
+    )
+
+    // TODO: convert all unusable droppedFiles here
+
+    if (file.contents) {
+      // JWPUB extract
+      write(path, file.contents)
+    } else if (file.objectUrl) {
+      // Dropped file object (from web browser for example)
+      await fetchFile({ url: file.objectUrl, dest: path })
+    } else if (file.filepath) {
+      // Local file
+      await copy(file.filepath, path)
+    } else if (file.safeName) {
+      // External file from jw.org
+      file.folder = date.value
+      await downloadIfRequired({
+        file: file as VideoFile,
+        additional: true,
+      })
+
+      // if (file.subtitles) {
+      //   congPromises.push(uploadFile(changeExt(path, 'vtt')))
+      // }
+
+      // Download markers if required
+      if (file.markers && file.folder && file.safeName) {
+        const markers = Array.from(
+          new Set(
+            file.markers?.markers?.map(
+              ({ duration, label, startTime, endTransitionDuration }) =>
+                JSON.stringify({
+                  duration,
+                  label,
+                  startTime,
+                  endTransitionDuration,
+                })
+            )
+          )
+        ).map((m) => JSON.parse(m))
+
+        const markerPath = join(
+          getPrefs('cloudSync.enable')
+            ? join(getPrefs('cloudSync.path'), 'Additional')
+            : mediaPath(),
+          file.folder,
+          changeExt(file.safeName, 'json')
+        )
+        write(markerPath, JSON.stringify(markers))
+        // congPromises.push(uploadFile(markerPath))
+      }
+    }
+  }
+
+  // Upload media to the cong server
+  // if (client.value && online.value && props.uploadMedia) {
+  //   const perf: any = {
+  //     start: performance.now(),
+  //     bytes: (await stat(path)).size,
+  //     name: file.safeName,
+  //   }
+
+  //   congPromises.push(uploadFile(path))
+  //   await Promise.allSettled(congPromises)
+
+  //   perf.end = performance.now()
+  //   perf.bits = perf.bytes * BITS_IN_BYTE
+  //   perf.ms = perf.end - perf.start
+  //   perf.s = perf.ms / MS_IN_SEC
+  //   perf.bps = perf.bits / perf.s
+  //   perf.MBps = perf.bps / BYTES_IN_MB
+  //   perf.dir = 'up'
+  //   log.debug('perf', perf)
+  // }
+  // increaseProgress()
+  reset()
+}
+
+const reset = () => {
+  droppedFiles.value = []
+}
 
 // Current meeting date
 const date = useRouteQuery<string>('date', '')
@@ -260,6 +383,73 @@ onMounted(() => {
       }
     )
   }
+  document.addEventListener('dragover', (event) => {
+    if (event.dataTransfer?.types.includes('Files')) {
+      event.preventDefault()
+      event.stopPropagation()
+      dropping.value = true
+    }
+  })
+  document.addEventListener('dragleave', (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+  })
+  document.addEventListener('drop', async (event) => {
+    if (dropping.value) {
+      try {
+        event.preventDefault()
+        event.stopPropagation()
+        if (event.dataTransfer?.files) {
+          const filesArray = Array.from(event.dataTransfer.files)
+          const jwpubFile = filesArray.find(
+            (item) => extname(item.name) === '.jwpub'
+          )
+          const zipFile = filesArray.find(
+            (item) => extname(item.name) === '.zip'
+          )
+          if (jwpubFile) {
+            droppedFiles.value = [
+              {
+                safeName: '00-00 - ' + sanitize(basename(jwpubFile.name), true),
+                objectUrl: URL.createObjectURL(jwpubFile),
+                filepath: jwpubFile.path,
+              },
+            ]
+          } else if (zipFile) {
+            const zip = new JSZip()
+            const zipData = await zip.loadAsync(zipFile)
+            const unzippedFiles = []
+            let count = 0
+            for (const entryName in zipData.files) {
+              const entry = zipData.files[entryName]
+              if (entry.dir) continue // Skip directories
+              const unzippedFile = {
+                safeName: '00-00 - ' + sanitize(basename(entry.name), true),
+                objectUrl: URL.createObjectURL(await entry.async('blob')),
+                filepath: entry.name,
+              }
+              unzippedFiles.push(unzippedFile)
+              count++
+              if (count >= 30) break // Limit number of unzipped files for performance reasons
+            }
+            droppedFiles.value = unzippedFiles
+          } else {
+            droppedFiles.value = filesArray.map((item) => {
+              return {
+                safeName: '00-00 - ' + sanitize(basename(item.name), true),
+                objectUrl: URL.createObjectURL(item),
+                filepath: item.path,
+              }
+            })
+          }
+        }
+      } catch (err) {
+        console.error(err)
+      } finally {
+        dropping.value = false
+      }
+    }
+  })
 })
 
 // Media active state
