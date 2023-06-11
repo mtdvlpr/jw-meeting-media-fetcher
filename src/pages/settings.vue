@@ -1078,12 +1078,18 @@ const filteredGroups = computed(() => {
       const filteredSettings: (Setting | Action | Group)[] = []
       group.settings.forEach((setting) => {
         if (setting.type === 'group') {
-          const filteredSubSettings = setting.value.filter((subSetting) => {
-            const label = $i18n.t(
-              subSetting.label ?? (subSetting as Setting).key.split('.').pop()
-            )
-            return label.toLowerCase().includes(filter.value.toLowerCase())
-          })
+          const filteredSubSettings = $i18n
+            .t(setting.label)
+            .toLowerCase()
+            .includes(filter.value.toLowerCase())
+            ? setting.value
+            : setting.value.filter((subSetting) => {
+                const label = $i18n.t(
+                  subSetting.label ??
+                    (subSetting as Setting).key.split('.').pop()
+                )
+                return label.toLowerCase().includes(filter.value.toLowerCase())
+              })
           if (filteredSubSettings.length > 0) {
             filteredSettings.push({
               ...setting,
