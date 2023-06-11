@@ -10,7 +10,7 @@
       <v-switch inset :model-value="value" density="compact" hide-details />
     </v-list-item-action>
     <template v-if="setting.explanation || isLocked(setting.key)" #append>
-      <v-tooltip location="top" activator="parent">
+      <v-tooltip location="left" activator="parent">
         <template #activator="{ props: attrs }">
           <v-icon
             :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
@@ -29,7 +29,7 @@
   </v-list-item>
   <v-list-item v-else-if="setting.type == 'date'">
     <template v-if="setting.explanation || isLocked(setting.key)" #append>
-      <v-tooltip location="top" activator="parent">
+      <v-tooltip location="left" activator="parent">
         <template #activator="{ props: attrs }">
           <v-icon
             :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
@@ -66,20 +66,24 @@
   </v-list-item>
   <v-list-item v-else-if="setting.type == 'shortcut'" style="max-width: 550px">
     <div class="text-body-2 mb-2" v-html="$t(label)" />
-    <v-btn
-      variant="tonal"
-      class="text-none"
-      :disabled="recording || isLocked(setting.key)"
-      @click="recordShortcut()"
-    >
-      <template v-if="value">
-        <v-kbd v-for="key in value.split('+')" :key="key" class="me-1">
-          {{ key }}
-        </v-kbd>
-      </template>
-      <template v-else> {{ value || $t('keyboardShortcutSet') }} </template>
-      <v-icon v-if="value" end @click.stop="clearShortcut"> mdi-close </v-icon>
-    </v-btn>
+    <template v-if="value">
+      <v-kbd v-for="key in value.split('+')" :key="key" class="me-1 px-2">
+        {{ key }}
+      </v-kbd>
+      <v-icon size="small" color="error" @click="clearShortcut()">
+        mdi-close
+      </v-icon>
+    </template>
+    <template v-else>
+      <v-btn
+        variant="tonal"
+        class="text-none"
+        :disabled="recording || isLocked(setting.key)"
+        @click="recordShortcut()"
+      >
+        {{ $t('keyboardShortcutSet') }}
+      </v-btn>
+    </template>
   </v-list-item>
   <v-list-item v-else-if="setting.type === 'list'">
     <v-col class="d-flex pa-0 pb-2 align-center">
@@ -149,10 +153,10 @@
         (setting.explanation || isLocked(setting.key)) &&
         (setting.type === 'text' || setting.type === 'password')
       "
-      #append-inner
+      #append
     >
       <v-tooltip
-        location="top"
+        location="left"
         :text="
           $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
         "
@@ -169,7 +173,7 @@
     </template>
     <template v-else-if="setting.explanation || isLocked(setting.key)" #append>
       <v-tooltip
-        location="top"
+        location="left"
         :text="
           $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
         "
