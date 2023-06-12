@@ -1134,9 +1134,9 @@ const filteredGroups = computed(() => {
   if (invalidSettingGroups.value?.length > 0) {
     return invalidSettingGroups.value
   }
-  // if (!filter.value) {
-  // return groups.value
-  // }
+  if (!filter.value) {
+    return groups.value
+  }
   const filtered: Settings[] = []
   groups.value.forEach((group) => {
     if (group.label.toLowerCase().includes(filter.value.toLowerCase())) {
