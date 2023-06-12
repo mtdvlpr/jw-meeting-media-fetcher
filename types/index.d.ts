@@ -8,6 +8,8 @@ export * from './electron'
 export * from './settings'
 
 export type VFormRef = {
+  isValidating: boolean
+  items: any[]
   id: number | string
   validate: () => Promise<string[]>
   reset: () => void

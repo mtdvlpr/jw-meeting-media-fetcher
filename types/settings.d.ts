@@ -62,6 +62,7 @@ export interface Group {
 }
 
 export interface Settings {
+  type?: string
   id: GroupID
   label: string
   icon?: string

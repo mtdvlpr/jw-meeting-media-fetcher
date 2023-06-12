@@ -6,14 +6,19 @@
     "
   >
     <v-divider v-if="setting.type == 'group'" />
-    <v-list-group v-if="setting.type == 'group'">
+    <v-list-group v-if="setting.type == 'group'" :v-model="invalidSettings">
       <template #activator="{ props }">
         <v-list-item
           v-bind="props"
           :prepend-icon="setting.icon"
+          :disabled="invalidSettings"
           variant="flat"
           :title="$t(setting.label)"
           class="bg-grey-lighten-3"
+          :class="{
+            'bg-subgroup': !invalidSettings,
+            'bg-error': invalidSettings,
+          }"
         />
       </template>
       <template
@@ -68,5 +73,6 @@ import { Action, Group, Setting } from '~~/types'
 
 defineProps<{
   setting: Setting | Action | Group
+  invalidSettings: boolean
 }>()
 </script>

@@ -31,6 +31,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           dark: false,
           colors: {
             bg: '#fff',
+            group: 'rgb(224, 224, 224)',
+            subgroup: 'rgb(189, 189, 189)',
             regular: '#000',
             primary: '#0d6efd',
             song: '#055160',
@@ -51,6 +53,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           dark: true,
           colors: {
             bg: '#121212',
+            group: 'rgb(66, 66, 66)',
+            subgroup: '##616161',
             regular: '#fff',
             primary: '#375a7f',
             song: '#5dbecd',

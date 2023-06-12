@@ -7,6 +7,7 @@
       :refresh-cache="refreshCache"
       :current="relativeDownloadProgress"
       :total="totalProgress"
+      :invalid-settings="invalidSettingGroups.length > 0"
     />
     <cong-forced-prefs v-model="forcingPrefs" />
     <v-row no-gutters justify="center" class="fill-height settings">
@@ -16,15 +17,29 @@
             v-if="!mounted"
             type="list-item-avatar,list-item-avatar,list-item-avatar,list-item-avatar,list-item-avatar"
           />
-          <v-form v-else ref="form" v-model="valid" @submit.prevent>
+          <v-form
+            v-else
+            ref="form"
+            v-model="valid"
+            validate-on="input"
+            @submit.prevent
+          >
             <v-list class="">
-              <v-list-group v-for="group in filteredGroups" :key="group.id">
+              <v-list-group
+                v-for="group in filteredGroups"
+                :key="group.id"
+                :v-model="invalidSettingGroups.length > 0"
+              >
                 <template #activator="{ props }">
                   <v-list-item
                     v-bind="props"
+                    :disabled="invalidSettingGroups.length > 0"
                     :title="$t(group.label)"
                     variant="flat"
-                    class="bg-grey-lighten-2"
+                    :class="{
+                      'bg-group': invalidSettingGroups.length === 0,
+                      'bg-error': invalidSettingGroups.length > 0,
+                    }"
                     :prepend-icon="group.icon"
                   />
                 </template>
@@ -32,6 +47,7 @@
                   v-for="setting in group.settings"
                   :key="setting.label"
                   :setting="setting"
+                  :invalid-settings="invalidSettingGroups.length > 0"
                 />
               </v-list-group>
             </v-list>
@@ -142,8 +158,21 @@ const obsComplete = computed(() => {
 const mounted = ref(false)
 onMounted(() => {
   getLangs()
-  form.value?.validate()
+  nextTick(() => {
+    form.value?.validate()
+  })
   mounted.value = true
+})
+
+const invalidFormItems = computed(() => {
+  return (
+    (form.value &&
+      !form.value.isValidating &&
+      form.value.items?.filter(
+        (item: { isValid: any }) => item.isValid !== null && !item.isValid
+      )) ||
+    []
+  )
 })
 
 const locales = ref<{ name: string; code: string }[]>([])
@@ -1067,9 +1096,47 @@ const groups = computed((): Settings[] => {
     },
   ]
 })
-
+function isSetting(item: Setting | Group | Action): item is Setting {
+  return (item as Setting).key !== undefined
+}
+const invalidSettingGroups = computed(() => {
+  return invalidFormItems.value?.length > 0
+    ? groups.value
+        ?.map((group) => {
+          const filteredSettings = group.settings.filter((item) => {
+            if (isSetting(item)) {
+              return invalidFormItems.value
+                ?.map((item) => item.id)
+                .some((id) => id?.includes(item.key?.replace(/\./g, '')))
+            } else if (item.type === 'group') {
+              const filteredGroupSettings = item.value.filter(
+                (setting) =>
+                  isSetting(setting) &&
+                  invalidFormItems.value
+                    ?.map((item) => item.id)
+                    .some((id) => id?.includes(setting.key?.replace(/\./g, '')))
+              )
+              return filteredGroupSettings.length > 0
+            } else {
+              return false
+            }
+          })
+          if (filteredSettings.length > 0 || group.type !== 'group') {
+            return { ...group, settings: filteredSettings }
+          } else {
+            return null
+          }
+        })
+        .filter((group) => !!group?.settings.length)
+    : []
+})
 const filteredGroups = computed(() => {
-  if (!filter.value) return groups.value
+  if (invalidSettingGroups.value?.length > 0) {
+    return invalidSettingGroups.value
+  }
+  // if (!filter.value) {
+  // return groups.value
+  // }
   const filtered: Settings[] = []
   groups.value.forEach((group) => {
     if (group.label.toLowerCase().includes(filter.value.toLowerCase())) {

@@ -11,6 +11,7 @@
         hide-details="auto"
         density="compact"
         prepend-inner-icon="mdi-text-search"
+        :disabled="invalidSettings"
         clearable
       />
     </template>
@@ -63,6 +64,7 @@ const props = defineProps<{
   total: number
   refreshCache?: boolean
   modelValue: string
+  invalidSettings: boolean
 }>()
 
 // Pass filter value to parent
