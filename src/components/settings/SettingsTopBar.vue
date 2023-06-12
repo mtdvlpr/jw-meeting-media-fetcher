@@ -7,7 +7,7 @@
     <template #extension>
       <v-text-field
         v-model="filter"
-        label="Search"
+        :label="$t('search')"
         hide-details="auto"
         density="compact"
         prepend-inner-icon="mdi-text-search"

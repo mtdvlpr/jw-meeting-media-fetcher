@@ -632,6 +632,7 @@ const groups = computed((): Settings[] => {
         },
         {
           type: 'group',
+          depends: 'media.enableMediaDisplayButton',
           id: 'playbackAdvanced',
           label: 'advanced',
           icon: 'mdi-cogs',
