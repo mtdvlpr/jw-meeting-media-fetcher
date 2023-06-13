@@ -201,28 +201,32 @@ const localMedia = computed((): LocalFile[] => [
       }
     })
     .concat(
-      findAll(join(getPrefs('cloudSync.path'), 'Hidden', date.value, '*')).map(
-        (item) => {
-          return {
-            safeName: basename(item),
-            filepath: item,
-            hidden: true,
-            isLocal: true,
-          }
-        }
-      )
+      getPrefs('cloudSync.enable')
+        ? findAll(
+            join(getPrefs('cloudSync.path'), 'Hidden', date.value, '*')
+          ).map((item) => {
+            return {
+              safeName: basename(item),
+              filepath: item,
+              hidden: true,
+              isLocal: true,
+            }
+          })
+        : []
     )
     .concat(
-      findAll(join(getPrefs('cloudSync.path'), 'Recurring', '*')).map(
-        (item) => {
-          return {
-            safeName: basename(item),
-            filepath: item,
-            recurring: true,
-            isLocal: true,
-          }
-        }
-      )
+      getPrefs('cloudSync.enable')
+        ? findAll(join(getPrefs('cloudSync.path'), 'Recurring', '*')).map(
+            (item) => {
+              return {
+                safeName: basename(item),
+                filepath: item,
+                recurring: true,
+                isLocal: true,
+              }
+            }
+          )
+        : []
     )
     .sort((a, b) => {
       const nameA = a.safeName.toUpperCase()

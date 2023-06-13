@@ -30,36 +30,38 @@
           @progress="progress = $event"
         />
       </template>
-
       <v-list-item-subtitle class="mx-3 media-title">
         <div class="d-flex align-center">
           <span class="sort-prefix text-nowrap" style="display: none">
             {{ titleParts[1] }}
           </span>
+          <v-chip v-if="titleParts[2]" color="warning" class="mr-3">
+            <v-icon>mdi-asterisk</v-icon>
+          </v-chip>
           <v-chip
-            v-if="titleParts[3]"
+            v-if="titleParts[4]"
             color="song"
             prepend-icon="mdi-music-note"
-            :text="titleParts[3]"
+            :text="titleParts[4]"
             class="mr-3 font-weight-bold text-subtitle-1 number-chip"
-            :title="`${translate('song')} ${cleanTitle(titleParts[3])}`"
+            :title="`${translate('song')} ${cleanTitle(titleParts[4])}`"
           />
           <!-- format-pilcrow is paragraph sign in mdi -->
           <v-chip
-            v-if="titleParts[5]"
+            v-if="titleParts[6]"
             color="paragraph"
-            :text="titleParts[5]"
+            :text="titleParts[6]"
             prepend-icon="mdi-image-text"
             class="mr-3 font-weight-bold text-subtitle-1 number-chip"
-            :title="`${translate('paragraph')} ${cleanTitle(titleParts[5])}`"
+            :title="`${translate('paragraph')} ${cleanTitle(titleParts[6])}`"
           />
           <div
             class="clamp-lines text-regular"
-            :title="cleanTitle(titleParts[6] + titleParts[7])"
+            :title="cleanTitle(titleParts[7] + titleParts[8])"
           >
-            {{ titleParts[6] }}
+            {{ titleParts[7] }}
             <span class="text-grey">
-              {{ titleParts[7] }}
+              {{ titleParts[8] }}
             </span>
           </div>
         </div>
@@ -237,8 +239,8 @@ const titleParts = computed(() => {
   return (props.streamingFile?.safeName || basename(props.src)).split(
     new RegExp(
       `^((?:\\d{1,2}-?){0,3})[ -]*(${translate(
-        'song'
-      )} (\\d+)[ -]*){0,1}(${translate(
+        'footnote'
+      )}[ -]*){0,1}(${translate('song')} (\\d+)[ -]*){0,1}(${translate(
         'paragraph'
       )} (\\d+)[ -]*){0,1}(.*)(\\.[0-9a-z]+$)`
     )

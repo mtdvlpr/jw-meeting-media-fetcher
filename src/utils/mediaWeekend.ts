@@ -71,6 +71,20 @@ export async function getWeMedia(date: string) {
 
   const promises: Promise<void>[] = []
 
+  const videos = executeQuery<MultiMediaItem>(
+    db,
+    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, KeySymbol, Track, IssueTagNumber, MimeType, BeginParagraphOrdinal, TargetParagraphNumberLabel
+         FROM DocumentMultimedia
+         INNER JOIN Multimedia
+           ON DocumentMultimedia.MultimediaId = Multimedia.MultimediaId
+         LEFT JOIN Question
+           ON Question.DocumentId = DocumentMultimedia.DocumentId 
+           AND Question.TargetParagraphOrdinal = DocumentMultimedia.BeginParagraphOrdinal
+         WHERE DocumentMultimedia.DocumentId = ${docId}
+           AND CategoryType = -1
+         GROUP BY DocumentMultimedia.MultimediaId`
+  )
+
   const media = executeQuery<MultiMediaItem>(
     db,
     `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, MepsDocumentId, BeginParagraphOrdinal, FilePath, Label, Caption, TargetParagraphNumberLabel, KeySymbol, Track, IssueTagNumber
@@ -82,14 +96,22 @@ export async function getWeMedia(date: string) {
            AND Question.TargetParagraphOrdinal = DocumentMultimedia.BeginParagraphOrdinal
          WHERE DocumentMultimedia.DocumentId = ${docId}
            AND CategoryType <> 9 
+           AND CategoryType <> -1
            AND (KeySymbol != "sjjm" OR KeySymbol IS NULL)
          GROUP BY DocumentMultimedia.MultimediaId
-         ORDER BY BeginParagraphOrdinal`
+         ORDER BY BeginParagraphOrdinal` // pictures
+  ).concat(
+    // exclude the first two videos if wt is before FEB_2023, since these are the songs
+    videos.slice(+issue < FEB_2023 ? 0 : 2).map((mediaObj) =>
+      mediaObj.TargetParagraphNumberLabel === null
+        ? { ...mediaObj, TargetParagraphNumberLabel: 9999 } // assign special number so we know videos are referenced by a footnote
+        : mediaObj
+    )
   )
 
   media.forEach((m) => promises.push(addMediaToPart(date, issue, m)))
 
-  let songs = media.filter((m) => m.KeySymbol === 'sjjm')
+  let songs = []
 
   // Watchtowers before Feb 2023 don't include songs in DocumentMultimedia
   if (+issue < FEB_2023) {
@@ -104,19 +126,7 @@ export async function getWeMedia(date: string) {
           LIMIT 2 OFFSET ${2 * weekNr}`
     ) as MultiMediaItem[]
   } else {
-    songs = executeQuery(
-      db,
-      `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, KeySymbol, Track, IssueTagNumber, MimeType
-         FROM DocumentMultimedia
-         INNER JOIN Multimedia
-           ON DocumentMultimedia.MultimediaId = Multimedia.MultimediaId
-         INNER JOIN DocumentExtract
-           ON DocumentExtract.DocumentId = DocumentMultimedia.DocumentId
-           AND DocumentExtract.BeginParagraphOrdinal = DocumentMultimedia.BeginParagraphOrdinal
-         WHERE DocumentMultimedia.DocumentId = ${docId}
-           AND CategoryType = -1
-         GROUP BY DocumentMultimedia.MultimediaId`
-    ) as MultiMediaItem[]
+    songs = videos.slice(0, 2) // since FEB_2023, the first two videos from DocumentMultimedia are the songs
   }
 
   let songLangs = songs.map(() => getPrefs<string>('media.lang'))

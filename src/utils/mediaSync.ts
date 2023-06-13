@@ -70,9 +70,14 @@ export function createMediaNamesByDate(date: string) {
           .padStart(2, '0')}-${(j + 1).toString().padStart(2, '0')} -`
         if (!item.congSpecific) {
           if (item.queryInfo?.TargetParagraphNumberLabel) {
-            item.safeName += ` ${translate('paragraph')} ${
-              item.queryInfo?.TargetParagraphNumberLabel
-            } -`
+            item.safeName +=
+              ' ' +
+              (item.queryInfo.TargetParagraphNumberLabel === 9999
+                ? translate('footnote')
+                : translate('paragraph') +
+                  ' ' +
+                  item.queryInfo?.TargetParagraphNumberLabel) +
+              ' -'
           }
           if (item.pub?.includes('sjj')) {
             item.safeName += ` ${translate('song')}`
@@ -362,9 +367,10 @@ export async function syncJWMedia(
 async function syncMediaItemByDate(date: string, item: MeetingFile) {
   if (item.filesize && (item.url || item.filepath)) {
     if (
-      await pathExists(
+      getPrefs('cloudSync.enable') &&
+      (await pathExists(
         join(getPrefs('cloudSync.path'), 'Hidden', item.folder, item.safeName)
-      )
+      ))
     ) {
       log.info(
         `%c[HIDDEN] [${date}] ${item.safeName}`,

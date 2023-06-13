@@ -103,6 +103,7 @@
   "fieldRequired": "This field is required.",
   "fieldShortcutInvalid": "This is not a valid shortcut",
   "fieldShortcutTaken": "This shortcut is already taken",
+  "footnote": "Footnote",
   "hideMediaLogo": "Do not show logo on external display",
   "hideWinAfterMedia": "Hide the media playback window when in standby",
   "hideWinAfterMediaExplain": "This will hide the media playback window when no media is being played using in M³. If M³ is installed at the Kingdom Hall, this option should only be enabled if it is being used as a companion to JW Library. Otherwise, disable it.",
