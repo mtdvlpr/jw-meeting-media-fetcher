@@ -36,6 +36,12 @@ jobs:
       contents: write
 
     steps:
+      - run: |
+          echo "${needs.get-commit.outputs.msg}"
+          echo "${{ needs.get-commit.outputs.msg != '' }}"
+          echo "${{ needs.get-commit.outputs.msg != null }}"
+          echo "${{ !contains(needs.get-commit.outputs.msg, 'chore(release)') }}"
+          echo "${{ !contains(needs.get-commit.outputs.msg, 'version bump') }}"
       - name: 'Checkout repository'
         uses: 'actions/checkout@v3'
         with:
