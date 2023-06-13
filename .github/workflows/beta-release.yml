@@ -30,7 +30,7 @@ jobs:
           ${{ needs.get-commit.outputs.msg }} != '' &&
           ${{ needs.get-commit.outputs.msg }} != null &&
           !startsWith(needs.get-commit.outputs.msg, 'chore(release)') &&
-          !startsWith(needs.get-commit.outputs.msg, 'ci: version bump')
+          !startsWith(needs.get-commit.outputs.msg, 'ci')
     runs-on: ubuntu-latest
     permissions:
       contents: write
