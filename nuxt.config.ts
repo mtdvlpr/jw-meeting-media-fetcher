@@ -116,7 +116,7 @@ export default defineNuxtConfig({
       target: 'chrome110',
     },
     optimizeDeps: {
-      exclude: ['@stephen/sql.js', 'fsevents'],
+      exclude: ['@stephen/sql.js', 'fsevents', 'chokidar'],
     },
     plugins: vitePlugins,
   },
