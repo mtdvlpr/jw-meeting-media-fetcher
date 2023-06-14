@@ -24,14 +24,17 @@ const sentryInit =
 if (sentryInit && !process.env.SENTRY_DISABLE) {
   vitePlugins.push(
     sentryVitePlugin({
-      dryRun: isDev || !process.env.SENTRY_SOURCE_MAPS,
       telemetry: false,
-      include: 'output',
       org: process.env.SENTRY_ORG,
       project: process.env.SENTRY_PROJECT,
       authToken: process.env.SENTRY_AUTH_TOKEN,
-      dist: platform().replace('32', ''),
-      release: `${appLongName.toLowerCase().replace(' ', '-')}@${version}`,
+      sourcemaps: {
+        assets: ['output'],
+      },
+      release: {
+        name: `${appLongName.toLowerCase().replace(' ', '-')}@${version}`,
+        dist: platform().replace('32', ''),
+      },
     })
   )
 }
@@ -113,7 +116,7 @@ export default defineNuxtConfig({
       target: 'chrome110',
     },
     optimizeDeps: {
-      exclude: ['@stephen/sql.js'],
+      exclude: ['@stephen/sql.js', 'fsevents'],
     },
     plugins: vitePlugins,
   },
