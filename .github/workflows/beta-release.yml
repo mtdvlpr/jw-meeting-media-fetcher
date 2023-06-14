@@ -15,18 +15,18 @@ jobs:
       - name: 'Checkout repository'
         uses: 'actions/checkout@v3'
         with:
+          fetch-depth: 0
           persist-credentials: false
       - id: set-msg
         name: 'Set commit message variable'
         run: |
-          msg=$(git --no-pager log -1 --pretty=format:"%s")
-          echo "msg=${msg}" >> $GITHUB_OUTPUT
+          commitMessages=$(git log $(git describe --tags --abbrev=0)..@ --pretty=format:"%s" --no-merges | sed '/chore(deps/d' | sed '2,$d')
+          echo "msg=${commitMessages}"
+          echo "msg=${commitMessages}" >> $GITHUB_OUTPUT
   bump-version:
     name: 'Bump version'
     needs: get-commit
-    if: |
-      !startsWith(needs.get-commit.outputs.msg, 'chore(release)') &&
-      !startsWith(needs.get-commit.outputs.msg, 'ci: version bump')
+    if: ${{ needs.get-commit.outputs.msg != '' && needs.get-commit.outputs.msg != null && !contains(needs.get-commit.outputs.msg, 'chore(release)') && !contains(needs.get-commit.outputs.msg, 'version bump') }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -38,7 +38,7 @@ jobs:
           persist-credentials: false
       - name: 'Automated Version Bump'
         id: version-bump
-        uses: 'phips28/gh-action-bump-version@v9.1.5'
+        uses: 'phips28/gh-action-bump-version@v10.0.0'
         with:
           version-type: prerelease
           preid: 'beta'
