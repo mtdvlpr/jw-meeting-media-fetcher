@@ -6,19 +6,20 @@
     "
   >
     <v-divider v-if="setting.type == 'group'" />
-    <v-list-group v-if="setting.type == 'group'" :v-model="invalidSettings">
+    <v-list-group v-if="setting.type == 'group'" :value="setting.id">
       <template #activator="{ props }">
         <v-list-item
           v-bind="props"
           :prepend-icon="setting.icon"
-          :disabled="invalidSettings"
           variant="flat"
           :title="$t(setting.label)"
-          class="bg-grey-lighten-3"
-          :class="{
-            'bg-subgroup': !invalidSettings,
-            'bg-error': invalidSettings,
-          }"
+          :class="[
+            'bg-grey-lighten-3',
+            {
+              'bg-subgroup': !invalidSettings,
+              'bg-error-light': invalidSettings,
+            },
+          ]"
         />
       </template>
       <template
