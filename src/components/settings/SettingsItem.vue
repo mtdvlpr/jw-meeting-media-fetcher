@@ -54,7 +54,6 @@
     <div class="text-body-2 mb-2" v-html="$t(label)" />
     <v-btn
       variant="tonal"
-      color="primary"
       style="height: 40px"
       class="text-none"
       :disabled="isLocked(setting.key)"

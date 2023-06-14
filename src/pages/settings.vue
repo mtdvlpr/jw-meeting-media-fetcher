@@ -24,28 +24,27 @@
             validate-on="input"
             @submit.prevent
           >
-            <v-list class="">
+            <v-list v-model:opened="openedGroups">
               <v-list-group
                 v-for="group in filteredGroups"
-                :key="group.id"
-                :v-model="invalidSettingGroups.length > 0"
+                :key="group?.id"
+                :value="group?.id"
               >
                 <template #activator="{ props }">
                   <v-list-item
                     v-bind="props"
-                    :disabled="invalidSettingGroups.length > 0"
-                    :title="$t(group.label)"
+                    :title="group?.label ? $t(group.label) : ''"
                     variant="flat"
                     :class="{
                       'bg-group': invalidSettingGroups.length === 0,
                       'bg-error': invalidSettingGroups.length > 0,
                     }"
-                    :prepend-icon="group.icon"
+                    :prepend-icon="group?.icon"
                   />
                 </template>
                 <settings-group
-                  v-for="setting in group.settings"
-                  :key="setting.label"
+                  v-for="setting in group?.settings"
+                  :key="setting?.label"
                   :setting="setting"
                   :invalid-settings="invalidSettingGroups.length > 0"
                 />
@@ -787,7 +786,7 @@ const groups = computed((): Settings[] => {
               depends: 'cloudSync.enable',
               label: 'cloudSyncFolder',
               props: {
-                required: prefs.value.cloudSync.enable,
+                required: !!prefs.value.cloudSync.enable,
               },
             },
             {
@@ -1112,7 +1111,35 @@ const groups = computed((): Settings[] => {
 function isSetting(item: Setting | Group | Action): item is Setting {
   return (item as Setting).key !== undefined
 }
-const invalidSettingGroups = computed((): Settings[] => {
+const missingSettings = computed(() => {
+  return groups.value
+    .map((obj) => {
+      const settings = obj.settings
+        .map((setting) => {
+          if (setting.type === 'group') {
+            const value = setting.value
+              .map((subSetting) => {
+                return !!subSetting.props?.required &&
+                  !getPrefs((subSetting as Setting).key)
+                  ? subSetting
+                  : undefined
+              })
+              .filter(Boolean)
+            return value.length > 0 ? { ...setting, value } : undefined
+          } else {
+            return !!setting.props?.required &&
+              !getPrefs((setting as Setting).key)
+              ? setting
+              : undefined
+          }
+        })
+        .filter(Boolean)
+      return settings.length > 0 ? { ...obj, settings } : undefined
+    })
+    .filter(Boolean)
+})
+const invalidSettingGroups = computed(() => {
+  if (missingSettings.value.length > 0) return missingSettings.value
   return invalidFormItems.value?.length > 0
     ? groups.value
         ?.map((group) => {
@@ -1195,6 +1222,18 @@ const filteredGroups = computed(() => {
   })
   return filtered
 })
+const openedGroups = ref(
+  invalidSettingGroups.value.length > 0
+    ? filteredGroups.value
+        .flatMap((obj) =>
+          [obj]
+            .concat(obj.value)
+            .concat(obj.settings)
+            .map((header) => header?.id)
+        )
+        .filter(Boolean)
+    : undefined
+)
 </script>
 <style lang="scss" scoped>
 .settings {
