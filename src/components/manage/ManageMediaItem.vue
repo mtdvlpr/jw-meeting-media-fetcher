@@ -32,9 +32,9 @@
         <template #append>
           <template v-if="item.recurring">
             <v-tooltip :text="$t('recurringMediaItem')">
-              <template #activator="{ props }">
+              <template #activator="{ props: attrs }">
                 <v-icon
-                  v-bind="props"
+                  v-bind="attrs"
                   icon="mdi-calendar-sync"
                   class="mx-2"
                   color="secondary"
@@ -205,7 +205,8 @@ const { online } = useOnline()
 const previewName = ref('')
 const { client, contents } = storeToRefs(useCongStore())
 
-const unhide = (item: { filepath: string; hidden: boolean }) => {
+const unhide = (item: MeetingFile | LocalFile) => {
+  if (!item.filepath) return
   mv(
     normalize(item.filepath),
     normalize(item.filepath).replace(
@@ -216,7 +217,8 @@ const unhide = (item: { filepath: string; hidden: boolean }) => {
   item.hidden = false
 }
 
-const hide = (item: { filepath: string; hidden: boolean }) => {
+const hide = (item: MeetingFile | LocalFile) => {
+  if (!item.filepath) return
   mv(
     normalize(item.filepath),
     normalize(item.filepath).replace(
@@ -227,7 +229,8 @@ const hide = (item: { filepath: string; hidden: boolean }) => {
   item.hidden = true
 }
 
-const remove = (item: { filepath: string }) => {
+const remove = (item: MeetingFile | LocalFile) => {
+  if (!item.filepath) return
   rm(
     normalize(item.filepath).replace(
       normalize(mediaPath()!),

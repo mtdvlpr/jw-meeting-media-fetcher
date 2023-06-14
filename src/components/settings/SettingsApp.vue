@@ -312,7 +312,7 @@
 import { platform } from 'os'
 import { ipcRenderer } from 'electron'
 import { extname, join } from 'upath'
-import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import type { LocaleObject } from '#i18n'
 // eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { AppPrefs, VFormRef, PrefStore } from '~~/types'

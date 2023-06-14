@@ -448,7 +448,7 @@ onMounted(() => {
           }
         }
       } catch (err) {
-        console.error(err)
+        log.error(err)
       } finally {
         dropping.value = false
       }

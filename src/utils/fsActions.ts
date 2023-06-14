@@ -18,7 +18,7 @@ import {
 import { sync, type Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
 import { ipcRenderer } from 'electron'
-import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import type { LocaleObject } from '#i18n'
 import { DateFormat, PrefStore } from '~~/types'
 
 export function findOne(path: string | string[], options?: Options) {

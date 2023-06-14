@@ -570,7 +570,7 @@ const groups = computed((): Settings[] => {
                   await Promise.allSettled(promises)
                   refreshCache.value = !refreshCache.value
                 } catch (e: unknown) {
-                  console.log('error')
+                  log.error(e)
                 }
               },
             },
@@ -829,9 +829,18 @@ const groups = computed((): Settings[] => {
                 }
               },
             },
-            requiredSettings.value['app.obs.password'],
-            requiredSettings.value['app.obs.port'],
-            requiredSettings.value['app.obs.cameraScene'],
+            {
+              ...requiredSettings.value['app.obs.password'],
+              depends: 'app.obs.enable',
+            },
+            {
+              ...requiredSettings.value['app.obs.port'],
+              depends: 'app.obs.enable',
+            },
+            {
+              ...requiredSettings.value['app.obs.cameraScene'],
+              depends: 'app.obs.enable',
+            },
             {
               type: 'select',
               key: 'app.obs.imageScene',
@@ -846,7 +855,10 @@ const groups = computed((): Settings[] => {
                 ),
               },
             },
-            requiredSettings.value['app.obs.mediaScene'],
+            {
+              ...requiredSettings.value['app.obs.mediaScene'],
+              depends: 'app.obs.enable',
+            },
             {
               type: 'select',
               key: 'app.obs.zoomScene',
@@ -1100,7 +1112,7 @@ const groups = computed((): Settings[] => {
 function isSetting(item: Setting | Group | Action): item is Setting {
   return (item as Setting).key !== undefined
 }
-const invalidSettingGroups = computed(() => {
+const invalidSettingGroups = computed((): Settings[] => {
   return invalidFormItems.value?.length > 0
     ? groups.value
         ?.map((group) => {
@@ -1125,10 +1137,10 @@ const invalidSettingGroups = computed(() => {
           if (filteredSettings.length > 0 || group.type !== 'group') {
             return { ...group, settings: filteredSettings }
           } else {
-            return null
+            return undefined
           }
         })
-        .filter((group) => !!group?.settings.length)
+        .filter((group): group is Settings => !!group?.settings.length)
     : []
 })
 const filteredGroups = computed(() => {

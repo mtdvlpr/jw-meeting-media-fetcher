@@ -312,7 +312,7 @@ const saveFileOrder = async () => {
       )
       emit('customSort', true)
     } catch (error) {
-      console.error('Error saving file order:', error)
+      log.error('Error saving file order:', error)
     }
   }
 }

@@ -1,4 +1,4 @@
-import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import type { LocaleObject } from '#i18n'
 
 export const DAYJS_LOCALES = [
   'de',

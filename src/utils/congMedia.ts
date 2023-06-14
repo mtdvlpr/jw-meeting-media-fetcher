@@ -1,7 +1,7 @@
 import type { Dayjs } from 'dayjs'
 import { stat } from 'fs-extra'
 import { join, extname, basename } from 'upath'
-import type { LocaleObject } from '@nuxtjs/i18n/dist/runtime/composables'
+import type { LocaleObject } from '#i18n'
 import { MeetingFile, DateFormat, CongFile } from '~~/types'
 
 export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
