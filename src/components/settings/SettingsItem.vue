@@ -158,12 +158,18 @@
       <v-tooltip
         location="left"
         :text="
-          $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
+          $t(
+            isLocked(setting.key)
+              ? 'settingLocked'
+              : setting.explanation
+              ? setting.explanation
+              : ''
+          )
         "
       >
-        <template #activator="{ props }">
+        <template #activator="{ props: attrs }">
           <v-icon
-            v-bind="props"
+            v-bind="attrs"
             :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
             size="small"
             style="pointer-events: auto"
@@ -178,9 +184,9 @@
           $t(isLocked(setting.key) ? 'settingLocked' : setting.explanation)
         "
       >
-        <template #activator="{ props }">
+        <template #activator="{ props: attrs }">
           <v-icon
-            v-bind="props"
+            v-bind="attrs"
             :icon="isLocked(setting.key) ? 'mdi-lock' : 'mdi-help-circle'"
             size="small"
             style="pointer-events: auto"
