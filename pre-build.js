@@ -1,5 +1,7 @@
-const path = require('path');
-const fs = require('fs-extra');
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require('path')
+const fs = require('fs-extra')
 
 const filesToCopy = [
   {
@@ -10,16 +12,16 @@ const filesToCopy = [
     source: 'node_modules/pdfjs-dist/build/pdf.worker.min.js',
     destination: 'src/renderer/static/pdf.worker.min.js',
   },
-];
+]
 
 filesToCopy.forEach(({ source, destination }) => {
-  const sourcePath = path.join(__dirname, source);
-  const destPath = path.join(__dirname, destination);
+  const sourcePath = path.join(__dirname, source)
+  const destPath = path.join(__dirname, destination)
 
   try {
-    fs.copySync(sourcePath, destPath);
-    console.log(`${source} copied to ${destination} successfully!`);
+    fs.copySync(sourcePath, destPath)
+    console.log(`${source} copied to ${destination} successfully!`)
   } catch (err) {
-    console.error(`Error copying ${source} to ${destination}:`, err);
+    console.error(`Error copying ${source} to ${destination}:`, err)
   }
-});
+})
