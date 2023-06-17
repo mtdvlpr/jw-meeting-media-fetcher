@@ -114,6 +114,9 @@ export default defineNuxtConfig({
       sourcemap: false,
       cssCodeSplit: true,
       target: 'chrome110',
+      rollupOptions: {
+        external: ['chokidar'],
+      },
     },
     optimizeDeps: {
       exclude: ['@stephen/sql.js'],

@@ -1,6 +1,7 @@
 appId: sircharlo.meeting-media-manager
 productName: Meeting Media Manager
 artifactName: meeting-media-manager-${version}.${ext}
+buildDependenciesFromSource: true
 generateUpdatesFilesForAllChannels: true
 directories:
   output: build
