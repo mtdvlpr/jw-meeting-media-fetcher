@@ -21,7 +21,10 @@ export function strip(value: string, type = 'id') {
   if (!value) return ''
   switch (type) {
     case 'id':
-      return value.replace(/[^a-zA-Z0-9\-:_]/g, '')
+      return value.replace(
+        /[\s "»“”‘’«(){}№+[\]$<>,/\\:*\x00-\x1F\x80-\x9F\u0000-\u001F]/gu,
+        ''
+      )
     case 'file':
       return (
         value

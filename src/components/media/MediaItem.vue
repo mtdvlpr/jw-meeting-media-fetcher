@@ -1,153 +1,152 @@
 <template>
-  <div class="media-item">
-    <v-list-item
-      :id="id"
-      link
-      :class="{
-        'media-played': played,
-        'current-media-item': current,
-      }"
-    >
-      <template #prepend>
-        <div v-if="isImage(src)" class="img-container">
-          <img
-            :id="id + '-preview'"
-            class="img-preview"
-            :src="url"
-            @click="atClick"
-            @wheel.prevent="zoomWithWheel"
-          />
-        </div>
-
-        <media-video
-          v-else
-          :src="!!streamingFile && streamDownloaded ? localStreamPath : src"
-          :playing="active"
-          :stream="!!streamingFile && !streamDownloaded"
-          :temp-clipped="tempClipped"
-          @clipped="setTime($event)"
-          @reset-clipped="tempClipped = null"
-          @progress="progress = $event"
+  <v-list-item
+    :id="id"
+    :data-id="id"
+    link
+    :class="{
+      'media-item': true,
+      'media-played': played,
+      'current-media-item': current,
+    }"
+  >
+    <template #prepend>
+      <div v-if="isImage(src)" class="img-container">
+        <img
+          :id="id + '-preview'"
+          class="img-preview"
+          :src="url"
+          @click="atClick"
+          @wheel.prevent="zoomWithWheel"
         />
-      </template>
-      <v-list-item-subtitle class="mx-3 media-title">
-        <div class="d-flex align-center">
-          <span class="sort-prefix text-nowrap" style="display: none">
-            {{ titleParts[1] }}
+      </div>
+      <media-video
+        v-else
+        :src="!!streamingFile && streamDownloaded ? localStreamPath : src"
+        :playing="active"
+        :stream="!!streamingFile && !streamDownloaded"
+        :temp-clipped="tempClipped"
+        @clipped="setTime($event)"
+        @reset-clipped="tempClipped = null"
+        @progress="progress = $event"
+      />
+    </template>
+    <v-list-item-subtitle class="mx-3 media-title">
+      <div class="d-flex align-center">
+        <span class="sort-prefix text-nowrap" style="display: none">
+          {{ titleParts[1] }}
+        </span>
+        <v-chip v-if="titleParts[2]" color="warning" class="mr-3">
+          <v-icon>mdi-asterisk</v-icon>
+        </v-chip>
+        <v-chip
+          v-if="titleParts[4]"
+          color="song"
+          prepend-icon="mdi-music-note"
+          :text="titleParts[4]"
+          class="mr-3 font-weight-bold text-subtitle-1 number-chip"
+          :title="`${translate('song')} ${cleanTitle(titleParts[4])}`"
+        />
+        <!-- format-pilcrow is paragraph sign in mdi -->
+        <v-chip
+          v-if="titleParts[6]"
+          color="paragraph"
+          :text="titleParts[6]"
+          prepend-icon="mdi-image-text"
+          class="mr-3 font-weight-bold text-subtitle-1 number-chip"
+          :title="`${translate('paragraph')} ${cleanTitle(titleParts[6])}`"
+        />
+        <div
+          class="clamp-lines text-regular"
+          :title="cleanTitle(titleParts[7] + titleParts[8])"
+        >
+          {{ titleParts[7] }}
+          <span class="text-grey">
+            {{ titleParts[8] }}
           </span>
-          <v-chip v-if="titleParts[2]" color="warning" class="mr-3">
-            <v-icon>mdi-asterisk</v-icon>
-          </v-chip>
-          <v-chip
-            v-if="titleParts[4]"
-            color="song"
-            prepend-icon="mdi-music-note"
-            :text="titleParts[4]"
-            class="mr-3 font-weight-bold text-subtitle-1 number-chip"
-            :title="`${translate('song')} ${cleanTitle(titleParts[4])}`"
-          />
-          <!-- format-pilcrow is paragraph sign in mdi -->
-          <v-chip
-            v-if="titleParts[6]"
-            color="paragraph"
-            :text="titleParts[6]"
-            prepend-icon="mdi-image-text"
-            class="mr-3 font-weight-bold text-subtitle-1 number-chip"
-            :title="`${translate('paragraph')} ${cleanTitle(titleParts[6])}`"
-          />
-          <div
-            class="clamp-lines text-regular"
-            :title="cleanTitle(titleParts[7] + titleParts[8])"
-          >
-            {{ titleParts[7] }}
-            <span class="text-grey">
-              {{ titleParts[8] }}
-            </span>
-          </div>
         </div>
-      </v-list-item-subtitle>
-      <template #append>
-        <v-list-item-action class="align-self-center d-flex flex-row" end>
-          <template v-if="active">
-            <pause-btn
-              v-if="isLongVideo || (scene && !zoomPart)"
-              :toggled="paused"
-              :video="isLongVideo"
-              :disabled="isLongVideo && !videoStarted"
-              tooltip="top"
-              @click="togglePaused()"
-            />
-            <div class="ml-2">
-              <icon-btn
-                variant="stop"
-                tooltip="top"
-                :click-twice="isLongVideo"
-                @click="stop()"
-              />
-            </div>
-          </template>
-          <icon-btn
-            v-else
-            class="ml-2"
-            variant="play"
-            :disabled="videoActive"
-            @click="play()"
+      </div>
+    </v-list-item-subtitle>
+    <template #append>
+      <v-list-item-action class="align-self-center d-flex flex-row" end>
+        <template v-if="active">
+          <pause-btn
+            v-if="isLongVideo || (scene && !zoomPart)"
+            :toggled="paused"
+            :video="isLongVideo"
+            :disabled="isLongVideo && !videoStarted"
+            tooltip="top"
+            @click="togglePaused()"
           />
-        </v-list-item-action>
-      </template>
-      <template v-if="!isImage(src)">
-        <v-slider
-          v-if="active && paused"
-          v-model="newProgress"
-          density="compact"
-          hide-details="auto"
-          step="any"
-          :min="clippedStart"
-          :max="100 - clippedEnd"
-          class="video-scrubber"
-          :style="`left: ${clippedStart}%; right: ${clippedEnd}%; width: ${
-            100 - clippedStart - clippedEnd
-          }%`"
-        />
-        <v-progress-linear
+          <div class="ml-2">
+            <icon-btn
+              variant="stop"
+              tooltip="top"
+              :click-twice="isLongVideo"
+              @click="stop()"
+            />
+          </div>
+        </template>
+        <icon-btn
           v-else
-          :model-value="progress"
-          aria-label="Video progress"
-          class="video-progress"
-          :bg-opacity="0"
+          class="ml-2"
+          variant="play"
+          :disabled="videoActive"
+          @click="play()"
         />
-        <v-progress-linear
-          v-if="clippedStart > 0"
-          :model-value="clippedStart"
-          class="video-progress"
-          aria-label="Video clipped start"
-          color="rgb(231, 76, 60)"
-          :bg-opacity="0"
-        />
-        <v-progress-linear
-          v-if="clippedEnd > 0"
-          :model-value="clippedEnd"
-          class="video-progress"
-          aria-label="Video clipped end"
-          color="rgb(231, 76, 60)"
-          reverse
-          :bg-opacity="0"
-        />
-      </template>
-    </v-list-item>
-    <div class="mx-4">
-      <v-btn
-        v-for="marker in markers"
-        :key="id + marker.label"
-        class="mr-2 mb-2"
-        :color="
-          marker.playing ? 'primary' : marker.played ? 'info darken-2' : 'info'
-        "
-        @click="play(marker)"
-      >
-        {{ marker.label }}
-      </v-btn>
-    </div>
+      </v-list-item-action>
+    </template>
+    <template v-if="!isImage(src)">
+      <v-slider
+        v-if="active && paused"
+        v-model="newProgress"
+        density="compact"
+        hide-details="auto"
+        step="any"
+        :min="clippedStart"
+        :max="100 - clippedEnd"
+        class="video-scrubber"
+        :style="`left: ${clippedStart}%; right: ${clippedEnd}%; width: ${
+          100 - clippedStart - clippedEnd
+        }%`"
+      />
+      <v-progress-linear
+        v-else
+        :model-value="progress"
+        aria-label="Video progress"
+        class="video-progress"
+        :bg-opacity="0"
+      />
+      <v-progress-linear
+        v-if="clippedStart > 0"
+        :model-value="clippedStart"
+        class="video-progress"
+        aria-label="Video clipped start"
+        color="rgb(231, 76, 60)"
+        :bg-opacity="0"
+      />
+      <v-progress-linear
+        v-if="clippedEnd > 0"
+        :model-value="clippedEnd"
+        class="video-progress"
+        aria-label="Video clipped end"
+        color="rgb(231, 76, 60)"
+        reverse
+        :bg-opacity="0"
+      />
+    </template>
+  </v-list-item>
+  <div class="mx-4">
+    <v-btn
+      v-for="marker in markers"
+      :key="id + marker.label"
+      class="mr-2 mb-2"
+      :color="
+        marker.playing ? 'primary' : marker.played ? 'info darken-2' : 'info'
+      "
+      @click="play(marker)"
+    >
+      {{ marker.label }}
+    </v-btn>
   </div>
 </template>
 <script setup lang="ts">
@@ -189,6 +188,8 @@ const onResetZoom = () => {
   resetZoom()
 }
 watch(active, (val) => {
+  console.log(active, val)
+
   const imgPreview = document.querySelector<HTMLElement>(`#${id.value}-preview`)
   if (imgPreview) {
     imgPreview.style.cursor = val ? 'zoom-in' : 'default'
@@ -484,17 +485,20 @@ onBeforeUnmount(() => {
 const initPanzoom = async () => {
   const { default: Panzoom } = await import('@panzoom/panzoom')
   const previewEl = getPreviewEl()
-  panzoom.value = Panzoom(previewEl, {
-    animate: true,
-    canvas: true,
-    contain: 'outside',
-    cursor: 'default',
-    minScale: 1,
-    panOnlyWhenZoomed: true,
-  })
+  console.log(id.value, previewEl)
+  if (previewEl) {
+    panzoom.value = Panzoom(previewEl, {
+      animate: true,
+      canvas: true,
+      contain: 'outside',
+      cursor: 'default',
+      minScale: 1,
+      panOnlyWhenZoomed: true,
+    })
 
-  previewEl.addEventListener('panzoomchange', onPanzoomChange)
-  resetZoom()
+    previewEl.addEventListener('panzoomchange', onPanzoomChange)
+    resetZoom()
+  }
 }
 
 // At double click, zoom in or out

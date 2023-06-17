@@ -1,6 +1,9 @@
 import { createVuetify } from 'vuetify'
 import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles' // pre-build css styles
+import SortableJs, { MultiDrag } from 'sortablejs'
+import VueSortable from 'vue3-sortablejs'
+import 'vuetify/styles'
+SortableJs.mount(new MultiDrag()) // pre-build css styles
 
 export default defineNuxtPlugin((nuxtApp) => {
   const vuetify = createVuetify({
@@ -78,4 +81,5 @@ export default defineNuxtPlugin((nuxtApp) => {
   })
 
   nuxtApp.vueApp.use(vuetify)
+  nuxtApp.vueApp.use(VueSortable)
 })

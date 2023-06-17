@@ -30,152 +30,93 @@
         />
       </v-list>
     </v-expand-transition>
-    <div v-if="isMwDay">
-      <template v-if="treasureItems.length > 0">
-        <v-divider class="mx-4 mt-4 text-treasures" />
-        <v-list-item-title class="mx-4 my-2 text-treasures text-overline">
-          {{ mwbHeadings.treasures }}
-        </v-list-item-title>
-        <v-list class="ma-4">
-          <draggable
-            v-model="treasureItems"
-            item-key="id"
-            tag="div"
-            group="media-items"
-            @start="dragging = true"
-            @end="dragEnd"
-          >
-            <template #item="{ element }">
-              <media-item
-                :key="element"
-                :src="element.path"
-                :play-now="element.play"
-                :stop-now="element.stop"
-                :deactivate="element.deactivate"
-                @playing="setIndex(element.id)"
-                @deactivated="resetDeactivate(element.id)"
-              />
-            </template>
-          </draggable>
-        </v-list>
-      </template>
-      <template v-if="applyItems.length > 0">
-        <v-divider class="mx-4 text-apply" />
-        <v-list-item-title class="mx-4 my-2 text-apply text-overline">
-          {{ mwbHeadings.apply }}
-        </v-list-item-title>
-        <v-list class="ma-4">
-          <draggable
-            v-model="applyItems"
-            item-key="id"
-            tag="div"
-            group="media-items"
-            @start="dragging = true"
-            @end="dragEnd"
-          >
-            <template #item="{ element }">
-              <media-item
-                :src="element.path"
-                :play-now="element.play"
-                :stop-now="element.stop"
-                :deactivate="element.deactivate"
-                @playing="setIndex(element.id)"
-                @deactivated="resetDeactivate(element.id)"
-              />
-            </template>
-          </draggable>
-        </v-list>
-      </template>
-      <template v-if="livingItems.length > 0">
-        <v-divider class="mx-4 text-living" />
-        <v-list-item-title class="mx-4 my-2 text-living text-overline">
-          {{ mwbHeadings.living }}
-        </v-list-item-title>
-        <v-list class="ma-4">
-          <draggable
-            v-model="livingItems"
-            item-key="id"
-            tag="div"
-            group="media-items"
-            @start="dragging = true"
-            @end="dragEnd"
-          >
-            <template #item="{ element }">
-              <media-item
-                :src="element.path"
-                :play-now="element.play"
-                :stop-now="element.stop"
-                :deactivate="element.deactivate"
-                @playing="setIndex(element.id)"
-                @deactivated="resetDeactivate(element.id)"
-              />
-            </template>
-          </draggable>
-        </v-list>
-      </template>
-    </div>
-    <div v-else-if="isWeDay">
-      <v-list-item-title class="mx-4 my-4 text-treasures text-overline">
-        {{ $t('publicTalk') }}
-      </v-list-item-title>
-      <v-list class="ma-4">
-        <draggable
-          v-model="publicTalkItems"
-          item-key="id"
-          tag="div"
-          group="media-items"
-          @start="dragging = true"
-          @end="dragEnd"
+    <template
+      v-for="section in isMwDay
+        ? [
+            sections.treasureItems.value,
+            sections.applyItems.value,
+            sections.livingItems.value,
+          ]
+        : isWeDay
+        ? [sections.publicTalkItems.value, sections.wtItems.value]
+        : [sections.mediaItems.value]"
+      :key="section"
+    >
+      <template v-if="section && section.length > 0">
+        <v-divider
+          class="mx-4"
+          :class="{
+            'mt-4': true,
+            'text-treasures':
+              section === sections.treasureItems.value ||
+              section === sections.publicTalkItems.value,
+            'text-apply': section === sections.applyItems.value,
+            'text-living':
+              section === sections.livingItems.value ||
+              section === sections.wtItems.value,
+          }"
+        />
+        <v-list-item-title
+          class="mx-4 my-2"
+          :class="{
+            'text-overline': true,
+            'text-treasures':
+              section === sections.treasureItems.value ||
+              section === sections.publicTalkItems.value,
+            'text-apply': section === sections.applyItems.value,
+            'text-living':
+              section === sections.livingItems.value ||
+              section === sections.wtItems.value,
+          }"
         >
-          <template #item="{ element }">
-            <media-item
-              :src="element.path"
-              :play-now="element.play"
-              :stop-now="element.stop"
-              :deactivate="element.deactivate"
-              @playing="setIndex(element.id)"
-              @deactivated="resetDeactivate(element.id)"
-            />
-          </template>
-        </draggable>
-      </v-list>
-      <v-divider class="mx-4 living" />
-      <v-list-item-title class="mx-4 my-2 text-living text-overline">
-        {{ wtTitle }}
-      </v-list-item-title>
-      <v-list class="ma-4">
-        <draggable
-          v-model="wtItems"
-          item-key="id"
-          tag="div"
-          group="media-items"
-          @start="dragging = true"
-          @end="dragEnd"
+          {{
+            (() => {
+              switch (section) {
+                case sections.treasureItems.value:
+                  return mwbHeadings.treasures
+                case sections.applyItems.value:
+                  return mwbHeadings.apply
+                case sections.livingItems.value:
+                  return mwbHeadings.living
+                case sections.publicTalkItems.value:
+                  return $t('publicTalk')
+                case sections.wtItems.value:
+                  return wtTitle
+                default:
+                  return ''
+              }
+            })()
+          }}
+        </v-list-item-title>
+        <v-list
+          :key="section.length"
+          v-sortable="sortableOptions"
+          class="ma-4"
+          :data-section="
+            (() => {
+              switch (section) {
+                case sections.treasureItems.value:
+                  return 'treasureItems'
+                case sections.applyItems.value:
+                  return 'applyItems'
+                case sections.livingItems.value:
+                  return 'livingItems'
+                case sections.publicTalkItems.value:
+                  return 'publicTalkItems'
+                case sections.wtItems.value:
+                  return 'wtItems'
+                case sections.mediaItems.value:
+                  return 'mediaItems'
+                default:
+                  return 'unknownItems'
+              }
+            })()
+          "
+          @sort="saveFileOrder"
         >
-          <template #item="{ element }">
-            <media-item
-              :src="element.path"
-              :play-now="element.play"
-              :stop-now="element.stop"
-              :deactivate="element.deactivate"
-              @playing="setIndex(element.id)"
-              @deactivated="resetDeactivate(element.id)"
-            />
-          </template>
-        </draggable>
-      </v-list>
-    </div>
-    <v-list v-else class="ma-4">
-      <draggable
-        v-model="mediaItems"
-        item-key="id"
-        tag="div"
-        group="media-items"
-        @start="dragging = true"
-        @end="dragEnd"
-      >
-        <template #item="{ element }">
           <media-item
+            v-for="element in section"
+            :key="element.id"
             :src="element.path"
             :play-now="element.play"
             :stop-now="element.stop"
@@ -183,17 +124,16 @@
             @playing="setIndex(element.id)"
             @deactivated="resetDeactivate(element.id)"
           />
-        </template>
-      </draggable>
-    </v-list>
+        </v-list>
+      </template>
+    </template>
   </div>
 </template>
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 
-import { pathExists, pathExistsSync, readFile, writeFile } from 'fs-extra'
+import { pathExistsSync, readFile, writeFile } from 'fs-extra'
 import { basename, dirname, join } from 'upath'
-import draggable from 'vuedraggable'
 import { DateFormat, VideoFile } from '~~/types'
 type MediaItem = {
   id: string
@@ -212,9 +152,10 @@ const props = defineProps<{
   items: MediaItem[]
   showQuickSong: boolean
   customSort: boolean
+  customSortOrder: object | undefined
 }>()
 
-const dragging = ref(false)
+// const dragging = ref(false)
 const date = useRouteQuery<string>('date', '')
 const initialTimerPassed = ref(false)
 
@@ -259,28 +200,29 @@ const getMwbHeadings = async () => {
 }
 
 const firstWtSong = computed(() => {
-  return mediaItems.value.findIndex((item) =>
+  return sections.mediaItems.value.findIndex((item) =>
     basename(item.path).startsWith('03-01')
   )
 })
 const firstApplyItem = computed(() => {
-  return mediaItems.value.findIndex((item) =>
+  return sections.mediaItems.value.findIndex((item) =>
     basename(item.path).startsWith('02')
   )
 })
 const secondMwbSong = computed(() => {
-  return mediaItems.value.findIndex((item) =>
+  return sections.mediaItems.value.findIndex((item) =>
     basename(item.path).startsWith('03')
   )
 })
 
-// Media items
-const mediaItems = ref<MediaItem[]>([])
-const treasureItems = ref<MediaItem[]>([])
-const applyItems = ref<MediaItem[]>([])
-const livingItems = ref<MediaItem[]>([])
-const publicTalkItems = ref<MediaItem[]>([])
-const wtItems = ref<MediaItem[]>([])
+const sections = {
+  mediaItems: ref<MediaItem[]>([]),
+  treasureItems: ref<MediaItem[]>([]),
+  applyItems: ref<MediaItem[]>([]),
+  livingItems: ref<MediaItem[]>([]),
+  publicTalkItems: ref<MediaItem[]>([]),
+  wtItems: ref<MediaItem[]>([]),
+}
 watch(
   () => props.items,
   (val) => {
@@ -295,71 +237,58 @@ watch(
   },
   { deep: true }
 )
+watch(
+  () => props.customSortOrder,
+  (val) => {
+    if (val) setItems(props.items)
+  },
+  { deep: true }
+)
 const saveFileOrder = async () => {
-  const combinedItems = {
-    treasureItems: treasureItems.value,
-    applyItems: applyItems.value,
-    livingItems: livingItems.value,
-    publicTalkItems: publicTalkItems.value,
-    wtItems: wtItems.value,
-  }
+  const domSections = document.querySelectorAll<HTMLElement>('[data-section]')
+  const combinedItems: Record<string, any[]> = {}
+  domSections.forEach((section) => {
+    const ids = Array.from(section.querySelectorAll<HTMLElement>('[id]'))
+      .map((element) => element.dataset.id)
+      .filter(Boolean)
+    const sectionName = section.dataset.section
+    if (sectionName) {
+      combinedItems[sectionName] = ids
+    }
+  })
   if (Object.values(combinedItems).flat().length > 0) {
-    const destPath = dirname(Object.values(combinedItems).flat()[0].path)
+    const destPath = dirname(sections.mediaItems.value[0].path)
+    const filePath = join(destPath, 'file-order.json')
     try {
-      await writeFile(
-        join(destPath, 'file-order.json'),
-        JSON.stringify(combinedItems, null, 2)
-      )
+      await writeFile(filePath, JSON.stringify(combinedItems, null, 2))
       emit('customSort', true)
     } catch (error) {
       log.error('Error saving file order:', error)
     }
   }
 }
-const setItems = async (val: MediaItem[]) => {
-  mediaItems.value = val
+const setItems = (val: MediaItem[]) => {
+  sections.mediaItems.value = val
   try {
-    const orderFile =
-      val && val[0]?.path
-        ? join(dirname(val[0].path), 'file-order.json')
-        : undefined
-    if (orderFile && (await pathExists(orderFile))) {
-      const order = Object.fromEntries(
-        Object.entries(JSON.parse(await readFile(orderFile, 'utf-8'))).map(
-          ([key, value]) => [
-            key,
-            (value as MediaItem[]).filter((item: { path: string }) =>
-              pathExistsSync(item.path)
-            ),
-          ]
-        )
+    if (props.customSortOrder) {
+      const result = Object.entries(props.customSortOrder).reduce(
+        (acc, [key, order]) => {
+          acc[key] = val
+            .filter((item) => order.includes(item.id))
+            .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
+          return acc
+        },
+        {}
       )
-      // Add new items to top
-      const newItems = val.filter(
-        (item) =>
-          !Object.values(order)
-            .flat()
-            .some((existingItem: { id: string }) => {
-              return existingItem.id === item.id
-            })
-      )
-      if (newItems.length > 0) {
-        if (order.wtItems.length > 0) {
-          order.publicTalkItems = [...newItems, ...order.publicTalkItems]
-        } else {
-          order.treasureItems = [...newItems, ...order.treasureItems]
-        }
+      for (const key in result) {
+        sections[key].value = result[key]
       }
-      treasureItems.value = order.treasureItems
-      livingItems.value = order.livingItems
-      applyItems.value = order.applyItems
-      publicTalkItems.value = order.publicTalkItems
-      wtItems.value = order.wtItems
       emit('customSort', true)
     } else {
       defaultOrder(val)
     }
-  } catch {
+  } catch (err) {
+    console.error(err)
     defaultOrder(val)
   }
 }
@@ -373,23 +302,22 @@ const defaultOrder = (
   }[]
 ) => {
   if (firstWtSong.value !== -1) {
-    publicTalkItems.value = val.slice(0, firstWtSong.value)
-    wtItems.value = val.slice(firstWtSong.value)
+    sections.publicTalkItems.value = val.slice(0, firstWtSong.value)
+    sections.wtItems.value = val.slice(firstWtSong.value)
   }
-  treasureItems.value = val.slice(
+  sections.treasureItems.value = val.slice(
     0,
     firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
   )
-  livingItems.value = val.slice(secondMwbSong.value)
+  sections.livingItems.value = val.slice(secondMwbSong.value)
   if (firstApplyItem.value === -1) {
-    applyItems.value = []
+    sections.applyItems.value = []
   } else {
-    applyItems.value = val.slice(firstApplyItem.value, secondMwbSong.value)
+    sections.applyItems.value = val.slice(
+      firstApplyItem.value,
+      secondMwbSong.value
+    )
   }
-}
-const dragEnd = () => {
-  dragging.value = false
-  saveFileOrder()
 }
 const resetDeactivate = (id: string) => {
   emit(
@@ -409,6 +337,16 @@ const song = ref<VideoFile | null>(null)
 const deactivateSong = () => {
   if (song.value) song.value.deactivate = false
 }
+
+// Sortable Options
+const sortableOptions = ref({
+  options: {
+    group: 'media-items',
+    multiDrag: true,
+    selectedClass: 'bg-group', // Class name for selected item
+    multiDragKey: 'ctrl', // Key that must be down for items to be selected
+  },
+})
 
 // Computed list height
 // const obsEnabled = computed(() => {

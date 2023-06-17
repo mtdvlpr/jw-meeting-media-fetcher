@@ -44,6 +44,7 @@
           :cc-enable="ccEnable"
           :show-quick-song="showQuickSong"
           :custom-sort="customSort"
+          :custom-sort-order="customSortOrder"
           @index="setIndex"
           @deactivate="resetDeactivate"
           @custom-sort="customSort = true"
@@ -61,6 +62,7 @@ import { useRouteQuery } from '@vueuse/router'
 import { basename, changeExt, dirname, extname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
 import * as JSZip from 'jszip'
+import { readFileSync } from 'fs-extra'
 import { LocalFile, VideoFile } from '~~/types'
 
 const { setProgress } = useProgress()
@@ -287,32 +289,40 @@ onMounted(() => {
             deactivate: false,
           })
           items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
+        } else if (basename(path) === 'file-order.json') {
+          customSortOrder.value = Object.fromEntries(
+            Object.entries(JSON.parse(readFileSync(path, 'utf-8')))
+          )
         }
       })
       .on('change', (path) => {
-        const cleanName = sanitize(basename(path), true)
-        const index = items.value.findIndex((item) => {
-          return item.id === strip(`mediaitem-${cleanName}`)
-        })
-        if (index !== -1) {
-          items.value.splice(index, 1, {
-            id: strip('mediaitem-' + cleanName),
-            path: join(dirname(path), cleanName),
-            play: false,
-            stop: false,
-            deactivate: false,
+        if (isImage(path) || isVideo(path) || isAudio(path)) {
+          const cleanName = sanitize(basename(path), true)
+          const index = items.value.findIndex((item) => {
+            return item.id === strip(`mediaitem-${cleanName}`)
           })
-          items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
+          if (index !== -1) {
+            items.value.splice(index, 1, {
+              id: strip('mediaitem-' + cleanName),
+              path: join(dirname(path), cleanName),
+              play: false,
+              stop: false,
+              deactivate: false,
+            })
+            items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
+          }
         }
       })
       .on('unlink', (path) => {
-        const index = items.value.findIndex((item) => {
-          return (
-            item.id === strip(`mediaitem-${sanitize(basename(path), true)}`)
-          )
-        })
-        if (index !== -1) {
-          items.value.splice(index, 1)
+        if (isImage(path) || isVideo(path) || isAudio(path)) {
+          const index = items.value.findIndex((item) => {
+            return (
+              item.id === strip(`mediaitem-${sanitize(basename(path), true)}`)
+            )
+          })
+          if (index !== -1) {
+            items.value.splice(index, 1)
+          }
         }
       })
   )
@@ -528,6 +538,7 @@ useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
   }
 })
 const customSort = ref(false)
+const customSortOrder = ref()
 const setIndex = (index: number) => {
   const previousItem = items.value[currentIndex.value]
   if (previousItem && currentIndex.value !== index) {
