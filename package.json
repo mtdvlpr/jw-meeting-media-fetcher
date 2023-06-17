@@ -1,6 +1,6 @@
 {
   "name": "meeting-media-manager",
-  "version": "23.5.0-alpha.4",
+  "version": "23.5.0-alpha.3",
   "private": true,
   "main": "dist-electron/main.js",
   "description": "Meeting Media Manager",
