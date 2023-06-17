@@ -281,14 +281,16 @@ onMounted(() => {
           if (filename !== cleanName) {
             rename(path, filename, cleanName)
           }
-          items.value.push({
+          const newItem = {
             id: strip('mediaitem-' + cleanName),
             path: join(dirname(path), cleanName),
             play: false,
             stop: false,
             deactivate: false,
-          })
-          items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
+          }
+          items.value = [...items.value, newItem].sort((a, b) =>
+            a.id.localeCompare(b.id)
+          )
         } else if (basename(path) === 'file-order.json') {
           customSortOrder.value = Object.fromEntries(
             Object.entries(JSON.parse(readFileSync(path, 'utf-8')))
@@ -302,14 +304,20 @@ onMounted(() => {
             return item.id === strip(`mediaitem-${cleanName}`)
           })
           if (index !== -1) {
-            items.value.splice(index, 1, {
-              id: strip('mediaitem-' + cleanName),
-              path: join(dirname(path), cleanName),
-              play: false,
-              stop: false,
-              deactivate: false,
-            })
-            items.value = items.value.sort((a, b) => a.id.localeCompare(b.id))
+            items.value = items.value
+              .map((item, i) => {
+                if (i === index) {
+                  return {
+                    id: strip('mediaitem-' + cleanName),
+                    path: join(dirname(path), cleanName),
+                    play: false,
+                    stop: false,
+                    deactivate: false,
+                  }
+                }
+                return item
+              })
+              .sort((a, b) => a.id.localeCompare(b.id))
           }
         }
       })
