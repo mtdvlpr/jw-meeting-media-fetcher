@@ -1,6 +1,6 @@
 <template>
   <div :id="id" class="d-flex video-item">
-    <div :id="id + '-container'" class="align-center d-flex" />
+    <div ref="container" class="align-center d-flex" />
     <!--<v-overlay
       absolute
       :model-value="changeTime"
@@ -103,6 +103,7 @@ const props = defineProps<{
 }>()
 
 const { $dayjs } = useNuxtApp()
+const container = ref(null)
 
 onMounted(() => {
   setCCAvailable()
@@ -137,7 +138,6 @@ const thumbnail = computed(() => {
 
 // Video preview
 const initVideoPreview = () => {
-  const div = document.querySelector(`#${id.value}-container`)
   const source = document.createElement('source')
   source.src = url.value
   const video = document.createElement('video')
@@ -162,7 +162,7 @@ const initVideoPreview = () => {
       formatted: originalString.value,
     })
   }
-  if (div) div.appendChild(video)
+  if (container.value) container.value.appendChild(video)
 }
 
 // Video state

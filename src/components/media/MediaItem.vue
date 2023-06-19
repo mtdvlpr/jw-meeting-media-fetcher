@@ -12,7 +12,7 @@
     <template #prepend>
       <div v-if="isImage(src)" class="img-container">
         <img
-          :id="id + '-preview'"
+          ref="imgPreview"
           class="img-preview"
           :src="url"
           @click="atClick"
@@ -190,9 +190,8 @@ const onResetZoom = () => {
 watch(active, (val) => {
   console.log(active, val)
 
-  const imgPreview = document.querySelector<HTMLElement>(`#${id.value}-preview`)
-  if (imgPreview) {
-    imgPreview.style.cursor = val ? 'zoom-in' : 'default'
+  if (imgPreview.value) {
+    imgPreview.value.style.cursor = val ? 'zoom-in' : 'default'
   }
 
   const ipcRenderer = useIpcRenderer()
@@ -466,28 +465,24 @@ const getMarkers = async () => {
 
 // Zoom and pan image
 const panzoom = ref<PanzoomObject | null>(null)
-const getPreviewEl = () =>
-  document.querySelector<HTMLElement>(`#${id.value}-preview`)!
+const imgPreview = ref(null)
 
 const onPanzoomChange = (e: CustomEvent<PanzoomChangeEvent>) => {
-  const previewEl = getPreviewEl()
-  if (!previewEl) return
+  if (!imgPreview.value) return
   useIpcRenderer().send('pan', {
-    x: e.detail.x / previewEl.clientWidth,
-    y: e.detail.y / previewEl.clientHeight,
+    x: e.detail.x / imgPreview.value.clientWidth,
+    y: e.detail.y / imgPreview.value.clientHeight,
   })
 }
 
 onBeforeUnmount(() => {
-  getPreviewEl()?.removeEventListener('panzoomchange', onPanzoomChange)
+  imgPreview.value?.removeEventListener('panzoomchange', onPanzoomChange)
 })
 
 const initPanzoom = async () => {
   const { default: Panzoom } = await import('@panzoom/panzoom')
-  const previewEl = getPreviewEl()
-  console.log(id.value, previewEl)
-  if (previewEl) {
-    panzoom.value = Panzoom(previewEl, {
+  if (imgPreview.value) {
+    panzoom.value = Panzoom(imgPreview.value, {
       animate: true,
       canvas: true,
       contain: 'outside',
@@ -496,7 +491,7 @@ const initPanzoom = async () => {
       panOnlyWhenZoomed: true,
     })
 
-    previewEl.addEventListener('panzoomchange', onPanzoomChange)
+    imgPreview.value.addEventListener('panzoomchange', onPanzoomChange)
     resetZoom()
   }
 }
@@ -566,9 +561,6 @@ const resetZoom = () => {
         -webkit-line-clamp: 3;
       }
     }
-    .number-chip {
-      min-width: fit-content;
-    }
   }
   .video-progress {
     position: absolute;
@@ -591,6 +583,9 @@ const resetZoom = () => {
   }
   .v-slider-track {
     height: 4px !important;
+  }
+  .number-chip {
+    min-width: fit-content;
   }
 }
 </style>

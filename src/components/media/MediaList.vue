@@ -88,43 +88,45 @@
             })()
           }}
         </v-list-item-title>
-        <v-list
-          :key="section.length"
-          v-sortable="sortableOptions"
-          class="ma-4"
-          :data-section="
-            (() => {
-              switch (section) {
-                case sections.treasureItems.value:
-                  return 'treasureItems'
-                case sections.applyItems.value:
-                  return 'applyItems'
-                case sections.livingItems.value:
-                  return 'livingItems'
-                case sections.publicTalkItems.value:
-                  return 'publicTalkItems'
-                case sections.wtItems.value:
-                  return 'wtItems'
-                case sections.mediaItems.value:
-                  return 'mediaItems'
-                default:
-                  return 'unknownItems'
-              }
-            })()
-          "
-          @sort="saveFileOrder"
-        >
-          <media-item
-            v-for="element in section"
-            :key="element.id"
-            :src="element.path"
-            :play-now="element.play"
-            :stop-now="element.stop"
-            :deactivate="element.deactivate"
-            @playing="setIndex(element.id)"
-            @deactivated="resetDeactivate(element.id)"
-          />
-        </v-list>
+        <v-lazy>
+          <v-list
+            :key="section.length"
+            v-sortable="sortableOptions"
+            class="ma-4"
+            :data-section="
+              (() => {
+                switch (section) {
+                  case sections.treasureItems.value:
+                    return 'treasureItems'
+                  case sections.applyItems.value:
+                    return 'applyItems'
+                  case sections.livingItems.value:
+                    return 'livingItems'
+                  case sections.publicTalkItems.value:
+                    return 'publicTalkItems'
+                  case sections.wtItems.value:
+                    return 'wtItems'
+                  case sections.mediaItems.value:
+                    return 'mediaItems'
+                  default:
+                    return 'unknownItems'
+                }
+              })()
+            "
+            @sort="saveFileOrder"
+          >
+            <media-item
+              v-for="element in section"
+              :key="element.id"
+              :src="element.path"
+              :play-now="element.play"
+              :stop-now="element.stop"
+              :deactivate="element.deactivate"
+              @playing="setIndex(element.id)"
+              @deactivated="resetDeactivate(element.id)"
+            />
+          </v-list>
+        </v-lazy>
       </template>
     </template>
   </div>
@@ -268,6 +270,8 @@ const saveFileOrder = async () => {
   }
 }
 const setItems = (val: MediaItem[]) => {
+  console.log('setItems', val)
+
   sections.mediaItems.value = val
   try {
     if (props.customSortOrder) {
@@ -281,6 +285,7 @@ const setItems = (val: MediaItem[]) => {
         {}
       )
       for (const key in result) {
+        console.log(sections[key].value, result[key])
         sections[key].value = result[key]
       }
       emit('customSort', true)
