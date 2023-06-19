@@ -1,6 +1,5 @@
 import { ipcRenderer } from 'electron'
 import Store, { type Schema } from 'electron-store'
-// eslint-disable-next-line import/named
 import { readJsonSync, removeSync } from 'fs-extra'
 import { basename, dirname, join, joinSafe, normalizeSafe } from 'upath'
 import {

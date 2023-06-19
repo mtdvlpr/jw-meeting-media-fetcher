@@ -62,6 +62,7 @@ import { useRouteQuery } from '@vueuse/router'
 import { basename, changeExt, dirname, extname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
 import * as JSZip from 'jszip'
+// eslint-disable-next-line import/named
 import { readJsonSync, readdirSync } from 'fs-extra'
 import { LocalFile, VideoFile } from '~~/types'
 

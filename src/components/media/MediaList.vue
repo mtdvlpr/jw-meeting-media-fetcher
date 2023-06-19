@@ -270,7 +270,6 @@ const saveFileOrder = async () => {
   }
 }
 const setItems = (val: MediaItem[]) => {
-  console.log('setItems', val)
   sections.mediaItems.value = val
   try {
     if (props.customSortOrder) {
@@ -305,7 +304,7 @@ const setItems = (val: MediaItem[]) => {
       defaultOrder(val)
     }
   } catch (err) {
-    console.error(err)
+    log.error('Error setting items', err)
     defaultOrder(val)
   }
 }

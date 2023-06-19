@@ -265,17 +265,22 @@ const enableExternalDisplayAndMusic = () => {
   setPrefs('meeting.companionToJw', !firstRunParams.value.companionToJw)
   setPrefs('media.hideWinAfterMedia', !firstRunParams.value.companionToJw)
 
+  // eslint-disable-next-line no-console
   console.log('enableExternalDisplayAndMusic')
   if (firstRunParams.value.companionToJw) {
+    // eslint-disable-next-line no-console
     console.log('enableMusicButton = true')
   } else {
+    // eslint-disable-next-line no-console
     console.log('specialCong = true')
+    // eslint-disable-next-line no-console
     console.log('media.hideWinAfterMedia = true')
   }
 }
 
 const startMediaSync = () => {
   // start media sync here
+  // eslint-disable-next-line no-console
   console.log('start media sync here')
 }
 

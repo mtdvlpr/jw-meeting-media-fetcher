@@ -186,7 +186,7 @@ const resetSort = () => {
     rm(join(mediaPath(), date.value, 'file-order.json'))
     emit('resetSort')
   } catch (error) {
-    console.error(error)
+    log.error('Error resetting sort', error)
   }
 }
 
