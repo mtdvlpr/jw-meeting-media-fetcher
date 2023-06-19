@@ -188,8 +188,6 @@ const onResetZoom = () => {
   resetZoom()
 }
 watch(active, (val) => {
-  console.log(active, val)
-
   if (imgPreview.value) {
     imgPreview.value.style.cursor = val ? 'zoom-in' : 'default'
   }
@@ -465,7 +463,7 @@ const getMarkers = async () => {
 
 // Zoom and pan image
 const panzoom = ref<PanzoomObject | null>(null)
-const imgPreview = ref(null)
+const imgPreview: { value: HTMLElement | null } = ref(null)
 
 const onPanzoomChange = (e: CustomEvent<PanzoomChangeEvent>) => {
   if (!imgPreview.value) return
@@ -512,12 +510,13 @@ const { atClick } = useClickTwice<MouseEvent>((e) => {
 const zoomWithWheel = (e: WheelEvent) => {
   if (!panzoom.value || !active.value) return
   const newZoom = panzoom.value.zoomWithWheel(e)
-  const previewEl = getPreviewEl()
   useIpcRenderer().send('zoom', newZoom.scale)
-  useIpcRenderer().send('pan', {
-    x: newZoom.x / previewEl.clientWidth,
-    y: newZoom.y / previewEl.clientHeight,
-  })
+  if (imgPreview.value) {
+    useIpcRenderer().send('pan', {
+      x: newZoom.x / imgPreview.value.clientWidth,
+      y: newZoom.y / imgPreview.value.clientHeight,
+    })
+  }
 }
 
 // Reset zoom

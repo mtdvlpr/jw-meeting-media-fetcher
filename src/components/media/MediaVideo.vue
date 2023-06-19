@@ -103,7 +103,7 @@ const props = defineProps<{
 }>()
 
 const { $dayjs } = useNuxtApp()
-const container = ref(null)
+const container: { value: HTMLElement | null } = ref(null)
 
 onMounted(() => {
   setCCAvailable()

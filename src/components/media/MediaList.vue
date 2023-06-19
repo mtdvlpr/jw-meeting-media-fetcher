@@ -88,45 +88,43 @@
             })()
           }}
         </v-list-item-title>
-        <v-lazy>
-          <v-list
-            :key="section.length"
-            v-sortable="sortableOptions"
-            class="ma-4"
-            :data-section="
-              (() => {
-                switch (section) {
-                  case sections.treasureItems.value:
-                    return 'treasureItems'
-                  case sections.applyItems.value:
-                    return 'applyItems'
-                  case sections.livingItems.value:
-                    return 'livingItems'
-                  case sections.publicTalkItems.value:
-                    return 'publicTalkItems'
-                  case sections.wtItems.value:
-                    return 'wtItems'
-                  case sections.mediaItems.value:
-                    return 'mediaItems'
-                  default:
-                    return 'unknownItems'
-                }
-              })()
-            "
-            @sort="saveFileOrder"
-          >
-            <media-item
-              v-for="element in section"
-              :key="element.id"
-              :src="element.path"
-              :play-now="element.play"
-              :stop-now="element.stop"
-              :deactivate="element.deactivate"
-              @playing="setIndex(element.id)"
-              @deactivated="resetDeactivate(element.id)"
-            />
-          </v-list>
-        </v-lazy>
+        <v-list
+          :key="section.length"
+          v-sortable="sortableOptions"
+          class="ma-4"
+          :data-section="
+            (() => {
+              switch (section) {
+                case sections.treasureItems.value:
+                  return 'treasureItems'
+                case sections.applyItems.value:
+                  return 'applyItems'
+                case sections.livingItems.value:
+                  return 'livingItems'
+                case sections.publicTalkItems.value:
+                  return 'publicTalkItems'
+                case sections.wtItems.value:
+                  return 'wtItems'
+                case sections.mediaItems.value:
+                  return 'mediaItems'
+                default:
+                  return 'unknownItems'
+              }
+            })()
+          "
+          @sort="saveFileOrder"
+        >
+          <media-item
+            v-for="element in section"
+            :key="element.id"
+            :src="element.path"
+            :play-now="element.play"
+            :stop-now="element.stop"
+            :deactivate="element.deactivate"
+            @playing="setIndex(element.id)"
+            @deactivated="resetDeactivate(element.id)"
+          />
+        </v-list>
       </template>
     </template>
   </div>
@@ -134,7 +132,7 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 
-import { pathExistsSync, readFile, writeFile } from 'fs-extra'
+import { readFile, writeFile } from 'fs-extra'
 import { basename, dirname, join } from 'upath'
 import { DateFormat, VideoFile } from '~~/types'
 type MediaItem = {
@@ -226,25 +224,26 @@ const sections = {
   wtItems: ref<MediaItem[]>([]),
 }
 watch(
-  () => props.items,
-  (val) => {
-    setItems(val)
-  },
-  { deep: true }
+  () => props.items.length,
+  () => {
+    setItems(props.items)
+  }
 )
 watch(
   () => props.customSort,
   (customSort) => {
     if (!customSort) defaultOrder(props.items)
-  },
-  { deep: true }
+  }
 )
 watch(
   () => props.customSortOrder,
   (val) => {
-    if (val) setItems(props.items)
-  },
-  { deep: true }
+    if (val) {
+      setItems(props.items)
+    } else {
+      defaultOrder(props.items)
+    }
+  }
 )
 const saveFileOrder = async () => {
   const domSections = document.querySelectorAll<HTMLElement>('[data-section]')
@@ -275,17 +274,30 @@ const setItems = (val: MediaItem[]) => {
   sections.mediaItems.value = val
   try {
     if (props.customSortOrder) {
-      const result = Object.entries(props.customSortOrder).reduce(
-        (acc, [key, order]) => {
-          acc[key] = val
-            .filter((item) => order.includes(item.id))
-            .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
-          return acc
-        },
-        {}
-      )
+      const result: {
+        [key: string]: MediaItem[]
+      } = Object.entries(props.customSortOrder).reduce((acc, [key, order]) => {
+        acc[key] = val
+          .filter((item) => order.includes(item.id))
+          .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
+        return acc
+      }, {})
+      result[Object.keys(result)[0]] = val
+        .filter((item) =>
+          val
+            .map((item) => item.id)
+            .filter(
+              (id) =>
+                !Object.values(result)
+                  .flat()
+                  .map((item) => item.id)
+                  .includes(id)
+            )
+            .includes(item.id)
+        )
+        .concat(result[Object.keys(result)[0]])
+
       for (const key in result) {
-        console.log(sections[key].value, result[key])
         sections[key].value = result[key]
       }
       emit('customSort', true)
