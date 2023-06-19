@@ -155,7 +155,7 @@ import { basename, changeExt, join } from 'upath'
 import type { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRenderer } from '@vueuse/electron'
 
-import { pathExists, readFile } from 'fs-extra'
+import { pathExists, readJson } from 'fs-extra'
 import { Marker, Times, TimeString, VideoFile } from '~~/types'
 import { PanzoomChangeEvent } from '~~/types/global'
 
@@ -404,9 +404,7 @@ const getMarkers = async () => {
   if (isImage(props.src) || !(await pathExists(changeExt(props.src, 'json'))))
     return
   const { $dayjs } = useNuxtApp()
-  const markerArray = JSON.parse(
-    await readFile(changeExt(props.src, 'json'), 'utf8')
-  ) as Marker[]
+  const markerArray = (await readJson(changeExt(props.src, 'json'))) as Marker[]
 
   // For each marker, calculate the custom start and end time
   markerArray.forEach((marker) => {

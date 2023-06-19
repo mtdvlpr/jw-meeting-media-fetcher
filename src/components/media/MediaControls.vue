@@ -62,7 +62,7 @@ import { useRouteQuery } from '@vueuse/router'
 import { basename, changeExt, dirname, extname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
 import * as JSZip from 'jszip'
-import { pathExistsSync, readFileSync, readdirSync } from 'fs-extra'
+import { readJsonSync, readdirSync } from 'fs-extra'
 import { LocalFile, VideoFile } from '~~/types'
 
 const { setProgress } = useProgress()
@@ -279,12 +279,11 @@ onMounted(() => {
       }
     })
     .sort((a, b) => a.id.localeCompare(b.id))
-  const fileOrder = join(mPath, date.value, 'file-order.json')
-  if (pathExistsSync(fileOrder)) {
-    customSortOrder.value = Object.fromEntries(
-      Object.entries(JSON.parse(readFileSync(fileOrder, 'utf-8')))
-    )
-  }
+
+  customSortOrder.value = readJsonSync(
+    join(mPath, date.value, 'file-order.json'),
+    { throws: false }
+  )
 
   watchers.value.push(
     fileWatcher

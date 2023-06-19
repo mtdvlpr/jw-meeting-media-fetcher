@@ -132,7 +132,7 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 
-import { readFile, writeFile } from 'fs-extra'
+import { readJsonSync, writeJson } from 'fs-extra'
 import { basename, dirname, join } from 'upath'
 import { DateFormat, VideoFile } from '~~/types'
 type MediaItem = {
@@ -190,10 +190,10 @@ const fallback = {
   living: 'LIVING AS CHRISTIANS',
 }
 const mwbHeadings = ref(fallback)
-const getMwbHeadings = async () => {
+const getMwbHeadings = () => {
   try {
-    const file = await readFile(join(pubPath(), 'mwb', 'headings.json'), 'utf8')
-    mwbHeadings.value = file ? JSON.parse(file) : fallback
+    const json = readJsonSync(join(pubPath(), 'mwb', 'headings.json'))
+    mwbHeadings.value = json || fallback
   } catch (e: any) {
     mwbHeadings.value = fallback
   }
@@ -258,10 +258,11 @@ const saveFileOrder = async () => {
     }
   })
   if (Object.values(combinedItems).flat().length > 0) {
-    const destPath = dirname(sections.mediaItems.value[0].path)
-    const filePath = join(destPath, 'file-order.json')
     try {
-      await writeFile(filePath, JSON.stringify(combinedItems, null, 2))
+      await writeJson(
+        join(dirname(sections.mediaItems.value[0].path), 'file-order.json'),
+        combinedItems
+      )
       emit('customSort', true)
     } catch (error) {
       log.error('Error saving file order:', error)
@@ -270,7 +271,6 @@ const saveFileOrder = async () => {
 }
 const setItems = (val: MediaItem[]) => {
   console.log('setItems', val)
-
   sections.mediaItems.value = val
   try {
     if (props.customSortOrder) {

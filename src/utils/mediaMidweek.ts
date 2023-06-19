@@ -1,4 +1,5 @@
 import type { Database } from '@stephen/sql.js'
+import { writeJson } from 'fs-extra'
 import { join } from 'upath'
 import { MultiMediaExtractRef, DateFormat } from '~~/types'
 
@@ -42,14 +43,11 @@ export async function getMwMedia(date: string) {
     livingTitle = living[living.length / 2].FeatureTitle
   }
 
-  write(
-    join(pubPath()!, 'mwb', 'headings.json'),
-    JSON.stringify({
-      treasures: treasures.FeatureTitle,
-      apply: apply.FeatureTitle,
-      living: livingTitle,
-    })
-  )
+  writeJson(join(pubPath()!, 'mwb', 'headings.json'), {
+    treasures: treasures.FeatureTitle,
+    apply: apply.FeatureTitle,
+    living: livingTitle,
+  })
 
   // Get document multimedia and add them to the media list
   const mms = await getDocumentMultiMedia(db, docId)
