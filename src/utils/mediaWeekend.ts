@@ -35,7 +35,7 @@ export async function getWeMedia(date: string) {
   let weekNr = getWeekNr(db)
 
   if (weekNr < 0) {
-    issue = baseDate.subtract(9, 'weeks').format('YYYYMM') + '00'
+    issue = baseDate.subtract(10, 'weeks').format('YYYYMM') + '00'
     db = await getDbFromJWPUB({ pub: 'w', issue, date })
     weekNr = getWeekNr(db)
   }
