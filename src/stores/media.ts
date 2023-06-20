@@ -109,17 +109,17 @@ export const useMediaStore = defineStore('media', {
       par: number
       media: MeetingFile
     }) {
-      let dateMap = this.meetings.get(date)
-      if (!dateMap) {
-        this.meetings.set(date, new Map())
-        dateMap = this.meetings.get(date)!
-      }
-      let mediaList = dateMap.get(par)
-      if (!mediaList) dateMap.set(par, [])
-      mediaList = dateMap.get(par) ?? []
+      const dateMap =
+        this.meetings.get(date) || this.meetings.set(date, new Map()).get(date)!
+      const mediaList = dateMap.get(par) || dateMap.set(par, []).get(par)!
       mediaList.push(media)
-      const parMap = new Map(dateMap.set(par, mediaList))
-      this.meetings = new Map(this.meetings.set(date, parMap))
+      mediaList.sort((a, b) =>
+        a.queryInfo && b.queryInfo
+          ? a.queryInfo.BeginParagraphOrdinal -
+            b.queryInfo.BeginParagraphOrdinal
+          : 0
+      )
+      this.meetings.set(date, new Map(dateMap.set(par, mediaList)))
     },
     setHidden({
       date,

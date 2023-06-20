@@ -132,7 +132,7 @@
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
 
-import { pathExistsSync, readFile, writeFile } from 'fs-extra'
+import { readJsonSync, writeJson } from 'fs-extra'
 import { basename, dirname, join } from 'upath'
 import { DateFormat, VideoFile } from '~~/types'
 type MediaItem = {
@@ -190,10 +190,10 @@ const fallback = {
   living: 'LIVING AS CHRISTIANS',
 }
 const mwbHeadings = ref(fallback)
-const getMwbHeadings = async () => {
+const getMwbHeadings = () => {
   try {
-    const file = await readFile(join(pubPath(), 'mwb', 'headings.json'), 'utf8')
-    mwbHeadings.value = file ? JSON.parse(file) : fallback
+    const json = readJsonSync(join(pubPath(), 'mwb', 'headings.json'))
+    mwbHeadings.value = json || fallback
   } catch (e: any) {
     mwbHeadings.value = fallback
   }
@@ -224,25 +224,26 @@ const sections = {
   wtItems: ref<MediaItem[]>([]),
 }
 watch(
-  () => props.items,
-  (val) => {
-    setItems(val)
-  },
-  { deep: true }
+  () => props.items.length,
+  () => {
+    setItems(props.items)
+  }
 )
 watch(
   () => props.customSort,
   (customSort) => {
     if (!customSort) defaultOrder(props.items)
-  },
-  { deep: true }
+  }
 )
 watch(
   () => props.customSortOrder,
   (val) => {
-    if (val) setItems(props.items)
-  },
-  { deep: true }
+    if (val) {
+      setItems(props.items)
+    } else {
+      defaultOrder(props.items)
+    }
+  }
 )
 const saveFileOrder = async () => {
   const domSections = document.querySelectorAll<HTMLElement>('[data-section]')
@@ -257,10 +258,11 @@ const saveFileOrder = async () => {
     }
   })
   if (Object.values(combinedItems).flat().length > 0) {
-    const destPath = dirname(sections.mediaItems.value[0].path)
-    const filePath = join(destPath, 'file-order.json')
     try {
-      await writeFile(filePath, JSON.stringify(combinedItems, null, 2))
+      await writeJson(
+        join(dirname(sections.mediaItems.value[0].path), 'file-order.json'),
+        combinedItems
+      )
       emit('customSort', true)
     } catch (error) {
       log.error('Error saving file order:', error)
@@ -271,15 +273,29 @@ const setItems = (val: MediaItem[]) => {
   sections.mediaItems.value = val
   try {
     if (props.customSortOrder) {
-      const result = Object.entries(props.customSortOrder).reduce(
-        (acc, [key, order]) => {
-          acc[key] = val
-            .filter((item) => order.includes(item.id))
-            .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
-          return acc
-        },
-        {}
-      )
+      const result: {
+        [key: string]: MediaItem[]
+      } = Object.entries(props.customSortOrder).reduce((acc, [key, order]) => {
+        acc[key] = val
+          .filter((item) => order.includes(item.id))
+          .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
+        return acc
+      }, {})
+      result[Object.keys(result)[0]] = val
+        .filter((item) =>
+          val
+            .map((item) => item.id)
+            .filter(
+              (id) =>
+                !Object.values(result)
+                  .flat()
+                  .map((item) => item.id)
+                  .includes(id)
+            )
+            .includes(item.id)
+        )
+        .concat(result[Object.keys(result)[0]])
+
       for (const key in result) {
         sections[key].value = result[key]
       }
@@ -288,7 +304,7 @@ const setItems = (val: MediaItem[]) => {
       defaultOrder(val)
     }
   } catch (err) {
-    console.error(err)
+    log.error('Error setting items', err)
     defaultOrder(val)
   }
 }

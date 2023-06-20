@@ -35,7 +35,7 @@ export async function getWeMedia(date: string) {
   let weekNr = getWeekNr(db)
 
   if (weekNr < 0) {
-    issue = baseDate.subtract(9, 'weeks').format('YYYYMM') + '00'
+    issue = baseDate.subtract(10, 'weeks').format('YYYYMM') + '00'
     db = await getDbFromJWPUB({ pub: 'w', issue, date })
     weekNr = getWeekNr(db)
   }
@@ -84,7 +84,12 @@ export async function getWeMedia(date: string) {
            AND CategoryType = -1
          GROUP BY DocumentMultimedia.MultimediaId`
   )
-
+  const videosInParagraphs = videos.filter(
+    (video) => !!video.TargetParagraphNumberLabel
+  )
+  const videosNotInParagraphs = videos.filter(
+    (video) => !video.TargetParagraphNumberLabel
+  )
   const media = executeQuery<MultiMediaItem>(
     db,
     `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, MepsDocumentId, BeginParagraphOrdinal, FilePath, Label, Caption, TargetParagraphNumberLabel, KeySymbol, Track, IssueTagNumber
@@ -100,14 +105,16 @@ export async function getWeMedia(date: string) {
            AND (KeySymbol != "sjjm" OR KeySymbol IS NULL)
          GROUP BY DocumentMultimedia.MultimediaId
          ORDER BY BeginParagraphOrdinal` // pictures
-  ).concat(
-    // exclude the first two videos if wt is before FEB_2023, since these are the songs
-    videos.slice(+issue < FEB_2023 ? 0 : 2).map((mediaObj) =>
-      mediaObj.TargetParagraphNumberLabel === null
-        ? { ...mediaObj, TargetParagraphNumberLabel: 9999 } // assign special number so we know videos are referenced by a footnote
-        : mediaObj
-    )
   )
+    .concat(videosInParagraphs)
+    .concat(
+      // exclude the first two videos if wt is after FEB_2023, since these are the songs
+      videosNotInParagraphs.slice(+issue < FEB_2023 ? 0 : 2).map((mediaObj) =>
+        mediaObj.TargetParagraphNumberLabel === null
+          ? { ...mediaObj, TargetParagraphNumberLabel: 9999 } // assign special number so we know videos are referenced by a footnote
+          : mediaObj
+      )
+    )
 
   media.forEach((m) => promises.push(addMediaToPart(date, issue, m)))
 
@@ -126,7 +133,7 @@ export async function getWeMedia(date: string) {
           LIMIT 2 OFFSET ${2 * weekNr}`
     ) as MultiMediaItem[]
   } else {
-    songs = videos.slice(0, 2) // since FEB_2023, the first two videos from DocumentMultimedia are the songs
+    songs = videosNotInParagraphs.slice(0, 2) // after FEB_2023, the first two videos from DocumentMultimedia are the songs
   }
 
   let songLangs = songs.map(() => getPrefs<string>('media.lang'))

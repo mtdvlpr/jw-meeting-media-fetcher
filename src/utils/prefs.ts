@@ -1,7 +1,6 @@
 import { ipcRenderer } from 'electron'
 import Store, { type Schema } from 'electron-store'
-// eslint-disable-next-line import/named
-import { readFileSync, removeSync } from 'fs-extra'
+import { readJsonSync, removeSync } from 'fs-extra'
 import { basename, dirname, join, joinSafe, normalizeSafe } from 'upath'
 import {
   AppPrefs,
@@ -590,7 +589,7 @@ export async function getCongPrefs() {
   const { sync } = await import('fast-glob')
   return sync(join(await ipcRenderer.invoke('userData'), 'prefs-*.json'))
     .map((file) => {
-      const prefs = JSON.parse(readFileSync(file, 'utf8')) as PrefStore
+      const prefs = readJsonSync(file) as PrefStore
       return {
         id: basename(file, '.json').replace('prefs-', ''),
         name:
@@ -623,7 +622,7 @@ export function initStore(name: string) {
 
 export function setPrefs(key: string, value: any) {
   store.set(key, value)
-  const prefs = JSON.parse(readFileSync(store.path, 'utf8')) as PrefStore
+  const prefs = readJsonSync(store.path) as PrefStore
   useNuxtApp().$sentry.setContext('prefs', {
     ...prefs,
     obs: prefs.app?.obs,
@@ -644,9 +643,7 @@ export function getPrefs<T = unknown>(key: string) {
 }
 
 export function getAllPrefs() {
-  return store
-    ? (JSON.parse(readFileSync(store.path, 'utf8')) as PrefStore)
-    : PREFS
+  return store ? (readJsonSync(store.path) as PrefStore) : PREFS
 }
 
 export function setAllPrefs(prefs: PrefStore) {

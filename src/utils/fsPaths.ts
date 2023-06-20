@@ -1,7 +1,6 @@
 import { platform } from 'os'
 import { ipcRenderer } from 'electron'
-// eslint-disable-next-line import/named
-import { ensureDirSync, readFileSync } from 'fs-extra'
+import { ensureDirSync, readJsonSync } from 'fs-extra'
 import { basename, dirname, join, joinSafe } from 'upath'
 import { MeetingFile, ShortJWLang } from '~~/types'
 
@@ -17,7 +16,7 @@ export function pubPath(file?: MeetingFile) {
     log.debug('Pub path', file)
     try {
       validMediaLangs = <ShortJWLang[]>(
-        JSON.parse(readFileSync(join(appPath(), 'langs.json'), 'utf8') ?? '[]')
+        (readJsonSync(join(appPath(), 'langs.json')) ?? '[]')
       )
     } catch (e) {
       log.error(e)

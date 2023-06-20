@@ -62,7 +62,8 @@ import { useRouteQuery } from '@vueuse/router'
 import { basename, changeExt, dirname, extname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
 import * as JSZip from 'jszip'
-import { readFileSync } from 'fs-extra'
+// eslint-disable-next-line import/named
+import { readJsonSync, readdirSync } from 'fs-extra'
 import { LocalFile, VideoFile } from '~~/types'
 
 const { setProgress } = useProgress()
@@ -266,6 +267,25 @@ onBeforeUnmount(() => {
   })
 })
 onMounted(() => {
+  items.value = readdirSync(join(mPath, date.value))
+    .filter((file) => isImage(file) || isVideo(file) || isAudio(file))
+    .map((file) => {
+      const cleanName = sanitize(file, true)
+      return {
+        id: strip('mediaitem-' + cleanName),
+        path: join(mPath, date.value, cleanName),
+        play: false,
+        stop: false,
+        deactivate: false,
+      }
+    })
+    .sort((a, b) => a.id.localeCompare(b.id))
+
+  customSortOrder.value = readJsonSync(
+    join(mPath, date.value, 'file-order.json'),
+    { throws: false }
+  )
+
   watchers.value.push(
     fileWatcher
       .watch(join(mPath, date.value), {
@@ -278,23 +298,22 @@ onMounted(() => {
         if (isImage(path) || isVideo(path) || isAudio(path)) {
           const cleanName = sanitize(basename(path), true)
           const filename = basename(path)
+          const fileId = strip('mediaitem-' + cleanName)
           if (filename !== cleanName) {
             rename(path, filename, cleanName)
           }
-          const newItem = {
-            id: strip('mediaitem-' + cleanName),
-            path: join(dirname(path), cleanName),
-            play: false,
-            stop: false,
-            deactivate: false,
+          if (!items.value.map((path) => path.id).includes(fileId)) {
+            const newItem = {
+              id: fileId,
+              path: join(dirname(path), cleanName),
+              play: false,
+              stop: false,
+              deactivate: false,
+            }
+            items.value = [...items.value, newItem].sort((a, b) =>
+              a.id.localeCompare(b.id)
+            )
           }
-          items.value = [...items.value, newItem].sort((a, b) =>
-            a.id.localeCompare(b.id)
-          )
-        } else if (basename(path) === 'file-order.json') {
-          customSortOrder.value = Object.fromEntries(
-            Object.entries(JSON.parse(readFileSync(path, 'utf-8')))
-          )
         }
       })
       .on('change', (path) => {

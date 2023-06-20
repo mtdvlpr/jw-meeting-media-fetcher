@@ -14,6 +14,7 @@ import {
   ensureFile,
   copyFile,
   moveSync,
+  readJson,
 } from 'fs-extra'
 import { sync, type Options } from 'fast-glob'
 import { dirname, basename, join } from 'upath'
@@ -311,7 +312,7 @@ export async function cleanup() {
     })
     for (let i = 0; i < prefFiles.length; i++) {
       const file = prefFiles[i]
-      const prefs = <PrefStore>JSON.parse(await readFile(file, 'utf8'))
+      const prefs = <PrefStore>await readJson(file)
       // @ts-expect-error: congregationName doesn't exist in ElectronStore
       if (!prefs.congregationName && !prefs.app?.congregationName) {
         rm(file)

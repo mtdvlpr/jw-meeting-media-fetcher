@@ -1,4 +1,4 @@
-import { pathExists, readFile } from 'fs-extra'
+import { pathExists, readJson } from 'fs-extra'
 import { join } from 'upath'
 import { ShortJWLang, JWLang, Filter } from '~~/types'
 
@@ -46,10 +46,10 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
 
   let langs: ShortJWLang[] = []
 
-  async function readLangs(firstTry = true): Promise<string> {
+  async function readLangs(firstTry = true) {
     try {
-      const fileContent = await readFile(langPath, 'utf8')
-      return fileContent
+      const fileContent = await readJson(langPath)
+      return fileContent as ShortJWLang[]
     } catch (e) {
       if (firstTry) {
         return readLangs(false)
@@ -63,7 +63,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   const fileContent = await readLangs()
   if (fileContent) {
     try {
-      langs = <ShortJWLang[]>JSON.parse(fileContent)
+      langs = fileContent
       if (langs.length === 0) return getJWLangs(true)
     } catch (e: any) {
       if (e.message.includes('Unexpected token')) {
@@ -128,9 +128,7 @@ export async function getPubAvailability(
   try {
     const langPath = join(appPath(), 'langs.json')
     if (!(await pathExists(langPath))) return { lang, w, mwb }
-    const langs = <ShortJWLang[]>(
-      JSON.parse((await readFile(langPath, 'utf8')) ?? '[]')
-    )
+    const langs = <ShortJWLang[]>((await readJson(langPath)) ?? '[]')
 
     const langObject = langs.find((l) => l.langcode === lang)
     if (!langObject) return { lang, w, mwb }
@@ -164,7 +162,8 @@ export async function getPubAvailability(
     if (mwbResult.status === 'fulfilled') {
       if (mwbResult.value.choices) {
         mwb = !!mwbResult.value.choices.find(
-          (c) => c.optionValue === new Date().getFullYear()
+          (c: { optionValue: number }) =>
+            c.optionValue === new Date().getFullYear()
         )
       } else {
         log.error(mwbResult.value)
@@ -172,7 +171,9 @@ export async function getPubAvailability(
     }
     if (wResult.status === 'fulfilled') {
       if (wResult.value.choices) {
-        w = !!wResult.value.choices.find((c) => c.optionValue === 'w')
+        w = !!wResult.value.choices.find(
+          (c: { optionValue: string }) => c.optionValue === 'w'
+        )
       } else {
         log.error(wResult.value)
       }
