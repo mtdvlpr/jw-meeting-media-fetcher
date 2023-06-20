@@ -30,6 +30,15 @@ export const appLongName = 'Meeting Media Manager'
 export const AR_WIDTH = 16
 export const AR_HEIGHT = 9
 
+// TODO: Remove this before migrating
+app.setPath(
+  'userData',
+  join(
+    app.getPath('appData'),
+    appLongName.toLowerCase().replace(' ', '-') + '-test'
+  )
+)
+
 if (isDev) {
   app.setPath(
     'userData',

@@ -216,7 +216,7 @@ async function processMultiMediaItem(
               BeginParagraphOrdinal: 0,
               title: '',
               queryInfo: mmItem,
-            })!,
+            } as ImageFile)!,
             mmItem.FilePath
           )
 

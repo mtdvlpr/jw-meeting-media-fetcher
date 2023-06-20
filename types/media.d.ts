@@ -46,6 +46,9 @@ export interface ImageFile extends MeetingFileBase {
   track?: undefined
   trackImage?: undefined
   url?: undefined
+  duration?: undefined
+  subtitled?: undefined
+  subtitles?: undefined
 }
 
 export interface LocalFile {

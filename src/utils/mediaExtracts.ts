@@ -149,6 +149,13 @@ async function extractMediaItems({
         !mmItem?.queryInfo?.TargetParagraphNumberLabel
       ) {
         return true
+      }
+      // Always include header image of Live Forever lesson
+      else if (
+        extract.UniqueEnglishSymbol === 'lff' &&
+        mmItem.BeginParagraphOrdinal === 1
+      ) {
+        return true
       } else if (
         mmItem.BeginParagraphOrdinal &&
         extract.RefBeginParagraphOrdinal &&
