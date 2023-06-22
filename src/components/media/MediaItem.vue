@@ -59,10 +59,7 @@
           class="clamp-lines text-regular"
           :title="cleanTitle(titleParts[7] + titleParts[8])"
         >
-          {{ titleParts[7] }}
-          <span class="text-grey">
-            {{ titleParts[8] }}
-          </span>
+          {{ titleParts[7] }}<span class="text-grey">{{ titleParts[8] }}</span>
         </div>
       </div>
     </v-list-item-subtitle>

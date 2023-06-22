@@ -92,7 +92,19 @@ export async function getWeMedia(date: string) {
   )
   const media = executeQuery<MultiMediaItem>(
     db,
-    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, MepsDocumentId, BeginParagraphOrdinal, FilePath, Label, Caption, TargetParagraphNumberLabel, KeySymbol, Track, IssueTagNumber
+    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, MepsDocumentId, BeginParagraphOrdinal, FilePath, Label, Caption, KeySymbol, Track, IssueTagNumber,
+            COALESCE(
+                (
+                    SELECT Question.TargetParagraphNumberLabel
+                    FROM DocumentInternalLink
+                    INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId
+                    INNER JOIN Question ON Question.DocumentId = DocumentInternalLink.DocumentId
+                                        AND Question.ParagraphOrdinal = DocumentInternalLink.BeginParagraphOrdinal
+                    WHERE DocumentInternalLink.DocumentId = DocumentMultimedia.DocumentId
+                      AND DocumentMultimedia.BeginParagraphOrdinal BETWEEN InternalLink.BeginParagraphOrdinal AND InternalLink.EndParagraphOrdinal
+                ),
+                TargetParagraphNumberLabel
+            ) AS TargetParagraphNumberLabel
          FROM DocumentMultimedia
          INNER JOIN Multimedia
            ON DocumentMultimedia.MultimediaId = Multimedia.MultimediaId
@@ -104,7 +116,7 @@ export async function getWeMedia(date: string) {
            AND CategoryType <> -1
            AND (KeySymbol != "sjjm" OR KeySymbol IS NULL)
          GROUP BY DocumentMultimedia.MultimediaId
-         ORDER BY BeginParagraphOrdinal` // pictures
+         ORDER BY TargetParagraphNumberLabel` // pictures
   )
     .concat(videosInParagraphs)
     .concat(

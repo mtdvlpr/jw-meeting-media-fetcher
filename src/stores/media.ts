@@ -113,12 +113,29 @@ export const useMediaStore = defineStore('media', {
         this.meetings.get(date) || this.meetings.set(date, new Map()).get(date)!
       const mediaList = dateMap.get(par) || dateMap.set(par, []).get(par)!
       mediaList.push(media)
-      mediaList.sort((a, b) =>
-        a.queryInfo && b.queryInfo
-          ? a.queryInfo.BeginParagraphOrdinal -
+      mediaList.sort((a, b) => {
+        if (a.queryInfo && b.queryInfo) {
+          if (
+            a.queryInfo.TargetParagraphNumberLabel &&
+            b.queryInfo.TargetParagraphNumberLabel
+          ) {
+            return (
+              a.queryInfo.TargetParagraphNumberLabel -
+              b.queryInfo.TargetParagraphNumberLabel
+            )
+          } else if (
+            a.queryInfo.BeginParagraphOrdinal &&
             b.queryInfo.BeginParagraphOrdinal
-          : 0
-      )
+          ) {
+            return (
+              a.queryInfo.BeginParagraphOrdinal -
+              b.queryInfo.BeginParagraphOrdinal
+            )
+          }
+        }
+        return 0
+      })
+
       this.meetings.set(date, new Map(dateMap.set(par, mediaList)))
     },
     setHidden({
