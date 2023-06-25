@@ -481,6 +481,7 @@ const groups = computed((): Settings[] => {
               key: 'media.excludeLffImages',
               explanation: 'excludeLffImagesExplain',
             },
+            { key: 'media.excludeFootnotes' },
             {
               key: 'media.enableVlcPlaylistCreation',
               explanation: 'enableVlcPlaylistCreationExplain',

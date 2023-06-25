@@ -73,6 +73,7 @@
   "errorWebdavRm": "An error occurred while attempting to delete the following file. Please contact your videoconference organizer.",
   "errorWebdavTooBig": "Lehibe laotra ny zavatra nalefanao (tsy tokony hiaotran'ny 512MB). Tafiditra ato ilay izy, fa tsy lasa any amin'ny serveur'ny fiangonana.",
   "errorWebdavTooManyRequests": "Be laotra ny hafatra alefa any amin'ny serveur. Mamerena rehefa kelikely azafady.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "Exclude <em>Enjoy Life Forever</em> images outside the Congregation Bible Study",
   "excludeTh": "Exclude all media from the <em>th</em> brochure",
   "fetchMedia": "Haka an'ireo Sary/Video",

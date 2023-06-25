@@ -73,6 +73,7 @@
   "errorWebdavRm": "Ocorreu um erro ao tentar eliminar esse ficheiro. Entre em contacto com o organizador de sua videoconferência.",
   "errorWebdavTooBig": "O arquivo que você está tentando enviar é muito grande (máximo de 512 MB). O arquivo foi adicionado localmente, mas não foi carregado no servidor da congregação.",
   "errorWebdavTooManyRequests": "Foram enviadas muitas solicitações ao servidor. Por favor, tente novamente mais tarde.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "Excluir imagens do livro <em>Seja Feliz para Sempre</em> que não serão consideradas no Estudo Bíblico de Congregação",
   "excludeTh": "Eliminar todas as multimédias da publicação <em>th</em>",
   "fetchMedia": "Descarregar multimédias!",

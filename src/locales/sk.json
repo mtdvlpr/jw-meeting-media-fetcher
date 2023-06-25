@@ -73,6 +73,7 @@
   "errorWebdavRm": "Nastala chyba pri pokuse o vymazanie nasledujúceho súboru. Prosím, kontaktuj organizátora videokonferencie.",
   "errorWebdavTooBig": "Súbor, ktorý sa snažíš nahrať je príliš veľký (max 512MB). Súbor bol pridaný lokálne, no nebol nahraný na zborový server.",
   "errorWebdavTooManyRequests": "Server dostal príliž veľa požiadaviek. Prosím, skúste to znova neskôr.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "Vynechať obrázky z publikácie <em>Tešte sa zo života navždy</em> s výnimkou zborového štúdia biblie",
   "excludeTh": "Vynechať všetky médiá z brožúry <em>th</em>",
   "fetchMedia": "Aktualizovať priečinky s médiami",

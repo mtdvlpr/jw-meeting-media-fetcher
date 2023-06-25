@@ -73,6 +73,7 @@
   "errorWebdavRm": "A apărut o eroare la ștergerea următorului fișier. Vă rugăm să contactați organizatorul conferinței.",
   "errorWebdavTooBig": "Fișierul pe care încercați să îl încarcați este prea mare (max 512MB). Fișierul a fost adăugat local, dar nu a fost încărcat pe serverul congregației.",
   "errorWebdavTooManyRequests": "Prea multe request-uri au fost trimise la server, vă rugăm să încercați din nou mai târziu.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "Excludeți imaginile din <em>Bucură-te pentru totdeauna de viață!</em> din afara Studiului Bibliei în Congregației",
   "excludeTh": "Excludeți toate materialele media din broșura <em>th</em>",
   "fetchMedia": "Actualizare foldere media",

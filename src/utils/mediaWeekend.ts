@@ -90,6 +90,10 @@ export async function getWeMedia(date: string) {
   const videosNotInParagraphs = videos.filter(
     (video) => !video.TargetParagraphNumberLabel
   )
+
+  const FOOTNOTE_TAR_PAR = 9999
+  const excludeFootnotes = getPrefs<boolean>('media.excludeFootnotes')
+
   const media = executeQuery<MultiMediaItem>(
     db,
     `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, MepsDocumentId, BeginParagraphOrdinal, FilePath, Label, Caption, KeySymbol, Track, IssueTagNumber,
@@ -121,11 +125,19 @@ export async function getWeMedia(date: string) {
     .concat(videosInParagraphs)
     .concat(
       // exclude the first two videos if wt is after FEB_2023, since these are the songs
-      videosNotInParagraphs.slice(+issue < FEB_2023 ? 0 : 2).map((mediaObj) =>
-        mediaObj.TargetParagraphNumberLabel === null
-          ? { ...mediaObj, TargetParagraphNumberLabel: 9999 } // assign special number so we know videos are referenced by a footnote
-          : mediaObj
-      )
+      videosNotInParagraphs
+        .slice(+issue < FEB_2023 ? 0 : 2)
+        // assign special number so we know videos are referenced by a footnote
+        .map((mediaObj) =>
+          mediaObj.TargetParagraphNumberLabel === null
+            ? { ...mediaObj, TargetParagraphNumberLabel: FOOTNOTE_TAR_PAR }
+            : mediaObj
+        )
+        .filter((v) => {
+          return (
+            !excludeFootnotes || v.TargetParagraphNumberLabel < FOOTNOTE_TAR_PAR
+          )
+        })
     )
 
   media.forEach((m) => promises.push(addMediaToPart(date, issue, m)))

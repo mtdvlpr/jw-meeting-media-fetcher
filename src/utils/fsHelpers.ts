@@ -10,7 +10,16 @@ export function isVideo(file: string) {
 }
 
 export function isImage(file: string) {
-  return isOneOf(file, ['jpg', 'png', 'gif', 'bmp', 'jpeg', 'jfif', 'svg'])
+  return isOneOf(file, [
+    'jpg',
+    'png',
+    'gif',
+    'bmp',
+    'jpeg',
+    'jfif',
+    'svg',
+    'webp',
+  ])
 }
 
 export function isAudio(file: string) {

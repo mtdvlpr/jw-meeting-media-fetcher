@@ -73,6 +73,7 @@
   "errorWebdavRm": "Something go wrong when we try delete this file. Abeg, make you speak to the person wey de organize una video conference.",
   "errorWebdavTooBig": "The file wey you try to de upload na too big (512MB or smaller). We add this one here, but we no fit put-am for cong. server.",
   "errorWebdavTooManyRequests": "The server don get plenty request them. Abeg, make you wait small-small and try-am again.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "No download <em>Enjoy Life Now and Forever</em> pictures except for Congregation Bible Study",
   "excludeTh": "No show nothing from the <em>th</em> brochure",
   "fetchMedia": "Update picture and video folders",

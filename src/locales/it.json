@@ -73,6 +73,7 @@
   "errorWebdavRm": "Si è verificato un errore durante il tentativo di eliminare il seguente file. Si prega di contattare l'organizzatore della videoconferenza.",
   "errorWebdavTooBig": "Il file che stai tentando di caricare è troppo grande (massimo 512 MB). Il file è stato aggiunto localmente, ma non al server della congregazione.",
   "errorWebdavTooManyRequests": "Sono state inviate troppe richieste al server. Per favore riprova più tardi.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "Escludere immagini dal libro <em>lff</em> oltre lo studio biblico di congregazione",
   "excludeTh": "Escludi tutti i media dell'opuscolo <em>th</em>",
   "fetchMedia": "Aggiorna le cartelle con i media",

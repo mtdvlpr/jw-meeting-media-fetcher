@@ -93,6 +93,7 @@
   "errorWebdavRm": "An error occurred while attempting to delete the following file.",
   "errorWebdavTooBig": "The file you are attempting to upload is too large (max 512MB). The file has been added locally, but was not uploaded to the congregation server.",
   "errorWebdavTooManyRequests": "Too many requests have been sent to the server. Please try again later.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "Exclude images from <em>lff</em> (does not apply to the Congregation Bible Study)",
   "excludeLffImagesExplain": "Enable this if you do not want to retrieve images from the lff book, other than for the Congregation Bible Study. This will prevent these images from being included for the student assignments, for example. If M³ is installed at the Kingdom Hall, this option should be enabled with caution.",
   "excludeTh": "Exclude all media from the <em>th</em> brochure",

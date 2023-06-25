@@ -73,6 +73,7 @@
   "errorWebdavRm": "Er ging iets fout tijdens het verwijderen van het volgende bestand. Neem alsjeblieft contact op met jouw videoconferentie organisator.",
   "errorWebdavTooBig": "Het bestand dat je wilde uploaden is te groot (max. 512 MB). Het bestand is lokaal toegevoegd, maar niet toegevoegd aan de gemeente server.",
   "errorWebdavTooManyRequests": "Er zijn te veel verzoeken naar de gemeente server gestuurd. Probeer het later opnieuw.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "Sluit <em>Voor Eeuwig Gelukkig</em> plaatjes uit buiten de gemeentebijbelstudie",
   "excludeTh": "Sluit alle media van de <em>th</em> brochure uit",
   "fetchMedia": "Haal media op",

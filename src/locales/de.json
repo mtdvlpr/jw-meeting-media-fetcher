@@ -73,6 +73,7 @@
   "errorWebdavRm": "Beim Versuch, die folgende Datei zu löschen, ist ein Fehler aufgetreten. Bitte den Videokonferenz-Organisator kontaktieren.",
   "errorWebdavTooBig": "Die hochzuladende Datei ist zu groß (max. 512 MB). Sie wurde lokal hinzugefügt, aber nicht auf den Versammlungs-Server hochgeladen.",
   "errorWebdavTooManyRequests": "An den Server gesendet wurden zu viele Anfragen gesendet. Bitte später erneut versuchen.",
+  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
   "excludeLffImages": "Alle Bilder aus <em>Glücklich – für immer</em> außerhalb des Versammlungsbibelstudiums ausschließen",
   "excludeTh": "Alle Medien der <em>Lesen-und-Lehren-Broschüre</em> ausschließen",
   "fetchMedia": "Medienordner aktualisieren",
