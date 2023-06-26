@@ -18,6 +18,7 @@ interface Stats {
 interface StatStore {
   online: boolean
   navDisabled: boolean
+  syncInProgress: boolean
   showMediaPlayback: boolean
   showMusicButton: boolean
   initialLoad: boolean
@@ -29,6 +30,7 @@ interface StatStore {
 const defaultState: StatStore = {
   online: false, // Whether the user is connected to the internet
   navDisabled: false, // Whether navigation is disabled (e.g. when settings are invalid)
+  syncInProgress: false, // If media is currently being synced
   showMediaPlayback: false, // Whether the media playback nav item should be shown
   showMusicButton: false,
   initialLoad: true, // Whether the app is loading for the first time
@@ -55,6 +57,9 @@ export const useStatStore = defineStore('stats', {
     },
     setNavDisabled(navDisabled: boolean) {
       this.navDisabled = navDisabled
+    },
+    setSyncInProgress(syncInProgress: boolean) {
+      this.syncInProgress = syncInProgress
     },
     setShowMediaPlayback(showMediaPlayback: boolean) {
       this.showMediaPlayback = showMediaPlayback

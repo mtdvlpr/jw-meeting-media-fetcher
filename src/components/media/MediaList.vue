@@ -2,10 +2,15 @@
   <div id="media-list-container" style="width: 100%">
     <v-expand-transition>
       <v-alert
-        v-if="initialTimerPassed && $props.items.length === 0"
+        v-if="!syncInProgress && $props.items.length === 0"
         type="warning"
         :text="$t('warnNoMediaFound')"
-      ></v-alert>
+      />
+      <v-alert
+        v-else-if="syncInProgress"
+        type="info"
+        :text="$t('warnSyncInProgress')"
+      />
     </v-expand-transition>
     <v-expand-transition>
       <song-picker
@@ -157,16 +162,15 @@ const props = defineProps<{
 
 // const dragging = ref(false)
 const date = useRouteQuery<string>('date', '')
-const initialTimerPassed = ref(false)
 
 // Meeting day
 const meetingDay = ref('')
 const isMwDay = computed(() => meetingDay.value === 'mw')
 const isWeDay = computed(() => meetingDay.value === 'we')
 
+const { syncInProgress } = storeToRefs(useStatStore())
 onMounted(() => {
   setItems(props.items)
-
   getMwbHeadings()
   meetingDay.value = isMeetingDay(
     useNuxtApp().$dayjs(
@@ -174,9 +178,6 @@ onMounted(() => {
       getPrefs<DateFormat>('app.outputFolderDateFormat')
     )
   )
-  setTimeout(() => {
-    initialTimerPassed.value = true
-  }, 1000)
 })
 
 // Meeting headings

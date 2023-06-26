@@ -62,7 +62,6 @@ import * as fileWatcher from 'chokidar'
 import { MediaPrefs, DateFormat } from '~~/types'
 const watcher = ref<fileWatcher.FSWatcher | null>(null)
 const dayNames = ref<string[]>([])
-const syncing = ref(false)
 const weeks = ref<
   Array<
     Array<{
@@ -199,41 +198,49 @@ onMounted(() => {
   }
 })
 const { online } = useOnline()
+const { syncInProgress } = storeToRefs(useStatStore())
 const syncMedia = async () => {
-  syncing.value = true
-  useMediaStore().clear()
-  // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
-  // for (const week of weeks) {
-  //   await Promise.all(
-  //     week.map(async (day) => {
-  //       if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
-  //       if (day.meetingType)
-  //         await this.syncJWMediaByDate(day.date, day.meetingType)
-  //       await syncLocalRecurringMediaByDate(day.date)
-  //       await convertUnusableFilesByDate(day.date)
-  //       if (enableMp4Conversion) await convertToMP4ByDate(day.date)
-  //       if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
-  //     })
-  //   )
-  // }
+  try {
+    if (!syncInProgress) {
+      useStatStore().setSyncInProgress(true)
+      useMediaStore().clear()
+      // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
+      // for (const week of weeks) {
+      //   await Promise.all(
+      //     week.map(async (day) => {
+      //       if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
+      //       if (day.meetingType)
+      //         await this.syncJWMediaByDate(day.date, day.meetingType)
+      //       await syncLocalRecurringMediaByDate(day.date)
+      //       await convertUnusableFilesByDate(day.date)
+      //       if (enableMp4Conversion) await convertToMP4ByDate(day.date)
+      //       if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
+      //     })
+      //   )
+      // }
 
-  // THIS IS IF WE WANT ALL WEEKS TO BE ASYNC
-  const meetingToday = weeks.value
-    .flat()
-    .flat()
-    .find((day) => day.isToday && !!day.meetingType)
+      // THIS IS IF WE WANT ALL WEEKS TO BE ASYNC
+      const meetingToday = weeks.value
+        .flat()
+        .flat()
+        .find((day) => day.isToday && !!day.meetingType)
 
-  if (meetingToday) await processDay(meetingToday)
-  await Promise.all(
-    weeks.value.map(async (week) => {
+      if (meetingToday) await processDay(meetingToday)
       await Promise.all(
-        week.flatMap(async (day) => {
-          if (!(day.isToday && !!day.meetingType)) await processDay(day)
+        weeks.value.map(async (week) => {
+          await Promise.all(
+            week.flatMap(async (day) => {
+              if (!(day.isToday && !!day.meetingType)) await processDay(day)
+            })
+          )
         })
       )
-    })
-  )
-  syncing.value = false
+    }
+  } catch (err) {
+    error('Sync error', err)
+  } finally {
+    useStatStore().setSyncInProgress(false)
+  }
 }
 const processDay = async (day: {
   inPast: boolean
@@ -295,7 +302,7 @@ const selectDate = (date: string) => {
     },
   })
 }
-defineExpose({ syncMedia, syncing })
+defineExpose({ syncMedia })
 </script>
 <style lang="scss" scoped>
 .present-select {

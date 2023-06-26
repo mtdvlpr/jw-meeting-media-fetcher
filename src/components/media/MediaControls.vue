@@ -33,7 +33,6 @@
         @manage-media="managingMedia = true"
       />
       <!-- @show-prefix="togglePrefix()" -->
-      Currently syncing (not working yet): {{ syncing }}
       <v-expand-transition>
         <loading-icon v-if="loading" />
         <media-list
@@ -67,10 +66,6 @@ import { pathExistsSync, readJsonSync, readdirSync } from 'fs-extra'
 import { LocalFile, VideoFile } from '~~/types'
 
 const { setProgress } = useProgress()
-const props = defineProps({
-  syncing: Boolean,
-})
-const { syncing } = toRefs(props) // should be a global ref/state lookup i guess?
 const loading = ref(false)
 const droppedFiles = ref()
 const isLoneJwpub = ref(false)
