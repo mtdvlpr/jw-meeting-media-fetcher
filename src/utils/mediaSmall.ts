@@ -67,7 +67,7 @@ export async function getMediaLinks(
 
     // Get thumbnail and primaryCategory
     smallMediaFiles.forEach((item) => {
-      if (item.duration > 0 && (!item.trackImage || !item.pub)) {
+      if (item.duration > 0) {
         const id = mediaItem.docId
           ? `docid-${mediaItem.docId}_1`
           : `pub-${[

@@ -46,6 +46,7 @@
       location="left"
       :rounded="0"
       variant="flat"
+      color="black"
       class="time-btn"
       :class="{ 'pulse-danger': isClipped }"
       @click="atClick()"
@@ -127,9 +128,7 @@ const thumbnail = computed(() => {
   meetingMedia.forEach((media) => {
     if (t !== undefined) return
     const file = media.find((m) => m.safeName === basename(props.src))
-    if (file?.pub?.startsWith('sjj')) {
-      t = ''
-    } else if (file) {
+    if (file) {
       t = file.thumbnail || file.trackImage || ''
     }
   })
@@ -339,9 +338,10 @@ const { clickedOnce, atClick } = useClickTwice(() => {
 
   .time-btn {
     position: absolute;
-    bottom: -6px;
-    top: unset !important;
+    top: 4px !important;
     left: 16px !important;
+    transform: unset !important;
+    opacity: 60%;
   }
 
   .cc-btn {
