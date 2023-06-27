@@ -6,7 +6,7 @@ function isOneOf(file: string, exts: string[]) {
 }
 
 export function isVideo(file: string) {
-  return isOneOf(file, ['mov', 'mp4', 'mpeg', 'mpg', 'ogg', 'ogv', 'webm'])
+  return isOneOf(file, ['mov', 'mp4', 'm4v', 'mpeg', 'mpg', 'ogg', 'ogv', 'webm'])
 }
 
 export function isImage(file: string) {
