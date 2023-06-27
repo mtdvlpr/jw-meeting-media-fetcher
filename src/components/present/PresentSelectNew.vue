@@ -60,6 +60,7 @@ import { join, basename } from 'upath'
 import weekday from 'dayjs/plugin/weekday'
 import * as fileWatcher from 'chokidar'
 import { MediaPrefs, DateFormat } from '~~/types'
+const { isDev } = useRuntimeConfig().public
 const watcher = ref<fileWatcher.FSWatcher | null>(null)
 const dayNames = ref<string[]>([])
 const weeks = ref<
@@ -118,7 +119,7 @@ onMounted(() => {
     const todayDate = $dayjs().startOf('day')
     const weDay = getPrefs<number>('meeting.weDay')
     const firstDay = todayDate.subtract((todayDate.weekday() + 1) % 7, 'day')
-    const lastDay = firstDay.add(2, 'weeks')
+    const lastDay = firstDay.add(isDev ? 12 : 2, 'weeks')
     const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
     for (let i = 0; i < 7; i++) {
       dayNames.value[i] = firstDay.add(i, 'day').format('ddd')
@@ -201,40 +202,35 @@ const { online } = useOnline()
 const { syncInProgress } = storeToRefs(useStatStore())
 const syncMedia = async () => {
   try {
-    if (!syncInProgress) {
+    if (!syncInProgress.value) {
       useStatStore().setSyncInProgress(true)
       useMediaStore().clear()
-      // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
-      // for (const week of weeks) {
-      //   await Promise.all(
-      //     week.map(async (day) => {
-      //       if (congSync.value) await getCongMediaByDate(day.date) // need to define this one
-      //       if (day.meetingType)
-      //         await this.syncJWMediaByDate(day.date, day.meetingType)
-      //       await syncLocalRecurringMediaByDate(day.date)
-      //       await convertUnusableFilesByDate(day.date)
-      //       if (enableMp4Conversion) await convertToMP4ByDate(day.date)
-      //       if (enableVlcPlaylistCreation) await convertToVLCByDate(day.date)
-      //     })
-      //   )
-      // }
 
-      // THIS IS IF WE WANT ALL WEEKS TO BE ASYNC
+      // Process current day first if it's a meeting day
       const meetingToday = weeks.value
         .flat()
         .flat()
         .find((day) => day.isToday && !!day.meetingType)
-
       if (meetingToday) await processDay(meetingToday)
-      await Promise.all(
-        weeks.value.map(async (week) => {
-          await Promise.all(
-            week.flatMap(async (day) => {
-              if (!(day.isToday && !!day.meetingType)) await processDay(day)
-            })
-          )
-        })
-      )
+
+      // THIS IS IF WE WANT ONE WEEK AT A TIME, BOTH MEETINGS IN THE WEEK ASYNC
+      for (const week of weeks.value) {
+        await Promise.all(
+          week.map(async (day) => {
+            if (!(day.isToday && !!day.meetingType)) await processDay(day)
+          })
+        )
+      }
+      // THIS IS IF WE WANT ALL WEEKS TO BE ASYNC
+      // await Promise.all(
+      //   weeks.value.map(async (week) => {
+      //     await Promise.all(
+      //       week.flatMap(async (day) => {
+      //         if (!(day.isToday && !!day.meetingType)) await processDay(day)
+      //       })
+      //     )
+      //   })
+      // )
     }
   } catch (err) {
     error('Sync error', err)

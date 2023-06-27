@@ -98,16 +98,25 @@ export async function getWeMedia(date: string) {
     db,
     `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, MimeType, MepsDocumentId, BeginParagraphOrdinal, FilePath, Label, Caption, KeySymbol, Track, IssueTagNumber,
             COALESCE(
-                (
-                    SELECT Question.TargetParagraphNumberLabel
-                    FROM DocumentInternalLink
-                    INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId
-                    INNER JOIN Question ON Question.DocumentId = DocumentInternalLink.DocumentId
-                                        AND Question.ParagraphOrdinal = DocumentInternalLink.BeginParagraphOrdinal
-                    WHERE DocumentInternalLink.DocumentId = DocumentMultimedia.DocumentId
-                      AND DocumentMultimedia.BeginParagraphOrdinal BETWEEN InternalLink.BeginParagraphOrdinal AND InternalLink.EndParagraphOrdinal
-                ),
-                TargetParagraphNumberLabel
+			        TargetParagraphNumberLabel,
+              (
+                SELECT Question.TargetParagraphNumberLabel
+                FROM DocumentInternalLink
+                INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId
+                INNER JOIN Question ON Question.DocumentId = DocumentInternalLink.DocumentId
+                  AND Question.ParagraphOrdinal = DocumentInternalLink.BeginParagraphOrdinal
+                WHERE DocumentInternalLink.DocumentId = DocumentMultimedia.DocumentId
+                  AND DocumentMultimedia.BeginParagraphOrdinal BETWEEN InternalLink.BeginParagraphOrdinal AND InternalLink.EndParagraphOrdinal
+              ),
+      				(
+                SELECT DocumentParagraph.ParagraphNumberLabel
+                FROM DocumentInternalLink
+                INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId
+                INNER JOIN DocumentMultimedia ON DocumentMultimedia.DocumentId = DocumentInternalLink.DocumentId
+                INNER JOIN DocumentParagraph ON DocumentParagraph.ParagraphIndex = DocumentInternalLink.BeginParagraphOrdinal
+                WHERE DocumentParagraph.DocumentId = DocumentMultimedia.DocumentId
+                  AND DocumentMultimedia.BeginParagraphOrdinal BETWEEN InternalLink.BeginParagraphOrdinal AND InternalLink.EndParagraphOrdinal
+              ) 
             ) AS TargetParagraphNumberLabel
          FROM DocumentMultimedia
          INNER JOIN Multimedia
