@@ -1,6 +1,16 @@
 <template>
   <div :id="id" class="d-flex video-item">
-    <div ref="container" class="align-center d-flex" />
+    <div class="align-center d-flex">
+      <video
+        ref="videoPreview"
+        width="142"
+        height="80"
+        preload="metadata"
+        :poster="thumbnail || poster"
+      >
+        <source :src="url" />
+      </video>
+    </div>
     <!--<v-overlay
       absolute
       :model-value="changeTime"
@@ -104,7 +114,9 @@ const props = defineProps<{
 }>()
 
 const { $dayjs } = useNuxtApp()
-const container: { value: HTMLElement | null } = ref(null)
+const { meetings } = storeToRefs(useMediaStore())
+const date = useRouteQuery<string>('date', '')
+const videoPreview: { value: HTMLVideoElement | null } = ref(null)
 
 onMounted(() => {
   setCCAvailable()
@@ -137,37 +149,36 @@ const thumbnail = computed(() => {
 
 // Video preview
 const initVideoPreview = () => {
-  const source = document.createElement('source')
-  source.src = url.value
-  const video = document.createElement('video')
-  video.width = 142
-  video.height = 80
-  video.preload = 'metadata'
-  video.poster = thumbnail.value ?? poster.value
-  video.appendChild(source)
-
-  // When video has been loaded, set clipped to original
-  video.onloadedmetadata = () => {
-    original.value.end = parseInt(
-      $dayjs.duration(video.duration, 's').asMilliseconds().toFixed(0)
-    )
-    clipped.value = {
-      start: $dayjs.duration(original.value.start, 'ms').format('HH:mm:ss.SSS'),
-      end: $dayjs.duration(original.value.end, 'ms').format('HH:mm:ss.SSS'),
+  if (videoPreview.value) {
+    // When video has been loaded, set clipped to original
+    videoPreview.value.onloadedmetadata = () => {
+      if (videoPreview.value) {
+        original.value.end = parseInt(
+          $dayjs
+            .duration(videoPreview.value.duration, 's')
+            .asMilliseconds()
+            .toFixed(0)
+        )
+        clipped.value = {
+          start: $dayjs
+            .duration(original.value.start, 'ms')
+            .format('HH:mm:ss.SSS'),
+          end: $dayjs.duration(original.value.end, 'ms').format('HH:mm:ss.SSS'),
+        }
+        emit('clipped', {
+          original: original.value,
+          clipped: clippedMs.value,
+          formatted: originalString.value,
+        })
+      }
+      // To reload poster
+      videoPreview.value?.load()
     }
-    emit('clipped', {
-      original: original.value,
-      clipped: clippedMs.value,
-      formatted: originalString.value,
-    })
   }
-  if (container.value) container.value.appendChild(video)
 }
 
 // Video state
 const current = ref(0)
-const date = useRouteQuery<string>('date', '')
-const { meetings } = storeToRefs(useMediaStore())
 watch(
   () => props.playing,
   (val) => {
