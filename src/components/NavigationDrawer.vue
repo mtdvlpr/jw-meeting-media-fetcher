@@ -1,11 +1,5 @@
 <template>
-  <v-navigation-drawer
-    v-if="cong"
-    color="secondary"
-    rail
-    expand-on-hover
-    permanent
-  >
+  <v-navigation-drawer color="secondary" rail expand-on-hover permanent>
     <v-list>
       <v-list-item title="M³">
         <template #subtitle>
@@ -93,16 +87,13 @@
   </v-navigation-drawer>
 </template>
 <script setup lang="ts">
-import { useRouteQuery } from '@vueuse/router'
 import { useIpcRenderer } from '@vueuse/electron'
 const { $i18n } = useNuxtApp()
 const localePath = useLocalePath()
-const cong = useRouteQuery<string>('cong', '')
 const { isDev } = useRuntimeConfig().public
 const { navDisabled, showMediaPlayback, showMusicButton, online } = storeToRefs(
   useStatStore()
 )
-//        //const { online } = storeToRefs(statStore)
 
 const navItems = computed(() => {
   const items = [
