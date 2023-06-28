@@ -29,6 +29,7 @@
               ? 'blue-lighten-4'
               : 'bg'
           "
+          :loading="syncInProgress.includes(day.date)"
           :class="{
             inPast: day.inPast,
             'ma-1': true,
@@ -38,17 +39,23 @@
         >
           <v-card-text> </v-card-text>
           <v-progress-linear
-            v-if="daysDownloadProgress.get(day.date)?.percent < 100"
-            v-model="daysDownloadProgress.get(day.date).percent"
+            :active="
+              !!daysDownloadProgress.get(day.date)?.percent &&
+              daysDownloadProgress.get(day.date).percent > 0 &&
+              daysDownloadProgress.get(day.date).percent < 100
+            "
             color="red"
-            stream
+            height="4"
+            indeterminate
           ></v-progress-linear>
-          <v-progress-linear
-            v-if="day.progress.total > 0"
-            v-model="day.progress.percent"
-            color="orange"
-            stream
-          ></v-progress-linear>
+          <template #loader="{ isActive }">
+            <v-progress-linear
+              :active="isActive"
+              color="warning"
+              height="4"
+              indeterminate
+            ></v-progress-linear>
+          </template>
         </v-card>
       </v-col>
     </v-row>
@@ -74,7 +81,6 @@ const weeks = ref<
       isToday: boolean
       nonMeetingMedia: boolean | number
       inPast: boolean
-      progress: { current: number; total: number; percent: number }
     }>
   >
 >([])
@@ -153,7 +159,6 @@ onMounted(() => {
               (f) => isAudio(f) || isVideo(f) || isImage(f)
             ).length,
           inPast: date.isBefore(todayDate),
-          progress: { current: 0, total: 0, percent: 0 },
         })
         currentDay = currentDay.add(1, 'day')
       }
@@ -171,9 +176,7 @@ onMounted(() => {
     }
     watcher.value = fileWatcher
       .watch(mPath, {
-        awaitWriteFinish: true,
         depth: 1,
-        alwaysStat: false,
         ignorePermissionErrors: true,
       })
       .on('addDir', (path) => {
@@ -202,8 +205,8 @@ const { online } = useOnline()
 const { syncInProgress } = storeToRefs(useStatStore())
 const syncMedia = async () => {
   try {
-    if (!syncInProgress.value) {
-      useStatStore().setSyncInProgress(true)
+    if (syncInProgress.value.length === 0) {
+      useStatStore().setSyncInProgress('', true)
       useMediaStore().clear()
 
       // Process current day first if it's a meeting day
@@ -235,60 +238,37 @@ const syncMedia = async () => {
   } catch (err) {
     error('Sync error', err)
   } finally {
-    useStatStore().setSyncInProgress(false)
+    useStatStore().setSyncInProgress('', false)
   }
 }
 const processDay = async (day: {
   inPast: boolean
   meetingType: string | undefined
-  progress: { total: number; current: number; percent: number }
   date: string
 }) => {
-  const increaseProgress = (day: {
-    progress: { current: number; percent: number; total: number }
-  }) => {
-    day.progress.current++
-    day.progress.percent = (day.progress.current / day.progress.total) * 100
-  }
+  useStatStore().setSyncInProgress(day.date, true)
   const { client } = useCongStore()
   const congSync = computed(() => !!client)
   const { enableMp4Conversion, enableVlcPlaylistCreation } =
     getPrefs<MediaPrefs>('media')
   if (!day.inPast) {
-    const dayTotalSteps = (
-      congSync.value || !!day.meetingType
-        ? [
-            congSync.value ? 2 : 0,
-            !!day.meetingType,
-            true,
-            enableMp4Conversion,
-            enableVlcPlaylistCreation,
-          ]
-        : []
-    ).filter(Boolean).length
-    day.progress.total = dayTotalSteps
     if (congSync.value) {
       await getCongMediaByDate(day.date, !!day.meetingType)
-      increaseProgress(day)
     }
     await Promise.allSettled([
       day.meetingType && syncJWMediaByDate(day.date, day.meetingType),
       congSync.value && syncCongMediaByDate(day.date),
       // syncLocalRecurringMediaByDate(day.date),
     ])
-    day.meetingType && increaseProgress(day)
-    congSync.value && increaseProgress(day)
     await convertUnusableFilesByDate(day.date)
-    increaseProgress(day)
     if (enableMp4Conversion) {
       await convertToMP4ByDate(day.date)
-      increaseProgress(day)
     }
     if (enableVlcPlaylistCreation) {
       await convertToVLCByDate(day.date)
-      increaseProgress(day)
     }
   }
+  useStatStore().setSyncInProgress(day.date, false)
 }
 const selectDate = (date: string) => {
   useRouter().push({

@@ -2,12 +2,16 @@
   <div id="media-list-container" style="width: 100%">
     <v-expand-transition>
       <v-alert
-        v-if="!syncInProgress && $props.items.length === 0"
+        v-if="
+          itemsLoaded &&
+          syncInProgress.length === 0 &&
+          $props.items.length === 0
+        "
         type="warning"
         :text="$t('warnNoMediaFound')"
       />
       <v-alert
-        v-else-if="syncInProgress"
+        v-else-if="syncInProgress.includes(date)"
         type="info"
         :text="$t('warnSyncInProgress')"
       />
@@ -146,6 +150,7 @@ type MediaItem = {
   play: boolean
   stop: boolean
   deactivate: boolean
+  size?: number
 }
 const emit = defineEmits<{
   index: [id: number]
@@ -158,6 +163,8 @@ const props = defineProps<{
   showQuickSong: boolean
   customSort: boolean
   customSortOrder: object | undefined
+  zoomPart: boolean
+  ccEnable: boolean
 }>()
 
 // const dragging = ref(false)
@@ -169,6 +176,7 @@ const isMwDay = computed(() => meetingDay.value === 'mw')
 const isWeDay = computed(() => meetingDay.value === 'we')
 
 const { syncInProgress } = storeToRefs(useStatStore())
+const itemsLoaded = ref(false)
 onMounted(() => {
   setItems(props.items)
   getMwbHeadings()
@@ -225,7 +233,9 @@ const sections = {
   wtItems: ref<MediaItem[]>([]),
 }
 watch(
-  () => props.items.length,
+  () =>
+    props.items.length +
+    props.items.reduce((total, item) => total + (item.size || 0), 0),
   () => {
     setItems(props.items)
   }
@@ -307,6 +317,8 @@ const setItems = (val: MediaItem[]) => {
   } catch (err) {
     log.error('Error setting items', err)
     defaultOrder(val)
+  } finally {
+    itemsLoaded.value = true
   }
 }
 const defaultOrder = (

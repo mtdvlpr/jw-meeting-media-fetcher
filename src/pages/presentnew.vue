@@ -12,7 +12,7 @@
       />
       <template #append>
         <v-progress-circular
-          v-if="syncInProgress"
+          v-if="syncInProgress.length > 0"
           indeterminate
           color="primary"
           class="mx-3"
@@ -52,10 +52,10 @@
     <div id="zoomMeetingContainer" style="display: none">
       <div id="zoomMeeting" />
     </div>
-    <v-slide-x-transition>
+    <v-fade-transition>
       <media-controls v-if="date" />
       <present-select-new v-else ref="presentSelect" />
-    </v-slide-x-transition>
+    </v-fade-transition>
     <present-footer
       :participant="participant"
       @zoom-part="toggleZoomPart()"

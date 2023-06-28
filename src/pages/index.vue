@@ -290,9 +290,7 @@ const initPrefs = async (name: string, isNew = false) => {
           `custom-background-image-${getPrefs<string>('app.congregationName')}*`
         ),
         {
-          awaitWriteFinish: true,
           depth: 1,
-          alwaysStat: true,
           ignorePermissionErrors: true,
         }
       )
@@ -319,9 +317,7 @@ const initPrefs = async (name: string, isNew = false) => {
             )}*`
           ),
           {
-            awaitWriteFinish: true,
             depth: 1,
-            alwaysStat: true,
             ignorePermissionErrors: true,
           }
         )
@@ -341,9 +337,7 @@ const initPrefs = async (name: string, isNew = false) => {
         .watch(
           join(getPrefs('cloudSync.path'), 'Settings', 'forcedPrefs.json'),
           {
-            awaitWriteFinish: true,
             depth: 1,
-            alwaysStat: true,
             ignorePermissionErrors: true,
           }
         )

@@ -18,7 +18,7 @@ interface Stats {
 interface StatStore {
   online: boolean
   navDisabled: boolean
-  syncInProgress: boolean
+  syncInProgress: Array<string>
   showMediaPlayback: boolean
   showMusicButton: boolean
   initialLoad: boolean
@@ -30,7 +30,7 @@ interface StatStore {
 const defaultState: StatStore = {
   online: false, // Whether the user is connected to the internet
   navDisabled: false, // Whether navigation is disabled (e.g. when settings are invalid)
-  syncInProgress: false, // If media is currently being synced
+  syncInProgress: [], // Which media is currently being synced
   showMediaPlayback: false, // Whether the media playback nav item should be shown
   showMusicButton: false,
   initialLoad: true, // Whether the app is loading for the first time
@@ -58,8 +58,15 @@ export const useStatStore = defineStore('stats', {
     setNavDisabled(navDisabled: boolean) {
       this.navDisabled = navDisabled
     },
-    setSyncInProgress(syncInProgress: boolean) {
-      this.syncInProgress = syncInProgress
+    setSyncInProgress(date: string, inProgress: boolean) {
+      if (!inProgress) {
+        const index = this.syncInProgress.indexOf(date)
+        if (index !== -1) {
+          this.syncInProgress.splice(index, 1)
+        }
+      } else if (!this.syncInProgress.includes(date)) {
+        this.syncInProgress.push(date)
+      }
     },
     setShowMediaPlayback(showMediaPlayback: boolean) {
       this.showMediaPlayback = showMediaPlayback

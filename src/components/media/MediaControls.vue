@@ -98,12 +98,12 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
     if (file.contents) {
       // JWPUB extract
       write(path, file.contents)
-    } else if (file.objectUrl) {
-      // Dropped file object (from web browser for example)
-      await fetchFile({ url: file.objectUrl, dest: path })
     } else if (file.filepath) {
       // Local file
       await copy(file.filepath, path)
+    } else if (file.objectUrl) {
+      // Dropped file object (from web browser for example)
+      await fetchFile({ url: file.objectUrl, dest: path })
     } else if (file.safeName) {
       // External file from jw.org
       file.folder = date.value
@@ -286,12 +286,10 @@ onMounted(() => {
   watchers.value.push(
     fileWatcher
       .watch(join(mPath, date.value), {
-        awaitWriteFinish: true,
         depth: 1,
-        alwaysStat: true,
         ignorePermissionErrors: true,
       })
-      .on('add', (path) => {
+      .on('add', (path, stats) => {
         if (isImage(path) || isVideo(path) || isAudio(path)) {
           const cleanName = sanitize(basename(path), true)
           const filename = basename(path)
@@ -306,6 +304,7 @@ onMounted(() => {
               play: false,
               stop: false,
               deactivate: false,
+              size: stats?.size,
             }
             items.value = [...items.value, newItem].sort((a, b) =>
               a.id.localeCompare(b.id)
@@ -313,7 +312,7 @@ onMounted(() => {
           }
         }
       })
-      .on('change', (path) => {
+      .on('change', (path, stats) => {
         if (isImage(path) || isVideo(path) || isAudio(path)) {
           const cleanName = sanitize(basename(path), true)
           const index = items.value.findIndex((item) => {
@@ -329,6 +328,7 @@ onMounted(() => {
                     play: false,
                     stop: false,
                     deactivate: false,
+                    size: stats?.size,
                   }
                 }
                 return item
@@ -355,9 +355,7 @@ onMounted(() => {
     watchers.value?.push(
       fileWatcher
         .watch(join(getPrefs('cloudSync.path'), 'Additional', date.value), {
-          awaitWriteFinish: true,
           depth: 1,
-          alwaysStat: true,
           ignorePermissionErrors: true,
         })
         .on('add', (additionalFile) => {
@@ -374,9 +372,7 @@ onMounted(() => {
     watchers.value?.push(
       fileWatcher
         .watch(join(getPrefs('cloudSync.path'), 'Hidden', date.value), {
-          awaitWriteFinish: true,
           depth: 1,
-          alwaysStat: true,
           ignorePermissionErrors: true,
         })
         .on('add', (hiddenFile) => {
@@ -387,9 +383,7 @@ onMounted(() => {
     watchers.value?.push(
       fileWatcher
         .watch(join(getPrefs('cloudSync.path'), 'Recurring'), {
-          awaitWriteFinish: true,
           depth: 1,
-          alwaysStat: true,
           ignorePermissionErrors: true,
         })
         .on('add', (recurringFile) => {
@@ -449,7 +443,6 @@ onMounted(() => {
             droppedFiles.value = [
               {
                 safeName: '00-00 - ' + sanitize(basename(jwpubFile.name), true),
-                objectUrl: URL.createObjectURL(jwpubFile),
                 filepath: jwpubFile.path,
               },
             ]
@@ -464,7 +457,6 @@ onMounted(() => {
               const unzippedFile = {
                 safeName: '00-00 - ' + sanitize(basename(entry.name), true),
                 objectUrl: URL.createObjectURL(await entry.async('blob')),
-                filepath: entry.name,
               }
               unzippedFiles.push(unzippedFile)
               count++
@@ -475,7 +467,6 @@ onMounted(() => {
             droppedFiles.value = filesArray.map((item) => {
               return {
                 safeName: '00-00 - ' + sanitize(basename(item.name), true),
-                objectUrl: URL.createObjectURL(item),
                 filepath: item.path,
               }
             })
