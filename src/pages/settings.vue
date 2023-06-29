@@ -286,6 +286,10 @@ const requiredSettings = computed(() => {
       },
       onChange: (val: string) => {
         if (!val) return
+        updatePrefs(
+          'media.langFallback',
+          val === 'E' ? null : FALLBACK_LANGS[val] || 'E'
+        )
         useDbStore().clear()
         useMediaStore().clear()
         getPubAvailability(val)
