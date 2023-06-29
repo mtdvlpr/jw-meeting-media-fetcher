@@ -93,8 +93,6 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
       file.safeName
     )
 
-    // TODO: convert all unusable droppedFiles here
-
     if (file.contents) {
       // JWPUB extract
       write(path, file.contents)
@@ -166,6 +164,7 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
   //   log.debug('perf', perf)
   // }
   // increaseProgress()
+  convertUnusableFilesByDate(date.value)
   reset()
 }
 
@@ -359,10 +358,16 @@ onMounted(() => {
           ignorePermissionErrors: true,
         })
         .on('add', (additionalFile) => {
-          copy(
-            additionalFile,
-            join(mPath, date.value, sanitize(basename(additionalFile), true))
-          )
+          if (
+            isImage(additionalFile) ||
+            isVideo(additionalFile) ||
+            isAudio(additionalFile)
+          ) {
+            copy(
+              additionalFile,
+              join(mPath, date.value, sanitize(basename(additionalFile), true))
+            )
+          }
         })
         .on('unlink', (additionalFile) => {
           rm(join(mPath, date.value, sanitize(basename(additionalFile), true)))
@@ -390,10 +395,16 @@ onMounted(() => {
           findAll(join(mPath, '*'), {
             onlyDirectories: true,
           }).forEach((dateFolder) => {
-            copy(
-              recurringFile,
-              join(dateFolder, sanitize(basename(recurringFile), true))
-            )
+            if (
+              isImage(recurringFile) ||
+              isVideo(recurringFile) ||
+              isAudio(recurringFile)
+            ) {
+              copy(
+                recurringFile,
+                join(dateFolder, sanitize(basename(recurringFile), true))
+              )
+            }
           })
         })
         .on('unlink', (recurringFile) => {

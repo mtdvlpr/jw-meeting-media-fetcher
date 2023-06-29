@@ -13,7 +13,6 @@ import {
 } from 'fs-extra'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
-// @ts-expect-error
 import pdfWorkerSrc from 'pdfjs-dist/build/pdf.worker.min.js?url'
 import { Release, DateFormat } from '~~/types'
 
@@ -94,14 +93,25 @@ export async function convertUnusableFiles(
 }
 
 export async function convertUnusableFilesByDate(date: string) {
+  if (getPrefs('cloudSync.enable')) {
+    const cloudPath = join(getPrefs('cloudSync.path'), 'Additional')
+    const cloudPdfFiles = findAll(join(cloudPath, date, '*pdf'))
+    const cloudSvgFiles = findAll(join(cloudPath, date, '*svg'))
+    const cloudConvertSvgPromises = cloudSvgFiles.map((svgFile) =>
+      convertSvg(svgFile)
+    )
+    const cloudConvertPdfPromises = cloudPdfFiles.map((pdfFile) =>
+      convertPdf(pdfFile)
+    )
+    await Promise.all([...cloudConvertSvgPromises, ...cloudConvertPdfPromises])
+  }
   const mPath = mediaPath()
   if (!mPath) return
   const pdfFiles = findAll(join(mPath, date, '*pdf'))
   const svgFiles = findAll(join(mPath, date, '*svg'))
-  for (const svg of svgFiles) {
-    await convertSvg(svg)
-  }
-  await Promise.all(pdfFiles.map((pdf) => convertPdf(pdf)))
+  const convertSvgPromises = svgFiles.map((svgFile) => convertSvg(svgFile))
+  const convertPdfPromises = pdfFiles.map((pdfFile) => convertPdf(pdfFile))
+  await Promise.all([...convertSvgPromises, ...convertPdfPromises])
 }
 
 export async function convertToVLC() {

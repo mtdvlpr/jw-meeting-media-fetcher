@@ -107,9 +107,23 @@ const daysDownloadProgress = computed(() => {
   }
   return progressByDate
 })
+let isWatcherReady = false
+const closeWatcher = async () => {
+  await new Promise<void>((resolve) => {
+    if (isWatcherReady) {
+      watcher.value?.close()
+      resolve()
+    } else {
+      watcher.value?.on('ready', () => {
+        watcher.value?.close()
+        resolve()
+      })
+    }
+  })
+}
 
-onUnmounted(() => {
-  watcher.value?.close()
+onUnmounted(async () => {
+  await closeWatcher()
 })
 
 onMounted(() => {
@@ -123,9 +137,51 @@ onMounted(() => {
   } else {
     $dayjs.extend(weekday)
     const todayDate = $dayjs().startOf('day')
+    watcher.value = fileWatcher
+      .watch(mPath, {
+        depth: 1,
+        ignorePermissionErrors: true,
+      })
+      .on('ready', () => {
+        isWatcherReady = true
+      })
+      .on('unlinkDir', (path) => {
+        const folderName = basename(path)
+        const element = weeks.value[
+          weeks.value.findIndex((subarray) =>
+            subarray.find((el) => el.date === folderName)
+          )
+        ]?.find((el) => el.date === folderName) // The date to modify
+        if (element) element.nonMeetingMedia = 0
+      })
+      .on('addDir', (path) => {
+        const folderName = basename(path)
+        console.log(
+          'oldstuff',
+          folderName,
+          $dayjs(folderName).isValid(),
+          $dayjs(folderName).isBefore(todayDate)
+        )
+
+        if (
+          $dayjs(folderName).isValid() &&
+          $dayjs(folderName).isBefore(todayDate)
+        ) {
+          rm(path)
+        } else {
+          const element = weeks.value[
+            weeks.value.findIndex((subarray) =>
+              subarray.find((el) => el.date === folderName)
+            )
+          ]?.find((el) => el.date === folderName) // The date to modify
+          if (element && !element.meetingType && !element.inPast) {
+            element.nonMeetingMedia = 1
+          }
+        }
+      })
     const weDay = getPrefs<number>('meeting.weDay')
     const firstDay = todayDate.subtract((todayDate.weekday() + 1) % 7, 'day')
-    const lastDay = firstDay.add(isDev ? 12 : 2, 'weeks')
+    const lastDay = firstDay.add(isDev ? 6 : 2, 'weeks')
     const dateFormat = getPrefs<DateFormat>('app.outputFolderDateFormat')
     for (let i = 0; i < 7; i++) {
       dayNames.value[i] = firstDay.add(i, 'day').format('ddd')
@@ -174,31 +230,6 @@ onMounted(() => {
         selectDate(todayDate.format(dateFormat))
       }
     }
-    watcher.value = fileWatcher
-      .watch(mPath, {
-        depth: 1,
-        ignorePermissionErrors: true,
-      })
-      .on('addDir', (path) => {
-        const folderName = basename(path)
-        const element = weeks.value[
-          weeks.value.findIndex((subarray) =>
-            subarray.find((el) => el.date === folderName)
-          )
-        ]?.find((el) => el.date === folderName) // The date to modify
-        if (element && !element.meetingType && !element.inPast) {
-          element.nonMeetingMedia = 1
-        }
-      })
-      .on('unlinkDir', (path) => {
-        const folderName = basename(path)
-        const element = weeks.value[
-          weeks.value.findIndex((subarray) =>
-            subarray.find((el) => el.date === folderName)
-          )
-        ]?.find((el) => el.date === folderName) // The date to modify
-        if (element) element.nonMeetingMedia = 0
-      })
   }
 })
 const { online } = useOnline()

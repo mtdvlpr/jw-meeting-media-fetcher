@@ -152,27 +152,23 @@ const initVideoPreview = () => {
   if (videoPreview.value) {
     // When video has been loaded, set clipped to original
     videoPreview.value.onloadedmetadata = () => {
-      if (videoPreview.value) {
-        original.value.end = parseInt(
-          $dayjs
-            .duration(videoPreview.value.duration, 's')
-            .asMilliseconds()
-            .toFixed(0)
-        )
-        clipped.value = {
-          start: $dayjs
-            .duration(original.value.start, 'ms')
-            .format('HH:mm:ss.SSS'),
-          end: $dayjs.duration(original.value.end, 'ms').format('HH:mm:ss.SSS'),
-        }
-        emit('clipped', {
-          original: original.value,
-          clipped: clippedMs.value,
-          formatted: originalString.value,
-        })
+      original.value.end = parseInt(
+        $dayjs
+          .duration(videoPreview.value?.duration || 0, 's')
+          .asMilliseconds()
+          .toFixed(0)
+      )
+      clipped.value = {
+        start: $dayjs
+          .duration(original.value.start, 'ms')
+          .format('HH:mm:ss.SSS'),
+        end: $dayjs.duration(original.value.end, 'ms').format('HH:mm:ss.SSS'),
       }
-      // To reload poster
-      videoPreview.value?.load()
+      emit('clipped', {
+        original: original.value,
+        clipped: clippedMs.value,
+        formatted: originalString.value,
+      })
     }
   }
 }
