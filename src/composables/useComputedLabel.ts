@@ -18,7 +18,7 @@ export default function <
   fallback = 0,
   subKey?: T extends AppPrefs ? keyof S : undefined
 ) {
-  const { t } = useI18n()
+  const { t } = useNuxtApp().$i18n
   const computedLabel = computed(() => {
     const value = subKey
       ? unref(ref)[key][subKey] ?? fallback

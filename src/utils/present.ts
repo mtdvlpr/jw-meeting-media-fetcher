@@ -43,7 +43,7 @@ export function changeShortcut(key: string | null, fn: ShortcutAction) {
   }
 }
 export function getShortcutRules(fn: ShortcutAction) {
-  const { t } = useI18n()
+  const { t } = useNuxtApp().$i18n
   return [
     (v: string) => isShortcutValid(v) || t('fieldShortcutInvalid'),
     (v: string) => isShortcutAvailable(v, fn) || t('fieldShortcutTaken'),
@@ -224,7 +224,7 @@ export async function getMediaWindowDestination() {
 
   try {
     const store = usePresentStore()
-    const { t } = useI18n()
+    const { t } = useNuxtApp().$i18n
     const screenInfo = (await ipcRenderer.invoke('getScreenInfo')) as ScreenInfo
     store.setScreens(
       screenInfo.otherScreens.map((screen) => {

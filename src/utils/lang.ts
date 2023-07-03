@@ -1,13 +1,13 @@
 import type { LocaleObject } from '#i18n'
 
-export function translate(word: string, fallback?: string) {
+export function translate(word: string, fallback?: string): string {
   const mediaLang = getPrefs<string>('media.lang')
-  const { t, locale, locales } = useI18n()
+  const { t, locale, locales } = useNuxtApp().$i18n
   const langs = locales.value as LocaleObject[]
   const msgLocale =
     langs.find((l) => l.jw === mediaLang)?.code ?? fallback ?? locale.value
 
-  return t<string>(word, msgLocale)
+  return t(word, msgLocale)
 }
 
 export function convertSignLang(symbol: string) {
