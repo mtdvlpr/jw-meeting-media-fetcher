@@ -200,8 +200,7 @@ const props = withDefaults(
     field: 'text',
   }
 )
-
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 const emit = defineEmits(['update:modelValue'])
 const value = useVModel(props, 'modelValue', emit)
 const safeId = computed(() => (props.id ? strip(props.id) : undefined))
@@ -213,9 +212,9 @@ const rules = computed(() => {
   if (props.required) {
     rules.unshift((v: unknown) => {
       if (typeof v === 'string') {
-        return !!v.trim() || $i18n.t('fieldRequired')
+        return !!v.trim() || t('fieldRequired')
       }
-      return !!v || $i18n.t('fieldRequired')
+      return !!v || t('fieldRequired')
     })
   }
   if (props.max > 0) {
@@ -223,7 +222,7 @@ const rules = computed(() => {
       (v: string) =>
         !v ||
         v.length <= props.max ||
-        $i18n.t<string>('fieldMax').replace('XX', props.max.toString())
+        t<string>('fieldMax').replace('XX', props.max.toString())
     )
   }
   return rules

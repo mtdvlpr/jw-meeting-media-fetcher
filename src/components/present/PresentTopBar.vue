@@ -70,7 +70,7 @@
         <template v-for="(action, i) in actions" :key="i">
           <v-divider v-if="action.divider" />
           <v-list-item
-            v-if="action.title !== $i18n.t('resetSort') || customSort"
+            v-if="action.title !== $t('resetSort') || customSort"
             :disabled="action.disabled ? mediaActive : false"
             @click="action.action()"
           >
@@ -113,7 +113,7 @@ const emit = defineEmits([
   'resetSort',
 ])
 
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 const mediaActive = inject(mediaActiveKey, ref(false))
 const { client: zoomIntegration } = storeToRefs(useZoomStore())
 
@@ -193,38 +193,38 @@ const resetSort = () => {
 // More actions
 const actions = [
   {
-    title: $i18n.t('manageMedia'),
+    title: t('manageMedia'),
     icon: 'mdi-movie-open-edit',
     action: () => {
       emit('manageMedia')
     },
   },
   {
-    title: $i18n.t('toggleQuickSong'),
+    title: t('toggleQuickSong'),
     icon: 'mdi-music',
     action: () => {
       emit('toggleQuickSong')
     },
   },
   {
-    title: $i18n.t('resetSort'),
+    title: t('resetSort'),
     icon: 'mdi-sort-alphabetical-variant',
     divider: true,
     action: resetSort,
   },
   // toggleQuickSong
   {
-    title: $i18n.t('openFolder'),
+    title: t('openFolder'),
     icon: 'mdi-folder-open',
     action: openFolder,
   },
   // {
-  //   title: $i18n.t('showPrefix'),
+  //   title: t('showPrefix'),
   //   icon: 'mdi-numeric',
   //   action: () => emit('showPrefix'),
   // },
   {
-    title: $i18n.t('openJWorg') + ' [BETA]',
+    title: t('openJWorg') + ' [BETA]',
     icon: 'mdi-web',
     divider: true,
     action: openWebsite,

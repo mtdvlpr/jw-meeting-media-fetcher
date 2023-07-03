@@ -13,13 +13,13 @@ import { existsSync, readdirSync } from 'fs-extra'
 import { extname, join } from 'upath'
 import { DateFormat, LocalFile, MeetingFile } from '~~/types'
 
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 const date = computed(() => useRoute().query.date as string)
 useHead({
   title: computed(() =>
     date.value
       ? date.value === 'Recurring'
-        ? $i18n.t('recurring')
+        ? t('recurring')
         : `Manage ${date.value}`
       : 'Manage Media'
   ),

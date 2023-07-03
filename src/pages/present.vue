@@ -101,6 +101,7 @@ const toggleZoomPart = () => {
 
 // Zoom integration
 const zoomStore = useZoomStore()
+const { localeProperties } = useI18n()
 const {
   client: zoomClient,
   coHost,
@@ -142,7 +143,8 @@ const initZoomIntegration = async () => {
       .init({
         debug: true,
         zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
-        language: useNuxtApp().$i18n.localeProperties.value.iso,
+        // @ts-expect-error
+        language: localeProperties.value.iso,
       })
       .catch(() => {
         log.debug('Caught init promise error')

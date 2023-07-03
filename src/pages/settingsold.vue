@@ -145,7 +145,7 @@ const refresh = ref(false)
 const calcCache = () => (refresh.value = !refresh.value)
 
 // Headers
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 const panel = ref(['app', 'cong', 'media', 'meeting'])
 const headers = ref<
   { key: keyof PrefStore; icon: string; name: string; valid: boolean }[]
@@ -153,25 +153,25 @@ const headers = ref<
   {
     key: 'app',
     icon: 'mdi-application',
-    name: $i18n.t('optionsApp'),
+    name: t('optionsApp'),
     valid: false,
   },
   {
     key: 'cong',
     icon: 'mdi-cloud',
-    name: $i18n.t('optionsCongSync'),
+    name: t('optionsCongSync'),
     valid: false,
   },
   {
     key: 'media',
     icon: 'mdi-multimedia',
-    name: $i18n.t('optionsMedia'),
+    name: t('optionsMedia'),
     valid: false,
   },
   {
     key: 'meeting',
     icon: 'mdi-lectern',
-    name: $i18n.t('optionsMeetings'),
+    name: t('optionsMeetings'),
     valid: false,
   },
 ])

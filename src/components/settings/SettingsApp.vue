@@ -34,7 +34,7 @@
       v-model="app.localAppLang"
       field="autocomplete"
       :label="$t('localAppLang')"
-      :items="locales"
+      :items="localesMapped"
       item-title="name"
       item-value="code"
       required
@@ -328,10 +328,10 @@ const props = defineProps<{
 const valid = ref(true)
 watch(valid, (val) => emit('valid', val))
 const appForm = ref<VFormRef | null>()
-const locales = ref<{ name: string; code: string }[]>([])
+const localesMapped = ref<{ name: string; code: string }[]>([])
+const { locale, locales, localeProperties } = useI18n()
 onMounted(() => {
-  const { $i18n } = useNuxtApp()
-  locales.value = $i18n.locales.value.map((l) => {
+  localesMapped.value = locales.value.map((l) => {
     const locale = l as LocaleObject
     return {
       name: locale.name!,
@@ -339,7 +339,7 @@ onMounted(() => {
     }
   })
   oldName.value = app.value.congregationName
-  app.value.localAppLang = $i18n.locale.value
+  app.value.localAppLang = locale.value
   if (obsComplete.value) {
     getScenes().then(() => {
       if (appForm.value) {
@@ -388,16 +388,20 @@ watch(
   () => app.value.localAppLang,
   (val, oldVal) => {
     if (!val) return
-    const { $i18n, $dayjs } = useNuxtApp()
-    const locales = $i18n.locales.value as LocaleObject[]
-    const locale = locales.find((l) => l.code === val)!
-    const oldLocale = locales.find((l) => l.code === oldVal)
-    $dayjs.locale(locale?.dayjs ?? val)
+    const { $dayjs } = useNuxtApp()
+    const newLocale = (locales.value as LocaleObject[]).find(
+      (l) => l.code === val
+    )!
+
+    const oldLocale = (locales.value as LocaleObject[]).find(
+      (l) => l.code === oldVal
+    )
+    $dayjs.locale(newLocale?.dayjs ?? val)
     if (oldLocale && val !== oldVal) {
       useMediaStore().clear()
-      renamePubs(oldLocale, locale)
+      renamePubs(oldLocale, newLocale)
     }
-    if (val !== $i18n.locale.value) {
+    if (val !== locale.value) {
       log.debug('Change localAppLang')
       useRouter().replace(useSwitchLocalePath()(val))
     }
@@ -424,11 +428,10 @@ watch(
     if (mPath) {
       renameAll(mPath, oldVal, val, 'rename', 'date')
     }
-    const { $i18n } = useNuxtApp()
     useMediaStore().updateDateFormat({
       oldFormat: oldVal,
       newFormat: val,
-      locale: $i18n.localeProperties.value.dayjs ?? $i18n.locale.value,
+      locale: localeProperties.value.dayjs ?? locale.value,
     })
   }
 )

@@ -148,6 +148,7 @@ const toggleZoomPart = () => {
 
 // Zoom integration
 const zoomStore = useZoomStore()
+const { localeProperties } = useI18n()
 const {
   client: zoomClient,
   coHost,
@@ -158,7 +159,7 @@ whenever(coHost, () => useNotifyStore().dismissByMessage('remindNeedCoHost'))
 const participant = ref<Participant | null>(null)
 const participants = computed(() =>
   allParticipants.value.filter(
-    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name')
+    (p) => !p.isHold && p.userName !== getPrefs<string>('app.zoom.name')
   )
 )
 onBeforeUnmount(() => {
@@ -189,7 +190,8 @@ const initZoomIntegration = async () => {
       .init({
         debug: true,
         zoomAppRoot: document.getElementById('zoomMeeting') ?? undefined,
-        language: useNuxtApp().$i18n.localeProperties.value.iso,
+        // @ts-expect-error
+        language: localeProperties.value.iso,
       })
       .catch(() => {
         log.debug('Caught init promise error')

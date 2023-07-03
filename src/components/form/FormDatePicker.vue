@@ -43,8 +43,8 @@ const props = withDefaults(
 )
 
 const { isDark } = useTheme()
-const { $i18n, $getWeekStart } = useNuxtApp()
-const locale = computed(() => $i18n.localeProperties.value.iso ?? 'en-US')
+const { $getWeekStart } = useNuxtApp()
+const locale = computed(() => useI18n().localeProperties.value.iso ?? 'en-US')
 const disabledDates = (date: Date) => !props.allowedDates(date)
 const value = ref(props.modelValue)
 watch(

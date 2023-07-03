@@ -77,7 +77,8 @@ import {
 useHead({ title: 'Settings' })
 const { setTheme } = useTheme()
 const { online } = useOnline()
-const { $i18n, $dayjs } = useNuxtApp()
+const { $dayjs } = useNuxtApp()
+const { locale, locales, t } = useI18n()
 const { relativeDownloadProgress, totalProgress, setProgress } = useProgress()
 provide(setProgressKey, setProgress)
 
@@ -174,9 +175,9 @@ const invalidFormItems = computed(() => {
   )
 })
 
-const locales = ref<{ name: string; code: string }[]>([])
-locales.value = $i18n.locales.value.map((l: LocaleObject) => {
-  const locale = l as LocaleObject
+const localesMapped = ref<{ name: string; code: string }[]>([])
+localesMapped.value = (locales.value as LocaleObject[]).map((l) => {
+  const locale = l
   return {
     name: locale.name!,
     code: locale.code,
@@ -190,7 +191,7 @@ const requiredSettings = computed(() => {
       key: 'app.localAppLang',
       explanation: 'localAppLangExplain',
       props: {
-        items: $i18n.locales.value.map((l: LocaleObject) => {
+        items: (locales.value as LocaleObject[]).map((l) => {
           const locale = l as LocaleObject
           return {
             title: locale.name!,
@@ -200,15 +201,18 @@ const requiredSettings = computed(() => {
       },
       onChange: (val: string, oldVal: string) => {
         if (!val) return
-        const locales = $i18n.locales.value as LocaleObject[]
-        const locale = locales.find((l) => l.code === val)!
-        const oldLocale = locales.find((l) => l.code === oldVal)
+        const locale = (locales.value as LocaleObject[]).find(
+          (l) => l.code === val
+        )!
+        const oldLocale = (locales.value as LocaleObject[]).find(
+          (l) => l.code === oldVal
+        )
         $dayjs.locale(locale?.dayjs ?? val)
         if (oldLocale && val !== oldVal) {
           useMediaStore().clear()
           renamePubs(oldLocale, locale)
         }
-        if (val !== $i18n.locale.value) {
+        if (val !== locale.value) {
           log.debug('Change localAppLang')
           useRouter().replace(useSwitchLocalePath()(val))
         }
@@ -373,9 +377,9 @@ const groups = computed((): Settings[] => {
           key: 'app.theme',
           props: {
             items: [
-              { title: $i18n.t('light'), value: 'light' },
-              { title: $i18n.t('dark'), value: 'dark' },
-              { title: $i18n.t('system'), value: 'system' },
+              { title: t('light'), value: 'light' },
+              { title: t('dark'), value: 'dark' },
+              { title: t('system'), value: 'system' },
             ],
           },
           onChange: async (val) => {
@@ -514,7 +518,7 @@ const groups = computed((): Settings[] => {
           depends: 'media.enableMediaDisplayButton',
           props: {
             items: [
-              { title: $i18n.t('window'), value: 'window' },
+              { title: t('window'), value: 'window' },
               ...screens.value.map((s) => {
                 return {
                   title: s.title,
@@ -1190,15 +1194,14 @@ const filteredGroups = computed(() => {
       const filteredSettings: (Setting | Action | Group)[] = []
       group.settings.forEach((setting) => {
         if (setting.type === 'group') {
-          const filteredSubSettings = $i18n
-            .t(setting.label)
+          const filteredSubSettings = t(setting.label)
             .toLowerCase()
             .includes(filter.value.toLowerCase())
             ? setting.value
             : setting.value.filter((subSetting) => {
-                const label = $i18n.t(
+                const label = t(
                   subSetting.label ??
-                    (subSetting as Setting).key.split('.').pop()
+                    (subSetting as Setting).key.split('.').pop()!
                 )
                 return label.toLowerCase().includes(filter.value.toLowerCase())
               })
@@ -1209,8 +1212,8 @@ const filteredGroups = computed(() => {
             })
           }
         } else {
-          const label = $i18n.t(
-            setting.label ?? (setting as Setting).key.split('.').pop()
+          const label = t(
+            setting.label ?? (setting as Setting).key.split('.').pop()!
           )
           if (label.toLowerCase().includes(filter.value.toLowerCase())) {
             filteredSettings.push(setting)

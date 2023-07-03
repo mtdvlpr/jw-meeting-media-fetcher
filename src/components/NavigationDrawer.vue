@@ -88,7 +88,7 @@
 </template>
 <script setup lang="ts">
 import { useIpcRenderer } from '@vueuse/electron'
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 const localePath = useLocalePath()
 const { isDev } = useRuntimeConfig().public
 const { navDisabled, showMediaPlayback, showMusicButton, online } = storeToRefs(
@@ -98,14 +98,14 @@ const { navDisabled, showMediaPlayback, showMusicButton, online } = storeToRefs(
 const navItems = computed(() => {
   const items = [
     {
-      title: $i18n.t('plannedMedia'),
+      title: t('plannedMedia'),
       icon: 'mdi-calendar-week',
       to: localePath('/home'),
       tooltip: '',
       aria: 'home',
     },
     {
-      title: $i18n.t('settings'),
+      title: t('settings'),
       icon: 'mdi-cog',
       to: localePath('/settings'),
       tooltip: '',
@@ -114,7 +114,7 @@ const navItems = computed(() => {
   ]
   if (showMediaPlayback.value) {
     items.unshift({
-      title: $i18n.t('mediaPlayback'),
+      title: t('mediaPlayback'),
       icon: 'mdi-multimedia',
       to: localePath('/present'),
       tooltip: getPrefs<string>('media.presentShortcut'),
@@ -123,14 +123,14 @@ const navItems = computed(() => {
   }
   if (isDev) {
     items.splice(1, 0, {
-      title: $i18n.t('mediaPlayback') + ' DEV',
+      title: t('mediaPlayback') + ' DEV',
       icon: 'mdi-multimedia',
       to: localePath('/presentnew'),
       tooltip: getPrefs<string>('media.presentShortcut'),
       aria: 'present',
     })
     // items.splice(1, 0, {
-    //   title: $i18n.t('settings') + ' DEV',
+    //   title: t('settings') + ' DEV',
     //   icon: 'mdi-cog',
     //   to: localePath('/settingsnew'),
     //   tooltip: '',

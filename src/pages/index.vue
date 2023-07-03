@@ -114,12 +114,13 @@ const { prefersDark, setTheme } = useTheme()
 const initPrefs = async (name: string, isNew = false) => {
   const ipcRenderer = useIpcRenderer()
   initStore(name)
-  const { $i18n, $dayjs, $sentry } = useNuxtApp()
+  const { $dayjs, $sentry } = useNuxtApp()
+  const { fallbackLocale, locales } = useI18n()
 
   // Set correct locale
   let lang = getPrefs<string>('app.localAppLang')
   if (!lang) {
-    lang = useBrowserLocale() ?? $i18n.fallbackLocale.value.toString()
+    lang = useBrowserLocale() ?? fallbackLocale.value.toString()
     setPrefs('app.localAppLang', lang)
     log.debug(`Setting app lang to ${lang}`)
   }
@@ -142,8 +143,7 @@ const initPrefs = async (name: string, isNew = false) => {
 
   useStatStore().setNavDisabled(false)
 
-  const locales = $i18n.locales.value as LocaleObject[]
-  const locale = locales.find((l) => l.code === lang)
+  const locale = (locales.value as LocaleObject[]).find((l) => l.code === lang)
   $dayjs.locale(locale?.dayjs ?? lang ?? 'en')
 
   // Set disabledHardwareAcceleration to user pref
@@ -205,7 +205,7 @@ const initPrefs = async (name: string, isNew = false) => {
   if (
     isNew &&
     mediaLang &&
-    !$i18n.locales.value
+    !(locales.value as LocaleObject[])
       .map((l: any) => l.code)
       .includes(convertSignLang(mediaLang.symbol))
   ) {

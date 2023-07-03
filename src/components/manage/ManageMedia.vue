@@ -15,8 +15,8 @@
         :disabled="loading || saving"
         @update:model-value="reset()"
       >
-        <v-tab v-for="t in types" :key="t.value" :value="t.value">
-          {{ t.label }}
+        <v-tab v-for="tab in types" :key="tab.value" :value="tab.value">
+          {{ tab.label }}
         </v-tab>
       </v-tabs>
       <v-row
@@ -118,24 +118,24 @@ const props = defineProps<{
 
 // File prefix
 const prefix = ref('')
-const { $i18n } = useNuxtApp()
+const { t } = useI18n()
 
 // Type of media to add
 const types = [
   {
-    label: $i18n.t('custom'),
+    label: t('custom'),
     value: 'custom',
   },
   {
-    label: $i18n.t('song'),
+    label: t('song'),
     value: 'song',
   },
   {
-    label: $i18n.t('selectVideo'),
+    label: t('selectVideo'),
     value: 'jwOrgVideo',
   },
   {
-    label: $i18n.t('selectPublication'),
+    label: t('selectPublication'),
     value: 'jwOrgPub',
   },
 ]
