@@ -109,13 +109,13 @@ const removeCong = (path: string) => {
   loadCongs()
 }
 
+const { fallbackLocale, locales } = useI18n()
 const { online } = storeToRefs(useStatStore())
 const { prefersDark, setTheme } = useTheme()
 const initPrefs = async (name: string, isNew = false) => {
   const ipcRenderer = useIpcRenderer()
   initStore(name)
   const { $dayjs, $sentry } = useNuxtApp()
-  const { fallbackLocale, locales } = useI18n()
 
   // Set correct locale
   let lang = getPrefs<string>('app.localAppLang')

@@ -177,10 +177,9 @@ const invalidFormItems = computed(() => {
 
 const localesMapped = ref<{ name: string; code: string }[]>([])
 localesMapped.value = (locales.value as LocaleObject[]).map((l) => {
-  const locale = l
   return {
-    name: locale.name!,
-    code: locale.code,
+    name: l.name!,
+    code: l.code,
   }
 })
 
@@ -192,25 +191,24 @@ const requiredSettings = computed(() => {
       explanation: 'localAppLangExplain',
       props: {
         items: (locales.value as LocaleObject[]).map((l) => {
-          const locale = l as LocaleObject
           return {
-            title: locale.name!,
-            value: locale.code,
+            title: l.name!,
+            value: l.code,
           }
         }),
       },
       onChange: (val: string, oldVal: string) => {
         if (!val) return
-        const locale = (locales.value as LocaleObject[]).find(
+        const newLocale = (locales.value as LocaleObject[]).find(
           (l) => l.code === val
         )!
         const oldLocale = (locales.value as LocaleObject[]).find(
           (l) => l.code === oldVal
         )
-        $dayjs.locale(locale?.dayjs ?? val)
+        $dayjs.locale(newLocale?.dayjs ?? val)
         if (oldLocale && val !== oldVal) {
           useMediaStore().clear()
-          renamePubs(oldLocale, locale)
+          renamePubs(oldLocale, newLocale)
         }
         if (val !== locale.value) {
           log.debug('Change localAppLang')
