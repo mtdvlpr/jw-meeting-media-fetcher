@@ -44,7 +44,7 @@ import { pathExists } from 'fs-extra'
 import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import * as fileWatcher from 'chokidar'
-import { LocaleObject } from 'vue-i18n-routing'
+import type { LocaleObject } from '#i18n'
 import { CongPrefs, ObsPrefs, Theme } from '~~/types'
 
 interface Cong {

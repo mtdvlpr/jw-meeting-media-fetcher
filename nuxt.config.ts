@@ -115,7 +115,7 @@ export default defineNuxtConfig({
       cssCodeSplit: true,
       target: 'chrome110',
       rollupOptions: {
-        external: ['chokidar'],
+        // external: ['chokidar'],
       },
     },
     optimizeDeps: {

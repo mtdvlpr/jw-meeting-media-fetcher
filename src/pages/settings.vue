@@ -61,7 +61,7 @@
 import { ipcRenderer } from 'electron'
 import { extname, join } from 'upath'
 import { readFile } from 'fs-extra'
-import { LocaleObject } from 'vue-i18n-routing'
+import type { LocaleObject } from '#i18n'
 import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
 import {
   Action,
