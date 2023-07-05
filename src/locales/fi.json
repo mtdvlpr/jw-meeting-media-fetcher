@@ -73,7 +73,7 @@
   "errorWebdavRm": "Virhe yritettäessä poistaa seuraavaa tiedostoa. Ota yhteyttä videokonferenssin järjestäjään.",
   "errorWebdavTooBig": "Tiedosto, jota yrität ladata, on liian suuri (enintään 512 Mt). Tiedosto on lisätty paikallisesti, mutta ei cong-palvelimelle.",
   "errorWebdavTooManyRequests": "Liian monta pyyntöä on lähetetty palvelimelle. Yritä uudelleen myöhemmin.",
-  "excludeFootnotes": "Exclude media from footnotes in the Watchtower Study",
+  "excludeFootnotes": "Jätä Vartiotornin alaviitteistä olevat mediat huomiotta",
   "excludeLffImages": "Posta kuvat <em>lff</em>-kirjasta seurakunnan raamatuntutkistelun ulkopuolella",
   "excludeTh": "Jätä kaikki media pois <em>th</em>-esitteestä",
   "fetchMedia": "Päivitä mediakansiot",
