@@ -1,5 +1,5 @@
-appId: sircharlo.meeting-media-manager
-productName: Meeting Media Manager
+appId: sircharlo.m3-test # TODO: Change this back to `sircharlo.meeting-media-manager` before official release
+productName: M3 Test # TODO: Change this back to `Meeting Media Manager` before official release
 artifactName: meeting-media-manager-${version}.${ext}
 buildDependenciesFromSource: true
 generateUpdatesFilesForAllChannels: true

@@ -30,7 +30,7 @@ export const appLongName = 'Meeting Media Manager'
 export const AR_WIDTH = 16
 export const AR_HEIGHT = 9
 
-// TODO: Remove this before migrating
+// TODO: Remove this before official release
 app.setPath(
   'userData',
   join(
