@@ -45,7 +45,7 @@ import { useIpcRenderer } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
 import * as fileWatcher from 'chokidar'
 import type { LocaleObject } from '#i18n'
-import { CongPrefs, ObsPrefs, Theme } from '~~/types'
+import { CongPrefs, ObsPrefs, Theme, ZoomPrefs } from '~~/types'
 
 interface Cong {
   id: string
@@ -80,10 +80,10 @@ onMounted(() => {
   loadCongs()
 })
 
-const createCong = async () => {
+const createCong = () => {
   loading.value = true
   const id = Math.random().toString(36).substring(2, 15)
-  await initPrefs('prefs-' + id, true)
+  initPrefs('prefs-' + id, true)
   loading.value = false
 }
 
@@ -91,7 +91,7 @@ const autoSelectCong = async () => {
   if (congs.value.length === 0) {
     await createCong()
   } else if (congs.value.length === 1) {
-    await initPrefs(basename(congs.value[0].path, '.json'))
+    initPrefs(basename(congs.value[0].path, '.json'))
   } else {
     const { default: getUsername } = await import('fullname')
     const username = (await getUsername()) ?? userInfo().username
@@ -99,7 +99,7 @@ const autoSelectCong = async () => {
       (c) => c.name?.toLowerCase().trim() === username.toLowerCase().trim()
     )
     if (match) {
-      await initPrefs(basename(match.path, '.json'))
+      initPrefs(basename(match.path, '.json'))
     }
   }
 }
@@ -109,10 +109,15 @@ const removeCong = (path: string) => {
   loadCongs()
 }
 
+const watchers = ref<fileWatcher.FSWatcher[]>([])
+onBeforeUnmount(() => {
+  watchers.value.forEach((w) => w.close())
+})
+
 const { fallbackLocale, locales } = useI18n()
 const { online } = storeToRefs(useStatStore())
 const { prefersDark, setTheme } = useTheme()
-const initPrefs = async (name: string, isNew = false) => {
+const initPrefs = (name: string, isNew = false) => {
   const ipcRenderer = useIpcRenderer()
   initStore(name)
   const { $dayjs, $sentry } = useNuxtApp()
@@ -147,20 +152,7 @@ const initPrefs = async (name: string, isNew = false) => {
   $dayjs.locale(locale?.dayjs ?? lang ?? 'en')
 
   // Set disabledHardwareAcceleration to user pref
-  const disableHA = getPrefs<boolean>('app.disableHardwareAcceleration')
-  const haPath = join(appPath(), 'disableHardwareAcceleration')
-  const haExists = await pathExists(haPath)
-
-  // Only do something if the value is not in sync with the presence of the file
-  if (disableHA && !haExists) {
-    write(haPath, '')
-  } else if (!disableHA && haExists) {
-    rm(haPath)
-  }
-
-  if (disableHA !== haExists) {
-    ipcRenderer.send('restart')
-  }
+  setHardwareAcceleration()
 
   // Set app theme
   const themePref = getPrefs<Theme>('app.theme')
@@ -179,68 +171,14 @@ const initPrefs = async (name: string, isNew = false) => {
   $sentry.setContext('prefs', {
     ...getAllPrefs(),
     obs: getPrefs<ObsPrefs>('app.obs'),
+    zoom: getPrefs<ZoomPrefs>('app.zoom'),
   })
 
   // Open or close the media window depending on prefs
-  const presentStore = usePresentStore()
-  const enableMediaDisplayButton = getPrefs<boolean>(
-    'media.enableMediaDisplayButton'
-  )
-  if (enableMediaDisplayButton && !presentStore.mediaScreenInit) {
-    toggleMediaWindow('open')
-  } else if (!enableMediaDisplayButton && presentStore.mediaScreenInit) {
-    toggleMediaWindow('close')
-  }
-  useStatStore().setShowMediaPlayback(enableMediaDisplayButton)
+  initMediaWindow()
 
   // Check if the app is available in the current media lang
-  const langs = await getJWLangs()
-  const mediaLang = langs.find(
-    (l) => l.langcode === getPrefs<string>('media.lang')
-  )
-  const appLang = langs.find(
-    (l) => l.symbol === getPrefs<string>('app.localAppLang')
-  )
-
-  if (
-    isNew &&
-    mediaLang &&
-    !(locales.value as LocaleObject[])
-      .map((l: any) => l.code)
-      .includes(convertSignLang(mediaLang.symbol))
-  ) {
-    notify('wannaHelpExplain', {
-      type: 'wannaHelp',
-      identifier: `${mediaLang.name} (${mediaLang.langcode}/${mediaLang.symbol})`,
-      action: {
-        type: 'link',
-        label: 'wannaHelpForSure',
-        url: `${
-          useRuntimeConfig().public.repo
-        }/discussions/new?category=translations&title=New+translation+in+${
-          mediaLang.name
-        }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
-          mediaLang.name
-        } (${mediaLang.langcode}/${mediaLang.symbol}).`,
-      },
-    })
-  } else if (isNew && appLang && STALE_LANGS.includes(appLang.symbol)) {
-    notify('wannaHelpExisting', {
-      type: 'wannaHelp',
-      identifier: `${appLang.name} (${appLang.langcode}/${appLang.symbol})`,
-      action: {
-        type: 'link',
-        label: 'wannaHelpForSure',
-        url: `${
-          useRuntimeConfig().public.repo
-        }/discussions/new?category=translations&title=New+translator+for+${
-          appLang.name
-        }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
-          appLang.name
-        } (${appLang.langcode}/${appLang.symbol}).`,
-      },
-    })
-  }
+  checkLangs(isNew)
 
   // Set runAtBoot depending on prefs and platform
   if (platform() !== 'linux') {
@@ -260,7 +198,7 @@ const initPrefs = async (name: string, isNew = false) => {
 
   // Set music shuffle shortcut if enabled
   if (getPrefs<boolean>('meeting.enableMusicButton')) {
-    await setShortcut({
+    setShortcut({
       key: getPrefs<string>('meeting.shuffleShortcut'),
       fn: 'toggleMusicShuffle',
       scope: 'music',
@@ -268,6 +206,28 @@ const initPrefs = async (name: string, isNew = false) => {
   }
 
   // If all cong fields are filled in, try to connect to the server
+  connectWebDAV()
+
+  // Connect to cloud sync if enabled
+  connectCloudSync()
+
+  // Connect to OBS depending on prefs
+  useObsStore().clear()
+  const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')
+  if (enable && port && password) {
+    getScenes()
+  }
+
+  // Regular Cleanup
+  cleanup()
+  onBeforeUnmount(() => {
+    watchers.value?.forEach((watcher) => {
+      watcher.close()
+    })
+  })
+}
+
+const connectWebDAV = async () => {
   useCongStore().clear()
   if (!getPrefs<boolean>('app.offline')) {
     const { server, username, password, dir } = getPrefs<CongPrefs>('cong')
@@ -281,7 +241,6 @@ const initPrefs = async (name: string, isNew = false) => {
     }
   }
 
-  const watchers = ref<fileWatcher.FSWatcher[]>([])
   watchers.value.push(
     fileWatcher
       .watch(
@@ -304,6 +263,9 @@ const initPrefs = async (name: string, isNew = false) => {
         refreshBackgroundImgPreview()
       })
   )
+}
+
+const connectCloudSync = () => {
   if (getPrefs('cloudSync.enable') && getPrefs('cloudSync.path')) {
     // custom background image
     watchers.value.push(
@@ -352,19 +314,86 @@ const initPrefs = async (name: string, isNew = false) => {
         })
     )
   }
-  // Connect to OBS depending on prefs
-  useObsStore().clear()
-  const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')
-  if (enable && port && password) {
-    getScenes()
+}
+
+const initMediaWindow = () => {
+  const presentStore = usePresentStore()
+  const enableMediaDisplayButton = getPrefs<boolean>(
+    'media.enableMediaDisplayButton'
+  )
+  if (enableMediaDisplayButton && !presentStore.mediaScreenInit) {
+    toggleMediaWindow('open')
+  } else if (!enableMediaDisplayButton && presentStore.mediaScreenInit) {
+    toggleMediaWindow('close')
+  }
+  useStatStore().setShowMediaPlayback(enableMediaDisplayButton)
+}
+
+const checkLangs = async (isNew: boolean) => {
+  const langs = await getJWLangs()
+  const mediaLang = langs.find(
+    (l) => l.langcode === getPrefs<string>('media.lang')
+  )
+  const appLang = langs.find(
+    (l) => l.symbol === getPrefs<string>('app.localAppLang')
+  )
+
+  if (
+    isNew &&
+    mediaLang &&
+    !(locales.value as LocaleObject[])
+      .map((l: any) => l.code)
+      .includes(convertSignLang(mediaLang.symbol))
+  ) {
+    notify('wannaHelpExplain', {
+      type: 'wannaHelp',
+      identifier: `${mediaLang.name} (${mediaLang.langcode}/${mediaLang.symbol})`,
+      action: {
+        type: 'link',
+        label: 'wannaHelpForSure',
+        url: `${
+          useRuntimeConfig().public.repo
+        }/discussions/new?category=translations&title=New+translation+in+${
+          mediaLang.name
+        }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
+          mediaLang.name
+        } (${mediaLang.langcode}/${mediaLang.symbol}).`,
+      },
+    })
+  } else if (isNew && appLang && STALE_LANGS.includes(appLang.symbol)) {
+    notify('wannaHelpExisting', {
+      type: 'wannaHelp',
+      identifier: `${appLang.name} (${appLang.langcode}/${appLang.symbol})`,
+      action: {
+        type: 'link',
+        label: 'wannaHelpForSure',
+        url: `${
+          useRuntimeConfig().public.repo
+        }/discussions/new?category=translations&title=New+translator+for+${
+          appLang.name
+        }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
+          appLang.name
+        } (${appLang.langcode}/${appLang.symbol}).`,
+      },
+    })
+  }
+}
+
+const setHardwareAcceleration = async () => {
+  const ipcRenderer = useIpcRenderer()
+  const disableHA = getPrefs<boolean>('app.disableHardwareAcceleration')
+  const haPath = join(appPath(), 'disableHardwareAcceleration')
+  const haExists = await pathExists(haPath)
+
+  // Only do something if the value is not in sync with the presence of the file
+  if (disableHA && !haExists) {
+    write(haPath, '')
+  } else if (!disableHA && haExists) {
+    rm(haPath)
   }
 
-  // Regular Cleanup
-  cleanup()
-  onBeforeUnmount(() => {
-    watchers.value?.forEach((watcher) => {
-      watcher.close()
-    })
-  })
+  if (disableHA !== haExists) {
+    ipcRenderer.send('restart')
+  }
 }
 </script>

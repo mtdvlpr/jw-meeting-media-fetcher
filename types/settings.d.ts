@@ -52,6 +52,7 @@ export type SubGroupID =
   | 'zoom'
   | 'playbackAdvanced'
   | 'music'
+
 export interface Group {
   type: 'group'
   id: SubGroupID

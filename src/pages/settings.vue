@@ -17,13 +17,7 @@
             v-if="!mounted"
             type="list-item-avatar,list-item-avatar,list-item-avatar,list-item-avatar,list-item-avatar"
           />
-          <v-form
-            v-else
-            ref="form"
-            v-model="valid"
-            validate-on="input"
-            @submit.prevent
-          >
+          <v-form v-else ref="form" v-model="valid" @submit.prevent>
             <v-list v-model:opened="openedGroups">
               <v-list-group
                 v-for="group in filteredGroups"
@@ -167,9 +161,9 @@ onMounted(() => {
 const invalidFormItems = computed(() => {
   return (
     (form.value &&
-      !form.value.isValidating &&
-      form.value.items?.filter(
-        (item: { isValid: any }) => item.isValid !== null && !item.isValid
+      !form.value.isValidating.value &&
+      form.value.items.value.filter(
+        (item) => item.isValid !== null && !item.isValid
       )) ||
     []
   )
@@ -1115,23 +1109,23 @@ const groups = computed((): Settings[] => {
     },
   ]
 })
-function isSetting(item: Setting | Group | Action): item is Setting {
+
+function isSetting(item?: Setting | Group | Action): item is Setting {
   return (item as Setting).key !== undefined
 }
+
 const missingSettings = computed(() => {
   return groups.value
     .map((obj) => {
       const settings = obj.settings
         .map((setting) => {
           if (setting.type === 'group') {
-            const value = setting.value
-              .map((subSetting) => {
-                return !!subSetting.props?.required &&
-                  !getPrefs((subSetting as Setting).key)
-                  ? subSetting
-                  : undefined
-              })
-              .filter(Boolean)
+            const value = setting.value.filter((subSetting) => {
+              return (
+                !!subSetting.props?.required &&
+                !getPrefs((subSetting as Setting).key)
+              )
+            })
             return value.length > 0 ? { ...setting, value } : undefined
           } else {
             return !!setting.props?.required &&
@@ -1140,10 +1134,13 @@ const missingSettings = computed(() => {
               : undefined
           }
         })
-        .filter(Boolean)
+        .filter(
+          (item?: Setting | Group | Action): item is Setting | Group | Action =>
+            !!item
+        )
       return settings.length > 0 ? { ...obj, settings } : undefined
     })
-    .filter(Boolean)
+    .filter((item?: Settings): item is Settings => !!item)
 })
 const invalidSettingGroups = computed(() => {
   if (missingSettings.value.length > 0) return missingSettings.value
@@ -1154,14 +1151,18 @@ const invalidSettingGroups = computed(() => {
             if (isSetting(item)) {
               return invalidFormItems.value
                 ?.map((item) => item.id)
-                .some((id) => id?.includes(item.key?.replace(/\./g, '')))
+                .some((id) =>
+                  id.toString().includes(item.key?.replace(/\./g, ''))
+                )
             } else if (item.type === 'group') {
               const filteredGroupSettings = item.value.filter(
                 (setting) =>
                   isSetting(setting) &&
                   invalidFormItems.value
                     ?.map((item) => item.id)
-                    .some((id) => id?.includes(setting.key?.replace(/\./g, '')))
+                    .some((id) =>
+                      id.toString().includes(setting.key?.replace(/\./g, ''))
+                    )
               )
               return filteredGroupSettings.length > 0
             } else {
@@ -1174,7 +1175,7 @@ const invalidSettingGroups = computed(() => {
             return undefined
           }
         })
-        .filter((group): group is Settings => !!group?.settings.length)
+        .filter((item?: Settings): item is Settings => !!item)
     : []
 })
 const filteredGroups = computed(() => {
@@ -1228,18 +1229,7 @@ const filteredGroups = computed(() => {
   })
   return filtered
 })
-const openedGroups = ref(
-  invalidSettingGroups.value.length > 0
-    ? filteredGroups.value
-        .flatMap((obj) =>
-          [obj]
-            .concat(obj.value)
-            .concat(obj.settings)
-            .map((header) => header?.id)
-        )
-        .filter(Boolean)
-    : undefined
-)
+const openedGroups = ref([])
 </script>
 <style lang="scss" scoped>
 .settings {
