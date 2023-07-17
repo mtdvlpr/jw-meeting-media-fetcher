@@ -53,7 +53,9 @@ export async function getDbFromJWPUB({
           UniqueEnglishSymbol: string
           IssueTagNumber: string
         }>(db, 'SELECT UniqueEnglishSymbol, IssueTagNumber FROM Publication')[0]
-        pub = jwpubInfo.UniqueEnglishSymbol.replace(/\d/g, '')
+        pub = /[^a-zA-Z0-9]/.test(jwpubInfo.UniqueEnglishSymbol)
+          ? jwpubInfo.UniqueEnglishSymbol
+          : jwpubInfo.UniqueEnglishSymbol.replace(/\d/g, '')
         issue = jwpubInfo.IssueTagNumber
         setDb(db, pub, issue, lang)
       } catch (e) {

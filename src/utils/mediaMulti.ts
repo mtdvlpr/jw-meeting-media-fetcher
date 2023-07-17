@@ -18,10 +18,14 @@ export async function getDocumentMultiMedia(
 
   const mmTable = result.length === 0 ? 'Multimedia' : 'DocumentMultimedia'
 
-  const keySymbol = executeQuery<{ UniqueEnglishSymbol: string }>(
+  const uniqueEnglishSymbol = executeQuery<{ UniqueEnglishSymbol: string }>(
     db,
     'SELECT UniqueEnglishSymbol FROM Publication'
-  )[0].UniqueEnglishSymbol.replace(/\d*/g, '')
+  )[0].UniqueEnglishSymbol
+
+  const keySymbol = /[^a-zA-Z0-9]/.test(uniqueEnglishSymbol)
+    ? uniqueEnglishSymbol
+    : uniqueEnglishSymbol.replace(/\d/g, '')
 
   const issueTagNumber = executeQuery<{ IssueTagNumber: string }>(
     db,
