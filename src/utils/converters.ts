@@ -2,6 +2,7 @@
 import { pathToFileURL } from 'url'
 import { platform } from 'os'
 import type { Dayjs } from 'dayjs'
+import type HeicConvert from 'heic-convert'
 import {
   pathExists,
   stat,
@@ -10,6 +11,7 @@ import {
   constants,
   access,
   chmod,
+  readFileSync,
 } from 'fs-extra'
 import { join, changeExt, dirname, basename, extname } from 'upath'
 import type { PDFDocumentProxy } from 'pdfjs-dist/types/src/pdf'
@@ -79,7 +81,13 @@ export async function convertUnusableFiles(
     ignore: [join(dir, 'Recurring')],
   })
 
-  if (setProgress) initProgress(pdfFiles.length + svgFiles.length)
+  const heicFiles = findAll(join(dir, '**', '*heic'), {
+    ignore: [join(dir, 'Recurring')],
+  })
+
+  if (setProgress) {
+    initProgress(pdfFiles.length + svgFiles.length + heicFiles.length)
+  }
   pdfFiles.forEach((pdf) => {
     promises.push(convertPdf(pdf, setProgress))
   })
@@ -87,6 +95,10 @@ export async function convertUnusableFiles(
   svgFiles.forEach((svg) => {
     convertSvg(svg)
     if (setProgress) increaseProgress(setProgress)
+  })
+
+  heicFiles.forEach((heic) => {
+    promises.push(convertHEIC(heic, setProgress))
   })
 
   await Promise.allSettled(promises)
@@ -215,6 +227,25 @@ function convertSvg(src: string) {
     warn('warnSvgConversionFailure', { identifier: basename(src) }, e)
   }
   svg.src = pathToFileURL(src).href
+}
+
+async function convertHEIC(
+  filePath: string,
+  setProgress?: (loaded: number, total: number, global?: boolean) => void
+): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const convert = require('heic-convert') as typeof HeicConvert
+
+  const buffer = readFileSync(filePath)
+
+  const output = await convert({
+    buffer,
+    format: 'PNG',
+  })
+
+  write(filePath.replace('.heic', '.png'), Buffer.from(output))
+  rm(filePath)
+  if (setProgress) increaseProgress(setProgress)
 }
 
 async function convertPdf(
