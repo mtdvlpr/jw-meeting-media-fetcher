@@ -103,7 +103,7 @@ export default defineNuxtConfig({
     locales: LOCALES,
     types: 'composition',
     detectBrowserLanguage: false,
-    precompile: {
+    compilation: {
       strictMessage: false,
       escapeHtml: true,
     },

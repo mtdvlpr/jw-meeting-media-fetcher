@@ -1,4 +1,4 @@
-import { readFile, stat, writeFile } from 'fs-extra'
+import { readFile, readFileSync, stat, writeFile } from 'fs-extra'
 import { join, extname } from 'upath'
 
 export async function extractAllTo(zip: string, dest: string, date?: string) {
@@ -63,12 +63,29 @@ export async function extractAllTo(zip: string, dest: string, date?: string) {
   }
 }
 
-export async function getZipContentsByExt(zip: string, ext: string) {
+async function getContents(
+  file: string,
+  jwpub = true
+): Promise<ArrayBuffer | undefined> {
+  const zipFile = readFileSync(file)
+  if (!jwpub) return zipFile
+  const { default: JSZip } = await import('jszip')
+  const zipper = new JSZip()
+  const zipContents = await zipper.loadAsync(zipFile)
+  return zipContents.file('contents')?.async('arraybuffer')
+}
+
+export async function getZipContentsByExt(
+  zip: string,
+  ext: string,
+  jwpub = true
+) {
   try {
     const { default: JSZip } = await import('jszip')
-    const zipFile = await readFile(zip)
-    const zipContents = await JSZip.loadAsync(zipFile)
-    const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
+    // const zipFile = await readFile(zip)
+    // const zipContents = await JSZip.loadAsync(zipFile)
+    // const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
+    const fileBuffer = await getContents(zip, jwpub)
     if (!fileBuffer) throw new Error('Could not extract files from zip')
     const contents = await JSZip.loadAsync(fileBuffer)
     for (const [filename, fileObject] of Object.entries(contents.files)) {
@@ -82,13 +99,18 @@ export async function getZipContentsByExt(zip: string, ext: string) {
   return null
 }
 
-export async function getZipContentsByName(zip: string, name: string) {
+export async function getZipContentsByName(
+  zip: string,
+  name: string,
+  jwpub = true
+) {
   try {
     const { default: JSZip } = await import('jszip')
     const zipper = new JSZip()
-    const zipFile = await readFile(zip)
-    const zipContents = await zipper.loadAsync(zipFile)
-    const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
+    // const zipFile = await readFile(zip)
+    // const zipContents = await zipper.loadAsync(zipFile)
+    // const fileBuffer = zipContents.file('contents')?.async('arraybuffer')
+    const fileBuffer = await getContents(zip, jwpub)
     if (!fileBuffer) throw new Error('Could not extract files from zip')
     const contents = await zipper.loadAsync(fileBuffer)
     for (const [filename, fileObject] of Object.entries(contents.files)) {

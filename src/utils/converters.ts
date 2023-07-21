@@ -109,21 +109,35 @@ export async function convertUnusableFilesByDate(date: string) {
     const cloudPath = join(getPrefs('cloudSync.path'), 'Additional')
     const cloudPdfFiles = findAll(join(cloudPath, date, '*pdf'))
     const cloudSvgFiles = findAll(join(cloudPath, date, '*svg'))
+    const cloudHeicFiles = findAll(join(cloudPath, date, '*heic'))
     const cloudConvertSvgPromises = cloudSvgFiles.map((svgFile) =>
       convertSvg(svgFile)
     )
     const cloudConvertPdfPromises = cloudPdfFiles.map((pdfFile) =>
       convertPdf(pdfFile)
     )
-    await Promise.all([...cloudConvertSvgPromises, ...cloudConvertPdfPromises])
+    const cloudConvertHEICPromises = cloudHeicFiles.map((heicFile) =>
+      convertHEIC(heicFile)
+    )
+    await Promise.all([
+      ...cloudConvertSvgPromises,
+      ...cloudConvertPdfPromises,
+      ...cloudConvertHEICPromises,
+    ])
   }
   const mPath = mediaPath()
   if (!mPath) return
   const pdfFiles = findAll(join(mPath, date, '*pdf'))
   const svgFiles = findAll(join(mPath, date, '*svg'))
+  const heicFiles = findAll(join(mPath, date, '*heic'))
   const convertSvgPromises = svgFiles.map((svgFile) => convertSvg(svgFile))
   const convertPdfPromises = pdfFiles.map((pdfFile) => convertPdf(pdfFile))
-  await Promise.all([...convertSvgPromises, ...convertPdfPromises])
+  const convertHEICPromises = heicFiles.map((heicFile) => convertHEIC(heicFile))
+  await Promise.all([
+    ...convertSvgPromises,
+    ...convertPdfPromises,
+    ...convertHEICPromises,
+  ])
 }
 
 export async function convertToVLC() {
@@ -240,10 +254,10 @@ async function convertHEIC(
 
   const output = await convert({
     buffer,
-    format: 'PNG',
+    format: 'JPEG',
   })
 
-  write(filePath.replace('.heic', '.png'), Buffer.from(output))
+  write(filePath.replace('.heic', '.jpg'), Buffer.from(output))
   rm(filePath)
   if (setProgress) increaseProgress(setProgress)
 }

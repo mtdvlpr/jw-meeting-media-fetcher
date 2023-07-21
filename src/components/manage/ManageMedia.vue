@@ -107,7 +107,14 @@ import { ipcRenderer } from 'electron'
 
 import { readFile, stat } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
-import { LocalFile, MeetingFile, MeetingFileBase, VideoFile } from '~~/types'
+import type { Database } from '@stephen/sql.js'
+import {
+  LocalFile,
+  MeetingFile,
+  MeetingFileBase,
+  PlaylistItem,
+  VideoFile,
+} from '~~/types'
 
 const emit = defineEmits(['refresh', 'cancel'])
 const props = defineProps<{
@@ -138,6 +145,10 @@ const types = [
     label: t('selectPublication'),
     value: 'jwOrgPub',
   },
+  {
+    label: t('jwlplaylist'),
+    value: 'jwlplaylist',
+  },
 ]
 const type = ref('custom')
 
@@ -145,6 +156,8 @@ const type = ref('custom')
 const jwFile = ref<VideoFile | null>(null)
 watch(jwFile, (val) => (prefix.value = val ? '00-00' : prefix.value))
 const selectVideo = (video: VideoFile) => (jwFile.value = video)
+
+const processing = ref(false)
 
 // Add media from JW.org publication
 const jwOrgPub = ref()
@@ -183,6 +196,78 @@ const addMedia = (media: LocalFile[]) => {
   files.value = media
 }
 
+const processPlaylist = async (filePath: string) => {
+  processing.value = true
+  const db = (await getDb({
+    file: (await getZipContentsByExt(filePath, '.db', false)) ?? undefined,
+  })) as Database
+  const media = executeQuery(
+    db,
+    `SELECT Label, FilePath, MimeType, DocumentId, Track, IssueTagNumber, KeySymbol, MepsLanguage
+        FROM PlaylistItem PI
+          LEFT JOIN PlaylistItemLocationMap PILM ON PI.PlaylistItemId = PILM.PlaylistItemId
+          LEFT JOIN Location L ON PILM.LocationId = L.LocationId
+          LEFT JOIN PlaylistItemIndependentMediaMap PIIMM ON PI.PlaylistItemId = PIIMM.PlaylistItemId
+          LEFT JOIN IndependentMedia IM ON PIIMM.IndependentMediaId = IM.IndependentMediaId`
+  ) as PlaylistItem[]
+
+  const promises: Promise<void>[] = []
+  // Get correct extension
+  media
+    .map((m) => {
+      if (!extname(m.Label ?? '')) {
+        if (extname(m.FilePath ?? '')) {
+          m.Label += extname(m.FilePath!)
+        } else if (m.MimeType) {
+          m.Label = m.Label + '.' + m.MimeType.split('/')[1]
+        } else {
+          m.Label += '.mp4'
+        }
+      }
+      return m
+    })
+    .forEach((m, index) => {
+      promises.push(processPlaylistItem(index, m, filePath))
+    })
+  await Promise.allSettled(promises)
+  processing.value = false
+}
+const processPlaylistItem = async (
+  index: number,
+  m: PlaylistItem,
+  filePath: string
+) => {
+  console.log(m);
+  
+  if (m.FilePath) {
+    files.value.push({
+      safeName: `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
+        m.Label,
+        true
+      )}`,
+      contents:
+        (await getZipContentsByName(filePath, m.FilePath, false)) ?? undefined,
+    })
+  } else {
+    const mediaFiles = (await getMediaLinks({
+      pubSymbol: m.KeySymbol,
+      docId: m.DocumentId,
+      track: m.Track,
+      issue: m.IssueTagNumber,
+      lang: m.MepsLanguage ? MEPS_IDS[m.MepsLanguage] : undefined,
+    })) as VideoFile[]
+    files.value.push(
+      ...mediaFiles.map((f) => ({
+        ...f,
+        safeName: `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
+          `${f.title || ''}${extname(f.url || f.filepath || '')}`,
+          true
+        )}`,
+      }))
+    )
+  }
+}
+
 // Add local files
 watch(files, (val) => (prefix.value = val.length > 0 ? prefix.value : ''))
 const addFiles = async (multi = true, ...exts: string[]) => {
@@ -199,10 +284,14 @@ const addFiles = async (multi = true, ...exts: string[]) => {
   })
 
   if (result && !result.canceled) {
-    files.value = result.filePaths.map((file: string) => ({
-      safeName: '- ' + sanitize(basename(file), true),
-      filepath: file,
-    }))
+    if (type.value === 'jwlplaylist') {
+      await processPlaylist(result.filePaths[0])
+    } else {
+      files.value = result.filePaths.map((file: string) => ({
+        safeName: '- ' + sanitize(basename(file), true),
+        filepath: file,
+      }))
+    }
   }
 }
 const removeFile = (index: number) => {
@@ -248,10 +337,8 @@ const saveFiles = async () => {
 
     await Promise.allSettled(promises)
 
-    const localMediaPath = mediaPath()
-    if (localMediaPath) {
-      await convertUnusableFiles(localMediaPath, setProgress)
-    }
+    await convertUnusableFilesByDate(date.value)
+
     if (client.value && props.uploadMedia) await updateContent()
     emit('refresh')
   } catch (e: unknown) {

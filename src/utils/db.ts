@@ -110,7 +110,7 @@ export async function getDbFromJWPUB({
   return db
 }
 
-async function getDb({
+export async function getDb({
   file,
   pub,
   issue,

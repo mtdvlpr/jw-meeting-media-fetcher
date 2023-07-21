@@ -27,6 +27,7 @@ export function isImage(file: string) {
     'jpeg',
     'jfif',
     // 'svg',
+    'heic',
     'webp',
   ])
 }

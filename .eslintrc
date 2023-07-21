@@ -13,5 +13,6 @@
     "plugin:vuetify/recommended",
     "plugin:prettier/recommended"
   ],
-  "rules": {}
+  "rules": {},
+  "warnHtmlMessage": false
 }
