@@ -12,7 +12,7 @@
       </v-overlay>
       <v-tabs
         v-model="type"
-        :disabled="loading || saving"
+        :disabled="loading || saving || processing"
         @update:model-value="reset()"
       >
         <v-tab v-for="tab in types" :key="tab.value" :value="tab.value">
@@ -27,12 +27,12 @@
         <song-picker
           v-if="type === 'song'"
           v-model="jwFile"
-          :disabled="loading || saving"
+          :disabled="loading || saving || processing"
         />
         <publication-picker
           v-else-if="type === 'jwOrgPub'"
           v-model="jwOrgPub"
-          :disabled="loading || saving"
+          :disabled="loading || saving || processing"
           @select="
             !isLoneJwpub ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')
           "
@@ -41,10 +41,10 @@
           v-else
           :type="type"
           :files="files"
-          :loading="loading || saving"
+          :loading="loading || saving || processing"
           @remove="removeFile"
           @reset="reset()"
-          @click="!isLoneJwpub ? addFiles() : addFiles(false, 'JWPUB', 'jwpub')"
+          @click="addFiles(type === 'custom', (type === 'custom' ? '*' : type), (type === 'custom' ? '*' : type.toUpperCase()))"
         />
       </v-row>
       <v-row
@@ -52,7 +52,7 @@
         no-gutters
         class="pa-4 align-center"
       >
-        <manage-media-prefix v-model="prefix" :loading="loading || saving" />
+        <manage-media-prefix v-model="prefix" :loading="loading || saving || processing" />
       </v-row>
     </v-card-title>
     <v-divider />
@@ -65,7 +65,7 @@
           @empty="reset()"
         />
       </v-dialog>
-      <loading-icon v-if="loading || saving" />
+      <loading-icon v-if="loading || saving || processing" />
       <template v-else>
         <manage-media-list
           :date="date"
@@ -82,7 +82,7 @@
     <v-divider />
     <v-card-actions>
       <v-btn
-        :disabled="loading || saving"
+        :disabled="loading || saving || processing"
         color="error"
         variant="text"
         @click="cancel()"
@@ -91,7 +91,7 @@
       </v-btn>
       <v-btn
         v-if="jwFile || files.length > 0"
-        :loading="loading || saving"
+        :loading="loading || saving || processing"
         color="success"
         variant="text"
         @click="saveFiles()"

@@ -63,7 +63,8 @@ import * as fileWatcher from 'chokidar'
 import * as JSZip from 'jszip'
 // eslint-disable-next-line import/named
 import { pathExistsSync, readJsonSync, readdirSync } from 'fs-extra'
-import { LocalFile, VideoFile } from '~~/types'
+import { LocalFile, PlaylistItem, VideoFile } from '~~/types'
+import { Database } from '@stephen/sql.js'
 
 const { setProgress } = useProgress()
 const loading = ref(false)
@@ -98,7 +99,11 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
       write(path, file.contents)
     } else if (file.filepath) {
       // Local file
+      if (file.filepath.endsWith('.jwlplaylist')) {
+        await processPlaylist(file.filepath, dirname(path))
+      } else {
       await copy(file.filepath, path)
+      }
     } else if (file.objectUrl) {
       // Dropped file object (from web browser for example)
       await fetchFile({ url: file.objectUrl, dest: path })
@@ -166,6 +171,71 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
   // increaseProgress()
   convertUnusableFilesByDate(date.value)
   reset()
+}
+
+const processPlaylist = async (filePath: string, destPath: string) => {
+  loading.value = true
+  const db = (await getDb({
+    file: (await getZipContentsByExt(filePath, '.db', false)) ?? undefined,
+  })) as Database
+  const media = executeQuery(
+    db,
+    `SELECT Label, FilePath, MimeType, DocumentId, Track, IssueTagNumber, KeySymbol, MepsLanguage
+        FROM PlaylistItem PI
+          LEFT JOIN PlaylistItemLocationMap PILM ON PI.PlaylistItemId = PILM.PlaylistItemId
+          LEFT JOIN Location L ON PILM.LocationId = L.LocationId
+          LEFT JOIN PlaylistItemIndependentMediaMap PIIMM ON PI.PlaylistItemId = PIIMM.PlaylistItemId
+          LEFT JOIN IndependentMedia IM ON PIIMM.IndependentMediaId = IM.IndependentMediaId`
+  ) as PlaylistItem[]
+
+  const promises: Promise<void>[] = []
+  // Get correct extension
+  media
+    .map((m) => {
+      if (!extname(m.Label ?? '')) {
+        if (extname(m.FilePath ?? '')) {
+          m.Label += extname(m.FilePath!)
+        } else if (m.MimeType) {
+          m.Label = m.Label + '.' + m.MimeType.split('/')[1]
+        } else {
+          m.Label += '.mp4'
+        }
+      }
+      return m
+    })
+    .forEach((m, index) => {
+      promises.push(processPlaylistItem(index, m, filePath, destPath))
+    })
+  await Promise.allSettled(promises)
+  loading.value = false
+}
+const processPlaylistItem = async (
+  index: number,
+  m: PlaylistItem,
+  filePath: string,
+  destPath: string
+) => {
+  if (m.FilePath) {
+    let fileBuffer = (await getZipContentsByName(filePath, m.FilePath, false))
+    if (fileBuffer) write(join(destPath,`${(index + 1).toString().padStart(2, '0')} - ${sanitize(m.Label, true)}`), fileBuffer)
+  } else {
+    const mediaFiles = (await getMediaLinks({
+      pubSymbol: m.KeySymbol,
+      docId: m.DocumentId,
+      track: m.Track,
+      issue: m.IssueTagNumber,
+      lang: m.MepsLanguage ? MEPS_IDS[m.MepsLanguage] : undefined,
+    })) as VideoFile[]
+    for (const file of mediaFiles) {
+      file.folder = basename(destPath)
+     file.safeName = `${(index + 1).toString().padStart(2, '0')} - ${sanitize(file.title, true)}${extname(file.url)}`
+      await downloadIfRequired({
+        file,
+additional: true
+      })
+    }
+
+  }
 }
 
 const reset = () => {
