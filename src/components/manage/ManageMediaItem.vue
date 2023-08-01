@@ -50,7 +50,7 @@
             aria-label="rename file"
             @click="emit('edit')"
           />
-          <template v-if="getPrefs('cloudSync.enable')">
+          <template v-if="getPrefs('cloud.enable')">
             <template v-if="item.isLocal !== undefined && !item.recurring">
               <template v-if="!item.isLocal">
                 <v-btn
@@ -210,7 +210,7 @@ const unhide = (item: MeetingFile | LocalFile) => {
   mv(
     normalize(item.filepath),
     normalize(item.filepath).replace(
-      join(getPrefs('cloudSync.path'), 'Hidden'),
+      join(getPrefs('cloud.path'), 'Hidden'),
       normalize(mediaPath()!)
     )
   )
@@ -223,7 +223,7 @@ const hide = (item: MeetingFile | LocalFile) => {
     normalize(item.filepath),
     normalize(item.filepath).replace(
       normalize(mediaPath()!),
-      join(getPrefs('cloudSync.path'), 'Hidden')
+      join(getPrefs('cloud.path'), 'Hidden')
     )
   )
   item.hidden = true
@@ -234,7 +234,7 @@ const remove = (item: MeetingFile | LocalFile) => {
   rm(
     normalize(item.filepath).replace(
       normalize(mediaPath()!),
-      join(getPrefs('cloudSync.path'), 'Additional')
+      join(getPrefs('cloud.path'), 'Additional')
     )
   )
 }

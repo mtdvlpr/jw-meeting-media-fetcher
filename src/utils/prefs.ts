@@ -154,16 +154,16 @@ const schema: Schema<PrefStore> = {
       },
     },
   },
-  cloudSync: {
+  cloud: {
     type: 'object',
     properties: {
       enable: {
         type: 'boolean',
-        default: PREFS.cloudSync.enable,
+        default: PREFS.cloud.enable,
       },
       path: {
         type: ['string', 'null'],
-        default: PREFS.cloudSync.path,
+        default: PREFS.cloud.path,
       },
     },
   },
@@ -390,6 +390,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
           if (
             key === 'app' ||
             key === 'cong' ||
+            key === 'cloud' ||
             key === 'media' ||
             key === 'meeting' ||
             key === '__internal__'

@@ -198,7 +198,7 @@ export async function downloadIfRequired({
       const filePath = file.folder
         ? additional
           ? join(
-              (getPrefs('cloudSync.path'),
+              (getPrefs('cloud.path'),
               'Additional',
               file.folder!,
               file.destFilename ?? file.safeName)
@@ -238,7 +238,7 @@ export async function downloadIfRequired({
     if (file.folder) {
       const filePath = additional
         ? join(
-            getPrefs('cloudSync.path'),
+            getPrefs('cloud.path'),
             'Additional',
             file.folder!,
             file.destFilename ?? file.safeName
@@ -367,9 +367,9 @@ export async function syncJWMedia(
 async function syncMediaItemByDate(date: string, item: MeetingFile) {
   if (item.filesize && (item.url || item.filepath)) {
     if (
-      getPrefs('cloudSync.enable') &&
+      getPrefs('cloud.enable') &&
       (await pathExists(
-        join(getPrefs('cloudSync.path'), 'Hidden', item.folder, item.safeName)
+        join(getPrefs('cloud.path'), 'Hidden', item.folder, item.safeName)
       ))
     ) {
       log.info(

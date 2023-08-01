@@ -44,7 +44,13 @@
           :loading="loading || saving || processing"
           @remove="removeFile"
           @reset="reset()"
-          @click="addFiles(type === 'custom', (type === 'custom' ? '*' : type), (type === 'custom' ? '*' : type.toUpperCase()))"
+          @click="
+            addFiles(
+              type === 'custom',
+              type === 'custom' ? '*' : type,
+              type === 'custom' ? '*' : type.toUpperCase()
+            )
+          "
         />
       </v-row>
       <v-row
@@ -52,7 +58,10 @@
         no-gutters
         class="pa-4 align-center"
       >
-        <manage-media-prefix v-model="prefix" :loading="loading || saving || processing" />
+        <manage-media-prefix
+          v-model="prefix"
+          :loading="loading || saving || processing"
+        />
       </v-row>
     </v-card-title>
     <v-divider />
@@ -237,8 +246,8 @@ const processPlaylistItem = async (
   m: PlaylistItem,
   filePath: string
 ) => {
-  console.log(m);
-  
+  console.log(m)
+
   if (m.FilePath) {
     files.value.push({
       safeName: `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
@@ -365,8 +374,8 @@ const processFile = async (file: LocalFile | VideoFile) => {
 
   const congPromises: Promise<void>[] = []
   const path = join(
-    getPrefs('cloudSync.enable')
-      ? join(getPrefs('cloudSync.path'), 'Additional')
+    getPrefs('cloud.enable')
+      ? join(getPrefs('cloud.path'), 'Additional')
       : mediaPath(),
     date.value,
     file.safeName
@@ -413,8 +422,8 @@ const processFile = async (file: LocalFile | VideoFile) => {
       ).map((m) => JSON.parse(m))
 
       const markerPath = join(
-        getPrefs('cloudSync.enable')
-          ? join(getPrefs('cloudSync.path'), 'Additional')
+        getPrefs('cloud.enable')
+          ? join(getPrefs('cloud.path'), 'Additional')
           : mediaPath(),
         file.folder,
         changeExt(file.safeName, 'json')

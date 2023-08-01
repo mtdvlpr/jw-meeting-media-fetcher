@@ -675,15 +675,12 @@ const groups = computed((): Settings[] => {
                   const filename = `custom-background-image-${prefs.value.app.congregationName}`
                   const extension = extname(background)
                   rm(findAll(join(appPath(), filename + '*')))
-                  if (
-                    getPrefs('cloudSync.enable') &&
-                    getPrefs('cloudSync.path')
-                  ) {
+                  if (getPrefs('cloud.enable') && getPrefs('cloud.path')) {
                     // Copy the background to cloud sync
                     copy(
                       background,
                       join(
-                        getPrefs('cloudSync.path'),
+                        getPrefs('cloud.path'),
                         'Settings',
                         filename + extension
                       )
@@ -711,18 +708,11 @@ const groups = computed((): Settings[] => {
               action: async () => {
                 const filename = `custom-background-image-${prefs.value.app.congregationName}`
                 const background = findAll(join(appPath(), filename + '*'))
-                if (
-                  getPrefs('cloudSync.enable') &&
-                  getPrefs('cloudSync.path')
-                ) {
+                if (getPrefs('cloud.enable') && getPrefs('cloud.path')) {
                   // Remove the background from cloud sync
                   rm(
                     findAll(
-                      join(
-                        getPrefs('cloudSync.path'),
-                        'Settings',
-                        filename + '*'
-                      )
+                      join(getPrefs('cloud.path'), 'Settings', filename + '*')
                     )
                   )
                 } else if (client.value && prefs.value.cong.dir) {
@@ -777,22 +767,22 @@ const groups = computed((): Settings[] => {
           icon: 'mdi-cloud-sync',
           value: [
             {
-              key: 'cloudSync.enable',
+              key: 'cloud.enable',
               label: 'cloudSyncEnable',
               explanation: 'cloudSyncExplain',
             },
             {
               type: 'path',
-              key: 'cloudSync.path',
-              depends: 'cloudSync.enable',
+              key: 'cloud.path',
+              depends: 'cloud.enable',
               label: 'cloudSyncFolder',
               props: {
-                required: !!prefs.value.cloudSync.enable,
+                required: !!prefs.value.cloud.enable,
               },
             },
             {
               type: 'action',
-              depends: 'cloudSync.enable',
+              depends: 'cloud.enable',
               label: 'settingsLocked',
               action: () => {
                 forcingPrefs.value = true

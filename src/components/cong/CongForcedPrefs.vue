@@ -138,7 +138,7 @@ onMounted(() => {
 const change = ref(false)
 const updatePrefs = async () => {
   // If nothing changed, just close the modal
-  if (!change.value || (!getPrefs('cloudSync.enable') && !store.client)) {
+  if (!change.value || (!getPrefs('cloud.enable') && !store.client)) {
     active.value = false
     return
   }
@@ -166,9 +166,9 @@ const updatePrefs = async () => {
 
     // Update forcedPrefs.json
     log.debug('prefs', JSON.stringify(forcedPrefs))
-    if (getPrefs('cloudSync.enable')) {
+    if (getPrefs('cloud.enable')) {
       write(
-        join(getPrefs('cloudSync.path'), 'Settings', 'forcedPrefs.json'),
+        join(getPrefs('cloud.path'), 'Settings', 'forcedPrefs.json'),
         JSON.stringify(forcedPrefs, null, 2)
       )
     } else if (store.client) {

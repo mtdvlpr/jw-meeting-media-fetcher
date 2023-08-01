@@ -8,7 +8,7 @@ import {
   MeetingPrefs,
   PrefStore,
   ZoomPrefs,
-  CloudSyncPrefs,
+  CloudPrefs,
 } from '~~/types'
 
 export function isLocked(key: string) {
@@ -44,14 +44,14 @@ export function isLocked(key: string) {
 export async function forcePrefs(refresh = false) {
   const store = useCongStore()
   const client = store.client
-  const cloudSync = getPrefs('cloudSync.enable')
+  const cloudSync = getPrefs('cloud.enable')
   if (!client && !cloudSync) return null
   if (!refresh && store.prefs) {
     return store.prefs
   }
 
   const dir = cloudSync
-    ? join(getPrefs('cloudSync.path'), 'Settings')
+    ? join(getPrefs('cloud.path'), 'Settings')
     : getPrefs<string>('cong.dir')
   if (!dir) return undefined
 
@@ -121,8 +121,8 @@ export async function forcePrefs(refresh = false) {
       const newPrefs = {
         app: Object.assign(getPrefs<AppPrefs>('app'), prefs.app ?? {}),
         cong: Object.assign(getPrefs<CongPrefs>('cong'), prefs.cong ?? {}),
-        cloudSync: Object.assign(
-          getPrefs<CloudSyncPrefs>('cloudSync'),
+        cloud: Object.assign(
+          getPrefs<CloudPrefs>('cloudSync'),
           prefs.cloudSync ?? {}
         ),
         media: Object.assign(getPrefs<MediaPrefs>('media'), prefs.media ?? {}),

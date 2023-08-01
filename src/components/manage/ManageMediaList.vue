@@ -135,8 +135,8 @@ const saveNewName = async () => {
   const cleanName = sanitize(edit.value.newName + edit.value.ext, true)
   rename(
     join(
-      getPrefs('cloudSync.enable')
-        ? join(getPrefs('cloudSync.path'), 'Additional')
+      getPrefs('cloud.enable')
+        ? join(getPrefs('cloud.path'), 'Additional')
         : mediaPath(),
       props.date,
       edit.value.safeName

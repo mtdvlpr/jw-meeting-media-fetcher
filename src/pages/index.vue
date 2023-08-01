@@ -266,13 +266,13 @@ const connectWebDAV = async () => {
 }
 
 const connectCloudSync = () => {
-  if (getPrefs('cloudSync.enable') && getPrefs('cloudSync.path')) {
+  if (getPrefs('cloud.enable') && getPrefs('cloud.path')) {
     // custom background image
     watchers.value.push(
       fileWatcher
         .watch(
           join(
-            getPrefs('cloudSync.path'),
+            getPrefs('cloud.path'),
             'Settings',
             `custom-background-image-${getPrefs<string>(
               'app.congregationName'
@@ -296,13 +296,10 @@ const connectCloudSync = () => {
     // enforced settings
     watchers.value.push(
       fileWatcher
-        .watch(
-          join(getPrefs('cloudSync.path'), 'Settings', 'forcedPrefs.json'),
-          {
-            depth: 1,
-            ignorePermissionErrors: true,
-          }
-        )
+        .watch(join(getPrefs('cloud.path'), 'Settings', 'forcedPrefs.json'), {
+          depth: 1,
+          ignorePermissionErrors: true,
+        })
         .on('add', () => {
           forcePrefs()
         })

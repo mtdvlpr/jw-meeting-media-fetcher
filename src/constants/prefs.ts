@@ -36,7 +36,7 @@ export const PREFS = {
       autoStartTime: 1,
     },
   },
-  cloudSync: {
+  cloud: {
     enable: false,
     path: null,
   },

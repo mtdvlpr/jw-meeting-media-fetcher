@@ -87,8 +87,8 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
   for (const file of files) {
     // const congPromises: Promise<void>[] = []
     const path = join(
-      getPrefs('cloudSync.enable')
-        ? join(getPrefs('cloudSync.path'), 'Additional')
+      getPrefs('cloud.enable')
+        ? join(getPrefs('cloud.path'), 'Additional')
         : mediaPath(),
       date.value,
       file.safeName
@@ -102,7 +102,7 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
       if (file.filepath.endsWith('.jwlplaylist')) {
         await processPlaylist(file.filepath, dirname(path))
       } else {
-      await copy(file.filepath, path)
+        await copy(file.filepath, path)
       }
     } else if (file.objectUrl) {
       // Dropped file object (from web browser for example)
@@ -136,8 +136,8 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
         ).map((m) => JSON.parse(m))
 
         const markerPath = join(
-          getPrefs('cloudSync.enable')
-            ? join(getPrefs('cloudSync.path'), 'Additional')
+          getPrefs('cloud.enable')
+            ? join(getPrefs('cloud.path'), 'Additional')
             : mediaPath(),
           file.folder,
           changeExt(file.safeName, 'json')
@@ -216,8 +216,18 @@ const processPlaylistItem = async (
   destPath: string
 ) => {
   if (m.FilePath) {
-    let fileBuffer = (await getZipContentsByName(filePath, m.FilePath, false))
-    if (fileBuffer) write(join(destPath,`${(index + 1).toString().padStart(2, '0')} - ${sanitize(m.Label, true)}`), fileBuffer)
+    let fileBuffer = await getZipContentsByName(filePath, m.FilePath, false)
+    if (fileBuffer)
+      write(
+        join(
+          destPath,
+          `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
+            m.Label,
+            true
+          )}`
+        ),
+        fileBuffer
+      )
   } else {
     const mediaFiles = (await getMediaLinks({
       pubSymbol: m.KeySymbol,
@@ -228,13 +238,15 @@ const processPlaylistItem = async (
     })) as VideoFile[]
     for (const file of mediaFiles) {
       file.folder = basename(destPath)
-     file.safeName = `${(index + 1).toString().padStart(2, '0')} - ${sanitize(file.title, true)}${extname(file.url)}`
+      file.safeName = `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
+        file.title,
+        true
+      )}${extname(file.url)}`
       await downloadIfRequired({
         file,
-additional: true
+        additional: true,
       })
     }
-
   }
 }
 
@@ -259,7 +271,7 @@ const localMedia = computed((): LocalFile[] => [
         filepath: item.path,
         isLocal: !!findOne(
           join(
-            getPrefs('cloudSync.path'),
+            getPrefs('cloud.path'),
             'Additional',
             date.value,
             basename(item.path)
@@ -268,22 +280,22 @@ const localMedia = computed((): LocalFile[] => [
       }
     })
     .concat(
-      getPrefs('cloudSync.enable')
-        ? findAll(
-            join(getPrefs('cloudSync.path'), 'Hidden', date.value, '*')
-          ).map((item) => {
-            return {
-              safeName: basename(item),
-              filepath: item,
-              hidden: true,
-              isLocal: true,
+      getPrefs('cloud.enable')
+        ? findAll(join(getPrefs('cloud.path'), 'Hidden', date.value, '*')).map(
+            (item) => {
+              return {
+                safeName: basename(item),
+                filepath: item,
+                hidden: true,
+                isLocal: true,
+              }
             }
-          })
+          )
         : []
     )
     .concat(
-      getPrefs('cloudSync.enable')
-        ? findAll(join(getPrefs('cloudSync.path'), 'Recurring', '*')).map(
+      getPrefs('cloud.enable')
+        ? findAll(join(getPrefs('cloud.path'), 'Recurring', '*')).map(
             (item) => {
               return {
                 safeName: basename(item),
@@ -419,11 +431,11 @@ onMounted(() => {
         }
       })
   )
-  if (getPrefs('cloudSync.enable')) {
+  if (getPrefs('cloud.enable')) {
     // additional files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudSync.path'), 'Additional', date.value), {
+        .watch(join(getPrefs('cloud.path'), 'Additional', date.value), {
           depth: 1,
           ignorePermissionErrors: true,
         })
@@ -446,7 +458,7 @@ onMounted(() => {
     // hidden files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudSync.path'), 'Hidden', date.value), {
+        .watch(join(getPrefs('cloud.path'), 'Hidden', date.value), {
           depth: 1,
           ignorePermissionErrors: true,
         })
@@ -457,7 +469,7 @@ onMounted(() => {
     // recurring files
     watchers.value?.push(
       fileWatcher
-        .watch(join(getPrefs('cloudSync.path'), 'Recurring'), {
+        .watch(join(getPrefs('cloud.path'), 'Recurring'), {
           depth: 1,
           ignorePermissionErrors: true,
         })

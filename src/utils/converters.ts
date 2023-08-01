@@ -105,8 +105,8 @@ export async function convertUnusableFiles(
 }
 
 export async function convertUnusableFilesByDate(date: string) {
-  if (getPrefs('cloudSync.enable')) {
-    const cloudPath = join(getPrefs('cloudSync.path'), 'Additional')
+  if (getPrefs('cloud.enable')) {
+    const cloudPath = join(getPrefs('cloud.path'), 'Additional')
     const cloudPdfFiles = findAll(join(cloudPath, date, '*pdf'))
     const cloudSvgFiles = findAll(join(cloudPath, date, '*svg'))
     const cloudHeicFiles = findAll(join(cloudPath, date, '*heic'))
