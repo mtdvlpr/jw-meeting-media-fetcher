@@ -162,7 +162,7 @@ const invalidFormItems = computed(() => {
   return (
     (form.value &&
       !form.value.isValidating.value &&
-      form.value.items.value.filter(
+      form.value.items.value?.filter(
         (item) => item.isValid !== null && !item.isValid
       )) ||
     []
@@ -250,7 +250,7 @@ const requiredSettings = computed(() => {
       key: 'app.obs.cameraScene',
       label: 'obsCameraScene',
       props: {
-        items: scenes.value.filter(
+        items: scenes.value?.filter(
           (s) =>
             s !== prefs.value.app.obs.mediaScene &&
             s !== prefs.value.app.obs.zoomScene &&
@@ -263,7 +263,7 @@ const requiredSettings = computed(() => {
       key: 'app.obs.mediaScene',
       label: 'obsMediaScene',
       props: {
-        items: scenes.value.filter(
+        items: scenes.value?.filter(
           (s) =>
             s !== prefs.value.app.obs.cameraScene &&
             s !== prefs.value.app.obs.zoomScene &&
@@ -403,7 +403,7 @@ const groups = computed((): Settings[] => {
               key: 'media.langSubs',
               depends: 'media.enableSubtitles',
               props: {
-                items: langs.value.filter((l) => !l.isSignLanguage),
+                items: langs.value?.filter((l) => !l.isSignLanguage),
               },
               onChange: (val: string) => {
                 if (val) getPubAvailability(val)
@@ -448,7 +448,7 @@ const groups = computed((): Settings[] => {
               key: 'media.langFallback',
               explanation: 'langFallbackExplain',
               props: {
-                items: langs.value.filter(
+                items: langs.value?.filter(
                   (l) =>
                     l.value !== prefs.value.media.lang &&
                     (l.wAvailable !== false || l.mwbAvailable !== false)
@@ -837,7 +837,7 @@ const groups = computed((): Settings[] => {
               label: 'obsImageScene',
               depends: 'app.obs.enable',
               props: {
-                items: scenes.value.filter(
+                items: scenes.value?.filter(
                   (s) =>
                     s !== prefs.value.app.obs.mediaScene &&
                     s !== prefs.value.app.obs.zoomScene &&
@@ -855,7 +855,7 @@ const groups = computed((): Settings[] => {
               label: 'obsZoomScene',
               depends: 'app.obs.enable',
               props: {
-                items: scenes.value.filter(
+                items: scenes.value?.filter(
                   (s) =>
                     s !== prefs.value.app.obs.mediaScene &&
                     s !== prefs.value.app.obs.cameraScene &&
@@ -1110,7 +1110,7 @@ const missingSettings = computed(() => {
       const settings = obj.settings
         .map((setting) => {
           if (setting.type === 'group') {
-            const value = setting.value.filter((subSetting) => {
+            const value = setting.value?.filter((subSetting) => {
               return (
                 !!subSetting.props?.required &&
                 !getPrefs((subSetting as Setting).key)
@@ -1137,7 +1137,7 @@ const invalidSettingGroups = computed(() => {
   return invalidFormItems.value?.length > 0
     ? groups.value
         ?.map((group) => {
-          const filteredSettings = group.settings.filter((item) => {
+          const filteredSettings = group.settings?.filter((item) => {
             if (isSetting(item)) {
               return invalidFormItems.value
                 ?.map((item) => item.id)
@@ -1145,7 +1145,7 @@ const invalidSettingGroups = computed(() => {
                   id.toString().includes(item.key?.replace(/\./g, ''))
                 )
             } else if (item.type === 'group') {
-              const filteredGroupSettings = item.value.filter(
+              const filteredGroupSettings = item.value?.filter(
                 (setting) =>
                   isSetting(setting) &&
                   invalidFormItems.value

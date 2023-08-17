@@ -129,7 +129,7 @@ const id = computed(() => strip('video-' + basename(props.src)))
 const poster = computed(() => (isVideo(props.src) ? VIDEO_ICON : AUDIO_ICON))
 const url = computed(() => {
   return (
-    (props.stream ? props.src : pathToFileURL(props.src).href) +
+    ((props.stream || thumbnail.value.length > 0) ? props.src : pathToFileURL(props.src).href) +
     (thumbnail.value ? '' : '#t=5')
   )
 })
