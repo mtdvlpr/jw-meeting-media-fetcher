@@ -8,38 +8,22 @@
       <v-window-item v-for="step in firstRunSteps" :key="step.title">
         <v-card :title="step.title" class="mx-auto">
           <v-card-text>
-            <settings-item
-              v-for="pref in step.settings"
-              :key="pref.key"
-              :setting="pref"
-            />
+            <settings-item v-for="pref in step.settings" :key="pref.key" :setting="pref" />
             <span class="text-caption text-grey-darken-1">
               {{ step.subtitle }}
             </span>
           </v-card-text>
           <v-divider />
           <v-card-actions>
-            <v-btn
-              v-if="currentInitialSetting > 0"
-              variant="text"
-              color="secondary"
-              @click="previousStep()"
-            >
+            <v-btn v-if="currentInitialSetting > 0" variant="text" color="secondary" @click="previousStep()">
               Previous step
             </v-btn>
             <v-spacer />
             <template v-if="step.firstRunParam">
-              <v-btn
-                variant="flat"
-                @click="setFirstRunParam(step.firstRunParam!, false)"
-              >
+              <v-btn variant="flat" @click="setFirstRunParam(step.firstRunParam!, false)">
                 No
               </v-btn>
-              <v-btn
-                variant="flat"
-                color="primary"
-                @click="setFirstRunParam(step.firstRunParam!, true)"
-              >
+              <v-btn variant="flat" color="primary" @click="setFirstRunParam(step.firstRunParam!, true)">
                 Yes
               </v-btn>
             </template>
@@ -47,11 +31,7 @@
               <v-btn v-if="initialSettingsDone" @click="isNew = ''">
                 Go to media calendar
               </v-btn>
-              <v-btn
-                variant="flat"
-                color="primary"
-                @click="nextStep(step.onComplete)"
-              >
+              <v-btn variant="flat" color="primary" @click="nextStep(step.onComplete)">
                 {{ initialSettingsDone ? 'Explore more settings' : 'Next' }}
               </v-btn>
             </template>
@@ -64,6 +44,7 @@
 </template>
 <script setup lang="ts">
 import { useRouteQuery } from '@vueuse/router'
+import { ipcRenderer } from 'electron';
 import { Setting } from '~~/types'
 
 const props = defineProps<{
@@ -154,9 +135,7 @@ const firstRunSteps = computed((): FirstRunStep[] => {
         props.requiredSettings['meeting.weStartTime'],
       ],
       onComplete: () => {
-        if (firstRunParams.value.usingAtKh) {
-          enableExternalDisplayAndMusic()
-        }
+        enableExternalDisplayAndMusic()
       },
     },
     {
@@ -258,23 +237,46 @@ const initialSettingsDone = computed(
 const firstRunProgress = computed(
   () => ((currentInitialSetting.value + 1) / firstRunSteps.value.length) * 100
 )
+const { screens, mediaScreenInit } = storeToRefs(usePresentStore())
 const enableExternalDisplayAndMusic = () => {
-  // update prefs here
-  setPrefs('media.enableMediaDisplayButton', !!firstRunParams.value.usingAtKh)
-  setPrefs('media.enableMusicButton', !!firstRunParams.value.companionToJw)
-  setPrefs('meeting.companionToJw', !firstRunParams.value.companionToJw)
-  setPrefs('media.hideWinAfterMedia', !firstRunParams.value.companionToJw)
+  const usingAtKh = !!firstRunParams.value.usingAtKh
+  setPrefs('media.enableMediaDisplayButton', usingAtKh)
 
-  // eslint-disable-next-line no-console
-  console.log('enableExternalDisplayAndMusic')
-  if (firstRunParams.value.companionToJw) {
-    // eslint-disable-next-line no-console
-    console.log('enableMusicButton = true')
+  // TODO: I just manually took the function from "onChange" for the media.enableMediaDisplayButton button, but there has to be a better way
+  if (usingAtKh !== mediaScreenInit.value) {
+    toggleMediaWindow(usingAtKh ? 'open' : 'close')
   } else {
-    // eslint-disable-next-line no-console
-    console.log('specialCong = true')
-    // eslint-disable-next-line no-console
-    console.log('media.hideWinAfterMedia = true')
+    ipcRenderer.send('hideMediaWindow')
+  }
+
+  if (usingAtKh) {
+    if (
+      getPrefs('media.preferredOutput') === 'window' &&
+      screens.value.length > 0
+    ) {
+      setPrefs('media.preferredOutput', screens.value[0].id)
+    }
+    refreshBackgroundImgPreview()
+  }
+  useStatStore().setShowMediaPlayback(usingAtKh)
+  // onChange end
+
+  setPrefs('media.enableMusicButton', usingAtKh)
+  // TODO: I just manually took the function from "onChange" for the meeting.enableMusicButton button, but there has to be a better way
+  useStatStore().setShowMusicButton(usingAtKh)
+  // onChange end
+
+  const companionToJw = usingAtKh && !!firstRunParams.value.companionToJw
+  setPrefs('meeting.companionToJw', companionToJw)
+  setPrefs('media.hideWinAfterMedia', companionToJw)
+
+  if (usingAtKh) {
+    setPrefs('meeting.autoStartMusic', !companionToJw)
+    setPrefs('meeting.enableMusicFadeOut', !companionToJw)
+    setPrefs('meeting.musicFadeOutTime', 60)
+    setPrefs('meeting.musicFadeOutType', 'smart')
+    setPrefs('meeting.specialCong', companionToJw)
+    setPrefs('media.hideWinAfterMedia', companionToJw)
   }
 }
 
@@ -282,6 +284,7 @@ const startMediaSync = () => {
   // start media sync here
   // eslint-disable-next-line no-console
   console.log('start media sync here')
+  // presentSelect.value.syncMedia()
 }
 
 const enableObs = () => {
