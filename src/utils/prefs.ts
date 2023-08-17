@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron'
 import Store, { type Schema } from 'electron-store'
+import { sync } from 'fast-glob'
 import { readJsonSync, removeSync } from 'fs-extra'
 import { basename, dirname, join, joinSafe, normalizeSafe } from 'upath'
 import {
@@ -591,7 +592,6 @@ export function migrate2290(key: string, newVal: any) {
 }
 
 export async function getCongPrefs() {
-  const { sync } = await import('fast-glob')
   return sync(join(await ipcRenderer.invoke('userData'), 'prefs-*.json'))
     .map((file) => {
       const prefs = readJsonSync(file) as PrefStore

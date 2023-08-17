@@ -5,53 +5,32 @@
     </v-app-bar-title>
     <progress-bar :current="current" :total="total" />
     <template #extension>
-      <v-text-field
-        v-model="filter"
-        :label="$t('search')"
-        hide-details="auto"
-        density="compact"
-        prepend-inner-icon="mdi-text-search"
-        :disabled="invalidSettings"
-        clearable
-      />
+      <v-text-field v-model="filter" :label="$t('search')" hide-details="auto" density="compact"
+        prepend-inner-icon="mdi-text-search" :disabled="invalidSettings" clearable />
     </template>
     <template #append>
       <v-menu>
         <template #activator="{ props: menuProps }">
-          <v-btn
-            icon="mdi-dots-vertical"
-            v-bind="menuProps"
-            aria-label="More actions"
-          />
+          <v-btn icon="mdi-dots-vertical" v-bind="menuProps" aria-label="More actions" />
         </template>
         <v-list>
           <v-list-item :title="$t('cleanCache')" @click="removeCache()">
             <template #append>
-              <v-chip
-                size="small"
-                class="ms-2"
-                :text="`${cache.toFixed(1)}MB`"
-              />
+              <v-chip size="small" class="ms-2" :text="`${cache.toFixed(1)}MB`" />
               <v-icon>mdi-file-image-remove</v-icon>
             </template>
           </v-list-item>
+          <v-list-item :title="$t('openGithub')" append-icon="mdi-code-braces-box" @click="openReleases()" />
+          <v-list-item :title="$t('reportIssue')" append-icon="mdi-alert" @click="report()" />
           <v-divider />
-          <v-list-item
-            :title="$t('openGithub')"
-            append-icon="mdi-code-braces-box"
-            @click="openReleases()"
-          />
-          <v-list-item
-            :title="$t('reportIssue')"
-            append-icon="mdi-alert"
-            @click="report()"
-          />
+          <v-list-item :title="$t('wipeAllUserFiles')" append-icon="mdi-nuke" @click="wipeAllUserFiles()" />
         </v-list>
       </v-menu>
     </template>
   </v-app-bar>
 </template>
 <script setup lang="ts">
+import { ipcRenderer } from 'electron';
 import getFolderSize from 'get-folder-size'
 import { join } from 'upath'
 import { PrefStore } from '~~/types'
@@ -92,8 +71,8 @@ const setShuffleMusicFiles = () => {
   shuffleMusicFiles.value = isSignLanguage()
     ? join(pPath, '..', props.prefs.media.lang, 'sjj', '**', '*.mp4')
     : props.prefs.media.lang === 'E'
-    ? ''
-    : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
+      ? ''
+      : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
 }
 
 const getCacheFolders = (onlyDirs = false) => {
@@ -164,5 +143,17 @@ const openReleases = () => {
     `${repo}/releases/${updateSuccess.value ? 'tag/' + version : ''}`,
     '_blank'
   )
+}
+const wipeAllUserFiles = () => {
+  loading.value = true
+  const folders = getCacheFolders(true)
+  rm(
+    findAll(folders, {
+      onlyDirectories: true,
+    })
+  )
+  rm(findAll(join(appPath()!, "*.json")))
+  ipcRenderer.send('restart')
+  loading.value = false
 }
 </script>

@@ -273,14 +273,14 @@ const localMedia = computed((): LocalFile[] => [
       return {
         safeName: basename(item.path),
         filepath: item.path,
-        isLocal: !!findOne(
+        isLocal: getPrefs('cloud.enable') ? !!findOne(
           join(
             getPrefs('cloud.path'),
             'Additional',
             date.value,
             basename(item.path)
           )
-        ),
+        ): true,
       }
     })
     .concat(

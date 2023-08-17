@@ -8,53 +8,28 @@
         <v-card :subtitle="day" variant="text" class="text-dark"></v-card>
       </v-col>
     </v-row>
-    <v-row
-      v-for="(week, i) in weeks"
-      :key="i"
-      no-gutters
-      class="week v-row-auto"
-    >
+    <v-row v-for="(week, i) in weeks" :key="i" no-gutters class="week v-row-auto">
       <v-col v-for="(day, j) in week" :key="j" class="day">
-        <v-card
-          v-ripple="!day.inPast"
-          :variant="day.inPast ? 'tonal' : undefined"
-          :subtitle="day.month"
-          :title="day.dayOfMonth"
-          :color="
-            day.inPast
-              ? 'grey'
-              : day.meetingType
+        <v-card v-ripple="!day.inPast" :variant="day.inPast ? 'tonal' : undefined" :subtitle="day.month"
+          :title="day.dayOfMonth" :color="day.inPast
+            ? 'grey'
+            : day.meetingType
               ? 'primary'
               : day.nonMeetingMedia
-              ? 'blue-lighten-4'
-              : 'bg'
-          "
-          :loading="syncInProgress.includes(day.date)"
-          :class="{
-            inPast: day.inPast,
-            'ma-1': true,
-            border: !day.inPast && !day.meetingType,
-          }"
-          @click="day.inPast ? null : selectDate(day.date)"
-        >
+                ? 'blue-lighten-4'
+                : 'bg'
+            " :loading="syncInProgress.includes(day.date)" :class="{
+    inPast: day.inPast,
+    'ma-1': true,
+    border: !day.inPast && !day.meetingType,
+  }" @click="day.inPast ? null : selectDate(day.date)">
           <v-card-text> </v-card-text>
-          <v-progress-linear
-            :active="
-              !!daysDownloadProgress.get(day.date)?.percent &&
-              daysDownloadProgress.get(day.date).percent > 0 &&
-              daysDownloadProgress.get(day.date).percent < 100
-            "
-            color="red"
-            height="4"
-            indeterminate
-          ></v-progress-linear>
+          <v-progress-linear :active="!!daysDownloadProgress.get(day.date)?.percent &&
+            daysDownloadProgress.get(day.date).percent > 0 &&
+            daysDownloadProgress.get(day.date).percent < 100
+            " color="red" height="4" indeterminate></v-progress-linear>
           <template #loader="{ isActive }">
-            <v-progress-linear
-              :active="isActive"
-              color="warning"
-              height="4"
-              indeterminate
-            ></v-progress-linear>
+            <v-progress-linear :active="isActive" color="warning" height="4" indeterminate></v-progress-linear>
           </template>
         </v-card>
       </v-col>
@@ -200,8 +175,8 @@ onMounted(() => {
           isTodayOrAfter && isMwDay
             ? 'mw'
             : isTodayOrAfter && isWeDay
-            ? 'we'
-            : undefined
+              ? 'we'
+              : undefined
         week.push({
           date: date.format(dateFormat),
           dayOfMonth: date.format('D'),
@@ -221,7 +196,7 @@ onMounted(() => {
       weeks.value.push(week)
     }
     const lastPage = useRouter().options.history.state.back?.toString()
-    if (!lastPage || !lastPage.includes('present')) {
+    if (!lastPage || lastPage === "/") {
       syncMedia()
       if (
         (todayDate.day() + 6) % 7 === getMwDay(todayDate) ||
@@ -315,6 +290,7 @@ defineExpose({ syncMedia })
 .present-select {
   width: 100%;
 }
+
 .inPast {
   cursor: unset;
 }
