@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { join } from 'upath'
 // eslint-disable-next-line import/named
-import { writeFileSync } from 'fs-extra'
+import { writeJson } from 'fs-extra'
 import {
   findLatestBuild,
   ipcRendererInvoke,
@@ -88,7 +88,11 @@ export async function openHomePage(
   const onCongSelect = (await page.locator('.fa-building-user').count()) > 0
 
   // Insert mock preferences
-  writeFileSync(join(appPath, `prefs-${congId}.json`), JSON.stringify(prefs))
+  try {
+    await writeJson(join(appPath, `prefs-${congId}.json`), prefs)
+  } catch (error) {
+    log.error(error)
+  }
   const nrOfCongs = sync(join(appPath, 'prefs-*.json')).length
 
   if (onCongSelect && nrOfCongs > 1) {

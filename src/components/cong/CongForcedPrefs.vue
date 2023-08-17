@@ -52,6 +52,7 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
+import { writeJSON } from 'fs-extra';
 import { join } from 'upath'
 
 const emit = defineEmits(['update:modelValue'])
@@ -167,10 +168,11 @@ const updatePrefs = async () => {
     // Update forcedPrefs.json
     log.debug('prefs', JSON.stringify(forcedPrefs))
     if (getPrefs('cloud.enable')) {
-      write(
-        join(getPrefs('cloud.path'), 'Settings', 'forcedPrefs.json'),
-        JSON.stringify(forcedPrefs, null, 2)
-      )
+      try {
+        await writeJSON(join(getPrefs('cloud.path'), 'Settings', 'forcedPrefs.json'), forcedPrefs, { spaces: 2 })
+      } catch (error) {
+        log.error(error)
+      }
     } else if (store.client) {
       await store.client.putFileContents(
         join(getPrefs<string>('cong.dir'), 'forcedPrefs.json'),

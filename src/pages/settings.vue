@@ -288,8 +288,8 @@ const requiredSettings = computed(() => {
         )
         useDbStore().clear()
         useMediaStore().clear()
-        getPubAvailability(val)
         getJWLangs()
+        getPubAvailability(val)
         refreshBackgroundImgPreview(true)
       },
     },
@@ -458,8 +458,8 @@ const groups = computed((): Settings[] => {
                 useDbStore().clear()
                 useMediaStore().clear()
                 if (!val) return
-                getPubAvailability(val)
                 getJWLangs()
+                getPubAvailability(val)
               },
             },
             {

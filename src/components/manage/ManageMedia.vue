@@ -114,7 +114,7 @@
 import { useRouteQuery } from '@vueuse/router'
 import { ipcRenderer } from 'electron'
 
-import { readFile, stat } from 'fs-extra'
+import { readFile, stat, writeJSON } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
 import type { Database } from '@stephen/sql.js'
 import {
@@ -428,7 +428,11 @@ const processFile = async (file: LocalFile | VideoFile) => {
         file.folder,
         changeExt(file.safeName, 'json')
       )
-      write(markerPath, JSON.stringify(markers))
+      try {
+        await writeJSON(markerPath, markers)
+      } catch (error) {
+        log.error(error)
+      }
       congPromises.push(uploadFile(markerPath))
     }
   }

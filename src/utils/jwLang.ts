@@ -1,6 +1,6 @@
-import { pathExists, readJson } from 'fs-extra'
+import { pathExists, readJson, readJsonSync, writeJson } from 'fs-extra'
 import { join } from 'upath'
-import { ShortJWLang, JWLang, Filter } from '~~/types'
+import { ShortJWLang, JWLang, Filter, Choice } from '~~/types'
 
 export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   const { $dayjs } = useNuxtApp()
@@ -8,70 +8,51 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   const lastUpdate = getPrefs<string>('media.langUpdatedLast')
   const recentlyUpdated =
     lastUpdate && $dayjs(lastUpdate).isAfter($dayjs().subtract(3, 'months'))
+  let langs: ShortJWLang[] = []
 
   if (forceReload || !(await pathExists(langPath)) || !recentlyUpdated) {
     try {
       const result = await fetchJson<{ languages: JWLang[] }>(
         'https://www.jw.org/en/languages'
       )
-      if (result.languages) {
-        const langs: ShortJWLang[] = result.languages
-          .filter((lang) => lang.hasWebContent)
-          .map((lang) => {
-            return {
-              name: lang.name,
-              langcode: lang.langcode,
-              symbol: lang.symbol,
-              vernacularName: lang.vernacularName,
-              isSignLanguage: lang.isSignLanguage,
-            }
-          })
-        write(langPath, JSON.stringify(langs, null, 2))
-        setPrefs('media.langUpdatedLast', $dayjs().toISOString())
-      } else {
-        log.error(result)
+      log.debug('Result from langs call:', result)
+      langs = result.languages
+        .filter((lang) => lang.hasWebContent)
+        .map((lang) => {
+          return {
+            name: lang.name,
+            langcode: lang.langcode,
+            symbol: lang.symbol,
+            vernacularName: lang.vernacularName,
+            isSignLanguage: lang.isSignLanguage,
+          }
+        })
+      if (!Array.isArray(langs) || langs.length === 0) {
+        throw new Error('Langs array does not contain expected data')
       }
     } catch (e) {
-      if (useStatStore().online) {
-        warn('errorOffline')
-      } else {
-        log.error(e)
-      }
+      log.error(e)
+      log.debug('Falling back to fallback langs')
+      langs = FALLBACK_SITE_LANGS
+    }
+    try {
+      await writeJson(langPath, langs, { spaces: 2 })
+      log.debug('Wrote langs to file')
+      setPrefs('media.langUpdatedLast', $dayjs().toISOString())
+    } catch (error: any) {
+      log.error(error)
     }
   }
 
-  if (!(await pathExists(langPath))) {
-    return getJWLangs(true)
-  }
-
-  let langs: ShortJWLang[] = []
-
-  async function readLangs(firstTry = true) {
+  if (!Array.isArray(langs) || langs.length === 0) {
     try {
-      const fileContent = await readJson(langPath)
-      return fileContent as ShortJWLang[]
-    } catch (e) {
-      if (firstTry) {
-        return readLangs(false)
-      } else {
-        log.error(e)
-        return ''
+      langs = readJsonSync(langPath) as ShortJWLang[]
+      if (!Array.isArray(langs) || langs.length === 0) {
+        throw new Error('Langs file does not contain expected data')
       }
-    }
-  }
-
-  const fileContent = await readLangs()
-  if (fileContent) {
-    try {
-      langs = fileContent
-      if (langs.length === 0) return getJWLangs(true)
     } catch (e: any) {
-      if (e.message.includes('Unexpected token')) {
-        log.debug(`Invalid JSON: ${fileContent}`)
-        return getJWLangs(true)
-      } else {
-        log.error(e)
-      }
+      log.error(e, 'Setting fallback langs as a workaround')
+      langs = FALLBACK_SITE_LANGS
     }
   }
 
@@ -79,6 +60,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   const fallbackLang = getPrefs<string>('media.langFallback')
   const langPrefInLangs = langs.find((lang) => lang.langcode === mediaLang)
   const fallbackLangObj = langs.find((lang) => lang.langcode === fallbackLang)
+  let availabilityUpdated = false
 
   // Check current lang if it hasn't been checked yet
   if (
@@ -87,9 +69,10 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
     (langPrefInLangs.mwbAvailable === undefined ||
       langPrefInLangs.mwbAvailable === undefined)
   ) {
-    const availability = await getPubAvailability(mediaLang)
+    const availability = await getPubAvailability(mediaLang, langs)
     langPrefInLangs.wAvailable = availability.w
     langPrefInLangs.mwbAvailable = availability.mwb
+    availabilityUpdated = true
   }
 
   if (
@@ -98,9 +81,10 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
     (fallbackLangObj.mwbAvailable === undefined ||
       fallbackLangObj.mwbAvailable === undefined)
   ) {
-    const availability = await getPubAvailability(fallbackLang)
+    const availability = await getPubAvailability(fallbackLang, langs)
     fallbackLangObj.wAvailable = availability.w
     fallbackLangObj.mwbAvailable = availability.mwb
+    availabilityUpdated = true
   }
 
   const store = useMediaStore()
@@ -108,14 +92,22 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   store.setFallbackLang(fallbackLangObj ?? null)
   store.setSongPub(langPrefInLangs?.isSignLanguage ? 'sjj' : 'sjjm')
 
-  write(langPath, JSON.stringify(langs, null, 2))
+  if (availabilityUpdated) {
+    try {
+      await writeJson(langPath, langs, { spaces: 2 })
+      log.debug('Wrote langs to file')
+      setPrefs('media.langUpdatedLast', $dayjs().toISOString())
+    } catch (error: any) {
+      log.error(error)
+    }
+  }
 
   return langs
 }
 
 export async function getPubAvailability(
   lang: string,
-  refresh = false
+  langs?: ShortJWLang[]
 ): Promise<{ lang: string; w?: boolean; mwb?: boolean }> {
   let mwb
   let w
@@ -127,13 +119,14 @@ export async function getPubAvailability(
 
   try {
     const langPath = join(appPath(), 'langs.json')
-    if (!(await pathExists(langPath))) return { lang, w, mwb }
-    const langs = <ShortJWLang[]>((await readJson(langPath)) ?? '[]')
+    if (!langs) {
+      if (!(await pathExists(langPath))) return { lang, w, mwb }
+      langs = <ShortJWLang[]>((await readJson(langPath)) ?? '[]')
+    }
 
     const langObject = langs.find((l) => l.langcode === lang)
     if (!langObject) return { lang, w, mwb }
     if (
-      !refresh &&
       langObject.mwbAvailable !== undefined &&
       langObject.wAvailable !== undefined
     ) {
@@ -161,9 +154,8 @@ export async function getPubAvailability(
 
     if (mwbResult.status === 'fulfilled') {
       if (mwbResult.value.choices) {
-        mwb = !!mwbResult.value.choices.find(
-          (c: { optionValue: number }) =>
-            c.optionValue === new Date().getFullYear()
+        mwb = mwbResult.value.choices.some(
+          (c: Choice) => c.optionValue === new Date().getFullYear()
         )
       } else {
         log.error(mwbResult.value)
@@ -171,9 +163,7 @@ export async function getPubAvailability(
     }
     if (wResult.status === 'fulfilled') {
       if (wResult.value.choices) {
-        w = !!wResult.value.choices.find(
-          (c: { optionValue: string }) => c.optionValue === 'w'
-        )
+        w = wResult.value.choices.some((c: Choice) => c.optionValue === 'w')
       } else {
         log.error(wResult.value)
       }
@@ -181,7 +171,11 @@ export async function getPubAvailability(
 
     langObject.mwbAvailable = mwb
     langObject.wAvailable = w
-    write(langPath, JSON.stringify(langs, null, 2))
+    try {
+      await writeJson(langPath, langs, { spaces: 2 })
+    } catch (error) {
+      log.error(error)
+    }
   } catch (e) {
     log.error(e)
   }

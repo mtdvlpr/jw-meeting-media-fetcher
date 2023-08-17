@@ -1,6 +1,6 @@
 import type { Dayjs } from 'dayjs'
 
-import { pathExists, stat, emptyDir } from 'fs-extra'
+import { pathExists, stat, emptyDir, writeJson } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
 import { MeetingFile, SmallMediaFile, VideoFile, DateFormat } from '~~/types'
 
@@ -397,10 +397,14 @@ async function syncMediaItemByDate(date: string, item: MeetingFile) {
             )
           )
         ).map((m) => JSON.parse(m))
-        write(
-          join(path, item.folder, changeExt(item.safeName, 'json')),
-          JSON.stringify(markers)
-        )
+        try {
+          writeJson(
+            join(path, item.folder, changeExt(item.safeName, 'json')),
+            markers
+          )
+        } catch (error) {
+          log.error(error)
+        }
       }
       if (item.url) {
         const newItem = JSON.parse(JSON.stringify(item))
@@ -454,9 +458,9 @@ async function syncMediaItem(
           )
         )
       ).map((m) => JSON.parse(m))
-      write(
+      writeJson(
         join(path, item.folder!, changeExt(item.safeName!, 'json')),
-        JSON.stringify(markers)
+        markers
       )
     }
 

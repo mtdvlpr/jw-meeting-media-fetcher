@@ -380,8 +380,8 @@ watch(
     setPrefs('media.lang', val)
     useDbStore().clear()
     useMediaStore().clear()
-    getPubAvailability(val)
     getJWLangs()
+    getPubAvailability(val)
     if (bg.value === 'yeartext') {
       refreshBackgroundImgPreview(true)
     }
@@ -413,8 +413,8 @@ watch(
     useDbStore().clear()
     useMediaStore().clear()
     if (!val) return
-    getPubAvailability(val)
     getJWLangs()
+    getPubAvailability(val)
   }
 )
 

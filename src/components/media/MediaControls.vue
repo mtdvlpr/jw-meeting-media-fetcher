@@ -62,7 +62,7 @@ import { basename, changeExt, dirname, extname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
 import * as JSZip from 'jszip'
 // eslint-disable-next-line import/named
-import { pathExistsSync, readJsonSync, readdirSync } from 'fs-extra'
+import { pathExistsSync, readJsonSync, readdirSync, writeJson } from 'fs-extra'
 import { LocalFile, PlaylistItem, VideoFile } from '~~/types'
 import { Database } from '@stephen/sql.js'
 
@@ -142,7 +142,11 @@ const processFiles = async (files: (LocalFile | VideoFile)[]) => {
           file.folder,
           changeExt(file.safeName, 'json')
         )
-        write(markerPath, JSON.stringify(markers))
+        try {
+          await writeJson(markerPath, markers)
+        } catch (error) {
+          log.error(error)
+        }
         // congPromises.push(uploadFile(markerPath))
       }
     }
