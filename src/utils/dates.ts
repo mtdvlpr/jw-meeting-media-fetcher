@@ -1,4 +1,5 @@
 import type { Dayjs } from 'dayjs'
+import { DateFormat } from '../../types'
 
 export function getNow() {
   return useNuxtApp().$dayjs().hour(0).minute(0).second(0).millisecond(0)
@@ -21,15 +22,14 @@ export function isCoWeek(baseDate?: Dayjs) {
   if (!baseDate) baseDate = $dayjs()
   baseDate = baseDate.startOf('week')
   const coWeek = getPrefs<string>('meeting.coWeek')
+  const coWeekAsDayJs = $dayjs(
+    coWeek,
+    getPrefs<DateFormat>('app.outputFolderDateFormat')
+  )
   return (
     coWeek &&
-    $dayjs(coWeek).isValid() &&
-    $dayjs(coWeek, 'YYYY-MM-DD').isBetween(
-      baseDate,
-      baseDate.add(6, 'days'),
-      null,
-      '[]'
-    )
+    coWeekAsDayJs.isValid() &&
+    coWeekAsDayJs.isBetween(baseDate, baseDate.add(6, 'days'), null, '[]')
   )
 }
 

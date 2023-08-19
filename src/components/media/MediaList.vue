@@ -1,83 +1,53 @@
 <template>
   <div id="media-list-container" style="width: 100%">
     <v-expand-transition>
-      <v-alert
-        v-if="
-          itemsLoaded &&
-          syncInProgress.length === 0 &&
-          $props.items.length === 0
-        "
-        type="warning"
-        :text="$t('warnNoMediaFound')"
-      />
-      <v-alert
-        v-else-if="syncInProgress.includes(date)"
-        type="info"
-        :text="$t('warnSyncInProgress')"
-      />
+      <v-alert v-if="itemsLoaded &&
+        syncInProgress.length === 0 &&
+        $props.items.length === 0
+        " type="warning" :text="$t('warnNoMediaFound')" />
+      <v-alert v-else-if="syncInProgress.includes(date)" type="info" :text="$t('warnSyncInProgress')" />
+      <v-alert v-else-if="currentWeekIsCoWeek" type="info" closable :text="$t('informCurrentWeekIsCoWeek')" />
     </v-expand-transition>
     <v-expand-transition>
-      <song-picker
-        v-if="showQuickSong"
-        ref="songPicker"
-        v-model="song"
-        class="ma-4"
-        clearable
-      />
+      <song-picker v-if="showQuickSong" ref="songPicker" v-model="song" class="ma-4" clearable />
     </v-expand-transition>
     <v-expand-transition>
       <v-list v-if="song && showQuickSong" class="ma-4">
-        <media-item
-          :key="song.url"
-          :src="song.url"
-          :play-now="song.play"
-          :stop-now="song.stop"
-          :deactivate="song.deactivate"
-          :streaming-file="song"
-          @playing="setIndex('song')"
-          @deactivated="deactivateSong"
-        />
+        <media-item :key="song.url" :src="song.url" :play-now="song.play" :stop-now="song.stop"
+          :deactivate="song.deactivate" :streaming-file="song" @playing="setIndex('song')"
+          @deactivated="deactivateSong" />
       </v-list>
     </v-expand-transition>
-    <template
-      v-for="section in isMwDay
-        ? [
-            sections.treasureItems.value,
-            sections.applyItems.value,
-            sections.livingItems.value,
-          ]
-        : isWeDay
+    <template v-for="section in isMwDay
+      ? [
+        sections.treasureItems.value,
+        sections.applyItems.value,
+        sections.livingItems.value,
+      ]
+      : isWeDay
         ? [sections.publicTalkItems.value, sections.wtItems.value]
-        : [sections.mediaItems.value]"
-      :key="section"
-    >
+        : [sections.mediaItems.value]" :key="section">
       <template v-if="section && section.length > 0">
-        <v-divider
-          class="mx-4"
-          :class="{
-            'mt-4': true,
-            'text-treasures':
-              section === sections.treasureItems.value ||
-              section === sections.publicTalkItems.value,
-            'text-apply': section === sections.applyItems.value,
-            'text-living':
-              section === sections.livingItems.value ||
-              section === sections.wtItems.value,
-          }"
-        />
-        <v-list-item-title
-          class="mx-4 my-2"
-          :class="{
-            'text-overline': true,
-            'text-treasures':
-              section === sections.treasureItems.value ||
-              section === sections.publicTalkItems.value,
-            'text-apply': section === sections.applyItems.value,
-            'text-living':
-              section === sections.livingItems.value ||
-              section === sections.wtItems.value,
-          }"
-        >
+        <v-divider class="mx-4" :class="{
+          'mt-4': true,
+          'text-treasures':
+            section === sections.treasureItems.value ||
+            section === sections.publicTalkItems.value,
+          'text-apply': section === sections.applyItems.value,
+          'text-living':
+            section === sections.livingItems.value ||
+            section === sections.wtItems.value,
+        }" />
+        <v-list-item-title class="mx-4 my-2" :class="{
+          'text-overline': true,
+          'text-treasures':
+            section === sections.treasureItems.value ||
+            section === sections.publicTalkItems.value,
+          'text-apply': section === sections.applyItems.value,
+          'text-living':
+            section === sections.livingItems.value ||
+            section === sections.wtItems.value,
+        }">
           {{
             (() => {
               switch (section) {
@@ -97,42 +67,28 @@
             })()
           }}
         </v-list-item-title>
-        <v-list
-          :key="section.length"
-          v-sortable="sortableOptions"
-          class="ma-4"
-          :data-section="
-            (() => {
-              switch (section) {
-                case sections.treasureItems.value:
-                  return 'treasureItems'
-                case sections.applyItems.value:
-                  return 'applyItems'
-                case sections.livingItems.value:
-                  return 'livingItems'
-                case sections.publicTalkItems.value:
-                  return 'publicTalkItems'
-                case sections.wtItems.value:
-                  return 'wtItems'
-                case sections.mediaItems.value:
-                  return 'mediaItems'
-                default:
-                  return 'unknownItems'
-              }
-            })()
-          "
-          @sort="saveFileOrder"
-        >
-          <media-item
-            v-for="element in section"
-            :key="element.id"
-            :src="element.path"
-            :play-now="element.play"
-            :stop-now="element.stop"
-            :deactivate="element.deactivate"
-            @playing="setIndex(element.id)"
-            @deactivated="resetDeactivate(element.id)"
-          />
+        <v-list :key="section.length" v-sortable="sortableOptions" class="ma-4" :data-section="(() => {
+          switch (section) {
+            case sections.treasureItems.value:
+              return 'treasureItems'
+            case sections.applyItems.value:
+              return 'applyItems'
+            case sections.livingItems.value:
+              return 'livingItems'
+            case sections.publicTalkItems.value:
+              return 'publicTalkItems'
+            case sections.wtItems.value:
+              return 'wtItems'
+            case sections.mediaItems.value:
+              return 'mediaItems'
+            default:
+              return 'unknownItems'
+          }
+        })()
+          " @sort="saveFileOrder">
+          <media-item v-for="element in section" :key="element.id" :src="element.path" :play-now="element.play"
+            :stop-now="element.stop" :deactivate="element.deactivate" @playing="setIndex(element.id)"
+            @deactivated="resetDeactivate(element.id)" />
         </v-list>
       </template>
     </template>
@@ -168,7 +124,9 @@ const props = defineProps<{
 }>()
 
 // const dragging = ref(false)
+const { $dayjs } = useNuxtApp()
 const date = useRouteQuery<string>('date', '')
+const currentWeekIsCoWeek = ref(!!isCoWeek($dayjs(date.value, getPrefs<DateFormat>('app.outputFolderDateFormat'))))
 
 // Meeting day
 const meetingDay = ref('')
