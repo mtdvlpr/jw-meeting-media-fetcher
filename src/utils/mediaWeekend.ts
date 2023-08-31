@@ -73,7 +73,7 @@ export async function getWeMedia(date: string) {
 
   const videos = executeQuery<MultiMediaItem>(
     db,
-    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, KeySymbol, Track, IssueTagNumber, MimeType, BeginParagraphOrdinal, TargetParagraphNumberLabel
+    `SELECT DocumentMultimedia.MultimediaId, DocumentMultimedia.DocumentId, CategoryType, KeySymbol, Track, IssueTagNumber, MimeType, BeginParagraphOrdinal, TargetParagraphNumberLabel, MepsDocumentId
          FROM DocumentMultimedia
          INNER JOIN Multimedia
            ON DocumentMultimedia.MultimediaId = Multimedia.MultimediaId
