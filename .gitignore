@@ -37,5 +37,6 @@ src/**/pdf.worker*
 
 # Playwright
 img
-playwright-report
 test-results
+playwright-report
+playwright/.cache
