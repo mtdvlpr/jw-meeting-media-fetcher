@@ -125,7 +125,7 @@ const navItems = computed(() => {
     items.splice(1, 0, {
       title: t('mediaPlayback') + ' DEV',
       icon: 'mdi-multimedia',
-      to: localePath('/presentnew'),
+      to: localePath('/present'),
       tooltip: getPrefs<string>('media.presentShortcut'),
       aria: 'present',
     })

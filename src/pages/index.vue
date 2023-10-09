@@ -10,13 +10,28 @@
       <v-col cols="12">
         <loading-icon v-if="loading" />
         <v-list v-else>
-          <v-list-item v-for="c in congs" :key="c.id" :title="c.name" :active="c.id === cong"
-            @click="initPrefs(c.filename)">
+          <v-list-item
+            v-for="c in congs"
+            :key="c.id"
+            :title="c.name"
+            :active="c.id === cong"
+            @click="initPrefs(c.filename)"
+          >
             <template v-if="c.id !== cong" #append>
-              <v-btn icon="mdi-delete" variant="text" color="error" size="small" @click="removeCong(c.path)" />
+              <v-btn
+                icon="mdi-delete"
+                variant="text"
+                color="error"
+                size="small"
+                @click="removeCong(c.path)"
+              />
             </template>
           </v-list-item>
-          <v-list-item prepend-icon="mdi-plus" :title="$t('congregationAdd')" @click="createCong()" />
+          <v-list-item
+            prepend-icon="mdi-plus"
+            :title="$t('congregationAdd')"
+            @click="createCong()"
+          />
         </v-list>
       </v-col>
     </v-row>
@@ -116,7 +131,7 @@ const initPrefs = (name: string, isNew = false) => {
   }
 
   // Open home
-  let path = useLocalePath()('/presentnew', lang)
+  let path = useLocalePath()('/present', lang)
 
   // If new cong or invalid settings, open settings
   if (isNew || !mediaPath()) {
@@ -333,10 +348,13 @@ const checkLangs = async (isNew: boolean) => {
       action: {
         type: 'link',
         label: 'wannaHelpForSure',
-        url: `${useRuntimeConfig().public.repo
-          }/discussions/new?category=translations&title=New+translation+in+${mediaLang.name
-          }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${mediaLang.name
-          } (${mediaLang.langcode}/${mediaLang.symbol}).`,
+        url: `${
+          useRuntimeConfig().public.repo
+        }/discussions/new?category=translations&title=New+translation+in+${
+          mediaLang.name
+        }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
+          mediaLang.name
+        } (${mediaLang.langcode}/${mediaLang.symbol}).`,
       },
     })
   } else if (isNew && appLang && STALE_LANGS.includes(appLang.symbol)) {
@@ -346,10 +364,13 @@ const checkLangs = async (isNew: boolean) => {
       action: {
         type: 'link',
         label: 'wannaHelpForSure',
-        url: `${useRuntimeConfig().public.repo
-          }/discussions/new?category=translations&title=New+translator+for+${appLang.name
-          }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${appLang.name
-          } (${appLang.langcode}/${appLang.symbol}).`,
+        url: `${
+          useRuntimeConfig().public.repo
+        }/discussions/new?category=translations&title=New+translator+for+${
+          appLang.name
+        }&language=I+would+like+to+help+translate+M³+into+a+language+I+speak,+${
+          appLang.name
+        } (${appLang.langcode}/${appLang.symbol}).`,
       },
     })
   }

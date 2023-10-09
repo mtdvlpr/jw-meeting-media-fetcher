@@ -9,11 +9,6 @@ import { LOCALES } from './src/constants/lang'
 
 const isDev = process.env.NODE_ENV === 'development'
 
-const ignorePages: string[] = []
-if (!isDev) {
-  ignorePages.push(...['/presentnew' /*, '/settingsnew' */])
-}
-
 const vitePlugins: PluginOption[] = []
 const sentryInit =
   !!process.env.SENTRY_DSN &&
@@ -125,7 +120,6 @@ export default defineNuxtConfig({
   },
   nitro: {
     output: { publicDir: join(__dirname, 'output') },
-    prerender: { ignore: ignorePages },
   },
   runtimeConfig: {
     public: {
