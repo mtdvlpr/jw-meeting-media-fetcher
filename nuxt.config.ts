@@ -59,7 +59,7 @@ export default defineNuxtConfig({
     client: false,
   },
   modules: [
-    '@nuxtjs/i18n-edge',
+    '@nuxtjs/i18n',
     '@vueuse/nuxt',
     'nuxt-lodash',
     [
