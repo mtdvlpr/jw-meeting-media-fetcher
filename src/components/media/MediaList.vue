@@ -75,7 +75,6 @@
         </v-list-item-title>
         <v-list
           :key="section.length"
-          v-sortable="sortableOptions"
           class="ma-4"
           :data-section="
             (() => {
@@ -257,37 +256,7 @@ const saveFileOrder = async () => {
 const setItems = (val: MediaItem[]) => {
   sections.mediaItems.value = val
   try {
-    if (props.customSortOrder) {
-      const result: {
-        [key: string]: MediaItem[]
-      } = Object.entries(props.customSortOrder).reduce((acc, [key, order]) => {
-        acc[key] = val
-          .filter((item) => order.includes(item.id))
-          .sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))
-        return acc
-      }, {})
-      result[Object.keys(result)[0]] = val
-        .filter((item) =>
-          val
-            .map((item) => item.id)
-            .filter(
-              (id) =>
-                !Object.values(result)
-                  .flat()
-                  .map((item) => item.id)
-                  .includes(id),
-            )
-            .includes(item.id),
-        )
-        .concat(result[Object.keys(result)[0]])
-
-      for (const key in result) {
-        sections[key].value = result[key]
-      }
-      emit('customSort', true)
-    } else {
-      defaultOrder(val)
-    }
+    defaultOrder(val)
   } catch (err) {
     log.error('Error setting items', err)
     defaultOrder(val)
@@ -340,14 +309,4 @@ const song = ref<VideoFile | null>(null)
 const deactivateSong = () => {
   if (song.value) song.value.deactivate = false
 }
-
-// Sortable Options
-const sortableOptions = ref({
-  options: {
-    group: 'media-items',
-    multiDrag: true,
-    selectedClass: 'bg-group', // Class name for selected item
-    multiDragKey: 'ctrl', // Key that must be down for items to be selected
-  },
-})
 </script>
