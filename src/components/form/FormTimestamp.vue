@@ -1,20 +1,17 @@
-<template>MISSING</template>
-<!--
+<!-- eslint-disable vuetify/no-deprecated-components -->
 <template>
   <v-col class="d-flex pa-0">
     <v-col v-show="!disableHours" cols="2" class="pa-0">
       <v-otp-input
         id="input-hours"
-        ref="hours"
+        ref="hourRef"
         v-model="hours"
         type="number"
         length="2"
-        dense
-        plain
-        :rules="[(v) => validHours]"
+        :rules="[(v: string) => validHours]"
         :disabled="disableHours"
-        @change="handleChange"
-        @finish="focus($refs.mins)"
+        @update:model-value="handleChange"
+        @finish="focus('min')"
       />
     </v-col>
     <v-col
@@ -27,15 +24,13 @@
     <v-col cols="2" class="pa-0">
       <v-otp-input
         id="input-minutes"
-        ref="minutes"
+        ref="minRef"
         v-model="minutes"
         type="number"
         length="2"
-        dense
-        plain
-        :rules="[(v) => validMinutes]"
-        @change="handleChange"
-        @finish="focus($refs.seconds)"
+        :rules="[(v: string) => validMinutes]"
+        @update:model-value="handleChange"
+        @finish="focus('sec')"
       />
     </v-col>
     <v-col cols="auto" class="py-0 px-1 d-flex align-center justify-center">
@@ -44,15 +39,13 @@
     <v-col cols="2" class="pa-0">
       <v-otp-input
         id="input-seconds"
-        ref="seconds"
+        ref="secRef"
         v-model="seconds"
         type="number"
         length="2"
-        dense
-        plain
-        :rules="[(v) => validSeconds]"
-        @change="handleChange"
-        @finish="focus($refs.ms)"
+        :rules="[(v: string) => validSeconds]"
+        @update:model-value="handleChange"
+        @finish="focus('ms')"
       />
     </v-col>
     <v-col cols="auto" class="py-0 px-1 d-flex align-center justify-center">
@@ -61,14 +54,12 @@
     <v-col cols="3" class="pa-0">
       <v-otp-input
         id="input-ms"
-        ref="ms"
+        ref="msRef"
         v-model="ms"
         type="number"
         length="3"
-        dense
-        plain
-        :rules="[(v) => validMs]"
-        @change="handleChange"
+        :rules="[(v: string) => validMs]"
+        @update:model-value="handleChange"
       />
     </v-col>
     <v-col class="pa-0">
@@ -77,30 +68,51 @@
   </v-col>
 </template>
 <script setup lang="ts">
+import { VOtpInputRef } from '~~/types'
+
 const props = defineProps<{
-  value: string
+  modelValue: string
   min: string
   max: string
 }>()
 
-watch(() => props.value, (val) => {
-  setValue(val || '')
+watch(
+  () => props.modelValue,
+  (val) => {
+    setValue(val || '')
+  },
+)
+
+onMounted(() => {
+  setValue(props.modelValue || '')
+  handleChange()
+  emit('valid', valid.value)
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'valid'])
+
+const hourRef = ref<VOtpInputRef | null>(null)
+const minRef = ref<VOtpInputRef | null>(null)
+const secRef = ref<VOtpInputRef | null>(null)
+const msRef = ref<VOtpInputRef | null>(null)
 
 const hours = ref('')
 const minutes = ref('')
 const seconds = ref('')
 const ms = ref('')
 
-const isTimestamp = (val: string) => val && /\d{2}:\d{2}:\d{2}.\d{3}/.test(val)
+const isTimestamp = (val: string) =>
+  !!val && /\d{2}:\d{2}:\d{2}.\d{3}/.test(val)
 const getHours = (val: string) => Number(val?.split(':')[0] || '0')
 const getMinutes = (val: string) => Number(val?.split(':')[1] || '0')
 const getMs = (val: string) => Number(val?.split(':')[2]?.split('.')[1] || '0')
 const getSeconds = (val: string) => {
   return Number(val?.split(':')[2]?.split('.')[0] || '0')
 }
+
+const disableHours = computed(() => {
+  return (hours.value == '0' || hours.value === '00') && maxHours.value === 0
+})
 
 // Min
 const minHours = computed(() => {
@@ -139,20 +151,29 @@ const maxMs = computed(() => {
 })
 
 // Valid
-const validHours = computed(
-  () => +hours.value >= minHours.value && +hours.value <= maxHours.value
-)
+const validHours = computed(() => {
+  if (!hours.value) return false
+  console.log('hours', hours.value)
+  return +hours.value >= minHours.value && +hours.value <= maxHours.value
+})
 
-const validMinutes = computed(
-  () => +minutes.value >= minMinutes.value && +minutes.value <= maxMinutes.value
-)
+const validMinutes = computed(() => {
+  if (!minutes.value) return false
+  return (
+    +minutes.value >= minMinutes.value && +minutes.value <= maxMinutes.value
+  )
+})
 
-const validSeconds = computed(
-  () => +seconds.value >= minSeconds.value && +seconds.value <= maxSeconds.value
-)
-const validMs = computed(
-  () => +ms.value >= minMs.value && +ms.value <= maxMs.value
-)
+const validSeconds = computed(() => {
+  if (!seconds.value) return false
+  return (
+    +seconds.value >= minSeconds.value && +seconds.value <= maxSeconds.value
+  )
+})
+const validMs = computed(() => {
+  if (!ms.value) return false
+  return +ms.value >= minMs.value && +ms.value <= maxMs.value
+})
 
 const valid = computed(() => {
   return (
@@ -162,9 +183,13 @@ const valid = computed(() => {
     validMs.value
   )
 })
-watch(valid, (val) => emit('update:modelValue', val))
+watch(valid, (val) => emit('valid', val))
 
 const setValue = (val: string) => {
+  console.log('h', hours.value)
+  console.log('m', minutes.value)
+  console.log('s', seconds.value)
+  console.log('ms', ms.value)
   if (isTimestamp(val)) {
     const [h, m, s] = val.split(':')
     hours.value = h
@@ -175,6 +200,10 @@ const setValue = (val: string) => {
     resetValue()
     handleChange()
   }
+  console.log('h', hours.value)
+  console.log('m', minutes.value)
+  console.log('s', seconds.value)
+  console.log('ms', ms.value)
 }
 
 const resetValue = () => {
@@ -193,10 +222,20 @@ const handleChange = () => {
   emit('update:modelValue', val)
 }
 
-const focus = (ref: any) => {
-  if (ref) {
-    ref.focus()
+const focus = (ref: 'hour' | 'min' | 'sec' | 'ms') => {
+  switch (ref) {
+    case 'hour':
+      hourRef.value?.focus()
+      break
+    case 'min':
+      minRef.value?.focus()
+      break
+    case 'sec':
+      secRef.value?.focus()
+      break
+    case 'ms':
+      msRef.value?.focus()
+      break
   }
 }
 </script>
--->

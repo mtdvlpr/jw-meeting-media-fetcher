@@ -1,4 +1,4 @@
-import type { ShallowRef } from 'vue'
+import type { ShallowRef, Ref } from 'vue'
 export * from './prefs'
 export * from './jw'
 export * from './media'
@@ -30,4 +30,11 @@ export type VFormRef = {
   }>
   reset: () => void
   resetValidation: () => void
+}
+
+export type VOtpInputRef = {
+  blur: () => void
+  focus: () => void
+  isFocused: Ref<boolean> & { externalValue: boolean }
+  reset: () => void
 }

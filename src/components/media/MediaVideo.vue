@@ -11,46 +11,53 @@
         <source :src="url" />
       </video>
     </div>
-    <!--<v-overlay
-      absolute
+    <v-overlay
       :model-value="changeTime"
-      style="opacity: 1"
-      class="d-flex justify-start"
+      persistent
+      class="d-flex align-center justify-center"
     >
-      <v-row style="max-width: 640px">
-        <v-col align-self="start" class="d-flex flex-column px-0 ml-4">
-          <form-timestamp
-            v-model="clipped.start"
-            :min="originalString.start"
-            :max="clipped.end"
-            @valid="validStart = $event"
-          >
-            <v-btn icon @click="resetClipped()">
-              <v-tooltip activator="parent" location="top">
-                {{ $t('videoTimeReset') }}
-              </v-tooltip>
-              <v-icon icon="i-mdi:rotate-left" />
-            </v-btn>
-          </form-timestamp>
-          <form-timestamp
-            v-model="clipped.end"
-            :min="clipped.start"
-            :max="originalString.end"
-            @valid="validEnd = $event"
-          >
-            <v-btn icon :disabled="!validStart || !validEnd" @click="setTime()">
-              <v-tooltip activator="parent" location="bottom">
-                {{ $t('videoTimeSet') }}
-              </v-tooltip>
-              <v-icon
-                icon="i-mdi:checkbox-marked"
-                :class="`text-${validStart && validEnd ? 'success' : 'error'}`"
-              />
-            </v-btn>
-          </form-timestamp>
-        </v-col>
-      </v-row>
-    </v-overlay>-->
+      <v-sheet>
+        <v-row style="max-width: 640px">
+          <v-col align-self="start" class="d-flex flex-column px-0 ml-4">
+            <form-timestamp
+              v-model="clipped.start"
+              :min="originalString.start"
+              :max="clipped.end"
+              @valid="validStart = $event"
+            >
+              <v-btn icon @click="resetClipped()">
+                <v-tooltip activator="parent" location="top">
+                  {{ $t('videoTimeReset') }}
+                </v-tooltip>
+                <v-icon icon="i-mdi:rotate-left" />
+              </v-btn>
+            </form-timestamp>
+            <form-timestamp
+              v-model="clipped.end"
+              :min="clipped.start"
+              :max="originalString.end"
+              @valid="validEnd = $event"
+            >
+              <v-btn
+                icon
+                :disabled="!validStart || !validEnd"
+                @click="setTime()"
+              >
+                <v-tooltip activator="parent" location="bottom">
+                  {{ $t('videoTimeSet') }}
+                </v-tooltip>
+                <v-icon
+                  icon="i-mdi:checkbox-marked"
+                  :class="`text-${
+                    validStart && validEnd ? 'success' : 'error'
+                  }`"
+                />
+              </v-btn>
+            </form-timestamp>
+          </v-col>
+        </v-row>
+      </v-sheet>
+    </v-overlay>
     <v-btn
       size="x-small"
       location="left"
@@ -236,8 +243,8 @@ const setCCAvailable = async () => {
 }
 
 // Custom start/end times
-// const validStart = ref(false)
-// const validEnd = ref(false)
+const validStart = ref(false)
+const validEnd = ref(false)
 const duration = computed(() =>
   formatDuration(
     $dayjs.duration(clippedMs.value.end - clippedMs.value.start, 'ms'),
