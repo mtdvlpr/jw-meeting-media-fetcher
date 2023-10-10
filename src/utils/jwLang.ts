@@ -13,7 +13,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
   if (forceReload || !(await pathExists(langPath)) || !recentlyUpdated) {
     try {
       const result = await fetchJson<{ languages: JWLang[] }>(
-        'https://www.jw.org/en/languages'
+        'https://www.jw.org/en/languages',
       )
       log.debug('Result from langs call:', result)
       langs = result.languages
@@ -107,7 +107,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
 
 export async function getPubAvailability(
   lang: string,
-  langs?: ShortJWLang[]
+  langs?: ShortJWLang[],
 ): Promise<{ lang: string; w?: boolean; mwb?: boolean }> {
   let mwb
   let w
@@ -136,12 +136,12 @@ export async function getPubAvailability(
     const wAvailabilityEndpoint = url(
       'magazines',
       'MagazineViewsFilter',
-      langObject.symbol
+      langObject.symbol,
     )
     const mwbAvailabilityEndpoint = url(
       'jw-meeting-workbook',
       'IssueYearViewsFilter',
-      langObject.symbol
+      langObject.symbol,
     )
 
     const result = await Promise.allSettled([
@@ -155,7 +155,7 @@ export async function getPubAvailability(
     if (mwbResult.status === 'fulfilled') {
       if (mwbResult.value.choices) {
         mwb = mwbResult.value.choices.some(
-          (c: Choice) => c.optionValue === new Date().getFullYear()
+          (c: Choice) => c.optionValue === new Date().getFullYear(),
         )
       } else {
         log.error(mwbResult.value)

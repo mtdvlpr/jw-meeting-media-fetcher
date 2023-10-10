@@ -4,7 +4,7 @@ import { join } from 'upath'
 
 export function executeQuery<T extends Record<string, any>>(
   db: Database,
-  query: string
+  query: string,
 ) {
   const result = db.exec(query)[0]
   const results: T[] = []

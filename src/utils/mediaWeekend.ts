@@ -19,13 +19,13 @@ export async function getWeMedia(date: string) {
     if (!database) return -1
     return executeQuery(
       database,
-      'SELECT FirstDateOffset FROM DatedText'
+      'SELECT FirstDateOffset FROM DatedText',
     ).findIndex((weekItem: any) => {
       return $dayjs(weekItem.FirstDateOffset.toString(), 'YYYYMMDD').isBetween(
         baseDate,
         baseDate.add(6, 'days'),
         null,
-        '[]'
+        '[]',
       )
     })
   }
@@ -45,7 +45,7 @@ export async function getWeMedia(date: string) {
 
   const docId = executeQuery<{ DocumentId: number }>(
     db,
-    `SELECT Document.DocumentId FROM Document WHERE Document.Class=40 LIMIT 1 OFFSET ${weekNr}`
+    `SELECT Document.DocumentId FROM Document WHERE Document.Class=40 LIMIT 1 OFFSET ${weekNr}`,
   )[0]?.DocumentId
 
   // Return without error if no docId found (e.g. memorial week)
@@ -53,20 +53,20 @@ export async function getWeMedia(date: string) {
 
   const magazine = executeQuery<{ Title: string }>(
     db,
-    `SELECT Title FROM PublicationIssueProperty LIMIT 1`
+    `SELECT Title FROM PublicationIssueProperty LIMIT 1`,
   )[0]
   const article = executeQuery<{ Title: string }>(
     db,
-    `SELECT Title FROM Document WHERE DocumentId = ${docId}`
+    `SELECT Title FROM Document WHERE DocumentId = ${docId}`,
   )[0]
 
   write(
     join(
       mediaPath(),
       date,
-      strip(magazine.Title + ' - ' + article.Title, 'file') + '.title'
+      strip(magazine.Title + ' - ' + article.Title, 'file') + '.title',
     ),
-    ''
+    '',
   )
 
   const promises: Promise<void>[] = []
@@ -82,13 +82,13 @@ export async function getWeMedia(date: string) {
            AND Question.TargetParagraphOrdinal = DocumentMultimedia.BeginParagraphOrdinal
          WHERE DocumentMultimedia.DocumentId = ${docId}
            AND CategoryType = -1
-         GROUP BY DocumentMultimedia.MultimediaId`
+         GROUP BY DocumentMultimedia.MultimediaId`,
   )
   const videosInParagraphs = videos.filter(
-    (video) => !!video.TargetParagraphNumberLabel
+    (video) => !!video.TargetParagraphNumberLabel,
   )
   const videosNotInParagraphs = videos.filter(
-    (video) => !video.TargetParagraphNumberLabel
+    (video) => !video.TargetParagraphNumberLabel,
   )
 
   const FOOTNOTE_TAR_PAR = 9999
@@ -129,7 +129,7 @@ export async function getWeMedia(date: string) {
            AND CategoryType <> -1
            AND (KeySymbol != "sjjm" OR KeySymbol IS NULL)
          GROUP BY DocumentMultimedia.MultimediaId
-         ORDER BY TargetParagraphNumberLabel` // pictures
+         ORDER BY TargetParagraphNumberLabel`, // pictures
   )
     .concat(videosInParagraphs)
     .concat(
@@ -140,13 +140,13 @@ export async function getWeMedia(date: string) {
         .map((mediaObj) =>
           mediaObj.TargetParagraphNumberLabel === null
             ? { ...mediaObj, TargetParagraphNumberLabel: FOOTNOTE_TAR_PAR }
-            : mediaObj
+            : mediaObj,
         )
         .filter((v) => {
           return (
             !excludeFootnotes || v.TargetParagraphNumberLabel < FOOTNOTE_TAR_PAR
           )
-        })
+        }),
     )
 
   media.forEach((m) => promises.push(addMediaToPart(date, issue, m)))
@@ -163,7 +163,7 @@ export async function getWeMedia(date: string) {
             ON Multimedia.MultimediaId = DocumentMultimedia.MultimediaId
           WHERE DataType = 2
           ORDER BY BeginParagraphOrdinal
-          LIMIT 2 OFFSET ${2 * weekNr}`
+          LIMIT 2 OFFSET ${2 * weekNr}`,
     ) as MultiMediaItem[]
   } else {
     songs = videosNotInParagraphs.slice(0, 2) // after FEB_2023, the first two videos from DocumentMultimedia are the songs
@@ -180,7 +180,7 @@ export async function getWeMedia(date: string) {
       db,
       `SELECT Extract.ExtractId, Extract.Link, DocumentExtract.BeginParagraphOrdinal FROM Extract INNER JOIN DocumentExtract ON Extract.ExtractId = DocumentExtract.ExtractId WHERE Extract.RefMepsDocumentClass = 31 ORDER BY Extract.ExtractId LIMIT 2 OFFSET ${
         2 * weekNr
-      }`
+      }`,
     )
       .sort((a, b) => a.BeginParagraphOrdinal - b.BeginParagraphOrdinal)
       .map((item) => {
@@ -207,7 +207,7 @@ export async function getWeMedia(date: string) {
 async function addMediaToPart(
   date: string,
   issue: string,
-  mediaItem: MultiMediaItem
+  mediaItem: MultiMediaItem,
 ): Promise<void> {
   if (isImage(mediaItem.FilePath)) {
     let LocalPath = join(pubPath(), 'w', issue, '0', mediaItem.FilePath)
@@ -218,13 +218,13 @@ async function addMediaToPart(
           issue,
           url: `url_${getPrefs<string>('media.langFallback')}.jpg`,
         } as MeetingFile),
-        mediaItem.FilePath
+        mediaItem.FilePath,
       )
     }
     const FileName = sanitize(
       mediaItem.Caption.length > mediaItem.Label.length
         ? mediaItem.Caption
-        : mediaItem.Label
+        : mediaItem.Label,
     )
     const pictureObj: ImageFile = {
       title: FileName,
@@ -250,7 +250,7 @@ async function addSongToPart(
   date: string,
   songLangs: string[],
   song: MultiMediaItem,
-  i: number
+  i: number,
 ): Promise<void> {
   const mediaLang = getPrefs<string>('media.lang')
   const fallbackLang = getPrefs<string>('media.langFallback')

@@ -44,7 +44,7 @@ export async function extractAllTo(zip: string, dest: string, date?: string) {
       Object.entries(contents.files).map(async ([filename, fileObject]) => {
         await writeFile(
           join(dest, filename),
-          await fileObject.async('nodebuffer')
+          await fileObject.async('nodebuffer'),
         )
         // @ts-expect-error
         current = current + fileObject._data.uncompressedSize
@@ -56,7 +56,7 @@ export async function extractAllTo(zip: string, dest: string, date?: string) {
             date,
           },
         })
-      })
+      }),
     )
   } catch (e) {
     warn('errorExtractFromJWPUB', { identifier: zip })
@@ -65,7 +65,7 @@ export async function extractAllTo(zip: string, dest: string, date?: string) {
 
 async function getContents(
   file: string,
-  jwpub = true
+  jwpub = true,
 ): Promise<ArrayBuffer | undefined> {
   const zipFile = readFileSync(file)
   if (!jwpub) return zipFile
@@ -78,7 +78,7 @@ async function getContents(
 export async function getZipContentsByExt(
   zip: string,
   ext: string,
-  jwpub = true
+  jwpub = true,
 ) {
   try {
     const { default: JSZip } = await import('jszip')
@@ -102,7 +102,7 @@ export async function getZipContentsByExt(
 export async function getZipContentsByName(
   zip: string,
   name: string,
-  jwpub = true
+  jwpub = true,
 ) {
   try {
     const { default: JSZip } = await import('jszip')

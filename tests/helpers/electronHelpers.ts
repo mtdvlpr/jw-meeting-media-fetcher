@@ -1,6 +1,4 @@
-/* eslint-disable no-console */
 import { join } from 'upath'
-// eslint-disable-next-line import/named
 import { writeJson } from 'fs-extra'
 import {
   findLatestBuild,
@@ -59,7 +57,7 @@ async function selectCong(page: Page, congName: string) {
 
 export async function openHomePage(
   app: ElectronApplication,
-  prefsObject?: any
+  prefsObject?: any,
 ) {
   // Set first browser window as page
   const page = await app.firstWindow()

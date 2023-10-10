@@ -19,8 +19,8 @@ export async function getMwMedia(date: string) {
   const docId = executeQuery<{ DocumentId: number }>(
     db,
     `SELECT DocumentId FROM DatedText WHERE FirstDateOffset = ${baseDate.format(
-      'YYYYMMDD'
-    )}`
+      'YYYYMMDD',
+    )}`,
   )[0]?.DocumentId
 
   // Return without error if no docId found (e.g. memorial week)
@@ -28,15 +28,15 @@ export async function getMwMedia(date: string) {
 
   const treasures = executeQuery<{ FeatureTitle: string }>(
     db,
-    'SELECT FeatureTitle FROM Document WHERE Class = 21'
+    'SELECT FeatureTitle FROM Document WHERE Class = 21',
   )[0]
   const apply = executeQuery<{ FeatureTitle: string }>(
     db,
-    'SELECT FeatureTitle FROM Document WHERE Class = 94'
+    'SELECT FeatureTitle FROM Document WHERE Class = 94',
   )[0]
   const living = executeQuery<{ FeatureTitle: string }>(
     db,
-    'SELECT FeatureTitle FROM Document WHERE Class = 10 ORDER BY FeatureTitle'
+    'SELECT FeatureTitle FROM Document WHERE Class = 10 ORDER BY FeatureTitle',
   )
   let livingTitle = living[0].FeatureTitle
   if (living.length > 1) {
@@ -58,7 +58,7 @@ export async function getMwMedia(date: string) {
     let lastSongIdLookup = mms
       .reverse()
       .findIndex(
-        (m) => m.BeginParagraphOrdinal && m.BeginParagraphOrdinal >= 22
+        (m) => m.BeginParagraphOrdinal && m.BeginParagraphOrdinal >= 22,
       )
     if (lastSongIdLookup === -1) {
       lastSongIdLookup = mms
@@ -84,14 +84,14 @@ export async function getMwMedia(date: string) {
       date,
       extract.BeginParagraphOrdinal ?? 0,
       extract,
-      'external'
+      'external',
     )
   })
 
   // Get document multimedia of internal references
   const internalRefs = executeQuery<MultiMediaExtractRef>(
     db,
-    `SELECT DocumentInternalLink.DocumentId AS SourceDocumentId, DocumentInternalLink.BeginParagraphOrdinal, Document.DocumentId FROM DocumentInternalLink INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId INNER JOIN Document ON InternalLink.MepsDocumentId = Document.MepsDocumentId WHERE DocumentInternalLink.DocumentId = ${docId} AND Document.Class <> 94`
+    `SELECT DocumentInternalLink.DocumentId AS SourceDocumentId, DocumentInternalLink.BeginParagraphOrdinal, Document.DocumentId FROM DocumentInternalLink INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId INNER JOIN Document ON InternalLink.MepsDocumentId = Document.MepsDocumentId WHERE DocumentInternalLink.DocumentId = ${docId} AND Document.Class <> 94`,
   )
 
   internalRefs.forEach((ref) => {
@@ -104,14 +104,14 @@ export async function getMwMedia(date: string) {
 async function processInternalRefs(
   db: Database,
   ref: MultiMediaExtractRef,
-  date: string
+  date: string,
 ) {
   const promises: Promise<void>[] = []
 
   // Process internalRefs of the internalRefs
   const internalRefs = executeQuery<MultiMediaExtractRef>(
     db,
-    `SELECT DocumentInternalLink.DocumentId AS SourceDocumentId, DocumentInternalLink.BeginParagraphOrdinal, Document.DocumentId FROM DocumentInternalLink INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId INNER JOIN Document ON InternalLink.MepsDocumentId = Document.MepsDocumentId WHERE DocumentInternalLink.DocumentId = ${ref.DocumentId} AND Document.Class <> 94`
+    `SELECT DocumentInternalLink.DocumentId AS SourceDocumentId, DocumentInternalLink.BeginParagraphOrdinal, Document.DocumentId FROM DocumentInternalLink INNER JOIN InternalLink ON DocumentInternalLink.InternalLinkId = InternalLink.InternalLinkId INNER JOIN Document ON InternalLink.MepsDocumentId = Document.MepsDocumentId WHERE DocumentInternalLink.DocumentId = ${ref.DocumentId} AND Document.Class <> 94`,
   )
 
   internalRefs.forEach((ref) => {
@@ -125,7 +125,7 @@ async function processInternalRefs(
       date,
       ref.BeginParagraphOrdinal,
       refMediaFile,
-      'internal'
+      'internal',
     )
   })
 

@@ -23,9 +23,7 @@ const defaultState: PresentStore = {
 }
 
 export const usePresentStore = defineStore('present', {
-  state: (): PresentStore => ({
-    ...defaultState,
-  }),
+  state: (): PresentStore => cloneDeep(defaultState),
   actions: {
     setBackground(bg: string) {
       this.background = bg

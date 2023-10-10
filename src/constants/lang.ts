@@ -1,4 +1,5 @@
 import type { LocaleObject } from '#i18n'
+import { ShortJWLang } from '~~/types'
 
 export const DAYJS_LOCALES = [
   'de',
@@ -24,7 +25,7 @@ export const DAYJS_LOCALES = [
 // Languages that have no active translator
 export const STALE_LANGS: string[] = ['pt-pt']
 
-export const LOCALES: LocaleObject[] = [
+export const LOCALES = [
   {
     code: 'de',
     iso: 'de-DE',
@@ -155,7 +156,7 @@ export const LOCALES: LocaleObject[] = [
     dayjs: 'en',
     name: 'Pidgin - West Africa (Pidgin - West Africa)',
   },
-]
+] satisfies LocaleObject[]
 
 /*
 SELECT
@@ -166,7 +167,7 @@ FROM
 ORDER BY
   LanguageId
 */
-export const MEPS_IDS: Record<number, string> = {
+export const MEPS_IDS = {
   '0': 'E',
   '1': 'S',
   '2': 'X',
@@ -1583,7 +1584,7 @@ export const MEPS_IDS: Record<number, string> = {
   '1413': 'NLS',
   '1414': 'BKY',
   '1415': 'MDO',
-}
+} satisfies Record<number, string>
 
 /*
 SELECT
@@ -1599,7 +1600,7 @@ WHERE
   L.PrimaryFallbackLanguageId != 0
   AND L.PrimaryFallbackLanguageId != -1
 */
-export const FALLBACK_LANGS: Record<string, string> = {
+export const FALLBACK_LANGS = {
   AI: 'CH',
   AE: 'HI',
   AR: 'F',
@@ -2295,7 +2296,7 @@ export const FALLBACK_LANGS: Record<string, string> = {
   ODN: 'OI',
   NLS: 'NGD',
   BKY: 'PGW',
-}
+} satisfies Record<string, string>
 
 export const FALLBACK_SITE_LANGS = [
   {
@@ -6689,4 +6690,4 @@ export const FALLBACK_SITE_LANGS = [
     vernacularName: 'IsiZulu',
     isSignLanguage: false,
   },
-]
+] satisfies ShortJWLang[]

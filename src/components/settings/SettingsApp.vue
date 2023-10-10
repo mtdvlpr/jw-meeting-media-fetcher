@@ -165,7 +165,7 @@
           :color="scenes.length > 0 ? 'success' : 'primary'"
           @click="refreshOBS()"
         >
-          <v-icon icon="mdi-book-refresh" />
+          <v-icon icon="i-mdi:book-refresh" />
         </v-btn>
       </v-col>
       <form-input
@@ -278,7 +278,7 @@
           hide-details="auto"
         />
         <v-btn class="ml-2" color="primary" @click="addAutoRename()">
-          <v-icon icon="mdi-plus" size="small" />
+          <v-icon icon="i-mdi:plus" size="small" />
         </v-btn>
       </v-col>
       <v-col>
@@ -313,7 +313,6 @@ import { platform } from 'os'
 import { ipcRenderer } from 'electron'
 import { extname, join } from 'upath'
 import type { LocaleObject } from '#i18n'
-// eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { AppPrefs, VFormRef, PrefStore } from '~~/types'
 
@@ -374,14 +373,14 @@ watch(
   async (val) => {
     ipcRenderer.send('setTheme', val)
     setTheme(val === 'system' ? await ipcRenderer.invoke('theme') : val)
-  }
+  },
 )
 
 watch(
   () => app.value.autoRunAtBoot,
   (val) => {
     ipcRenderer.send('runAtBoot', val)
-  }
+  },
 )
 
 watch(
@@ -390,11 +389,11 @@ watch(
     if (!val) return
     const { $dayjs } = useNuxtApp()
     const newLocale = (locales.value as LocaleObject[]).find(
-      (l) => l.code === val
+      (l) => l.code === val,
     )!
 
     const oldLocale = (locales.value as LocaleObject[]).find(
-      (l) => l.code === oldVal
+      (l) => l.code === oldVal,
     )
     $dayjs.locale(newLocale?.dayjs ?? val)
     if (oldLocale && val !== oldVal) {
@@ -405,7 +404,7 @@ watch(
       log.debug('Change localAppLang')
       useRouter().replace(useSwitchLocalePath()(val))
     }
-  }
+  },
 )
 const dateFormats = [
   'DD-MM-YYYY',
@@ -433,7 +432,7 @@ watch(
       newFormat: val,
       locale: localeProperties.value.dayjs ?? locale.value,
     })
-  }
+  },
 )
 
 watch(
@@ -441,13 +440,13 @@ watch(
   (val) => {
     if (val === null || val === undefined) return
     ipcRenderer.send('toggleBetaUpdates', val)
-  }
+  },
 )
 watch(
   () => app.value.disableAutoUpdate,
   (val) => {
     ipcRenderer.send('toggleAutoUpdate', !val)
-  }
+  },
 )
 watch(
   () => app.value.disableHardwareAcceleration,
@@ -464,7 +463,7 @@ watch(
     if (val !== fileExists) {
       ipcRenderer.send('restart')
     }
-  }
+  },
 )
 
 // Zoom options
@@ -472,14 +471,14 @@ watch(
   () => app.value.zoom.enable,
   () => {
     appForm.value?.validate()
-  }
+  },
 )
 const autoStartMeeting = useComputedLabel<AppPrefs>(
   'minutesBeforeMeeting',
   app,
   'zoom',
   PREFS.app.zoom.autoStartTime!,
-  'autoStartTime'
+  'autoStartTime',
 )
 const newAutoRename = ref('')
 const addAutoRename = () => {
@@ -504,7 +503,7 @@ watch(
       resetOBS()
     }
     appForm.value?.validate()
-  }
+  },
 )
 watch(
   () => app.value.obs.useV4,
@@ -513,7 +512,7 @@ watch(
     if (obsComplete.value) {
       getScenes()
     }
-  }
+  },
 )
 const scenes = computed(() => useObsStore().scenes)
 const cameraScenes = computed(() => {
@@ -521,7 +520,7 @@ const cameraScenes = computed(() => {
     (s) =>
       s !== app.value.obs.mediaScene &&
       s !== app.value.obs.zoomScene &&
-      s !== app.value.obs.imageScene
+      s !== app.value.obs.imageScene,
   )
 })
 const mediaScenes = computed(() => {
@@ -529,7 +528,7 @@ const mediaScenes = computed(() => {
     (s) =>
       s !== app.value.obs.cameraScene &&
       s !== app.value.obs.zoomScene &&
-      s !== app.value.obs.imageScene
+      s !== app.value.obs.imageScene,
   )
 })
 const imageScenes = computed(() => {
@@ -537,7 +536,7 @@ const imageScenes = computed(() => {
     (s) =>
       s !== app.value.obs.cameraScene &&
       s !== app.value.obs.zoomScene &&
-      s !== app.value.obs.mediaScene
+      s !== app.value.obs.mediaScene,
   )
   if (
     app.value.obs.imageScene &&
@@ -552,7 +551,7 @@ const zoomScenes = computed(() => {
     (s) =>
       s !== app.value.obs.cameraScene &&
       s !== app.value.obs.mediaScene &&
-      s !== app.value.obs.imageScene
+      s !== app.value.obs.imageScene,
   )
   if (
     app.value.obs.zoomScene &&
@@ -595,7 +594,7 @@ watch(
       })
       app.value.localOutputPath = null
     }
-  }
+  },
 )
 const setLocalOutputPath = async () => {
   const result = await ipcRenderer.invoke('openDialog', {
@@ -619,7 +618,7 @@ watch(
       move(join(oldVal, 'Publications'), join(val, 'Publications'))
       move(join(oldVal, 'Fonts'), join(val, 'Fonts'))
     }
-  }
+  },
 )
 const setCustomCachePath = async () => {
   const result = await ipcRenderer.invoke('openDialog', {
@@ -640,7 +639,7 @@ watchDebounced(
       username: val,
     })
   },
-  { debounce: 500, maxWait: 1000 }
+  { debounce: 500, maxWait: 1000 },
 )
 const renameBg = async () => {
   if (oldName.value && app.value.congregationName) {
@@ -652,7 +651,7 @@ const renameBg = async () => {
     move(
       bg,
       join(appPath(), bgName(app.value.congregationName) + extname(bg)),
-      true
+      true,
     )
 
     if (client.value && props.prefs.cong.dir) {
@@ -660,8 +659,8 @@ const renameBg = async () => {
         join(props.prefs.cong.dir, bgName(oldName.value) + extname(bg)),
         join(
           props.prefs.cong.dir,
-          bgName(app.value.congregationName) + extname(bg)
-        )
+          bgName(app.value.congregationName) + extname(bg),
+        ),
       )
     }
   }

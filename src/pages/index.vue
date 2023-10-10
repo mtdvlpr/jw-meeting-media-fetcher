@@ -19,7 +19,7 @@
           >
             <template v-if="c.id !== cong" #append>
               <v-btn
-                icon="mdi-delete"
+                icon="i-mdi:delete"
                 variant="text"
                 color="error"
                 size="small"
@@ -28,7 +28,7 @@
             </template>
           </v-list-item>
           <v-list-item
-            prepend-icon="mdi-plus"
+            prepend-icon="i-mdi:plus"
             :title="$t('congregationAdd')"
             @click="createCong()"
           />
@@ -96,7 +96,7 @@ const autoSelectCong = async () => {
     const { default: getUsername } = await import('fullname')
     const username = (await getUsername()) ?? userInfo().username
     const match = congs.value.find(
-      (c) => c.name?.toLowerCase().trim() === username.toLowerCase().trim()
+      (c) => c.name?.toLowerCase().trim() === username.toLowerCase().trim(),
     )
     if (match) {
       initPrefs(basename(match.path, '.json'))
@@ -131,7 +131,7 @@ const initPrefs = (name: string, isNew = false) => {
   }
 
   // Open home
-  let path = useLocalePath()('/present', lang)
+  let path = useLocalePath()('/home', lang)
 
   // If new cong or invalid settings, open settings
   if (isNew || !mediaPath()) {
@@ -188,7 +188,7 @@ const initPrefs = (name: string, isNew = false) => {
   // Set auto updater prefs
   ipcRenderer.send(
     'toggleAutoUpdate',
-    !getPrefs<boolean>('app.disableAutoUpdate')
+    !getPrefs<boolean>('app.disableAutoUpdate'),
   )
 
   ipcRenderer.send('toggleUpdateChannel', getPrefs<boolean>('app.betaUpdates'))
@@ -220,11 +220,6 @@ const initPrefs = (name: string, isNew = false) => {
 
   // Regular Cleanup
   cleanup()
-  onBeforeUnmount(() => {
-    watchers.value?.forEach((watcher) => {
-      watcher.close()
-    })
-  })
 }
 
 const connectWebDAV = async () => {
@@ -246,12 +241,14 @@ const connectWebDAV = async () => {
       .watch(
         join(
           appPath(),
-          `custom-background-image-${getPrefs<string>('app.congregationName')}*`
+          `custom-background-image-${getPrefs<string>(
+            'app.congregationName',
+          )}*`,
         ),
         {
           depth: 1,
           ignorePermissionErrors: true,
-        }
+        },
       )
       .on('add', () => {
         refreshBackgroundImgPreview()
@@ -261,7 +258,7 @@ const connectWebDAV = async () => {
       })
       .on('unlink', () => {
         refreshBackgroundImgPreview()
-      })
+      }),
   )
 }
 
@@ -275,13 +272,13 @@ const connectCloudSync = () => {
             getPrefs('cloud.path'),
             'Settings',
             `custom-background-image-${getPrefs<string>(
-              'app.congregationName'
-            )}*`
+              'app.congregationName',
+            )}*`,
           ),
           {
             depth: 1,
             ignorePermissionErrors: true,
-          }
+          },
         )
         .on('add', (backgroundImg) => {
           copy(backgroundImg, join(appPath(), basename(backgroundImg)))
@@ -291,7 +288,7 @@ const connectCloudSync = () => {
         })
         .on('unlink', (backgroundImg) => {
           rm(join(appPath(), basename(backgroundImg)))
-        })
+        }),
     )
     // enforced settings
     watchers.value.push(
@@ -308,7 +305,7 @@ const connectCloudSync = () => {
         })
         .on('unlink', () => {
           forcePrefs()
-        })
+        }),
     )
   }
 }
@@ -316,7 +313,7 @@ const connectCloudSync = () => {
 const initMediaWindow = () => {
   const presentStore = usePresentStore()
   const enableMediaDisplayButton = getPrefs<boolean>(
-    'media.enableMediaDisplayButton'
+    'media.enableMediaDisplayButton',
   )
   if (enableMediaDisplayButton && !presentStore.mediaScreenInit) {
     toggleMediaWindow('open')
@@ -329,10 +326,10 @@ const initMediaWindow = () => {
 const checkLangs = async (isNew: boolean) => {
   const langs = await getJWLangs()
   const mediaLang = langs.find(
-    (l) => l.langcode === getPrefs<string>('media.lang')
+    (l) => l.langcode === getPrefs<string>('media.lang'),
   )
   const appLang = langs.find(
-    (l) => l.symbol === getPrefs<string>('app.localAppLang')
+    (l) => l.symbol === getPrefs<string>('app.localAppLang'),
   )
 
   if (

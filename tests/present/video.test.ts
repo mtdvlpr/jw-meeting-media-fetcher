@@ -1,5 +1,4 @@
 import { platform } from 'os'
-// eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { sync } from 'fast-glob'
 import { expect, test, ElectronApplication, Page } from '@playwright/test'
@@ -47,7 +46,7 @@ test('render the presentation mode page correctly', async () => {
 
   // Check for correct version
   expect((await page.locator('text=M³ v').innerText()).toLowerCase()).toBe(
-    `m³ v${version}`
+    `m³ v${version}`,
   )
 
   // Expand media setup
@@ -85,22 +84,20 @@ test('render the presentation mode page correctly', async () => {
     }).length === 1
   ) {
     // Check if more actions button is present
-    expect(
-      await page
-        .locator('[aria-label="More actions"]')
-        .getAttribute('aria-label')
-    ).toBeTruthy()
+    await expect(page.locator('[aria-label="More actions"]')).toHaveAttribute(
+      'aria-label',
+      'More actions',
+    )
   } else {
     // Check for correct heading
-    expect(
-      await page.locator('.v-toolbar-title__placeholder').innerText()
-    ).toBe(locale.selectDate)
+    await expect(page.locator('.v-toolbar-title__placeholder')).toHaveText(
+      locale.selectDate,
+    )
     await page.locator('.present-select .v-list-item').nth(0).click()
-    expect(
-      await page
-        .locator('[aria-label="More actions"]')
-        .getAttribute('aria-label')
-    ).toBeTruthy()
+    await expect(page.locator('[aria-label="More actions"]')).toHaveAttribute(
+      'aria-label',
+      'More actions',
+    )
   }
 })
 

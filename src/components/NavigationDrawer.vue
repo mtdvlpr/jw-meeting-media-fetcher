@@ -42,7 +42,7 @@
       <v-list nav>
         <v-list-item
           v-if="!online"
-          prepend-icon="mdi-wifi-off"
+          prepend-icon="i-mdi:wifi-off"
           title="No internet connection"
         >
         </v-list-item>
@@ -59,8 +59,8 @@
               size="small"
               class="mr-8"
             />
-            <v-icon v-else-if="musicFadeOut" icon="mdi-stop-circle-outline" />
-            <v-icon v-else icon="mdi-music-note" />
+            <v-icon v-else-if="musicFadeOut" icon="i-mdi:stop-circle-outline" />
+            <v-icon v-else icon="i-mdi:music-note" />
           </template>
           <template v-if="musicFadeOut" #append>
             <v-chip variant="plain" density="compact">
@@ -74,7 +74,7 @@
         <v-list-item
           v-if="showMediaPlayback"
           :class="{ 'pulse-danger': !mediaVisible }"
-          :prepend-icon="`mdi-television${mediaVisible ? '' : '-off'}`"
+          :prepend-icon="mediaVisible ? 'i-mdi:tv' : 'i-mdi-tv-off'"
           :title="$t(`mediaWin${mediaVisible ? 'Hide' : 'Show'}`)"
           @click="toggleScreen()"
         >
@@ -90,23 +90,22 @@
 import { useIpcRenderer } from '@vueuse/electron'
 const { t } = useI18n()
 const localePath = useLocalePath()
-const { isDev } = useRuntimeConfig().public
 const { navDisabled, showMediaPlayback, showMusicButton, online } = storeToRefs(
-  useStatStore()
+  useStatStore(),
 )
 
 const navItems = computed(() => {
   const items = [
     {
       title: t('plannedMedia'),
-      icon: 'mdi-calendar-week',
+      icon: 'i-mdi:calendar-week',
       to: localePath('/home'),
       tooltip: '',
       aria: 'home',
     },
     {
       title: t('settings'),
-      icon: 'mdi-cog',
+      icon: 'i-mdi:cog',
       to: localePath('/settings'),
       tooltip: '',
       aria: 'settings',
@@ -115,27 +114,11 @@ const navItems = computed(() => {
   if (showMediaPlayback.value) {
     items.unshift({
       title: t('mediaPlayback'),
-      icon: 'mdi-multimedia',
+      icon: 'i-mdi:multimedia',
       to: localePath('/present'),
       tooltip: getPrefs<string>('media.presentShortcut'),
       aria: 'present',
     })
-  }
-  if (isDev) {
-    items.splice(1, 0, {
-      title: t('mediaPlayback') + ' DEV',
-      icon: 'mdi-multimedia',
-      to: localePath('/present'),
-      tooltip: getPrefs<string>('media.presentShortcut'),
-      aria: 'present',
-    })
-    // items.splice(1, 0, {
-    //   title: t('settings') + ' DEV',
-    //   icon: 'mdi-cog',
-    //   to: localePath('/settingsnew'),
-    //   tooltip: '',
-    //   aria: 'settings',
-    // })
   }
   return items
 })
@@ -164,7 +147,7 @@ watch(
       timeRemaining = formatted
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Media Window

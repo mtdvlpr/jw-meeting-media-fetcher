@@ -123,7 +123,7 @@
             v-if="bg === 'yeartext'"
             color="primary"
             class="mb-2"
-            icon="mdi-image-edit-outline"
+            icon="i-mdi:image-edit-outline"
             @click="uploadBg()"
           />
           <v-btn v-else color="error" class="mb-2" @click="removeBg()">
@@ -133,7 +133,7 @@
             color="warning"
             class="mb-2"
             min-width="32px"
-            icon="mdi-web-refresh"
+            icon="i-mdi:web-refresh"
             @click="refreshBg()"
           />
         </v-col>
@@ -324,7 +324,7 @@ watch(
     }
     mediaForm.value?.validate()
     useStatStore().setShowMediaPlayback(val)
-  }
+  },
 )
 watch(
   () => media.value.preferredOutput,
@@ -335,30 +335,30 @@ watch(
         ipcRenderer.send('showMediaWindow', dest)
       })
     }
-  }
+  },
 )
 watch(
   () => media.value.hideMediaLogo,
   (val) => {
     refreshBackgroundImgPreview()
     const ytLogo = document.querySelector<HTMLDivElement>(
-      '#yeartextLogoContainer'
+      '#yeartextLogoContainer',
     )
     if (ytLogo) ytLogo.style.display = !val ? 'block' : 'none'
-  }
+  },
 )
 watch(
   () => media.value.enablePp,
   () => {
     if (mediaForm.value) mediaForm.value.validate()
-  }
+  },
 )
 
 const playMinutesBeforeMeeting = useComputedLabel<MediaPrefs>(
   'minutesBeforeMeeting',
   media,
   'autoPlayFirstTime',
-  PREFS.media.autoPlayFirstTime!
+  PREFS.media.autoPlayFirstTime!,
 )
 
 // Languages
@@ -385,26 +385,26 @@ watch(
     if (bg.value === 'yeartext') {
       refreshBackgroundImgPreview(true)
     }
-  }
+  },
 )
 const subLangs = computed(() => langs.value.filter((l) => !l.isSignLanguage))
 watch(
   () => media.value.enableSubtitles,
   () => {
     mediaForm.value?.validate()
-  }
+  },
 )
 watch(
   () => media.value.langSubs,
   (val) => {
     if (val) getPubAvailability(val)
-  }
+  },
 )
 const fallbackLangs = computed(() => {
   return langs.value.filter(
     (l) =>
       l.langcode !== media.value.lang &&
-      (l.wAvailable !== false || l.mwbAvailable !== false)
+      (l.wAvailable !== false || l.mwbAvailable !== false),
   )
 })
 watch(
@@ -415,13 +415,13 @@ watch(
     if (!val) return
     getJWLangs()
     getPubAvailability(val)
-  }
+  },
 )
 
 // Shortcuts
 watch(
   () => media.value.mediaWinShortcut,
-  (val) => changeShortcut(val, 'toggleMediaWindow')
+  (val) => changeShortcut(val, 'toggleMediaWindow'),
 )
 
 watch(
@@ -431,7 +431,7 @@ watch(
     const store = useStatStore()
     store.setShowMediaPlayback(false)
     store.setShowMediaPlayback(true)
-  }
+  },
 )
 
 // Media window background
@@ -470,7 +470,7 @@ const uploadBg = async () => {
         await readFile(background),
         {
           overwrite: true,
-        }
+        },
       )
     }
 
@@ -490,7 +490,7 @@ const removeBg = async () => {
     const extension = extname(background[0])
     try {
       await client.value.deleteFile(
-        join(props.prefs.cong.dir, filename + extension)
+        join(props.prefs.cong.dir, filename + extension),
       )
     } catch (e: any) {
       if (e.message.includes(LOCKED.toString())) {

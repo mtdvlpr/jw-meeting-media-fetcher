@@ -57,7 +57,7 @@
           $t(
             status == 'success'
               ? 'shuffleMusicDownloaded'
-              : 'downloadShuffleMusic'
+              : 'downloadShuffleMusic',
           )
         "
       >
@@ -65,7 +65,7 @@
           <v-btn
             v-if="meeting.enableMusicButton"
             v-bind="btnProps"
-            icon="mdi-playlist-music"
+            icon="i-mdi:playlist-music"
             :loading="status === 'loading'"
             :disabled="!appOnline"
             :color="
@@ -218,7 +218,7 @@ watch(
   () => props.cache,
   () => {
     setShuffleMusicCached()
-  }
+  },
 )
 const setShuffleMusicCached = async () => {
   let matchingFiles = 0
@@ -253,21 +253,21 @@ watch(
   (val) => {
     meetingForm.value?.validate()
     useStatStore().setShowMusicButton(val)
-  }
+  },
 )
 const isSignLanguage = () => useMediaStore().mediaLang?.isSignLanguage
 const musicFadeOutSmart = useComputedLabel<MeetingPrefs>(
   'musicFadeOutSmart',
   meeting,
   'musicFadeOutTime',
-  PREFS.meeting.musicFadeOutTime!
+  PREFS.meeting.musicFadeOutTime!,
 )
 
 const musicFadeOutTimer = useComputedLabel<MeetingPrefs>(
   'musicFadeOutTimer',
   meeting,
   'musicFadeOutTime',
-  PREFS.meeting.musicFadeOutTime!
+  PREFS.meeting.musicFadeOutTime!,
 )
 
 const processed = ref(0)

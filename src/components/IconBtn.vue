@@ -46,7 +46,7 @@ const props = withDefaults(
   {
     iconColor: '',
     tooltip: 'end',
-  }
+  },
 )
 
 // Emit click event
@@ -64,7 +64,7 @@ const { atClick: atFirstClick, clickedOnce } = useClickTwice(() => {
 
 // Icon
 const getIcon = (
-  icon: string | { text: string; props?: Record<string, any> }
+  icon: string | { text: string; props?: Record<string, any> },
 ) => {
   return typeof icon === 'string' ? icon : icon.text
 }
@@ -86,7 +86,7 @@ const link = computed(() => {
 
 // Icon color
 const getIconColor = (
-  icon?: string | { text: string; props?: Record<string, any> }
+  icon?: string | { text: string; props?: Record<string, any> },
 ) => {
   if (clickedOnce.value) return 'white'
   if (props.iconColor) return props.iconColor
@@ -97,7 +97,7 @@ const getIconColor = (
 
 // Icon props
 const getIconProps = (
-  icon: string | { text: string; props?: Record<string, any> }
+  icon: string | { text: string; props?: Record<string, any> },
 ) => {
   return typeof icon === 'string' ? {} : icon.props
 }
@@ -115,7 +115,7 @@ const styles: Record<string, Style> = {
       'min-width': '32px',
       color: 'btn',
     },
-    icon: { text: 'mdi-home', props: { color: 'white' } },
+    icon: { text: 'i-mdi:home', props: { color: 'white' } },
   },
   cancel: {
     props: {
@@ -123,18 +123,18 @@ const styles: Record<string, Style> = {
       color: 'error',
     },
     icon: {
-      text: 'mdi-arrow-left-bold-circle',
+      text: 'i-mdi:arrow-left-bold-circle',
       props: { color: 'white', size: 'medium' },
     },
   },
   play: {
     props: { color: 'primary' },
-    icon: { text: 'mdi-play', props: { size: 'x-large' } },
+    icon: { text: 'i-mdi:play', props: { size: 'x-large' } },
   },
   stop: {
     props: { color: 'warning' },
     icon: {
-      text: 'mdi-stop',
+      text: 'i-mdi:stop',
       props: { size: 'x-large', color: 'black' },
     },
   },

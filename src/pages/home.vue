@@ -65,7 +65,6 @@
 <script setup lang="ts">
 import { fileURLToPath, pathToFileURL } from 'url'
 import { useIpcRenderer } from '@vueuse/electron'
-// eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { basename, join } from 'upath'
 import { AppPrefs, MediaPrefs, MeetingPrefs } from '~~/types'
@@ -147,7 +146,7 @@ const upcomingWeeks = computed(() => {
             week.startOf('week').month() !== week.endOf('week').month()
               ? ' MMM'
               : ''
-          }`
+          }`,
         ) + ` - ${week.endOf('week').format('D MMM')}`
     weeks.push({ iso, label })
   }
@@ -225,10 +224,10 @@ const startMediaSync = async (dryrun = false) => {
         }).filter((dir: string) => {
           const date = $dayjs(
             basename(dir),
-            getPrefs<string>('app.outputFolderDateFormat')
+            getPrefs<string>('app.outputFolderDateFormat'),
           )
           return !date.isValid() || date.isBefore(now)
-        })
+        }),
       )
     }
 
@@ -292,7 +291,7 @@ const startMediaSync = async (dryrun = false) => {
       try {
         useIpcRenderer().send(
           'openPath',
-          fileURLToPath(pathToFileURL(mPath).href)
+          fileURLToPath(pathToFileURL(mPath).href),
         )
       } catch (e: unknown) {
         warn('errorSetVars', { identifier: mPath }, e)
@@ -407,9 +406,9 @@ const action = ref('')
 const icon = (action: string) => {
   switch (action) {
     case 'quitApp':
-      return 'mdi-exit-run'
+      return 'i-mdi:exit-run'
     case 'startMediaSync':
-      return 'mdi-pause'
+      return 'i-mdi:pause'
     default:
       throw new Error(`Unknown action: ${action}`)
   }
@@ -440,7 +439,7 @@ const execute = (ac: string) => {
 
 const testApp = async () => {
   const dbStore = useDbStore()
-  const previousLang = useCloneDeep(getPrefs<string>('media.lang'))
+  const previousLang = cloneDeep(getPrefs<string>('media.lang'))
   /*
       AML: American Sign Language
       E: English

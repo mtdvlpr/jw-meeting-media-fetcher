@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/named
 import { createWriteStream, WriteStream, ensureFile } from 'fs-extra'
 import { author, name } from '~~/package.json'
 import {
@@ -62,7 +61,7 @@ export async function fetchHead(baseUrl: string) {
 
 export async function fetchJson<T>(
   baseUrl: string,
-  options?: Record<string, any>
+  options?: Record<string, any>,
 ): Promise<T> {
   const url = new URL(baseUrl)
   if (options) {
@@ -87,40 +86,40 @@ export async function fetchJson<T>(
 export const fetchPublication = async (options: Record<string, any>) => {
   return await fetchJson<Publication>(
     'https://b.jw-cdn.org/apis/pub-media/GETPUBMEDIALINKS',
-    options
+    options,
   )
 }
 
 export const fetchMedia = async (
   appendToPath: string,
-  options?: Record<string, any>
+  options?: Record<string, any>,
 ) => {
   return await fetchJson<MediaItemResult>(
     'https://b.jw-cdn.org/apis/mediator/v1/media-items/' + appendToPath,
-    options
+    options,
   )
 }
 
 export const fetchMediaCategories = async (
   appendToPath: string,
-  options?: Record<string, any>
+  options?: Record<string, any>,
 ) => {
   return await fetchJson<MediaCategoryResult>(
     'https://b.jw-cdn.org/apis/mediator/v1/categories/' + appendToPath,
-    options
+    options,
   )
 }
 
 export const fetchPublicationList = async (langsymbol: string) => {
   return await fetchJson<PublicationListResult>(
     'https://www.jw.org/en/library/books/json/filters/PseudoSearchViewsFilter/?contentLanguageFilter=' +
-      langsymbol
+      langsymbol,
   )
 }
 
 export const fetchRelease = async (appendToPath: string) => {
   return await fetchJson<Release>(
     `https://api.github.com/repos/${author.name}/${name}/releases/` +
-      appendToPath
+      appendToPath,
   )
 }

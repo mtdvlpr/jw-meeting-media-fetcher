@@ -1,6 +1,5 @@
 import { platform } from 'os'
 import { expect, test, ElectronApplication, Page } from '@playwright/test'
-// eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { join } from 'upath'
 import { ipcRendererInvoke } from 'electron-playwright-helpers'
@@ -65,7 +64,9 @@ test('add song', async () => {
 
   // Expect song to be present in media list
   expect(
-    await page.locator(`text=01-23-45 - ${locale.song} ${filename}.mp4`).count()
+    await page
+      .locator(`text=01-23-45 - ${locale.song} ${filename}.mp4`)
+      .count(),
   ).toBe(1)
 
   // Take screenshot
@@ -86,7 +87,7 @@ test('add song', async () => {
   // Expect song to be present in media folder
   mediaPath = (await ipcRendererInvoke(page, 'downloads')) as string
   expect(existsSync(join(mediaPath, prefs.lang, 'Recurring', filename))).toBe(
-    true
+    true,
   )
 })
 
@@ -95,7 +96,7 @@ test('rename song', async () => {
   await page.locator('svg.fa-pen').click()
 
   // Expect check button to be visible
-  expect(await page.locator('svg.fa-check').isVisible()).toBe(true)
+  await expect(page.locator('svg.fa-check')).toBeVisible()
 
   // Clear name input
   await page.locator('.v-text-field--suffixed input').fill('')
@@ -119,7 +120,7 @@ test('rename song', async () => {
 
   // Expect cleaned, renamed song to be present in media folder
   expect(existsSync(join(mediaPath, prefs.lang, 'Recurring', filename))).toBe(
-    true
+    true,
   )
 })
 
@@ -138,6 +139,6 @@ test('remove song', async () => {
 
   // Verify song has been removed from media folder
   expect(existsSync(join(mediaPath, prefs.lang, 'Recurring', filename))).toBe(
-    false
+    false,
   )
 })

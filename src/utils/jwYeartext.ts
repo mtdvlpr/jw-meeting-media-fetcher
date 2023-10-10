@@ -3,7 +3,7 @@ import { WT_CLEARTEXT_FONT, JW_ICONS_FONT } from '~/constants/general'
 
 export async function getYearText(
   force = false,
-  lang?: string
+  lang?: string,
 ): Promise<string | null> {
   let yeartext = null
   const fontsPromise = getWtFonts(force)
@@ -23,7 +23,7 @@ export async function getYearText(
           wtlocale,
           format: 'json',
           snip: 'yes',
-        }
+        },
       )
 
       if (result.content) {

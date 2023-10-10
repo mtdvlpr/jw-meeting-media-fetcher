@@ -11,7 +11,7 @@ const defaultState: OBSStore = {
 }
 
 export const useObsStore = defineStore('obs', {
-  state: () => Object.assign({}, defaultState),
+  state: (): OBSStore => cloneDeep(defaultState),
   actions: {
     setConnected(connected: boolean) {
       this.connected = connected

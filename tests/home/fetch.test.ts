@@ -1,6 +1,5 @@
 import { platform } from 'os'
 import { ipcRendererInvoke } from 'electron-playwright-helpers'
-// eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { sync } from 'fast-glob'
 import { expect, test, ElectronApplication, Page } from '@playwright/test'
@@ -49,7 +48,7 @@ test('fetch is successful', async () => {
   expect(
     await page
       .locator('.v-card', { hasText: locale.recurring })
-      .getAttribute('class')
+      .getAttribute('class'),
   ).toContain('success')
 
   // Test if the media folder has a E folder for English media
@@ -58,7 +57,7 @@ test('fetch is successful', async () => {
 
   // Test if the weekend media folder has media files
   expect(
-    sync(join(mediaPath, prefs.lang, getDate('we'), '*')).length
+    sync(join(mediaPath, prefs.lang, getDate('we'), '*')).length,
   ).toBeGreaterThan(0)
   if (platform() === 'linux') {
     await page.screenshot({ path: 'img/main/sync-complete.png' })

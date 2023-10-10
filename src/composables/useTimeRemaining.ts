@@ -3,7 +3,7 @@ import type { Duration } from 'dayjs/plugin/duration'
 
 export default function (stop: Dayjs | number, onStop: () => void) {
   const { $dayjs } = useNuxtApp()
-  let interval: NodeJS.Timer | null = null
+  let interval: NodeJS.Timeout | null = null
   let initialSeconds = 0
 
   const stopInterval = (executeOnStop = false) => {

@@ -379,7 +379,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
     defaults: PREFS,
     beforeEachMigration: (_store, context) => {
       log.debug(
-        `[main-config] migrate from ${context.fromVersion} → ${context.toVersion}`
+        `[main-config] migrate from ${context.fromVersion} → ${context.toVersion}`,
       )
       log.debug(`[main-config] final version: ${context.finalVersion}`)
       log.debug(`[main-config] versions: ${context.versions}`)
@@ -400,7 +400,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
           }
 
           log.debug(
-            `Processing ${key}=${store.get(key)} (${typeof store.get(key)})...`
+            `Processing ${key}=${store.get(key)} (${typeof store.get(key)})...`,
           )
 
           try {
@@ -421,7 +421,7 @@ function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
         if (store.get('app.ppEnable') !== undefined) {
           store.set(
             'media.enablePp',
-            store.get('app.ppEnable') || store.get('media.enablePp')
+            store.get('app.ppEnable') || store.get('media.enablePp'),
           )
           // @ts-expect-error: 'app.ppEnable' is not defined as a key of PrefStore
           store.delete('app.ppEnable')

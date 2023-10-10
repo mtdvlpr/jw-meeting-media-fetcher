@@ -1,4 +1,3 @@
-/* eslint-disable import/named */
 import {
   writeFileSync,
   existsSync,
@@ -145,7 +144,7 @@ export function rename(
   oldName: string,
   newName: string,
   action = 'rename',
-  type = 'string'
+  type = 'string',
 ): void {
   if (!existsSync(path)) return
   if (oldName === newName) return
@@ -185,7 +184,7 @@ export function renameAll(
   search: string,
   newName: string,
   action = 'rename',
-  type = 'string'
+  type = 'string',
 ) {
   if (!existsSync(dir)) return
 
@@ -196,7 +195,7 @@ export function renameAll(
 
 export async function renamePubs(
   oldLocale: LocaleObject,
-  newLocale: LocaleObject
+  newLocale: LocaleObject,
 ) {
   const mPath = mediaPath()
   if (!mPath) return
@@ -208,7 +207,7 @@ export async function renamePubs(
     const date = useNuxtApp().$dayjs(
       dir,
       dateFormat,
-      oldLocale.dayjs ?? oldLocale.code
+      oldLocale.dayjs ?? oldLocale.code,
     )
 
     if (date.isValid() && (await stat(path)).isDirectory()) {
@@ -218,18 +217,18 @@ export async function renamePubs(
         const newName = file
           .replace(
             ' - ' + translate('song', oldLocale.code),
-            ' - ' + translate('song', newLocale.code)
+            ' - ' + translate('song', newLocale.code),
           )
           .replace(
             ' - ' + translate('paragraph', oldLocale.code),
-            ' - ' + translate('paragraph', newLocale.code)
+            ' - ' + translate('paragraph', newLocale.code),
           )
         rename(join(path, file), file, newName)
       }
       rename(
         path,
         dir,
-        date.locale(newLocale.dayjs ?? newLocale.code).format(dateFormat)
+        date.locale(newLocale.dayjs ?? newLocale.code).format(dateFormat),
       )
     }
   }

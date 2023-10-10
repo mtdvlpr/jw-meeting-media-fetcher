@@ -27,7 +27,7 @@ const defaultState: ZoomStore = {
 }
 
 export const useZoomStore = defineStore('zoom', {
-  state: () => useCloneDeep(defaultState),
+  state: (): ZoomStore => cloneDeep(defaultState),
   actions: {
     setClient(client: typeof EmbeddedClient) {
       this.client = client
@@ -64,7 +64,7 @@ export const useZoomStore = defineStore('zoom', {
         const { default: zoomSDK } = await import('@zoomus/websdk/embedded')
         zoomSDK.destroyClient()
       }
-      this.$state = useCloneDeep(defaultState)
+      this.$state = cloneDeep(defaultState)
     },
   },
 })

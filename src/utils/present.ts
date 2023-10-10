@@ -174,8 +174,8 @@ export async function refreshBackgroundImgPreview(force = false) {
     const backgrounds = findAll(
       join(
         appPath(),
-        `custom-background-image-${getPrefs<string>('app.congregationName')}*`
-      )
+        `custom-background-image-${getPrefs<string>('app.congregationName')}*`,
+      ),
     )
 
     const store = usePresentStore()
@@ -195,7 +195,7 @@ export async function refreshBackgroundImgPreview(force = false) {
         pathToFileURL(backgrounds[0]).href,
         {
           responseType: 'blob',
-        }
+        },
       )
       const file = new File([response._data!], basename(backgrounds[0]), {
         type: response.headers.get('content-type') ?? undefined,
@@ -237,7 +237,7 @@ export async function getMediaWindowDestination() {
               : ''
           }`,
         }
-      })
+      }),
     )
     const output = getPrefs<number | 'window'>('media.preferredOutput')
     if (output !== 'window' && screenInfo.otherScreens.length > 0) {

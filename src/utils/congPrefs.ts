@@ -101,34 +101,32 @@ export async function forcePrefs(refresh = false) {
       }
 
       if (prefs.media?.excludeLffiImages !== undefined) {
-        prefs.media.excludeLffImages = useCloneDeep(
-          prefs.media.excludeLffiImages
-        )
+        prefs.media.excludeLffImages = cloneDeep(prefs.media.excludeLffiImages)
         delete prefs.media.excludeLffiImages
       }
 
-      const forcedPrefs = useCloneDeep(prefs)
+      const forcedPrefs = cloneDeep(prefs)
 
       if (!prefs.app) prefs.app = {}
       prefs.app.obs = Object.assign(
         getPrefs<ObsPrefs>('app.obs') ?? {},
-        prefs.app.obs ?? {}
+        prefs.app.obs ?? {},
       )
       prefs.app.zoom = Object.assign(
         getPrefs<ZoomPrefs>('app.zoom') ?? {},
-        prefs.app.zoom ?? {}
+        prefs.app.zoom ?? {},
       )
       const newPrefs = {
         app: Object.assign(getPrefs<AppPrefs>('app'), prefs.app ?? {}),
         cong: Object.assign(getPrefs<CongPrefs>('cong'), prefs.cong ?? {}),
         cloud: Object.assign(
           getPrefs<CloudPrefs>('cloudSync'),
-          prefs.cloudSync ?? {}
+          prefs.cloudSync ?? {},
         ),
         media: Object.assign(getPrefs<MediaPrefs>('media'), prefs.media ?? {}),
         meeting: Object.assign(
           getPrefs<MeetingPrefs>('meeting'),
-          prefs.meeting ?? {}
+          prefs.meeting ?? {},
         ),
       }
       setAllPrefs(newPrefs)

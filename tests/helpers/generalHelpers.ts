@@ -1,4 +1,3 @@
-/* eslint-disable import/no-named-as-default-member */
 import dayjs from 'dayjs'
 import { basename, extname, join } from 'upath'
 import updateLocale from 'dayjs/plugin/updateLocale'
@@ -64,7 +63,7 @@ export function strip(value: string, type = 'file') {
           .replace(
             // eslint-disable-next-line no-control-regex
             /["»“”‘’«(){}№+[\]$<>,/\\:*\x00-\x1F\x80-\x9F\u0000-\u001F]/gu,
-            ''
+            '',
           )
           .trim()
           .replace(/[ -]+$/g, '')
@@ -88,7 +87,7 @@ export function sanitize(name: string, mediaPath?: string, isFile = false) {
     const projectedPathCharLength = join(
       mediaPath,
       '9999-99-99 - AAAAAAAAAA AAAAAAAAAA',
-      name
+      name,
     ).length
     if (projectedPathCharLength > maxCharactersInPath) {
       name =

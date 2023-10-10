@@ -63,7 +63,7 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
             overwrite: true,
           })
           if (isRecurring) {
-            recurringMedia = useCloneDeep(media)
+            recurringMedia = cloneDeep(media)
           }
         }
       })
@@ -73,7 +73,7 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
       mediaStore.setMultiple({
         date,
         par: -1,
-        media: useCloneDeep(recurringMedia)
+        media: cloneDeep(recurringMedia)
           .map((m) => {
             m.folder = date
             m.recurring = true
@@ -112,7 +112,7 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
             mediaMap.forEach((media, par) => {
               if (found) return
               const result = media.find(
-                ({ safeName }) => safeName === hiddenFile.basename
+                ({ safeName }) => safeName === hiddenFile.basename,
               )
               if (result) {
                 mediaStore.setHidden({
@@ -129,7 +129,7 @@ export function getCongMedia(baseDate: Dayjs, now: Dayjs) {
                     date.basename +
                     '] ' +
                     hiddenFile.basename,
-                  'background-color: #fff3cd; color: #856404;'
+                  'background-color: #fff3cd; color: #856404;',
                 )
                 found = true
               }
@@ -151,10 +151,10 @@ export function getCongMediaByDate(date: string, isMeeting: boolean) {
   const tree = updateContentsTree()
   const mediaFolder = tree.find(({ basename }) => basename === 'Media')
   const mediaDayFolder = mediaFolder?.children?.find(
-    ({ basename }) => basename === date
+    ({ basename }) => basename === date,
   )
   const recurringFolder = mediaFolder?.children?.find(
-    ({ basename }) => basename === 'Recurring'
+    ({ basename }) => basename === 'Recurring',
   )
   const hiddenDayFolder = tree
     .find(({ basename }) => basename === 'Hidden')
@@ -169,7 +169,7 @@ export function getCongMediaByDate(date: string, isMeeting: boolean) {
           folder: date,
           url: mediaFile.filename,
         }
-      }
+      },
     ) ?? []
   const recurringMedia: MeetingFile[] =
     recurringFolder?.children?.map(
@@ -182,7 +182,7 @@ export function getCongMediaByDate(date: string, isMeeting: boolean) {
           recurring: true,
           url: mediaFile.filename,
         }
-      }
+      },
     ) ?? []
   const combinedMedia = [...dayMedia, ...(isMeeting ? recurringMedia : [])]
   if (combinedMedia.length > 0) {
@@ -199,7 +199,7 @@ export function getCongMediaByDate(date: string, isMeeting: boolean) {
     for (const [par, media] of mediaMap?.entries() ?? []) {
       if (found) break
       const result = media.find(
-        ({ safeName }) => safeName === hiddenFile.basename
+        ({ safeName }) => safeName === hiddenFile.basename,
       )
       if (result) {
         mediaStore.setHidden({
@@ -212,7 +212,7 @@ export function getCongMediaByDate(date: string, isMeeting: boolean) {
         rm(join(mediaPath(), date, hiddenFile.basename))
         log.info(
           '%c[hiddenMedia] [' + date + '] ' + hiddenFile.basename,
-          'background-color: #fff3cd; color: #856404;'
+          'background-color: #fff3cd; color: #856404;',
         )
         found = true
       }
@@ -224,14 +224,14 @@ export async function syncCongMediaByDate(date: string) {
     useMediaStore()
       .meetings.get(date)
       ?.get(-1)
-      ?.filter((i) => i.congSpecific) || []
+      ?.filter((i) => i.congSpecific) || [],
   ).flatMap((mediaItem) => syncCongMediaItem(date, mediaItem))
   await Promise.all(promises)
 }
 
 export async function syncCongMedia(
   baseDate: Dayjs,
-  setProgress: (loaded: number, total: number, global?: boolean) => void
+  setProgress: (loaded: number, total: number, global?: boolean) => void,
 ) {
   const { $dayjs } = useNuxtApp()
   const statStore = useStatStore()
@@ -242,11 +242,11 @@ export async function syncCongMedia(
   })
   const meetings = new Map(
     Array.from(mediaStore.meetings)
-      .filter(([date, _parts]) => {
+      .filter(([date]) => {
         if (date === 'Recurring') return true
         const dateObj = $dayjs(
           date,
-          getPrefs<DateFormat>('app.outputFolderDateFormat')
+          getPrefs<DateFormat>('app.outputFolderDateFormat'),
         )
         return (
           dateObj.isValid() &&
@@ -258,10 +258,10 @@ export async function syncCongMedia(
           Array.from(parts).map(([part, media]) => {
             const newMedia = media.filter(({ congSpecific }) => !!congSpecific)
             return [part, newMedia]
-          })
+          }),
         )
         return [date, newParts]
-      })
+      }),
   )
 
   let total = 0
@@ -290,14 +290,14 @@ export async function syncCongMedia(
 async function syncCongMediaItem(
   date: string,
   item: MeetingFile,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ): Promise<void> {
   if (!item.hidden && !item.isLocal) {
     if (item.filesize) {
       const statStore = useStatStore()
       log.info(
         `%c[congMedia] [${date}] ${item.safeName}`,
-        'background-color: #d1ecf1; color: #0c5460'
+        'background-color: #d1ecf1; color: #0c5460',
       )
 
       // Prevent duplicates
@@ -307,8 +307,8 @@ async function syncCongMediaItem(
           mediaPath(),
           item.folder,
           '*' +
-            item.safeName?.substring(PREFIX_MAX_LENGTH).replace('.svg', '.png')
-        )
+            item.safeName?.substring(PREFIX_MAX_LENGTH).replace('.svg', '.png'),
+        ),
       )
       if (
         duplicate &&
@@ -320,7 +320,7 @@ async function syncCongMediaItem(
           rename(
             duplicate,
             basename(duplicate),
-            item.safeName.replace('.svg', '.png')
+            item.safeName.replace('.svg', '.png'),
           )
         }
         statStore.setDownloads({
@@ -353,7 +353,7 @@ async function syncCongMediaItem(
 
           write(
             join(mediaPath(), item.folder, item.safeName),
-            Buffer.from(new Uint8Array(file))
+            Buffer.from(new Uint8Array(file)),
           )
           statStore.setDownloads({
             origin: 'cong',
@@ -386,7 +386,7 @@ function initProgress(amount: number): void {
 }
 
 function increaseProgress(
-  setProgress: (loaded: number, total: number, global?: boolean) => void
+  setProgress: (loaded: number, total: number, global?: boolean) => void,
 ): void {
   progress++
   setProgress(progress, total, true)
@@ -395,7 +395,7 @@ function increaseProgress(
 export async function renameCongFile(
   file: CongFile,
   oldLocale: LocaleObject,
-  newLocale: LocaleObject
+  newLocale: LocaleObject,
 ): Promise<void> {
   const store = useCongStore()
   if (!store.client) return
@@ -404,7 +404,7 @@ export async function renameCongFile(
   if (file.basename.includes(' - ' + translate('song', oldVal))) {
     const newName = file.filename.replace(
       ' - ' + translate('song', oldVal),
-      ' - ' + translate('song', newVal)
+      ' - ' + translate('song', newVal),
     )
 
     if (file.filename !== newName) {
@@ -413,7 +413,7 @@ export async function renameCongFile(
   } else if (file.basename.includes(' - ' + translate('paragraph', oldVal))) {
     const newName = file.filename.replace(
       ' - ' + translate('paragraph', oldVal),
-      ' - ' + translate('paragraph', newVal)
+      ' - ' + translate('paragraph', newVal),
     )
     if (file.filename !== newName) {
       await store.client.moveFile(file.filename, newName)
@@ -423,13 +423,13 @@ export async function renameCongFile(
     const date = useNuxtApp().$dayjs(
       file.basename,
       dateFormat,
-      oldLocale?.dayjs ?? oldVal
+      oldLocale?.dayjs ?? oldVal,
     )
 
     if (date.isValid()) {
       const newName = file.filename.replace(
         file.basename,
-        date.locale(newVal).format(dateFormat)
+        date.locale(newVal).format(dateFormat),
       )
       if (file.filename !== newName) {
         if (!store.contents.find(({ filename }) => filename === newName)) {

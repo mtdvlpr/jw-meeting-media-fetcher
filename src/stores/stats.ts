@@ -50,7 +50,7 @@ const defaultState: StatStore = {
 }
 
 export const useStatStore = defineStore('stats', {
-  state: (): StatStore => useCloneDeep(defaultState),
+  state: (): StatStore => cloneDeep(defaultState),
   actions: {
     setOnline(online: boolean) {
       this.online = online
@@ -104,15 +104,15 @@ export const useStatStore = defineStore('stats', {
       this.downloads[origin][source].push(file)
     },
     clearDownloads() {
-      this.downloads = useCloneDeep(defaultState.downloads)
+      this.downloads = cloneDeep(defaultState.downloads)
     },
     printStats() {
       for (const [func, perf] of [...this.performance.entries()].sort(
-        (a, b) => a[1].stop - b[1].stop
+        (a, b) => a[1].stop - b[1].stop,
       )) {
         log.info(
           `%c[perf] [${func}] ${(perf.stop - perf.start).toFixed(1)}ms`,
-          'background-color: #e2e3e5; color: #41464b;'
+          'background-color: #e2e3e5; color: #41464b;',
         )
       }
 
@@ -127,7 +127,7 @@ export const useStatStore = defineStore('stats', {
                 BYTES_IN_KIBI_BYTE /
                 BYTES_IN_KIBI_BYTE
               ).toFixed(1)}MB`,
-              'background-color: #fbe9e7; color: #000;'
+              'background-color: #fbe9e7; color: #000;',
             )
           }
         }

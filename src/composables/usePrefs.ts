@@ -8,7 +8,7 @@ import {
 import { PREFS } from '~/constants/prefs'
 
 export default function <
-  T extends AppPrefs | CongPrefs | MediaPrefs | MeetingPrefs
+  T extends AppPrefs | CongPrefs | MediaPrefs | MeetingPrefs,
 >(scope: keyof PrefStore, emit: { (e: 'refresh', val: T): void }) {
   const prefs = ref<T>(getPrefs<T>(scope) ?? PREFS[scope]) as Ref<T>
   watch(
@@ -17,7 +17,7 @@ export default function <
       setPrefs(scope, val)
       emit('refresh', val)
     },
-    { deep: true }
+    { deep: true },
   )
 
   const { client, prefs: forcedPrefs } = storeToRefs(useCongStore())

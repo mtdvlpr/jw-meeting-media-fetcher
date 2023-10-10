@@ -17,7 +17,7 @@ export default function () {
   const { downloadProgress } = storeToRefs(useMediaStore())
   const globalDownloadProgress = computed(() => {
     const progressArray = Array.from(downloadProgress.value).filter(
-      ([, d]) => d.current !== d.total
+      ([, d]) => d.current !== d.total,
     )
     const current = progressArray.reduce((acc, [, value]) => {
       return acc + value.current

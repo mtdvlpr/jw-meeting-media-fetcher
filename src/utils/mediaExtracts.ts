@@ -31,7 +31,7 @@ export async function getDocumentExtract({
       ${songPub === 'sjjm' ? "AND NOT UniqueEnglishSymbol = 'sjj' " : ''}
       AND NOT UniqueEnglishSymbol LIKE 'mwbr%'
       ${excludeTh ? "AND NOT UniqueEnglishSymbol = 'th' " : ''}
-    ORDER BY DocumentExtract.BeginParagraphOrdinal`
+    ORDER BY DocumentExtract.BeginParagraphOrdinal`,
   )
 
   const promises: Promise<MeetingFile[]>[] = []
@@ -45,7 +45,7 @@ export async function getDocumentExtract({
       const match = extracts.find(
         (e) =>
           e.UniqueEnglishSymbol === 'lff' &&
-          e.BeginParagraphOrdinal !== extract.BeginParagraphOrdinal
+          e.BeginParagraphOrdinal !== extract.BeginParagraphOrdinal,
       )
       imagesOnly =
         !!match && extract.BeginParagraphOrdinal < match.BeginParagraphOrdinal
@@ -126,7 +126,7 @@ async function extractMediaItems({
       extractDb,
       null,
       extract.RefMepsDocumentId,
-      extract.Lang
+      extract.Lang,
     )
   )
     .filter((mmItem) => {

@@ -6,7 +6,7 @@
     "source.fixAll.markdownlint": true
   },
   "yaml.schemas": {
-    "https://json.schemastore.org/github-issue-config.json": "file:///home/manoah/Documents/dev/meeting-media-manager/.github/ISSUE_TEMPLATE/config.yml"
+    "https://json.schemastore.org/github-issue-config.json": "./../.github/ISSUE_TEMPLATE/config.yml"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "markdownlint.ignore": ["LICENSE.md"],
@@ -42,6 +42,7 @@
     "hcfy",
     "iasn",
     "icns",
+    "iconify",
     "Italiano",
     "jfif",
     "jszip",
@@ -81,6 +82,7 @@
     "slovenčina",
     "slovenščina",
     "snnw",
+    "sortablejs",
     "sqlite",
     "sqljs",
     "suomi",
@@ -88,8 +90,10 @@
     "uncompiled",
     "unmaximize",
     "unmute",
+    "unocss",
     "upath",
     "vetur",
+    "vuepic",
     "vuetify",
     "vueuse",
     "webdav",
@@ -99,6 +103,7 @@
     "wtlocale",
     "xmark",
     "xspf",
+    "xvfb",
     "yeartext",
     "zoomus",
     "русский",

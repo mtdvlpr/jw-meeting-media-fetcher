@@ -143,7 +143,7 @@ useIpcRendererOn('macUpdate', async (_e, version) => {
 
     const downloadsPath = join(
       (await ipcRenderer.invoke('downloads')) as string,
-      macDownload.name
+      macDownload.name,
     )
 
     // Download the latest release
@@ -155,7 +155,7 @@ useIpcRendererOn('macUpdate', async (_e, version) => {
     // Open the downloaded file
     ipcRenderer.send(
       'openPath',
-      fileURLToPath(pathToFileURL(downloadsPath).href)
+      fileURLToPath(pathToFileURL(downloadsPath).href),
     )
   } catch (e) {
     error('updateNotDownloaded', e)

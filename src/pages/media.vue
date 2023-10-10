@@ -19,13 +19,12 @@ import type { PanzoomObject } from '@panzoom/panzoom'
 import { useIpcRendererOn } from '@vueuse/electron'
 import { ipcRenderer } from 'electron'
 import { basename, changeExt, join } from 'upath'
-// eslint-disable-next-line import/named
 import { existsSync, readFileSync } from 'fs-extra'
 import { PrefStore } from '~~/types'
 
 definePageMeta({ layout: 'media' })
 
-const interval = ref<NodeJS.Timer | null>(null)
+const interval = ref<NodeJS.Timeout | null>(null)
 const container = ref<HTMLDivElement | null>()
 const mediaDisplay = ref<HTMLDivElement | null>()
 const yeartext = ref<HTMLDivElement | null>()
@@ -50,8 +49,8 @@ useIpcRendererOn('startMediaDisplay', async (_e, prefs: PrefStore) => {
   const bgImage = findOne(
     join(
       (await ipcRenderer.invoke('userData')) as string,
-      `custom-background-image-${prefs.app.congregationName}*`
-    )
+      `custom-background-image-${prefs.app.congregationName}*`,
+    ),
   )
 
   if (bgImage) {
@@ -66,7 +65,7 @@ useIpcRendererOn('startMediaDisplay', async (_e, prefs: PrefStore) => {
 
       if (main) {
         main.style.background = `url(${URL.createObjectURL(
-          file
+          file,
         )}) black center center / contain no-repeat`
       }
     } catch (e: unknown) {
@@ -373,7 +372,7 @@ useIpcRendererOn(
         }
       }
     }
-  }
+  },
 )
 
 // Zoom and pan feature
@@ -400,7 +399,7 @@ useIpcRendererOn('pan', (_e, { x, y }: { x: number; y: number }) => {
   if (panzoom.value && mediaDisplay.value) {
     panzoom.value.pan(
       mediaDisplay.value.clientWidth * x,
-      mediaDisplay.value.clientHeight * y
+      mediaDisplay.value.clientHeight * y,
     )
   }
 })
@@ -417,7 +416,7 @@ const zoom = (scale: number) => {
 
 // Resizing
 useIpcRendererOn('windowResizing', (_e, size: number[]) =>
-  resizingNow(size[0], size[1])
+  resizingNow(size[0], size[1]),
 )
 const resizingNow = (width: number, height: number) => {
   if (!resizeOverlay.value || !dimensions.value) return

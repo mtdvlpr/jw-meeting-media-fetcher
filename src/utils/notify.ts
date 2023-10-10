@@ -3,7 +3,7 @@ import { Notification } from '~~/types'
 export function notify(
   message: string,
   props: Partial<Notification> = {},
-  error?: unknown
+  error?: unknown,
 ) {
   const store = useNotifyStore()
   if (error) {
@@ -28,7 +28,7 @@ export function notify(
 export function warn(
   msg: string,
   props: Partial<Notification> = {},
-  error?: unknown
+  error?: unknown,
 ) {
   notify(msg, { type: 'warning', ...props }, error)
 }

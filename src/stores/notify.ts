@@ -30,7 +30,7 @@ export const useNotifyStore = defineStore('notify', {
         ({ type, message, identifier }) =>
           type === msg.type &&
           message === msg.message &&
-          identifier === msg.identifier
+          identifier === msg.identifier,
       )
 
       if (match) {

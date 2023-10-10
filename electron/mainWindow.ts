@@ -55,7 +55,7 @@ function onClose(e: Event) {
 }
 
 function createMainWindow(
-  pos: Pos = { width: 700, height: 700 }
+  pos: Pos = { width: 700, height: 700 },
 ): BrowserWinHandler {
   const winHandler = new BrowserWinHandler({
     x: pos.x,
@@ -97,7 +97,7 @@ export async function initMainWindow() {
     windowStateKeeper({
       defaultWidth: 700,
       defaultHeight: 700,
-    })
+    }),
   )
   win = await winHandler.created()
 

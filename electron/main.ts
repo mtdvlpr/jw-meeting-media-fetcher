@@ -1,4 +1,3 @@
-/* eslint-disable import/named */
 import { platform } from 'os'
 import { join, normalize } from 'path'
 import { existsSync } from 'fs'
@@ -22,7 +21,6 @@ import { initWebsiteListeners } from './websiteController'
 import { initMediaWinListeners } from './mediaWindow'
 import { getScreenInfo } from './utils'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config()
 const isDev = process.env.NODE_ENV === 'development'
 export const appShortName = 'M³'
@@ -35,8 +33,8 @@ app.setPath(
   'userData',
   join(
     app.getPath('appData'),
-    appLongName.toLowerCase().replace(' ', '-') + '-test'
-  )
+    appLongName.toLowerCase().replace(' ', '-') + '-test',
+  ),
 )
 
 if (isDev) {
@@ -44,8 +42,8 @@ if (isDev) {
     'userData',
     join(
       app.getPath('appData'),
-      appLongName.toLowerCase().replace(' ', '-') + '-dev'
-    )
+      appLongName.toLowerCase().replace(' ', '-') + '-dev',
+    ),
   )
 }
 
@@ -79,7 +77,9 @@ initRenderer()
 try {
   if (existsSync(join(app.getPath('userData'), 'disableHardwareAcceleration')))
     app.disableHardwareAcceleration()
-} catch (err) {}
+} catch (e) {
+  console.error(e)
+}
 
 let win: BrowserWindow
 let winHandler: BrowserWinHandler
@@ -109,11 +109,11 @@ async function boot() {
         Cookie: cookies,
         'User-Agent': details.requestHeaders['User-Agent'].replace(
           /Electron\/\d+\.\d+\.\d+ /,
-          ''
+          '',
         ),
       }
       resolve({ requestHeaders: details.requestHeaders })
-    }
+    },
   )
 
   session.defaultSession.webRequest.onHeadersReceived(
@@ -127,11 +127,11 @@ async function boot() {
         details.responseHeaders['set-cookie'] = setCookie.map((c) =>
           c
             .replace('HttpOnly', 'Secure')
-            .replace('Secure', 'SameSite=None; Secure')
+            .replace('Secure', 'SameSite=None; Secure'),
         )
       }
       resolve({ responseHeaders: details.responseHeaders })
-    }
+    },
   )
 
   app.on('window-all-closed', () => {
@@ -151,7 +151,7 @@ if (gotTheLock) {
   nativeTheme.on('updated', () => {
     win?.webContents.send(
       'themeUpdated',
-      nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+      nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
     )
   })
 
@@ -162,7 +162,7 @@ if (gotTheLock) {
   ipcMain.handle('appVersion', () => app.getVersion())
   ipcMain.handle('getScreenInfo', () => getScreenInfo())
   ipcMain.handle('theme', () =>
-    nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+    nativeTheme.shouldUseDarkColors ? 'dark' : 'light',
   )
 
   ipcMain.handle('openDialog', async (_e, options: OpenDialogOptions) => {

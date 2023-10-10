@@ -45,7 +45,7 @@ export function getScreenInfo(): ScreenInfo {
     otherScreens: displays.filter(
       (display) =>
         display.id !==
-        screen.getDisplayNearestPoint(winMidpoints.main as Point).id
+        screen.getDisplayNearestPoint(winMidpoints.main as Point).id,
     ),
   }
 }

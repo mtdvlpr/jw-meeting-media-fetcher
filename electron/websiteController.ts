@@ -23,11 +23,11 @@ export function initWebsiteListeners() {
   ipcMain.on('sendSize', () => {
     websiteController?.webContents.send(
       'mediaSize',
-      getMediaWin()?.getContentSize()
+      getMediaWin()?.getContentSize(),
     )
     websiteController?.webContents.send(
       'winSize',
-      websiteController?.getContentSize()
+      websiteController?.getContentSize(),
     )
   })
 
@@ -49,10 +49,10 @@ export function initWebsiteListeners() {
         alt: string | null
         src: string | null
         href: string | null
-      }
+      },
     ) => {
       getMediaWin()?.webContents.send('clickOnWebsite', target)
-    }
+    },
   )
 }
 
@@ -85,7 +85,7 @@ async function openWebsite(url: string) {
   }
   websiteControllerWinHandler = createWebsiteController(
     windowOpts,
-    mediaFullscreen
+    mediaFullscreen,
   )
   websiteController = await websiteControllerWinHandler.created()
   websiteControllerWinHandler.loadPage('/browser?controller=true&url=' + url)
@@ -95,11 +95,11 @@ async function openWebsite(url: string) {
       if (!websiteController?.isMaximized()) {
         websiteController?.webContents.send(
           'mediaSize',
-          mediaWin?.getContentSize()
+          mediaWin?.getContentSize(),
         )
         websiteController?.webContents.send(
           'winSize',
-          websiteController?.getContentSize()
+          websiteController?.getContentSize(),
         )
       }
     })
@@ -110,11 +110,11 @@ async function openWebsite(url: string) {
     .on('unmaximize', () => {
       websiteController?.webContents.send(
         'mediaSize',
-        mediaWin?.getContentSize()
+        mediaWin?.getContentSize(),
       )
       websiteController?.webContents.send(
         'winSize',
-        websiteController?.getContentSize()
+        websiteController?.getContentSize(),
       )
     })
     .on('maximize', () => {
@@ -134,7 +134,7 @@ async function openWebsite(url: string) {
   websiteController.webContents.send('mediaSize', mediaWin?.getContentSize())
   websiteController.webContents.send(
     'winSize',
-    websiteController.getContentSize()
+    websiteController.getContentSize(),
   )
 }
 
@@ -150,7 +150,7 @@ function setContentAspectRatio(win: BrowserWindow | null) {
 
 function createWebsiteController(
   opts: BrowserWindowConstructorOptions,
-  maximize = true
+  maximize = true,
 ) {
   const winHandler = new BrowserWinHandler({
     title: 'Website Controller Window',

@@ -26,7 +26,7 @@ test.afterAll(async () => {
 test('render the settings page correctly', async () => {
   // Check for correct version
   expect((await page.locator('text=M³ v').innerText()).toLowerCase()).toBe(
-    `m³ v${version}`
+    `m³ v${version}`,
   )
 
   // Test if title is correct

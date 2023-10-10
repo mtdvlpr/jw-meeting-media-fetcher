@@ -2,31 +2,56 @@
   <v-footer app class="settings-footer justify-space-between">
     <v-col cols="12" align-self="end" class="d-flex">
       <v-col class="d-flex pa-0 align-center" align-self="center">
-        <v-btn :color="updateSuccess ? undefined : 'error'" :class="{ 'mr-2': true, 'pulse-danger': !updateSuccess }"
-          @click="openReleases()">
-          <v-icon v-if="!updateSuccess" icon="mdi-hand-pointing-right" class="mr-1" />
+        <v-btn
+          :color="updateSuccess ? undefined : 'error'"
+          :class="{ 'mr-2': true, 'pulse-danger': !updateSuccess }"
+          @click="openReleases()"
+        >
+          <v-icon
+            v-if="!updateSuccess"
+            icon="i-mdi:hand-pointing-right"
+            class="mr-1"
+          />
           M³ {{ isDev ? 'dev' : version }}
         </v-btn>
         <v-btn class="mr-2" @click="report()">
           <v-tooltip activator="parent" location="top">
             {{ $t('reportIssue') }}
           </v-tooltip>
-          <v-icon icon="mdi-bug" />
+          <v-icon icon="i-mdi:bug" />
         </v-btn>
-        <v-btn v-click-outside="() => (cacheColor = 'warning')" :color="cacheColor" :loading="loading"
-          @click="removeCache()">
-          <v-icon icon="mdi-file-image-remove" color="black" start />
+        <v-btn
+          v-click-outside="() => (cacheColor = 'warning')"
+          :color="cacheColor"
+          :loading="loading"
+          @click="removeCache()"
+        >
+          <v-icon icon="i-mdi:file-image-remove" color="black" start />
           {{ `${cache}MB` }}
-          <v-tooltip v-if="cacheColor === 'warning'" activator="parent" location="top">
+          <v-tooltip
+            v-if="cacheColor === 'warning'"
+            activator="parent"
+            location="top"
+          >
             {{ $t('cleanCache') }}
           </v-tooltip>
-          <v-tooltip v-else activator="parent" model-value location="top" @update:model-value="() => { }">
+          <v-tooltip
+            v-else
+            activator="parent"
+            model-value
+            location="top"
+            @update:model-value="() => {}"
+          >
             {{ $t('clickAgain') }}
           </v-tooltip>
         </v-btn>
       </v-col>
       <v-col align-self="end" class="text-right pa-0">
-        <icon-btn v-if="cancel && isNew && !valid" variant="cancel" @click="goBack()" />
+        <icon-btn
+          v-if="cancel && isNew && !valid"
+          variant="cancel"
+          @click="goBack()"
+        />
       </v-col>
     </v-col>
   </v-footer>
@@ -61,7 +86,7 @@ const openReleases = () => {
   const { repo, version } = useRuntimeConfig().public
   window.open(
     `${repo}/releases/${updateSuccess.value ? 'tag/' + version : ''}`,
-    '_blank'
+    '_blank',
   )
 }
 
@@ -76,7 +101,7 @@ const goBack = async () => {
 const setCancel = async () => {
   let congs = await getCongPrefs()
   congs = congs.filter(
-    (c) => c.path !== join(appPath(), `prefs-${cong.value}.json`)
+    (c) => c.path !== join(appPath(), `prefs-${cong.value}.json`),
   )
   cancel.value = congs.length > 0
 }
@@ -89,7 +114,7 @@ onMounted(() => {
 // Cache
 watch(
   () => props.refresh,
-  () => calcCache()
+  () => calcCache(),
 )
 const shuffleMusicFiles = ref('')
 const isSignLanguage = () => useMediaStore().mediaLang?.isSignLanguage
@@ -99,8 +124,8 @@ const setShuffleMusicFiles = () => {
   shuffleMusicFiles.value = isSignLanguage()
     ? join(pPath, '..', props.prefs.media.lang, 'sjj', '**', '*.mp4')
     : props.prefs.media.lang === 'E'
-      ? ''
-      : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
+    ? ''
+    : join(pPath, '..', 'E', 'sjjm', '**', '*.mp3')
 }
 
 const calcCache = async () => {
@@ -164,7 +189,7 @@ const removeCache = async () => {
       findAll(folders, {
         ignore: mPath ? [join(mPath, 'Recurring')] : [],
         onlyDirectories: true,
-      })
+      }),
     )
 
     if (online.value) {

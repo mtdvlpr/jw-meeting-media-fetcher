@@ -5,7 +5,7 @@ import { ObsPrefs } from '~~/types'
 let obs: OBSSocket | OBSSocketV4 | null = null
 
 async function connectOBS<
-  T extends OBSSocket | OBSSocketV4
+  T extends OBSSocket | OBSSocketV4,
 >(): Promise<T | null> {
   const { enable, port, password, useV4 } = getPrefs<ObsPrefs>('app.obs')
   if (!enable && obs) {
@@ -178,7 +178,9 @@ export async function resetOBS() {
     } else if (obs) {
       await obs.disconnect()
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error(e)
+  }
 
   obs = null
   useObsStore().clear()
@@ -247,7 +249,7 @@ export async function getScenes(current = false): Promise<string | string[]> {
       .filter(
         (scene) =>
           scene !== getPrefs<string>('app.obs.mediaScene') &&
-          scene !== getPrefs<string>('app.obs.zoomScene')
+          scene !== getPrefs<string>('app.obs.zoomScene'),
       )
       .entries()) {
       const MAX_SHORTCUT = 9

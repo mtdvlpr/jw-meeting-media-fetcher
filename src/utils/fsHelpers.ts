@@ -43,7 +43,7 @@ export function strip(value: string, type = 'id') {
       return value.replace(
         // eslint-disable-next-line no-control-regex
         /[\s "»“”‘’«(){}№+[\]$<>,/\\:*\x00-\x1F\x80-\x9F\u0000-\u001F]/gu,
-        ''
+        '',
       )
     case 'file':
       return (
@@ -56,7 +56,7 @@ export function strip(value: string, type = 'id') {
           .replace(
             // eslint-disable-next-line no-control-regex
             /["»“”‘’«(){}№+[\]$<>,/\\:*\x00-\x1F\x80-\x9F\u0000-\u001F]/gu,
-            ''
+            '',
           )
           .trim()
           .replace(/[ -]+$/g, '')
@@ -79,7 +79,7 @@ export function sanitize(name: string, isFile = false, first = true): string {
     const projectedPathCharLength = join(
       mPath,
       '9999-99-99 - AAAAAAAAAA AAAAAAAAAA',
-      name
+      name,
     ).length
     if (projectedPathCharLength > maxCharactersInPath) {
       name =

@@ -80,7 +80,7 @@ const onUserAdded = (payload: ParticipantPropertiesPayload) => {
       })
       const name = names.find(
         (name) =>
-          name.old.toLowerCase() === user.displayName?.trim().toLowerCase()
+          name.old.toLowerCase() === user.displayName?.trim().toLowerCase(),
       )
       if (name) {
         renameParticipant(null, name.new, {

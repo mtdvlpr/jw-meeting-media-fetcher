@@ -48,7 +48,7 @@ export function muteParticipants(socket: WebSocket | null) {
         !p.isHost &&
         !p.isCoHost &&
         !p.muted &&
-        !store.spotlights.includes(p.userId)
+        !store.spotlights.includes(p.userId),
     )
   openParticipants.forEach((p) => {
     toggleMic(socket, true, p.userId)
@@ -64,14 +64,14 @@ function lowerHand(socket: WebSocket | null, userID: number) {
       body: { bOn: false },
     },
     true,
-    userID
+    userID,
   )
 }
 
 export async function toggleOnHold(
   socket: WebSocket | null,
   onHold: boolean,
-  userID: number
+  userID: number,
 ) {
   const store = useZoomStore()
   if (!store.client) return
@@ -89,7 +89,7 @@ export async function toggleOnHold(
         body: { bHold: onHold },
       },
       true,
-      userID
+      userID,
     )
   }
 }
@@ -113,7 +113,7 @@ function encodeName(name?: string) {
 export async function renameParticipant(
   socket: WebSocket | null,
   name: string,
-  user: { id: number; name?: string }
+  user: { id: number; name?: string },
 ) {
   const store = useZoomStore()
   if (!store.client) return
@@ -147,7 +147,7 @@ async function muteAll(socket: WebSocket | null) {
 export async function toggleMic(
   socket: WebSocket | null,
   mute: boolean,
-  userID?: number
+  userID?: number,
 ) {
   const store = useZoomStore()
   if (!store.client) return
@@ -161,7 +161,7 @@ export async function toggleMic(
         body: { bMute: mute },
       },
       true,
-      userID
+      userID,
     )
   }
 }
@@ -169,7 +169,7 @@ export async function toggleMic(
 function toggleVideo(
   socket: WebSocket | null,
   enable: boolean,
-  userID: number
+  userID: number,
 ) {
   sendToWebSocket(
     socket,
@@ -178,14 +178,14 @@ function toggleVideo(
       body: { bOn: !enable },
     },
     true,
-    userID
+    userID,
   )
 }
 
 export function toggleSpotlight(
   socket: WebSocket | null,
   enable: boolean,
-  userID?: number
+  userID?: number,
 ) {
   if (enable) {
     sendToWebSocket(
@@ -195,7 +195,7 @@ export function toggleSpotlight(
         body: { bReplace: false, bSpotlight: true },
       },
       true,
-      userID
+      userID,
     )
   } else {
     sendToWebSocket(socket, {
@@ -209,7 +209,7 @@ function sendToWebSocket(
   socket: WebSocket | null,
   msg: { evt: number; body: Record<string, any>; seq?: number },
   withUser = false,
-  userID?: number
+  userID?: number,
 ) {
   const store = useZoomStore()
   let webSocket = store.websocket

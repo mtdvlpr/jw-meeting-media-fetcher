@@ -1,10 +1,13 @@
 import { pathToFileURL } from 'url'
+import { cloneDeep as _cloneDeep } from 'lodash'
 
 import { pathExists } from 'fs-extra'
 import { join } from 'upath'
 import { JW_ICONS_FONT } from '~/constants/general'
 
 const intervals: Record<string, NodeJS.Timer> = {}
+
+export const cloneDeep = _cloneDeep
 
 export const parseRes = (res?: string) => {
   if (!res) return 0
@@ -21,20 +24,20 @@ export const isValidPort = (port: string | null) => {
 
 export async function loadFont(font: 'yeartext' | 'icon') {
   let fontFile = await localFontPath(
-    font === 'icon' ? JW_ICONS_FONT : WT_CLEARTEXT_FONT
+    font === 'icon' ? JW_ICONS_FONT : WT_CLEARTEXT_FONT,
   )
   if (!(await pathExists(fontFile))) {
     fontFile = findOne(
       join(
         await wtFontPath(),
-        font === 'icon' ? 'jw-icons*' : 'Wt-ClearText-Bold.*'
-      )
+        font === 'icon' ? 'jw-icons*' : 'Wt-ClearText-Bold.*',
+      ),
     )
   }
   if (fontFile && (await pathExists(fontFile))) {
     const fontFace = new FontFace(
       font === 'icon' ? 'JW-Icons' : 'Wt-ClearText-Bold',
-      `url(${pathToFileURL(fontFile).href})`
+      `url(${pathToFileURL(fontFile).href})`,
     )
     try {
       const loadedFont = await fontFace.load()
@@ -50,7 +53,7 @@ export async function loadFont(font: 'yeartext' | 'icon') {
 export function executeBeforeMeeting(
   name: string,
   mins: number,
-  action: () => void
+  action: () => void,
 ) {
   if (!intervals[name]) {
     const day = isMeetingDay()

@@ -32,7 +32,7 @@ onMounted(() => {
 })
 async function getPublications() {
   const langSymbol = (await getJWLangs()).find(
-    (lang) => lang.langcode === getPrefs<string>('media.lang')
+    (lang) => lang.langcode === getPrefs<string>('media.lang'),
   )?.symbol
   const result = langSymbol
     ? (await fetchPublicationList(langSymbol)).choices
@@ -44,7 +44,7 @@ async function getPublications() {
           }: {
             optionName: string
             optionValue: string
-          }) => ({ title, pub })
+          }) => ({ title, pub }),
         )
     : []
   return result

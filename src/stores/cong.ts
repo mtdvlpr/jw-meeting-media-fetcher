@@ -16,7 +16,7 @@ const defaultState: CongStore = {
 }
 
 export const useCongStore = defineStore('cong', {
-  state: () => useCloneDeep(defaultState),
+  state: (): CongStore => cloneDeep(defaultState),
   actions: {
     setClient(client: WebDAVClient) {
       this.client = client
@@ -31,7 +31,7 @@ export const useCongStore = defineStore('cong', {
       this.contentsTree = contentsTree
     },
     clear() {
-      this.$state = useCloneDeep(defaultState)
+      this.$state = cloneDeep(defaultState)
     },
   },
 })

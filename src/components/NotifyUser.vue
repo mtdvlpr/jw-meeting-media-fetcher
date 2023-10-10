@@ -24,7 +24,7 @@
       <v-col cols="auto" class="pa-2">
         <v-btn
           v-if="m.persistent || m.dismiss"
-          icon="mdi-close"
+          icon="i-mdi:close"
           size="x-small"
           variant="text"
           class="align-right"
@@ -68,11 +68,11 @@ const icon = (type: string) => {
   switch (type) {
     case 'warning':
     case 'error':
-      return 'mdi-alert-circle'
+      return 'i-mdi:alert-circle'
     case 'success':
-      return 'mdi-check-circle'
+      return 'i-mdi:check-circle'
     default:
-      return 'mdi-information'
+      return 'i-mdi:information'
   }
 }
 
@@ -91,7 +91,7 @@ const executeAction = (action?: NotifyAction) => {
   if (!action) return
   window.open(
     action.type === 'error' ? bugURL(action.error) : action.url,
-    '_blank'
+    '_blank',
   )
 }
 
@@ -108,7 +108,7 @@ const combinedHeight = (index: number) => {
 const getHeight = (index: number) => {
   const msg = notifications.value[index]
   const el = document.getElementById(
-    `msg-${msg.timestamp}-${msg.message}-${msg.identifier}`
+    `msg-${msg.timestamp}-${msg.message}-${msg.identifier}`,
   )
   if (el) {
     return el.children[0].clientHeight

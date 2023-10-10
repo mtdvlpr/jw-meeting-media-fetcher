@@ -9,18 +9,18 @@ export async function getDocumentMultiMedia(
   mepsId?: number,
   lang?: string,
   memOnly?: boolean,
-  silent?: boolean
+  silent?: boolean,
 ): Promise<MeetingFile[]> {
   const result = executeQuery(
     db,
-    "SELECT * FROM sqlite_master WHERE type='table' AND name='DocumentMultimedia'"
+    "SELECT * FROM sqlite_master WHERE type='table' AND name='DocumentMultimedia'",
   )
 
   const mmTable = result.length === 0 ? 'Multimedia' : 'DocumentMultimedia'
 
   const uniqueEnglishSymbol = executeQuery<{ UniqueEnglishSymbol: string }>(
     db,
-    'SELECT UniqueEnglishSymbol FROM Publication'
+    'SELECT UniqueEnglishSymbol FROM Publication',
   )[0].UniqueEnglishSymbol
 
   const keySymbol = /[^a-zA-Z0-9]/.test(uniqueEnglishSymbol)
@@ -29,19 +29,19 @@ export async function getDocumentMultiMedia(
 
   const issueTagNumber = executeQuery<{ IssueTagNumber: string }>(
     db,
-    'SELECT IssueTagNumber FROM Publication'
+    'SELECT IssueTagNumber FROM Publication',
   )[0].IssueTagNumber
 
   const targetParNrExists = executeQuery<{ name: string }>(
     db,
-    "PRAGMA table_info('Question')"
+    "PRAGMA table_info('Question')",
   )
     .map((item) => item.name)
     .includes('TargetParagraphNumberLabel')
 
   const suppressZoomExists = executeQuery<{ name: string }>(
     db,
-    "PRAGMA table_info('Multimedia')"
+    "PRAGMA table_info('Multimedia')",
   )
     .map((item) => item.name)
     .includes('SuppressZoom')
@@ -87,7 +87,7 @@ export async function getDocumentMultiMedia(
 
   const items = executeQuery<MultiMediaItem>(
     db,
-    `${select} ${from} ${where} ${groupAndSort}`
+    `${select} ${from} ${where} ${groupAndSort}`,
   )
 
   items.forEach((mmItem) => {
@@ -100,8 +100,8 @@ export async function getDocumentMultiMedia(
         keySymbol,
         issueTagNumber,
         !!memOnly,
-        lang
-      )
+        lang,
+      ),
     )
   })
 
@@ -124,7 +124,7 @@ async function processMultiMediaItem(
   keySymbol: string,
   issueTagNumber: string,
   memOnly: boolean,
-  lang?: string
+  lang?: string,
 ) {
   if (mmItem.MepsLanguageIndex) {
     const mepsLang = MEPS_IDS[mmItem.MepsLanguageIndex]
@@ -148,13 +148,13 @@ async function processMultiMediaItem(
   if (targetParNrExists) {
     const result = executeQuery(
       db,
-      `SELECT TargetParagraphNumberLabel From Question WHERE DocumentId = ${mmItem.DocumentId} AND TargetParagraphOrdinal = ${mmItem.BeginParagraphOrdinal}`
+      `SELECT TargetParagraphNumberLabel From Question WHERE DocumentId = ${mmItem.DocumentId} AND TargetParagraphOrdinal = ${mmItem.BeginParagraphOrdinal}`,
     )
     if (result.length === 1) Object.assign(mmItem, result[0])
     if (
       executeQuery<{ Count: number }>(
         db,
-        'SELECT COUNT(*) AS Count FROM Question'
+        'SELECT COUNT(*) AS Count FROM Question',
       )[0].Count > 0
     ) {
       mmItem.tableQuestionIsUsed = true
@@ -163,7 +163,7 @@ async function processMultiMediaItem(
         TargetParagraphOrdinal: number
       }>(
         db,
-        `SELECT TargetParagraphNumberLabel, TargetParagraphOrdinal From Question WHERE DocumentId = ${mmItem.DocumentId} AND TargetParagraphOrdinal > ${mmItem.BeginParagraphOrdinal} LIMIT 1`
+        `SELECT TargetParagraphNumberLabel, TargetParagraphOrdinal From Question WHERE DocumentId = ${mmItem.DocumentId} AND TargetParagraphOrdinal > ${mmItem.BeginParagraphOrdinal} LIMIT 1`,
       )
       if (result.length > 0)
         mmItem.NextParagraphOrdinal = result[0].TargetParagraphOrdinal
@@ -187,7 +187,7 @@ async function processMultiMediaItem(
             docId: mmItem.MultiMeps ?? 0,
             lang: fallbackLang ? mediaLang : lang,
           },
-          silent
+          silent,
         )
       )[0]
 
@@ -201,7 +201,7 @@ async function processMultiMediaItem(
               docId: mmItem.MultiMeps ?? 0,
               lang: lang === mediaLang ? fallbackLang : lang ?? fallbackLang,
             },
-            silent
+            silent,
           )
         )[0]
       } else if (!json) {
@@ -221,7 +221,7 @@ async function processMultiMediaItem(
               title: '',
               queryInfo: mmItem,
             } as ImageFile)!,
-            mmItem.FilePath
+            mmItem.FilePath,
           )
 
           if (lang && !mmItem.Link && !(await pathExists(mmItem.LocalPath))) {
@@ -232,7 +232,7 @@ async function processMultiMediaItem(
                 url: `url_${lang}.jpg`,
                 queryInfo: mmItem,
               })!,
-              mmItem.FilePath
+              mmItem.FilePath,
             )
           }
 
@@ -244,7 +244,7 @@ async function processMultiMediaItem(
                 url: `url_${fallbackLang}.jpg`,
                 queryInfo: mmItem,
               })!,
-              mmItem.FilePath
+              mmItem.FilePath,
             )
           }
         }
@@ -253,7 +253,7 @@ async function processMultiMediaItem(
       mmItem.FileName = sanitize(
         mmItem.Caption.length > mmItem.Label.length
           ? mmItem.Caption
-          : mmItem.Label
+          : mmItem.Label,
       )
 
       const picture: ImageFile = {
@@ -272,7 +272,7 @@ async function processMultiMediaItem(
       {
         identifier: `${keySymbol}-${issueTagNumber}`,
       },
-      e
+      e,
     )
   }
   return null

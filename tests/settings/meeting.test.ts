@@ -27,7 +27,7 @@ test.afterAll(async () => {
 test('render the settings page correctly', async () => {
   // Check for correct version
   expect((await page.locator('text=M³ v').innerText()).toLowerCase()).toBe(
-    `m³ v${version}`
+    `m³ v${version}`,
   )
 
   // Test if title is correct
@@ -35,6 +35,7 @@ test('render the settings page correctly', async () => {
   expect(title).toBe('Settings - M³')
 })
 
+// eslint-disable-next-line playwright/expect-expect
 test('screenshot settings', async () => {
   if (platform() === 'win32') {
     test.skip()

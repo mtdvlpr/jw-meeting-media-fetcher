@@ -62,7 +62,7 @@ export function pubPath(file?: MeetingFile) {
   const pPath = joinSafe(
     getPrefs<string>('app.customCachePath') || appPath(),
     'Publications',
-    mediaFolder
+    mediaFolder,
   )
   try {
     ensureDirSync(pPath)
@@ -113,7 +113,7 @@ export async function localFontPath(font: string) {
       appPath() ||
       ((await ipcRenderer.invoke('userData')) as Promise<string>),
     'Fonts',
-    basename(font)
+    basename(font),
   )
 }
 
@@ -134,7 +134,7 @@ export async function wtFontPath() {
     'LocalState',
     'www',
     'webapp',
-    'fonts'
+    'fonts',
   )
 }
 
@@ -152,6 +152,6 @@ export async function ytPath(lang?: string) {
     cachePath,
     'Publications',
     ytLang,
-    `yeartext-${ytLang}-${new Date().getFullYear().toString()}`
+    `yeartext-${ytLang}-${new Date().getFullYear().toString()}`,
   )
 }

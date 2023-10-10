@@ -6,7 +6,7 @@ export async function connect(
   host: string,
   username: string,
   password: string,
-  dir = '/'
+  dir = '/',
 ) {
   if (getPrefs<boolean>('app.offline')) return 'offline'
   const store = useCongStore()
@@ -22,7 +22,7 @@ export async function connect(
       host,
       username,
       password,
-      dir
+      dir,
     )
 
     // Clean up old dates
@@ -35,8 +35,8 @@ export async function connect(
 
     const bg = contents.find(({ basename }) =>
       basename.startsWith(
-        `custom-background-image-${getPrefs<string>('app.congregationName')}`
-      )
+        `custom-background-image-${getPrefs<string>('app.congregationName')}`,
+      ),
     )
 
     // If bg on cong server, force it to be used
@@ -46,18 +46,18 @@ export async function connect(
           join(
             appPath(),
             `custom-background-image-${getPrefs<string>(
-              'app.congregationName'
-            )}*`
-          )
-        )
+              'app.congregationName',
+            )}*`,
+          ),
+        ),
       )
       write(
         join(appPath(), bg.basename),
         Buffer.from(
           new Uint8Array(
-            (await client.getFileContents(bg.filename)) as ArrayBuffer
-          )
-        )
+            (await client.getFileContents(bg.filename)) as ArrayBuffer,
+          ),
+        ),
       )
     }
 
@@ -119,7 +119,7 @@ export async function updateContent() {
       server,
       username,
       password,
-      dir
+      dir,
     )
   }
   store.setContents(contents)
@@ -152,16 +152,16 @@ export function updateContentsTree() {
   let root = getPrefs<string>('cong.dir')
   if (!root) return []
   if (root.length > 1 && root.endsWith('/')) root = root.slice(0, -1)
-  const contents = useCloneDeep(store.contents)
+  const contents = cloneDeep(store.contents)
 
   // Get directories
   const dirs = [...contents.filter(({ type }) => type === 'directory')].sort(
-    (a, b) => a.basename.localeCompare(b.basename)
+    (a, b) => a.basename.localeCompare(b.basename),
   )
 
   // Get files
   const files = [...contents.filter(({ type }) => type === 'file')].sort(
-    (a, b) => a.basename.localeCompare(b.basename)
+    (a, b) => a.basename.localeCompare(b.basename),
   )
   // Add each file to its directory
   files.forEach((file) => {
@@ -208,7 +208,7 @@ async function getFolderContent(
   host: string,
   username: string,
   password: string,
-  dir = '/'
+  dir = '/',
 ) {
   const result = await $fetch<string>(`https://${host}${dir}`, {
     // @ts-expect-error: PROPFIND is not a valid method
@@ -217,7 +217,7 @@ async function getFolderContent(
     headers: {
       Accept: 'text/plain',
       Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString(
-        'base64'
+        'base64',
       )}`,
       Depth: '1',
     },
@@ -260,7 +260,7 @@ async function getCongDirectory(
   host: string,
   username: string,
   password: string,
-  dir = '/'
+  dir = '/',
 ) {
   const brokenServers = ['4shared', 'cloudwise']
   if (!brokenServers.some((s) => host.includes(s))) {
@@ -281,7 +281,7 @@ async function getCongDirectory(
       .filter(({ type }) => type === 'directory')
       .forEach((dir) => {
         datePromises.push(
-          getFolderContent(host, username, password, dir.filename)
+          getFolderContent(host, username, password, dir.filename),
         )
       })
 
@@ -299,7 +299,7 @@ async function getCongDirectory(
       .filter(({ type }) => type === 'directory')
       .forEach((dir) => {
         mediaPromises.push(
-          getFolderContent(host, username, password, dir.filename)
+          getFolderContent(host, username, password, dir.filename),
         )
       })
 
@@ -318,12 +318,12 @@ async function getCongDirectory(
 // Remove old date folders that are not used any more
 async function removeOldDate(
   client: WebDAVClient,
-  dir: FileStat
+  dir: FileStat,
 ): Promise<void> {
   const { $dayjs } = useNuxtApp()
   const date = $dayjs(
     dir.basename,
-    getPrefs<DateFormat>('app.outputFolderDateFormat')
+    getPrefs<DateFormat>('app.outputFolderDateFormat'),
   )
   if (date.isValid() && date.isBefore($dayjs().subtract(1, 'day'))) {
     try {

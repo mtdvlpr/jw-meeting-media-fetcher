@@ -35,7 +35,7 @@ export async function getLatestJWMedia(categories: string[]) {
         !self.find(
           (i) =>
             i.languageAgnosticNaturalKey === item.languageAgnosticNaturalKey &&
-            i.naturalKey.includes(`_${lang}_`)
+            i.naturalKey.includes(`_${lang}_`),
         )
       )
     })
@@ -43,14 +43,14 @@ export async function getLatestJWMedia(categories: string[]) {
 
 async function getCategoryMedia(
   category: string,
-  lang?: string
+  lang?: string,
 ): Promise<MediaItem[]> {
   try {
     const result = await fetchMediaCategories(
       (lang ?? getPrefs<string>('media.lang')) + `/${category}`,
       {
         detailed: 1,
-      }
+      },
     )
     const categoryMedia = result.category?.media || []
     const subcategoriesMedia =
@@ -82,7 +82,7 @@ async function getCategoryMedia(
 
 async function getMediaItemSubs(
   item: MediaItem,
-  lang: string
+  lang: string,
 ): Promise<MediaItem> {
   const result = await fetchMedia(`${lang}/${item.languageAgnosticNaturalKey}`)
   return {

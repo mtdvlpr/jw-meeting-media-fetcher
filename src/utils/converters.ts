@@ -1,4 +1,3 @@
-/* eslint-disable import/named */
 import { pathToFileURL } from 'url'
 import { platform } from 'os'
 import type { Dayjs } from 'dayjs'
@@ -21,7 +20,7 @@ import { Release, DateFormat } from '~~/types'
 export async function convertToMP4(
   baseDate: Dayjs,
   now: Dayjs,
-  setProgress: (loaded: number, total: number, global?: boolean) => void
+  setProgress: (loaded: number, total: number, global?: boolean) => void,
 ) {
   const { $dayjs } = useNuxtApp()
   const files = findAll(join(mediaPath(), '*'), {
@@ -31,7 +30,7 @@ export async function convertToMP4(
     .filter((dir) => {
       const date = $dayjs(
         dir,
-        getPrefs<DateFormat>('app.outputFolderDateFormat')
+        getPrefs<DateFormat>('app.outputFolderDateFormat'),
       )
       return (
         date.isValid() &&
@@ -43,7 +42,7 @@ export async function convertToMP4(
       findAll(join(mediaPath(), dir, '*'), {
         // Don't convert videos, playlists, markers or titles
         ignore: ['!**/(*.mp4|*.xspf|*.vtt|*.json|*.title)'],
-      })
+      }),
     )
     .flat()
 
@@ -59,7 +58,7 @@ export async function convertToMP4(
 
 export async function convertToMP4ByDate(date: string) {
   const files = findAll(join(mediaPath(), date, '*')).filter(
-    (f) => isAudio(f) || isImage(f)
+    (f) => isAudio(f) || isImage(f),
   )
   const promises: Promise<void>[] = []
   files.forEach((file) => {
@@ -70,7 +69,7 @@ export async function convertToMP4ByDate(date: string) {
 
 export async function convertUnusableFiles(
   dir: string,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ) {
   const promises: Promise<void>[] = []
   const pdfFiles = findAll(join(dir, '**', '*pdf'), {
@@ -111,13 +110,13 @@ export async function convertUnusableFilesByDate(date: string) {
     const cloudSvgFiles = findAll(join(cloudPath, date, '*svg'))
     const cloudHeicFiles = findAll(join(cloudPath, date, '*heic'))
     const cloudConvertSvgPromises = cloudSvgFiles.map((svgFile) =>
-      convertSvg(svgFile)
+      convertSvg(svgFile),
     )
     const cloudConvertPdfPromises = cloudPdfFiles.map((pdfFile) =>
-      convertPdf(pdfFile)
+      convertPdf(pdfFile),
     )
     const cloudConvertHEICPromises = cloudHeicFiles.map((heicFile) =>
-      convertHEIC(heicFile)
+      convertHEIC(heicFile),
     )
     await Promise.all([
       ...cloudConvertSvgPromises,
@@ -147,7 +146,7 @@ export async function convertToVLC() {
   })
     .map((d) => basename(d))
     .filter((d) =>
-      $dayjs(d, getPrefs<DateFormat>('app.outputFolderDateFormat')).isValid()
+      $dayjs(d, getPrefs<DateFormat>('app.outputFolderDateFormat')).isValid(),
     )
 
   if (mediaFolders.length === 0) return
@@ -173,7 +172,7 @@ export async function convertToVLC() {
     }
     write(
       join(mediaPath(), date, `${date}.xspf`),
-      new XMLBuilder({ ignoreAttributes: false }).build(playlistItems)
+      new XMLBuilder({ ignoreAttributes: false }).build(playlistItems),
     )
   })
 }
@@ -201,7 +200,7 @@ export async function convertToVLCByDate(date: string) {
   }
   write(
     join(mediaPath(), date, `${date}.xspf`),
-    new XMLBuilder({ ignoreAttributes: false }).build(playlistItems)
+    new XMLBuilder({ ignoreAttributes: false }).build(playlistItems),
   )
 }
 
@@ -231,8 +230,8 @@ function convertSvg(src: string) {
       join(dirname(src), basename(src, extname(src)) + '.png'),
       Buffer.from(
         canvas.toDataURL().replace(/^data:image\/\w+;base64,/, ''),
-        'base64'
-      )
+        'base64',
+      ),
     )
     rm(src)
     div.remove()
@@ -245,9 +244,8 @@ function convertSvg(src: string) {
 
 async function convertHEIC(
   filePath: string,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ): Promise<void> {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const convert = require('heic-convert') as typeof HeicConvert
 
   const buffer = readFileSync(filePath)
@@ -264,9 +262,18 @@ async function convertHEIC(
 
 async function convertPdf(
   mediaFile: string,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ): Promise<void> {
+  let loaded = 0
   const pdfjsLib = await import('pdfjs-dist')
+
+  function increasePageProgress(totalPages: number) {
+    loaded++
+    if (setProgress) {
+      setProgress(loaded, totalPages)
+    }
+  }
+
   try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerSrc
     const pdf = await pdfjsLib.getDocument({
@@ -274,19 +281,11 @@ async function convertPdf(
       verbosity: 0,
     }).promise
 
-    let loaded = 0
     const promises: Promise<void>[] = []
-
-    function increasePageProgress() {
-      loaded++
-      if (setProgress) {
-        setProgress(loaded, pdf.numPages)
-      }
-    }
 
     for (let pageNr = 1; pageNr <= pdf.numPages; pageNr++) {
       promises.push(
-        convertPdfPage(mediaFile, pdf, pageNr, increasePageProgress)
+        convertPdfPage(mediaFile, pdf, pageNr, increasePageProgress),
       )
     }
     await Promise.allSettled(promises)
@@ -302,7 +301,7 @@ async function convertPdfPage(
   mediaFile: string,
   pdf: PDFDocumentProxy,
   pageNr: number,
-  increasePageProgress: () => void
+  increasePageProgress: (totalPages: number) => void,
 ): Promise<void> {
   try {
     // Set pdf page
@@ -338,12 +337,12 @@ async function convertPdfPage(
         basename(mediaFile, extname(mediaFile)) +
           '-' +
           pageNr.toString().padStart(2, '0') +
-          '.png'
+          '.png',
       ),
       Buffer.from(
         canvas.toDataURL().replace(/^data:image\/\w+;base64,/, ''),
-        'base64'
-      )
+        'base64',
+      ),
     )
   } catch (e) {
     warn(
@@ -351,16 +350,13 @@ async function convertPdfPage(
       {
         identifier: `${basename(mediaFile)}, page ${pageNr}`,
       },
-      e
+      e,
     )
   }
-  increasePageProgress()
+  increasePageProgress(pdf.numPages)
 }
 
-async function setupFFmpeg(
-  ffmpeg: any,
-  _setProgress?: (loaded: number, total: number, global?: boolean) => void
-): Promise<void> {
+async function setupFFmpeg(ffmpeg: any): Promise<void> {
   const store = useMediaStore()
   if (store.ffMpeg) return
   const osType = platform()
@@ -372,10 +368,10 @@ async function setupFFmpeg(
   }
 
   const result = await fetchJson<Release>(
-    'https://api.github.com/repos/vot/ffbinaries-prebuilt/releases/latest'
+    'https://api.github.com/repos/vot/ffbinaries-prebuilt/releases/latest',
   )
   const version = result.assets.filter(
-    (a) => a.name.includes(target) && a.name.includes('ffmpeg')
+    (a) => a.name.includes(target) && a.name.includes('ffmpeg'),
   )[0]
   const ffMpegPath = join(appPath(), 'ffmpeg')
   const zipPath = join(ffMpegPath, 'zip', version.name)
@@ -435,7 +431,7 @@ function resize(x: number, y: number, xMax?: number, yMax?: number): number[] {
 
 function createVideo(
   file: string,
-  setProgress?: (loaded: number, total: number, global?: boolean) => void
+  setProgress?: (loaded: number, total: number, global?: boolean) => void,
 ): Promise<void> {
   const output = changeExt(file, 'mp4')
   return new Promise<void>((resolve) => {
@@ -443,7 +439,7 @@ function createVideo(
       // If mp3, just add audio to empty video
       if (extname(file).includes('mp3')) {
         import('fluent-ffmpeg').then(({ default: ffmpeg }) => {
-          setupFFmpeg(ffmpeg, setProgress)
+          setupFFmpeg(ffmpeg)
             .then(() => {
               ffmpeg(file)
                 .noVideo()
@@ -459,7 +455,7 @@ function createVideo(
               warn(
                 'warnMp4ConversionFailure',
                 { identifier: basename(file) },
-                e
+                e,
               )
               increaseProgress(setProgress!)
               return resolve()
@@ -490,7 +486,7 @@ function createVideo(
               dimensions.width,
               dimensions.height,
               max[0],
-              max[1]
+              max[1],
             )
             const div = document.createElement('div')
             div.style.display = 'none'
@@ -516,7 +512,7 @@ function createVideo(
                   const ctx = canvas.getContext('2d')!
                   ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
                   encoder.addFrameRgba(
-                    ctx.getImageData(0, 0, canvas.width, canvas.height).data
+                    ctx.getImageData(0, 0, canvas.width, canvas.height).data,
                   )
 
                   // Save video
@@ -557,7 +553,7 @@ function initProgress(amount: number): void {
 }
 
 function increaseProgress(
-  setProgress: (loaded: number, total: number, global?: boolean) => void
+  setProgress: (loaded: number, total: number, global?: boolean) => void,
 ): void {
   progress++
   setProgress(progress, total, true)

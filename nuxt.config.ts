@@ -1,7 +1,6 @@
 import { platform } from 'os'
 import { join } from 'path'
 import type { PluginOption } from 'vite'
-import vuetify from 'vite-plugin-vuetify'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import { repository, version } from './package.json'
 import { appLongName } from './src/constants/general'
@@ -30,7 +29,7 @@ if (sentryInit && !process.env.SENTRY_DISABLE) {
         name: `${appLongName.toLowerCase().replace(' ', '-')}@${version}`,
         dist: platform().replace('32', ''),
       },
-    })
+    }),
   )
 }
 
@@ -44,30 +43,15 @@ export default defineNuxtConfig({
     typeCheck: false,
     tsConfig: { compilerOptions: { moduleResolution: 'bundler' } },
   },
-  build: {
-    transpile: ['@vuepic/vue-datepicker'],
-  },
-  imports: {
-    dirs: ['stores', 'constants'],
-  },
-  router: {
-    options: {
-      hashMode: true,
-    },
-  },
-  sourcemap: {
-    client: false,
-  },
+  imports: { dirs: ['stores', 'constants'] },
+  router: { options: { hashMode: true } },
+  sourcemap: { client: false },
   modules: [
     '@nuxtjs/i18n',
+    ['@unocss/nuxt', { configFile: './config/uno.config.ts' }],
     '@vueuse/nuxt',
-    'nuxt-lodash',
-    [
-      '@pinia/nuxt',
-      {
-        autoImports: ['defineStore', 'storeToRefs'],
-      },
-    ],
+    'vuetify-nuxt-module',
+    ['@pinia/nuxt', { autoImports: ['defineStore', 'storeToRefs'] }],
     [
       'nuxt-electron',
       {
@@ -84,12 +68,6 @@ export default defineNuxtConfig({
         },
       },
     ],
-    /* Treeshaking: https://next.vuetifyjs.com/en/features/treeshaking/ */
-    (_, nuxt) => {
-      nuxt.hooks.hook('vite:extendConfig', (config) => {
-        config?.plugins?.push(vuetify())
-      })
-    },
   ],
   i18n: {
     lazy: true,
@@ -98,10 +76,15 @@ export default defineNuxtConfig({
     locales: LOCALES,
     types: 'composition',
     detectBrowserLanguage: false,
+    vueI18n: './config/i18n.config.ts',
     compilation: {
       strictMessage: false,
       escapeHtml: true,
     },
+  },
+  vuetify: {
+    moduleOptions: { prefixComposables: true },
+    vuetifyOptions: './config/vuetify.config.ts',
   },
   vite: {
     root: process.cwd(), // Fix for: https://github.com/electron-vite/vite-plugin-electron-renderer/issues/32

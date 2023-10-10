@@ -152,25 +152,25 @@ const headers = ref<
 >([
   {
     key: 'app',
-    icon: 'mdi-application',
+    icon: 'i-mdi:application',
     name: t('optionsApp'),
     valid: false,
   },
   {
     key: 'cong',
-    icon: 'mdi-cloud',
+    icon: 'i-mdi:cloud',
     name: t('optionsCongSync'),
     valid: false,
   },
   {
     key: 'media',
-    icon: 'mdi-multimedia',
+    icon: 'i-mdi:multimedia',
     name: t('optionsMedia'),
     valid: false,
   },
   {
     key: 'meeting',
-    icon: 'mdi-lectern',
+    icon: 'i-mdi:lectern',
     name: t('optionsMeetings'),
     valid: false,
   },
@@ -193,7 +193,7 @@ watch(
     headersChanged.value++
     mounted.value ||= valid.value || headersChanged.value > 4
   },
-  { deep: true }
+  { deep: true },
 )
 
 // Prefs

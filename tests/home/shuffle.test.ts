@@ -29,7 +29,7 @@ test('shuffle button works correctly', async () => {
 
   // Check for correct version
   expect((await page.locator('text=M³ v').innerText()).toLowerCase()).toBe(
-    `m³ v${version}`
+    `m³ v${version}`,
   )
 
   await page.locator('button', { hasText: locale.optionsMeetings }).click()
@@ -49,7 +49,7 @@ test('shuffle button works correctly', async () => {
 
   // Verify orange color
   expect((await shuffleBtn.getAttribute('class'))?.includes('warning')).toBe(
-    true
+    true,
   )
 
   // Click shuffle button again

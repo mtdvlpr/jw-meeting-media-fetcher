@@ -23,7 +23,7 @@ const report = () => {
 \`\`\`
 ${JSON.stringify(props.error, Object.getOwnPropertyNames(props.error), 2)}
 \`\`\``).replace(/\n/g, '%0D%0A'),
-    '_blank'
+    '_blank',
   )
 }
 </script>

@@ -27,7 +27,7 @@ const defaultState: MediaStore = {
 }
 
 export const useMediaStore = defineStore('media', {
-  state: () => useCloneDeep(defaultState),
+  state: (): MediaStore => cloneDeep(defaultState),
   actions: {
     setSongPub(songPub: string) {
       this.songPub = songPub
@@ -153,7 +153,7 @@ export const useMediaStore = defineStore('media', {
       if (media) {
         const newMedia = [...media]
         const index = newMedia.findIndex(
-          ({ safeName }) => safeName === mediaName
+          ({ safeName }) => safeName === mediaName,
         )
         if (index !== -1) {
           newMedia[index].hidden = hidden

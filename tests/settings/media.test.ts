@@ -1,6 +1,5 @@
 import { platform } from 'os'
 import { expect, test, ElectronApplication, Page } from '@playwright/test'
-// eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { join } from 'upath'
 import { ipcRendererInvoke } from 'electron-playwright-helpers'
@@ -32,7 +31,7 @@ test.afterAll(async () => {
 test('render the settings page correctly', async () => {
   // Check for correct version
   expect((await page.locator('text=M³ v').innerText()).toLowerCase()).toBe(
-    `m³ v${version}`
+    `m³ v${version}`,
   )
 
   // Test if title is correct
@@ -77,7 +76,7 @@ test('vlc playlist', async () => {
   const mediaPath = await ipcRendererInvoke(page, 'downloads')
   expect(
     existsSync(
-      join(mediaPath, prefs.lang, getDate('we'), getDate('we') + '.xspf')
-    )
+      join(mediaPath, prefs.lang, getDate('we'), getDate('we') + '.xspf'),
+    ),
   ).toBe(true)
 })

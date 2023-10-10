@@ -99,7 +99,7 @@ export default class BrowserWinHandler {
   loadPage(pagePath: string) {
     if (!this.browserWindow)
       return Promise.reject(
-        new Error("The page could not be loaded before win 'created' event")
+        new Error("The page could not be loaded before win 'created' event"),
       )
     const serverUrl = process.env.VITE_DEV_SERVER_URL
       ? process.env.VITE_DEV_SERVER_URL

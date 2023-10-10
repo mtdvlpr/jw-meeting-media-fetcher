@@ -9,7 +9,7 @@ export async function getMediaLinks(
     format?: string
     lang?: string
   },
-  silent?: boolean
+  silent?: boolean,
 ): Promise<SmallMediaFile[]> {
   if (mediaItem.lang) {
     log.debug('mi', mediaItem)
@@ -34,8 +34,8 @@ export async function getMediaLinks(
             ...mediaItem,
             lang: subsLang,
           },
-          silent
-        )
+          silent,
+        ),
       )
     }
     const result = await Promise.allSettled(mediaPromises)
@@ -50,7 +50,7 @@ export async function getMediaLinks(
     ) {
       smallMediaFiles.forEach((file) => {
         const matchingFile = subsResult.value.find(
-          (sub) => file.pub === sub.pub && file.track === sub.track
+          (sub) => file.pub === sub.pub && file.track === sub.track,
         )
         if (
           matchingFile &&
@@ -92,7 +92,7 @@ export async function getMediaLinks(
         {
           identifier: Object.values(mediaItem).filter(Boolean).join('_'),
         },
-        e
+        e,
       )
     }
   }
@@ -109,7 +109,7 @@ export async function getSmallMediaFiles(
     format?: string
     lang?: string
   },
-  silent?: boolean
+  silent?: boolean,
 ): Promise<SmallMediaFile[]> {
   let mediaFiles: MediaFile[] = []
   let smallMediaFiles: SmallMediaFile[] = []
@@ -284,7 +284,7 @@ export async function getSmallMediaFiles(
               : null,
             markers,
           }
-        }
+        },
       )
     } else if (!silent && (!fallbackLang || !mediaItem.lang)) {
       warn('infoPubIgnored', {
@@ -300,7 +300,7 @@ export async function getSmallMediaFiles(
         {
           identifier: Object.values(mediaItem).filter(Boolean).join('_'),
         },
-        e
+        e,
       )
     }
   }

@@ -47,7 +47,7 @@ export function autoStartMusic() {
     ? getPrefs<number>('meeting.musicFadeOutTime')
     : 0
   const meetingTime = getPrefs<string>(`meeting.${meetingDay}StartTime`).split(
-    ':'
+    ':',
   )
 
   const meetingStart = now
@@ -79,7 +79,7 @@ export async function shuffleMusic(stop = false, immediately = false) {
     if (useMediaStore().musicFadeOut && store.musicFadeOut) {
       const { $dayjs } = useNuxtApp()
       store.setMusicFadeOut(
-        $dayjs.duration(progress[1] - progress[0], 's').format('mm:ss')
+        $dayjs.duration(progress[1] - progress[0], 's').format('mm:ss'),
       )
     }
   }
@@ -117,7 +117,7 @@ export async function shuffleMusic(stop = false, immediately = false) {
         if (day && !getPrefs<boolean>('meeting.specialCong')) {
           // Set stop time depending on mw or we day
           const meetingStarts = getPrefs<string>(
-            `meeting.${day}StartTime`
+            `meeting.${day}StartTime`,
           )?.split(':') ?? ['0', '0']
 
           const timeToStop = now
@@ -163,7 +163,7 @@ export async function shuffleMusic(stop = false, immediately = false) {
             })
           ).filter((item) => extname(item.url) === `.${mediaFormat}`)
         : findAll(
-            join(pubPath(), '..', mediaLang, songPub, '**', `*.${mediaFormat}`)
+            join(pubPath(), '..', mediaLang, songPub, '**', `*.${mediaFormat}`),
           ).map((item) => ({
             title: basename(item),
             track: basename(resolve(item, '..')),
@@ -186,7 +186,7 @@ async function playSignLanguageSong(
   songs: (VideoFile | LocalSong)[],
   index: number,
   fadeOut: boolean,
-  isOnline: boolean
+  isOnline: boolean,
 ) {
   if (!usePresentStore().mediaScreenVisible) {
     ipcRenderer.send('toggleMediaWindowFocus')
@@ -210,7 +210,7 @@ async function playSignLanguageSong(
       songs,
       index < songs.length - 1 ? ++index : 0,
       fadeOut,
-      isOnline
+      isOnline,
     )
   })
 }
@@ -219,7 +219,7 @@ async function createAudioElement(
   songs: (VideoFile | LocalSong)[],
   index: number,
   fadeOut: boolean,
-  isOnline: boolean
+  isOnline: boolean,
 ) {
   const store = useMediaStore()
   const audio = document.createElement('audio')
@@ -232,7 +232,7 @@ async function createAudioElement(
       songs,
       index < songs.length - 1 ? ++index : 0,
       fadeOut,
-      isOnline
+      isOnline,
     )
   }
   audio.oncanplay = () => {
@@ -256,7 +256,7 @@ async function createAudioElement(
   source.type = 'audio/mpeg'
   if (isOnline) {
     source.src = pathToFileURL(
-      await downloadIfRequired({ file: songs[index] as VideoFile })
+      await downloadIfRequired({ file: songs[index] as VideoFile }),
     ).href
   } else {
     source.src = pathToFileURL((songs[index] as LocalSong)?.path ?? '').href

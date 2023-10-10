@@ -1,5 +1,4 @@
 import { platform } from 'os'
-// eslint-disable-next-line import/named
 import { existsSync } from 'fs-extra'
 import { sync } from 'fast-glob'
 import { expect, test, ElectronApplication, Page } from '@playwright/test'
@@ -38,7 +37,7 @@ test('render the presentation mode page correctly', async () => {
 
   // Check for correct version
   expect((await page.locator('text=M³ v').innerText()).toLowerCase()).toBe(
-    `m³ v${version}`
+    `m³ v${version}`,
   )
 
   // Expand media setup
@@ -88,11 +87,10 @@ test('render the presentation mode page correctly', async () => {
     }).length === 1
   ) {
     // Check if more actions button is present
-    expect(
-      await page
-        .locator('[aria-label="More actions"]')
-        .getAttribute('aria-label')
-    ).toBeTruthy()
+    await expect(page.locator('[aria-label="More actions"]')).toHaveAttribute(
+      'aria-label',
+      'More actions',
+    )
 
     if (platform() === 'linux') {
       await delay(10 * 100)
@@ -100,20 +98,19 @@ test('render the presentation mode page correctly', async () => {
     }
   } else {
     // Check for correct heading
-    expect(
-      await page.locator('.v-toolbar-title__placeholder').innerText()
-    ).toBe(locale.selectDate)
+    await expect(page.locator('.v-toolbar-title__placeholder')).toHaveText(
+      locale.selectDate,
+    )
 
     if (platform() !== 'win32') {
       if (platform() === 'linux') {
         await page.screenshot({ path: 'img/present/meeting-picker.png' })
       }
       await page.locator('.present-select .v-list-item').nth(0).click()
-      expect(
-        await page
-          .locator('[aria-label="More actions"]')
-          .getAttribute('aria-label')
-      ).toBeTruthy()
+      await expect(page.locator('[aria-label="More actions"]')).toHaveAttribute(
+        'aria-label',
+        'More actions',
+      )
 
       if (platform() === 'linux') {
         await delay(10 * 100)
@@ -127,7 +124,6 @@ test('render the presentation mode page correctly', async () => {
    // evaluate this script in render process
    // requires webPreferences.nodeIntegration true and contextIsolation false
    await page.evaluate(() => {
-     // eslint-disable-next-line @typescript-eslint/no-var-requires
      require('electron').ipcRenderer.send('new-window')
    })
    const newPage = await electronApp.waitForEvent('window')

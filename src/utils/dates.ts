@@ -24,7 +24,7 @@ export function isCoWeek(baseDate?: Dayjs) {
   const coWeek = getPrefs<string>('meeting.coWeek')
   const coWeekAsDayJs = $dayjs(
     coWeek,
-    getPrefs<DateFormat>('app.outputFolderDateFormat')
+    getPrefs<DateFormat>('app.outputFolderDateFormat'),
   )
   return (
     coWeek &&

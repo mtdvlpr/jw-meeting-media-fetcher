@@ -28,10 +28,10 @@ export function initMediaWinListeners() {
     'showMediaWindow',
     (
       _e,
-      mediaWinOptions: { destination: number; type: 'fullscreen' | 'window' }
+      mediaWinOptions: { destination: number; type: 'fullscreen' | 'window' },
     ) => {
       initMediaWindow(mediaWinOptions)
-    }
+    },
   )
 
   ipcMain.removeAllListeners('showMedia')
@@ -44,14 +44,14 @@ export function initMediaWinListeners() {
         stream?: boolean
         start?: string
         end?: string
-      } | null
+      } | null,
     ) => {
       mediaWin?.webContents.send('showMedia', media)
       getMainWindow()?.webContents.send('showingMedia', [
         !!media,
         !!media?.start,
       ])
-    }
+    },
   )
 
   ipcMain.removeAllListeners('closeMediaWindow')
@@ -90,7 +90,7 @@ export function initMediaWinListeners() {
     'toggleSubtitles',
     (_e, payload: { enabled: boolean; toggle: boolean }) => {
       mediaWin?.webContents.send('toggleSubtitles', payload)
-    }
+    },
   )
 
   ipcMain.removeAllListeners('scrubVideo')
@@ -149,11 +149,11 @@ async function initMediaWindow(mediaWinOptions: {
       fullscreen: mediaWinOptions.type === 'fullscreen',
       x:
         (screenInfo.displays.find(
-          (display) => display.id === mediaWinOptions.destination
+          (display) => display.id === mediaWinOptions.destination,
         )?.bounds?.x ?? 0) + STARTING_POSITION,
       y:
         (screenInfo.displays.find(
-          (display) => display.id === mediaWinOptions.destination
+          (display) => display.id === mediaWinOptions.destination,
         )?.bounds?.y ?? 0) + STARTING_POSITION,
     }
 
@@ -182,7 +182,7 @@ async function initMediaWindow(mediaWinOptions: {
           websiteControllerHandler.send('mediaSize', mediaWin?.getContentSize())
           websiteControllerHandler.send(
             'winSize',
-            websiteController?.getContentSize()
+            websiteController?.getContentSize(),
           )
         }
         if (platform() === 'linux') {
@@ -247,7 +247,7 @@ function setMediaWindowPosition(
   mediaWinOptions: {
     destination: number
     type: 'window' | 'fullscreen'
-  }
+  },
 ) {
   try {
     if (mediaWin) {
@@ -256,11 +256,11 @@ function setMediaWindowPosition(
       mediaWin.setBounds({
         x:
           (screenInfo.displays.find(
-            (display) => display.id === mediaWinOptions.destination
+            (display) => display.id === mediaWinOptions.destination,
           )?.bounds?.x ?? 0) + STARTING_POSITION,
         y:
           (screenInfo.displays.find(
-            (display) => display.id === mediaWinOptions.destination
+            (display) => display.id === mediaWinOptions.destination,
           )?.bounds?.y ?? 0) + STARTING_POSITION,
         ...(mediaWinOptions.type === 'window' && { width: 1280 }),
         ...(mediaWinOptions.type === 'window' && { height: 720 }),

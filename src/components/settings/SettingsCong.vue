@@ -70,7 +70,7 @@
         :disabled="!complete"
         @click="submit()"
       >
-        <v-icon icon="mdi-cloud-check" />
+        <v-icon icon="i-mdi:cloud-check" />
       </v-btn>
     </v-col>
     <template v-if="client">
@@ -84,7 +84,7 @@
         </v-col>
         <v-col class="text-right pr-0">
           <v-btn icon color="primary" @click="forcingPrefs = true">
-            <v-icon icon="mdi-cloud-lock-open" />
+            <v-icon icon="i-mdi:cloud-lock-open" />
           </v-btn>
         </v-col>
       </v-col>
@@ -140,7 +140,7 @@ const moveDirUp = async () => {
     cong.value.dir =
       cong.value.dir.substring(
         0,
-        cong.value.dir.slice(0, -1).lastIndexOf('/') + 1
+        cong.value.dir.slice(0, -1).lastIndexOf('/') + 1,
       ) || '/'
   } else {
     cong.value.dir =
@@ -158,7 +158,7 @@ const submit = async () => {
       cong.value.server!,
       cong.value.username!,
       cong.value.password!,
-      cong.value.dir!
+      cong.value.dir!,
     ))!
     if (client.value) {
       updateContentsTree()

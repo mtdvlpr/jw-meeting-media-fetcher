@@ -29,7 +29,7 @@ test('render the settings page correctly', async () => {
 
   // Check for correct version
   expect((await page.locator('text=M³ v').innerText()).toLowerCase()).toBe(
-    `m³ v${version}`
+    `m³ v${version}`,
   )
 
   // Test if title is correct
@@ -41,7 +41,6 @@ test('render the settings page correctly', async () => {
    // evaluate this script in render process
    // requires webPreferences.nodeIntegration true and contextIsolation false
    await page.evaluate(() => {
-     // eslint-disable-next-line @typescript-eslint/no-var-requires
      require('electron').ipcRenderer.send('new-window')
    })
    const newPage = await electronApp.waitForEvent('window')

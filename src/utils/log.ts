@@ -24,9 +24,8 @@ function logger(type: keyof Logs, args: [msg: any, ...args: any[]]): void {
   logs[type][now].push(
     typeof args[0] === 'string'
       ? args[0]
-      : args[0]?.message ?? args[0]?.description
+      : args[0]?.message ?? args[0]?.description,
   )
-  // eslint-disable-next-line no-console
   console[type](...args)
 }
 
@@ -74,14 +73,14 @@ export const bugURL = (error?: unknown): string => {
                   }
                 }
                 return [key, value]
-              }
-            )
+              },
+            ),
           ),
         ]
-      })
+      }),
     ),
     null,
-    2
+    2,
   )
 
   let errorDetails = ''
@@ -99,14 +98,14 @@ ${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}
     `${repo}/issues/new?template=bug_report.yml&title=[App][Bug]%3A+<title>&version=${version}&logs=${JSON.stringify(
       logs.error,
       null,
-      2
+      2,
     ).replace(/\n/g, '%0D%0A')}&additional-context=` +
     encodeURIComponent(
       `${type()} ${release()} ${arch()}
 ### Anonymized \`prefs.json\`
 \`\`\`
 ${prefs}
-\`\`\`${errorDetails}`
+\`\`\`${errorDetails}`,
     ).replace(/\n/g, '%0D%0A')
   )
 }
