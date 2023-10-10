@@ -1,4 +1,4 @@
-import { FileStat } from 'webdav/web/types'
+import type { FileStat } from 'webdav/web'
 
 export interface CongFile extends FileStat {
   children?: CongFile[]

@@ -167,7 +167,7 @@ FROM
 ORDER BY
   LanguageId
 */
-export const MEPS_IDS = {
+export const MEPS_IDS: Record<number, string> = {
   '0': 'E',
   '1': 'S',
   '2': 'X',
@@ -1584,7 +1584,7 @@ export const MEPS_IDS = {
   '1413': 'NLS',
   '1414': 'BKY',
   '1415': 'MDO',
-} satisfies Record<number, string>
+}
 
 /*
 SELECT
@@ -1600,7 +1600,7 @@ WHERE
   L.PrimaryFallbackLanguageId != 0
   AND L.PrimaryFallbackLanguageId != -1
 */
-export const FALLBACK_LANGS = {
+export const FALLBACK_LANGS: Record<string, string> = {
   AI: 'CH',
   AE: 'HI',
   AR: 'F',
@@ -2296,7 +2296,7 @@ export const FALLBACK_LANGS = {
   ODN: 'OI',
   NLS: 'NGD',
   BKY: 'PGW',
-} satisfies Record<string, string>
+}
 
 export const FALLBACK_SITE_LANGS = [
   {
