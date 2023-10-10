@@ -1,53 +1,59 @@
 <template>
   <div id="media-list-container" style="width: 100%">
-    <v-expand-transition>
-      <v-alert v-if="itemsLoaded &&
-        syncInProgress.length === 0 &&
-        $props.items.length === 0
-        " type="warning" :text="$t('warnNoMediaFound')" />
-      <v-alert v-else-if="syncInProgress.includes(date)" type="info" :text="$t('warnSyncInProgress')" />
-      <v-alert v-else-if="currentWeekIsCoWeek" type="info" closable :text="$t('informCurrentWeekIsCoWeek')" />
-    </v-expand-transition>
-    <v-expand-transition>
-      <song-picker v-if="showQuickSong" ref="songPicker" v-model="song" class="ma-4" clearable />
-    </v-expand-transition>
+    <song-picker ref="songPicker" v-model="song" class="ma-4" clearable />
     <v-expand-transition>
       <v-list v-if="song && showQuickSong" class="ma-4">
-        <media-item :key="song.url" :src="song.url" :play-now="song.play" :stop-now="song.stop"
-          :deactivate="song.deactivate" :streaming-file="song" @playing="setIndex('song')"
-          @deactivated="deactivateSong" />
+        <media-item
+          :key="song.url"
+          :src="song.url"
+          :play-now="song.play"
+          :stop-now="song.stop"
+          :deactivate="song.deactivate"
+          :streaming-file="song"
+          @playing="setIndex('song')"
+          @deactivated="deactivateSong"
+        />
       </v-list>
     </v-expand-transition>
-    <template v-for="section in isMwDay
-      ? [
-        sections.treasureItems.value,
-        sections.applyItems.value,
-        sections.livingItems.value,
-      ]
-      : isWeDay
+    <template
+      v-for="section in isMwDay
+        ? [
+            sections.treasureItems.value,
+            sections.applyItems.value,
+            sections.livingItems.value,
+          ]
+        : isWeDay
         ? [sections.publicTalkItems.value, sections.wtItems.value]
-        : [sections.mediaItems.value]" :key="section">
+        : [sections.mediaItems.value]"
+      :key="section"
+    >
       <template v-if="section && section.length > 0">
-        <v-divider class="mx-4" :class="{
-          'mt-4': true,
-          'text-treasures':
-            section === sections.treasureItems.value ||
-            section === sections.publicTalkItems.value,
-          'text-apply': section === sections.applyItems.value,
-          'text-living':
-            section === sections.livingItems.value ||
-            section === sections.wtItems.value,
-        }" />
-        <v-list-item-title class="mx-4 my-2" :class="{
-          'text-overline': true,
-          'text-treasures':
-            section === sections.treasureItems.value ||
-            section === sections.publicTalkItems.value,
-          'text-apply': section === sections.applyItems.value,
-          'text-living':
-            section === sections.livingItems.value ||
-            section === sections.wtItems.value,
-        }">
+        <v-divider
+          class="mx-4"
+          :class="{
+            'mt-4': true,
+            'text-treasures':
+              section === sections.treasureItems.value ||
+              section === sections.publicTalkItems.value,
+            'text-apply': section === sections.applyItems.value,
+            'text-living':
+              section === sections.livingItems.value ||
+              section === sections.wtItems.value,
+          }"
+        />
+        <v-list-item-title
+          class="mx-4 my-2"
+          :class="{
+            'text-overline': true,
+            'text-treasures':
+              section === sections.treasureItems.value ||
+              section === sections.publicTalkItems.value,
+            'text-apply': section === sections.applyItems.value,
+            'text-living':
+              section === sections.livingItems.value ||
+              section === sections.wtItems.value,
+          }"
+        >
           {{
             (() => {
               switch (section) {
@@ -67,28 +73,42 @@
             })()
           }}
         </v-list-item-title>
-        <v-list :key="section.length" v-sortable="sortableOptions" class="ma-4" :data-section="(() => {
-          switch (section) {
-            case sections.treasureItems.value:
-              return 'treasureItems'
-            case sections.applyItems.value:
-              return 'applyItems'
-            case sections.livingItems.value:
-              return 'livingItems'
-            case sections.publicTalkItems.value:
-              return 'publicTalkItems'
-            case sections.wtItems.value:
-              return 'wtItems'
-            case sections.mediaItems.value:
-              return 'mediaItems'
-            default:
-              return 'unknownItems'
-          }
-        })()
-          " @sort="saveFileOrder">
-          <media-item v-for="element in section" :key="element.id" :src="element.path" :play-now="element.play"
-            :stop-now="element.stop" :deactivate="element.deactivate" @playing="setIndex(element.id)"
-            @deactivated="resetDeactivate(element.id)" />
+        <v-list
+          :key="section.length"
+          v-sortable="sortableOptions"
+          class="ma-4"
+          :data-section="
+            (() => {
+              switch (section) {
+                case sections.treasureItems.value:
+                  return 'treasureItems'
+                case sections.applyItems.value:
+                  return 'applyItems'
+                case sections.livingItems.value:
+                  return 'livingItems'
+                case sections.publicTalkItems.value:
+                  return 'publicTalkItems'
+                case sections.wtItems.value:
+                  return 'wtItems'
+                case sections.mediaItems.value:
+                  return 'mediaItems'
+                default:
+                  return 'unknownItems'
+              }
+            })()
+          "
+          @sort="saveFileOrder"
+        >
+          <media-item
+            v-for="element in section"
+            :key="element.id"
+            :src="element.path"
+            :play-now="element.play"
+            :stop-now="element.stop"
+            :deactivate="element.deactivate"
+            @playing="setIndex(element.id)"
+            @deactivated="resetDeactivate(element.id)"
+          />
         </v-list>
       </template>
     </template>
@@ -123,17 +143,13 @@ const props = defineProps<{
   ccEnable: boolean
 }>()
 
-// const dragging = ref(false)
-const { $dayjs } = useNuxtApp()
 const date = useRouteQuery<string>('date', '')
-const currentWeekIsCoWeek = ref(!!isCoWeek($dayjs(date.value, getPrefs<DateFormat>('app.outputFolderDateFormat'))))
 
 // Meeting day
 const meetingDay = ref('')
 const isMwDay = computed(() => meetingDay.value === 'mw')
 const isWeDay = computed(() => meetingDay.value === 'we')
 
-const { syncInProgress } = storeToRefs(useStatStore())
 const itemsLoaded = ref(false)
 onMounted(() => {
   setItems(props.items)
@@ -141,8 +157,8 @@ onMounted(() => {
   meetingDay.value = isMeetingDay(
     useNuxtApp().$dayjs(
       date.value,
-      getPrefs<DateFormat>('app.outputFolderDateFormat')
-    )
+      getPrefs<DateFormat>('app.outputFolderDateFormat'),
+    ),
   )
 })
 
@@ -168,17 +184,17 @@ const getMwbHeadings = () => {
 
 const firstWtSong = computed(() => {
   return sections.mediaItems.value.findIndex((item) =>
-    basename(item.path).startsWith('03-01')
+    basename(item.path).startsWith('03-01'),
   )
 })
 const firstApplyItem = computed(() => {
   return sections.mediaItems.value.findIndex((item) =>
-    basename(item.path).startsWith('02')
+    basename(item.path).startsWith('02'),
   )
 })
 const secondMwbSong = computed(() => {
   return sections.mediaItems.value.findIndex((item) =>
-    basename(item.path).startsWith('03')
+    basename(item.path).startsWith('03'),
   )
 })
 
@@ -196,13 +212,13 @@ watch(
     props.items.reduce((total, item) => total + (item.size || 0), 0),
   () => {
     setItems(props.items)
-  }
+  },
 )
 watch(
   () => props.customSort,
   (customSort) => {
     if (!customSort) defaultOrder(props.items)
-  }
+  },
 )
 watch(
   () => props.customSortOrder,
@@ -212,7 +228,7 @@ watch(
     } else {
       defaultOrder(props.items)
     }
-  }
+  },
 )
 const saveFileOrder = async () => {
   const domSections = document.querySelectorAll<HTMLElement>('[data-section]')
@@ -230,7 +246,7 @@ const saveFileOrder = async () => {
     try {
       await writeJson(
         join(dirname(sections.mediaItems.value[0].path), 'file-order.json'),
-        combinedItems
+        combinedItems,
       )
       emit('customSort', true)
     } catch (error) {
@@ -259,9 +275,9 @@ const setItems = (val: MediaItem[]) => {
                 !Object.values(result)
                   .flat()
                   .map((item) => item.id)
-                  .includes(id)
+                  .includes(id),
             )
-            .includes(item.id)
+            .includes(item.id),
         )
         .concat(result[Object.keys(result)[0]])
 
@@ -286,7 +302,7 @@ const defaultOrder = (
     play: boolean
     stop: boolean
     deactivate: boolean
-  }[]
+  }[],
 ) => {
   if (firstWtSong.value !== -1) {
     sections.publicTalkItems.value = val.slice(0, firstWtSong.value)
@@ -294,7 +310,7 @@ const defaultOrder = (
   }
   sections.treasureItems.value = val.slice(
     0,
-    firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value
+    firstApplyItem.value === -1 ? secondMwbSong.value : firstApplyItem.value,
   )
   sections.livingItems.value = val.slice(secondMwbSong.value)
   if (firstApplyItem.value === -1) {
@@ -302,20 +318,20 @@ const defaultOrder = (
   } else {
     sections.applyItems.value = val.slice(
       firstApplyItem.value,
-      secondMwbSong.value
+      secondMwbSong.value,
     )
   }
 }
 const resetDeactivate = (id: string) => {
   emit(
     'deactivate',
-    props.items.findIndex((item) => item.id === id)
+    props.items.findIndex((item) => item.id === id),
   )
 }
 const setIndex = (id: string) => {
   emit(
     'index',
-    props.items.findIndex((item) => item.id === id)
+    props.items.findIndex((item) => item.id === id),
   )
 }
 
@@ -334,21 +350,4 @@ const sortableOptions = ref({
     multiDragKey: 'ctrl', // Key that must be down for items to be selected
   },
 })
-
-// Computed list height
-// const obsEnabled = computed(() => {
-//   const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')
-//   return enable && !!port && !!password
-// })
-// const { client: zoomIntegration } = storeToRefs(useZoomStore())
-// const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })
-// const listHeight = computed(() => {
-//   const TOP_BAR = 64
-//   const FOOTER = 76
-//   const ZOOM_BAR = 56
-//   let otherElements = TOP_BAR
-//   if (obsEnabled.value) otherElements += FOOTER
-//   if (zoomIntegration.value) otherElements += ZOOM_BAR
-//   return `max-height: ${windowSize.height.value - otherElements}px`
-// })
 </script>

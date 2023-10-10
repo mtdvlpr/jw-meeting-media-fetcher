@@ -7,18 +7,6 @@
         @cancel="managingMedia = false"
       />
     </v-dialog>
-    <v-dialog
-      v-if="droppedFiles?.length === 1"
-      persistent
-      :model-value="isLoneJwpub"
-    >
-      <manage-select-document
-        :file="droppedFiles[0]"
-        :set-progress="setProgress"
-        @select="processFiles($event)"
-        @empty="reset()"
-      />
-    </v-dialog>
     <v-row no-gutters class="media-controls">
       <!-- :media-active="mediaActive" -->
       <present-top-bar
@@ -32,7 +20,6 @@
         @reset-sort="customSort = false"
         @manage-media="managingMedia = true"
       />
-      <!-- @show-prefix="togglePrefix()" -->
       <v-expand-transition>
         <loading-icon v-if="loading" />
         <media-list
@@ -49,214 +36,18 @@
           @custom-sort="customSort = true"
         />
       </v-expand-transition>
-      <v-overlay :model-value="dropping" class="align-center justify-center">
-        <v-chip variant="flat">{{ $t('dropFiles') }}</v-chip>
-      </v-overlay>
     </v-row>
   </div>
 </template>
 <script setup lang="ts">
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import { useRouteQuery } from '@vueuse/router'
-import { basename, changeExt, dirname, extname, join } from 'upath'
+import { basename, dirname, join } from 'upath'
 import * as fileWatcher from 'chokidar'
-import * as JSZip from 'jszip'
-// eslint-disable-next-line import/named
-import { pathExistsSync, readJsonSync, readdirSync, writeJson } from 'fs-extra'
-import { LocalFile, PlaylistItem, VideoFile } from '~~/types'
-import { Database } from '@stephen/sql.js'
+import { pathExistsSync, readJsonSync, readdirSync } from 'fs-extra'
+import { LocalFile } from '~~/types'
 
-const { setProgress } = useProgress()
 const loading = ref(false)
-const droppedFiles = ref()
-const isLoneJwpub = ref(false)
-const dropping = ref(false)
-watch(droppedFiles, () => {
-  if (droppedFiles.value.length > 0) {
-    isLoneJwpub.value =
-      Array.isArray(droppedFiles.value) &&
-      droppedFiles.value.length === 1 &&
-      droppedFiles.value[0].filepath &&
-      extname(droppedFiles.value[0].filepath) === '.jwpub'
-    if (!isLoneJwpub.value) {
-      processFiles(droppedFiles.value)
-    }
-  }
-})
-const processFiles = async (files: (LocalFile | VideoFile)[]) => {
-  for (const file of files) {
-    // const congPromises: Promise<void>[] = []
-    const path = join(
-      getPrefs('cloud.enable')
-        ? join(getPrefs('cloud.path'), 'Additional')
-        : mediaPath(),
-      date.value,
-      file.safeName
-    )
-
-    if (file.contents) {
-      // JWPUB extract
-      write(path, file.contents)
-    } else if (file.filepath) {
-      // Local file
-      if (file.filepath.endsWith('.jwlplaylist')) {
-        await processPlaylist(file.filepath, dirname(path))
-      } else {
-        await copy(file.filepath, path)
-      }
-    } else if (file.objectUrl) {
-      // Dropped file object (from web browser for example)
-      await fetchFile({ url: file.objectUrl, dest: path })
-    } else if (file.safeName) {
-      // External file from jw.org
-      file.folder = date.value
-      await downloadIfRequired({
-        file: file as VideoFile,
-        additional: true,
-      })
-
-      // if (file.subtitles) {
-      //   congPromises.push(uploadFile(changeExt(path, 'vtt')))
-      // }
-
-      // Download markers if required
-      if (file.markers && file.folder && file.safeName) {
-        const markers = Array.from(
-          new Set(
-            file.markers?.markers?.map(
-              ({ duration, label, startTime, endTransitionDuration }) =>
-                JSON.stringify({
-                  duration,
-                  label,
-                  startTime,
-                  endTransitionDuration,
-                })
-            )
-          )
-        ).map((m) => JSON.parse(m))
-
-        const markerPath = join(
-          getPrefs('cloud.enable')
-            ? join(getPrefs('cloud.path'), 'Additional')
-            : mediaPath(),
-          file.folder,
-          changeExt(file.safeName, 'json')
-        )
-        try {
-          await writeJson(markerPath, markers)
-        } catch (error) {
-          log.error(error)
-        }
-        // congPromises.push(uploadFile(markerPath))
-      }
-    }
-  }
-
-  // Upload media to the cong server
-  // if (client.value && online.value && props.uploadMedia) {
-  //   const perf: any = {
-  //     start: performance.now(),
-  //     bytes: (await stat(path)).size,
-  //     name: file.safeName,
-  //   }
-
-  //   congPromises.push(uploadFile(path))
-  //   await Promise.allSettled(congPromises)
-
-  //   perf.end = performance.now()
-  //   perf.bits = perf.bytes * BITS_IN_BYTE
-  //   perf.ms = perf.end - perf.start
-  //   perf.s = perf.ms / MS_IN_SEC
-  //   perf.bps = perf.bits / perf.s
-  //   perf.MBps = perf.bps / BYTES_IN_MB
-  //   perf.dir = 'up'
-  //   log.debug('perf', perf)
-  // }
-  // increaseProgress()
-  convertUnusableFilesByDate(date.value)
-  reset()
-}
-
-const processPlaylist = async (filePath: string, destPath: string) => {
-  loading.value = true
-  const db = (await getDb({
-    file: (await getZipContentsByExt(filePath, '.db', false)) ?? undefined,
-  })) as Database
-  const media = executeQuery(
-    db,
-    `SELECT Label, FilePath, MimeType, DocumentId, Track, IssueTagNumber, KeySymbol, MepsLanguage
-        FROM PlaylistItem PI
-          LEFT JOIN PlaylistItemLocationMap PILM ON PI.PlaylistItemId = PILM.PlaylistItemId
-          LEFT JOIN Location L ON PILM.LocationId = L.LocationId
-          LEFT JOIN PlaylistItemIndependentMediaMap PIIMM ON PI.PlaylistItemId = PIIMM.PlaylistItemId
-          LEFT JOIN IndependentMedia IM ON PIIMM.IndependentMediaId = IM.IndependentMediaId`
-  ) as PlaylistItem[]
-
-  const promises: Promise<void>[] = []
-  // Get correct extension
-  media
-    .map((m) => {
-      if (!extname(m.Label ?? '')) {
-        if (extname(m.FilePath ?? '')) {
-          m.Label += extname(m.FilePath!)
-        } else if (m.MimeType) {
-          m.Label = m.Label + '.' + m.MimeType.split('/')[1]
-        } else {
-          m.Label += '.mp4'
-        }
-      }
-      return m
-    })
-    .forEach((m, index) => {
-      promises.push(processPlaylistItem(index, m, filePath, destPath))
-    })
-  await Promise.allSettled(promises)
-  loading.value = false
-}
-const processPlaylistItem = async (
-  index: number,
-  m: PlaylistItem,
-  filePath: string,
-  destPath: string
-) => {
-  if (m.FilePath) {
-    let fileBuffer = await getZipContentsByName(filePath, m.FilePath, false)
-    if (fileBuffer)
-      write(
-        join(
-          destPath,
-          `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
-            m.Label,
-            true
-          )}`
-        ),
-        fileBuffer
-      )
-  } else {
-    const mediaFiles = (await getMediaLinks({
-      pubSymbol: m.KeySymbol,
-      docId: m.DocumentId,
-      track: m.Track,
-      issue: m.IssueTagNumber,
-      lang: m.MepsLanguage ? MEPS_IDS[m.MepsLanguage] : undefined,
-    })) as VideoFile[]
-    for (const file of mediaFiles) {
-      file.folder = basename(destPath)
-      file.safeName = `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
-        file.title,
-        true
-      )}${extname(file.url)}`
-      await downloadIfRequired({
-        file,
-        additional: true,
-      })
-    }
-  }
-}
-
-const reset = () => {
-  droppedFiles.value = []
-}
 
 // Current meeting date
 const date = useRouteQuery<string>('date', '')
@@ -273,14 +64,16 @@ const localMedia = computed((): LocalFile[] => [
       return {
         safeName: basename(item.path),
         filepath: item.path,
-        isLocal: getPrefs('cloud.enable') ? !!findOne(
-          join(
-            getPrefs('cloud.path'),
-            'Additional',
-            date.value,
-            basename(item.path)
-          )
-        ): true,
+        isLocal: getPrefs('cloud.enable')
+          ? !!findOne(
+              join(
+                getPrefs('cloud.path'),
+                'Additional',
+                date.value,
+                basename(item.path),
+              ),
+            )
+          : true,
       }
     })
     .concat(
@@ -293,9 +86,9 @@ const localMedia = computed((): LocalFile[] => [
                 hidden: true,
                 isLocal: true,
               }
-            }
+            },
           )
-        : []
+        : [],
     )
     .concat(
       getPrefs('cloud.enable')
@@ -307,9 +100,9 @@ const localMedia = computed((): LocalFile[] => [
                 recurring: true,
                 isLocal: true,
               }
-            }
+            },
           )
-        : []
+        : [],
     )
     .sort((a, b) => {
       const nameA = a.safeName.toUpperCase()
@@ -365,7 +158,7 @@ onMounted(() => {
 
   customSortOrder.value = readJsonSync(
     join(mPath, date.value, 'file-order.json'),
-    { throws: false }
+    { throws: false },
   )
 
   watchers.value.push(
@@ -392,7 +185,7 @@ onMounted(() => {
               size: stats?.size,
             }
             items.value = [...items.value, newItem].sort((a, b) =>
-              a.id.localeCompare(b.id)
+              a.id.localeCompare(b.id),
             )
           }
         }
@@ -433,7 +226,7 @@ onMounted(() => {
             items.value.splice(index, 1)
           }
         }
-      })
+      }),
   )
   if (getPrefs('cloud.enable')) {
     // additional files
@@ -451,13 +244,13 @@ onMounted(() => {
           ) {
             copy(
               additionalFile,
-              join(mPath, date.value, sanitize(basename(additionalFile), true))
+              join(mPath, date.value, sanitize(basename(additionalFile), true)),
             )
           }
         })
         .on('unlink', (additionalFile) => {
           rm(join(mPath, date.value, sanitize(basename(additionalFile), true)))
-        })
+        }),
     )
     // hidden files
     watchers.value?.push(
@@ -468,7 +261,7 @@ onMounted(() => {
         })
         .on('add', (hiddenFile) => {
           rm(join(mPath, date.value, sanitize(basename(hiddenFile), true)))
-        })
+        }),
     )
     // recurring files
     watchers.value?.push(
@@ -488,14 +281,14 @@ onMounted(() => {
             ) {
               copy(
                 recurringFile,
-                join(dateFolder, sanitize(basename(recurringFile), true))
+                join(dateFolder, sanitize(basename(recurringFile), true)),
               )
             }
           })
         })
         .on('unlink', (recurringFile) => {
           rm(findAll(join(mPath, '*', basename(recurringFile))))
-        })
+        }),
     )
   }
 
@@ -509,73 +302,9 @@ onMounted(() => {
           currentIndex.value = -1
           next()
         }
-      }
+      },
     )
   }
-  document.addEventListener('dragover', (event) => {
-    if (event.dataTransfer?.types.includes('Files')) {
-      event.preventDefault()
-      event.stopPropagation()
-      dropping.value = true
-    }
-  })
-  document.addEventListener('dragleave', (event) => {
-    event.preventDefault()
-    event.stopPropagation()
-  })
-  document.addEventListener('drop', async (event) => {
-    if (dropping.value) {
-      try {
-        event.preventDefault()
-        event.stopPropagation()
-        if (event.dataTransfer?.files) {
-          const filesArray = Array.from(event.dataTransfer.files)
-          const jwpubFile = filesArray.find(
-            (item) => extname(item.name) === '.jwpub'
-          )
-          const zipFile = filesArray.find(
-            (item) => extname(item.name) === '.zip'
-          )
-          if (jwpubFile) {
-            droppedFiles.value = [
-              {
-                safeName: '00-00 - ' + sanitize(basename(jwpubFile.name), true),
-                filepath: jwpubFile.path,
-              },
-            ]
-          } else if (zipFile) {
-            const zip = new JSZip()
-            const zipData = await zip.loadAsync(zipFile)
-            const unzippedFiles = []
-            let count = 0
-            for (const entryName in zipData.files) {
-              const entry = zipData.files[entryName]
-              if (entry.dir) continue // Skip directories
-              const unzippedFile = {
-                safeName: '00-00 - ' + sanitize(basename(entry.name), true),
-                objectUrl: URL.createObjectURL(await entry.async('blob')),
-              }
-              unzippedFiles.push(unzippedFile)
-              count++
-              if (count >= 30) break // Limit number of unzipped files for performance reasons
-            }
-            droppedFiles.value = unzippedFiles
-          } else {
-            droppedFiles.value = filesArray.map((item) => {
-              return {
-                safeName: '00-00 - ' + sanitize(basename(item.name), true),
-                filepath: item.path,
-              }
-            })
-          }
-        }
-      } catch (err) {
-        log.error(err)
-      } finally {
-        dropping.value = false
-      }
-    }
-  })
 })
 
 // Media active state
@@ -624,16 +353,6 @@ watch(mediaActive, (val) => {
     useIpcRenderer().send('toggleMediaWindowFocus')
   }
 })
-
-// File prefix
-// const showPrefix = ref(false)
-// provide(showPrefixKey, showPrefix)
-// const togglePrefix = () => {
-//   showPrefix.value = true
-//   setTimeout(() => {
-//     showPrefix.value = false
-//   }, 3 * MS_IN_SEC)
-// }
 
 // Quick song
 const showQuickSong = ref(false)

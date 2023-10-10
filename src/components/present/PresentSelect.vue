@@ -46,7 +46,7 @@ onMounted(() => {
 const validDate = (date: string) => {
   return $dayjs(
     date,
-    getPrefs<DateFormat>('app.outputFolderDateFormat')
+    getPrefs<DateFormat>('app.outputFolderDateFormat'),
   ).isValid()
 }
 
@@ -77,7 +77,7 @@ const getDates = () => {
     .filter(
       (date) =>
         validDate(date) &&
-        findAll(join(mPath, date, '*.!(title|vtt|json)')).length > 0
+        findAll(join(mPath, date, '*.!(title|vtt|json)')).length > 0,
     )
 }
 

@@ -35,14 +35,15 @@
   </div>
 </template>
 <script setup lang="ts">
+import { useRouteQuery } from '@vueuse/router'
 import { useIpcRenderer, useIpcRendererOn } from '@vueuse/electron'
 import type { Participant } from '@zoomus/websdk/embedded'
 import { ZoomPrefs } from '~~/types'
 
-const date = computed(() => useRoute().query.date as string)
+const date = useRouteQuery<string>('date', '')
 useHead({
   title: computed(() =>
-    date.value ? `Present ${date.value}` : 'Presentation Mode'
+    date.value ? `Present ${date.value}` : 'Presentation Mode',
   ),
 })
 
@@ -112,8 +113,8 @@ whenever(coHost, () => useNotifyStore().dismissByMessage('remindNeedCoHost'))
 const participant = ref<Participant | null>(null)
 const participants = computed(() =>
   allParticipants.value.filter(
-    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name')
-  )
+    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name'),
+  ),
 )
 onBeforeUnmount(() => {
   unsetShortcuts('present')
@@ -169,7 +170,7 @@ const initZoomIntegration = async () => {
       getPrefs<number>('app.zoom.autoStartTime'),
       () => {
         if (!zoomStarted.value) startMeeting(zoomSocket())
-      }
+      },
     )
   }
 }

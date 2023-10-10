@@ -103,15 +103,7 @@ defineProps<{
   customSort: boolean
 }>()
 
-const emit = defineEmits([
-  'cc',
-  'previous',
-  'next',
-  'manageMedia',
-  // 'showPrefix',
-  'toggleQuickSong',
-  'resetSort',
-])
+const emit = defineEmits(['cc', 'previous', 'next', 'manageMedia', 'resetSort'])
 
 const { t } = useI18n()
 const mediaActive = inject(mediaActiveKey, ref(false))
@@ -197,13 +189,6 @@ const actions = [
     icon: 'i-mdi:movie-open-edit',
     action: () => {
       emit('manageMedia')
-    },
-  },
-  {
-    title: t('toggleQuickSong'),
-    icon: 'i-mdi:music',
-    action: () => {
-      emit('toggleQuickSong')
     },
   },
   {
