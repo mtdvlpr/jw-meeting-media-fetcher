@@ -33,7 +33,7 @@ const timeToString = (
     hours: number
     minutes: number
     seconds: number
-  } | null
+  } | null,
 ) => {
   if (!time) return null
   return `${time.hours.toString().padStart(2, '0')}:${time.minutes
@@ -68,7 +68,7 @@ watch(value, (val) => {
         v-on="on"
       >
         <template v-if="!locked" #append>
-          <v-icon icon="mdi-clock" style="margin-top: 2px" />
+          <v-icon icon="i-mdi:clock" style="margin-top: 2px" />
         </template>
       </form-input>
     </template>

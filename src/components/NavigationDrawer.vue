@@ -74,7 +74,7 @@
         <v-list-item
           v-if="showMediaPlayback"
           :class="{ 'pulse-danger': !mediaVisible }"
-          :prepend-icon="mediaVisible ? 'i-mdi:tv' : 'i-mdi-tv-off'"
+          :prepend-icon="mediaVisible ? 'i-mdi:tv' : 'i-mdi:tv-off'"
           :title="$t(`mediaWin${mediaVisible ? 'Hide' : 'Show'}`)"
           @click="toggleScreen()"
         >

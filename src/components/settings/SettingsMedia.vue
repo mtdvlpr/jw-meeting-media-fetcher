@@ -118,7 +118,7 @@
             <div id="yeartextContainer" v-html="background" />
           </div>
         </v-col>
-        <v-col cols="auto" align-self="center">
+        <v-col cols="auto" align-self="center" class="d-flex flex-column">
           <v-btn
             v-if="bg === 'yeartext'"
             color="primary"

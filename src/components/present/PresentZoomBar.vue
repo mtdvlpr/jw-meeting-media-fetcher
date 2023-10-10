@@ -24,14 +24,14 @@
               aria-label="save"
               @click="renamePerson(participant, newName)"
             >
-              <v-icon icon="mdi-check-bold" />
+              <v-icon icon="i-mdi:check-bold" />
             </v-btn>
           </v-col>
         </v-row>
       </v-card>
     </v-dialog>
     <v-toolbar id="zoom-app-bar" theme="dark" color="primary" density="compact">
-      <v-app-bar-nav-icon icon="mdi-alpha-z-box" />
+      <v-app-bar-nav-icon icon="i-mdi:alpha-z-box" />
       <v-btn
         icon
         aria-label="Toggle zoom component"
@@ -41,7 +41,7 @@
           {{ $t('zoomToggleComponent') }}
         </v-tooltip>
         <v-icon
-          :icon="`mdi-eye${showZoomComponent ? '' : '-off'}`"
+          :icon="`i-mdi:eye${showZoomComponent ? '' : '-off'}`"
           size="small"
         />
       </v-btn>
@@ -54,7 +54,7 @@
         <v-tooltip activator="parent" location="bottom">
           {{ $t(`zoom${started ? 'Stop' : 'Start'}Meeting`) }}
         </v-tooltip>
-        <v-icon :icon="started ? 'mdi-stop' : 'mdi-play'" />
+        <v-icon :icon="started ? 'i-mdi:stop' : 'i-mdi:play'" />
       </v-btn>
       <v-btn
         icon
@@ -64,7 +64,7 @@
         <v-tooltip activator="parent" location="bottom">
           {{ $t('zoomMuteParticipants') }}
         </v-tooltip>
-        <v-icon icon="mdi-microphone-off" size="small" />
+        <v-icon icon="i-mdi:microphone-off" size="small" />
       </v-btn>
       <v-spacer />
       <form-input
@@ -98,13 +98,13 @@
           <v-list-item-title>{{ item.displayName }}</v-list-item-title>
           <v-list-item-action>
             <v-btn icon @click.stop="atRename(item)">
-              <v-icon icon="mdi-pencil" size="small" />
+              <v-icon icon="i-mdi:pencil" size="small" />
             </v-btn>
           </v-list-item-action>
         </template>
       </form-input>
       <v-btn
-        :icon="spotlightActive ? 'mdi-account-minus' : 'mdi-account-box'"
+        :icon="spotlightActive ? 'i-mdi:account-minus' : 'i-mdi:account-box'"
         size="small"
         :class="{ 'pulse-danger': spotlightActive }"
         :disabled="participants.length == 0"
@@ -123,7 +123,7 @@ const { started, coHost, hostID } = storeToRefs(store)
 onMounted(() => {
   setTimeout(() => {
     const el = document.querySelector<HTMLButtonElement>(
-      '#zoom-app-bar button.v-app-bar__nav-icon'
+      '#zoom-app-bar button.v-app-bar__nav-icon',
     )
 
     if (el) el.disabled = true
@@ -135,13 +135,13 @@ const participantSearch = ref('')
 const participants = ref<Participant[]>([])
 const allParticipants = computed(() => {
   return store.participants.filter(
-    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name')
+    (p) => !p.bHold && p.displayName !== getPrefs<string>('app.zoom.name'),
   )
 })
 const toggleParticipant = (participant: Participant) => {
   if (participants.value.includes(participant)) {
     participants.value = participants.value.filter(
-      (p) => p.userId !== participant.userId
+      (p) => p.userId !== participant.userId,
     )
   } else {
     participants.value.push(participant)

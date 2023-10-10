@@ -23,10 +23,10 @@
         </v-chip>
       </v-slide-group-item>
       <template #prev>
-        <v-btn icon="mdi-chevron-left" variant="text" size="x-small" />
+        <v-btn icon="i-mdi:chevron-left" variant="text" size="x-small" />
       </template>
       <template #next>
-        <v-btn icon="mdi-chevron-right" variant="text" size="x-small" />
+        <v-btn icon="i-mdi:chevron-right" variant="text" size="x-small" />
       </template>
     </v-slide-group>
   </v-col>

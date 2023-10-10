@@ -4,7 +4,7 @@
       <div v-if="node.dir" class="d-flex justify-end" style="width: 100%">
         <v-btn
           variant="text"
-          icon="mdi-folder-arrow-right"
+          icon="i-mdi:folder-arrow-right"
           size="x-small"
           @click="emit('open', node.id)"
         />
@@ -37,7 +37,7 @@ watch(
   () => props.contents,
   () => {
     setTree()
-  }
+  },
 )
 const config = computed(() => {
   return {
@@ -95,7 +95,7 @@ const addToTree = (treeObj: TreeObj, file: CongFile) => {
     open-on-click
   >
     <template #prepend="{ item, open }">
-      <v-icon v-if="item.type === 'file'" icon="mdi-file" />
+      <v-icon v-if="item.type === 'file'" icon="i-mdi:file" />
       <v-icon v-else :icon="open ? faFolderOpen : faFolder" />
     </template>
     <template #append="{ item }">
@@ -104,7 +104,7 @@ const addToTree = (treeObj: TreeObj, file: CongFile) => {
         icon
         @click="emit('open', item.filename)"
       >
-        <v-icon icon="mdi-folder-arrow-right" />
+        <v-icon icon="i-mdi:folder-arrow-right" />
       </v-btn>
     </template>
   </v-treeview>

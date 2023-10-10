@@ -29,7 +29,7 @@
               <v-tooltip activator="parent" location="top">
                 {{ $t('videoTimeReset') }}
               </v-tooltip>
-              <v-icon icon="mdi-rotate-left" />
+              <v-icon icon="i-mdi:rotate-left" />
             </v-btn>
           </form-timestamp>
           <form-timestamp
@@ -43,7 +43,7 @@
                 {{ $t('videoTimeSet') }}
               </v-tooltip>
               <v-icon
-                icon="mdi-checkbox-marked"
+                icon="i-mdi:checkbox-marked"
                 :class="`text-${validStart && validEnd ? 'success' : 'error'}`"
               />
             </v-btn>
@@ -70,7 +70,7 @@
       >
         {{ $t('clickAgain') }}
       </v-tooltip>
-      <v-icon icon="mdi-movie-open" start />
+      <v-icon icon="i-mdi:movie-open" start />
       {{
         (playing || isClipped) && !isShortVideo
           ? `${progress[0] || limits.start}/${limits.end}`
@@ -129,8 +129,9 @@ const id = computed(() => strip('video-' + basename(props.src)))
 const poster = computed(() => (isVideo(props.src) ? VIDEO_ICON : AUDIO_ICON))
 const url = computed(() => {
   return (
-    ((props.stream || thumbnail.value.length > 0) ? props.src : pathToFileURL(props.src).href) +
-    (thumbnail.value ? '' : '#t=5')
+    (props.stream || thumbnail.value.length > 0
+      ? props.src
+      : pathToFileURL(props.src).href) + (thumbnail.value ? '' : '#t=5')
   )
 })
 const thumbnail = computed(() => {
@@ -156,7 +157,7 @@ const initVideoPreview = () => {
         $dayjs
           .duration(videoPreview.value?.duration || 0, 's')
           .asMilliseconds()
-          .toFixed(0)
+          .toFixed(0),
       )
       clipped.value = {
         start: $dayjs
@@ -196,7 +197,7 @@ watch(
         emit('resetClipped')
       }
     }
-  }
+  },
 )
 
 // Track video progress
@@ -220,10 +221,10 @@ watch(
   () => ccEnable.value,
   (val) => {
     if (props.playing) toggleSubtitles(val, false)
-  }
+  },
 )
 const ccIcon = computed(
-  () => `mdi-closed-caption${ccEnable.value ? '' : '-outline'}`
+  () => `i-mdi:closed-caption${ccEnable.value ? '' : '-outline'}`,
 )
 const toggleSubtitles = (enabled: boolean, toggle = false) => {
   ipcRenderer.send('toggleSubtitles', { enabled, toggle })
@@ -239,8 +240,8 @@ const setCCAvailable = async () => {
 // const validEnd = ref(false)
 const duration = computed(() =>
   formatDuration(
-    $dayjs.duration(clippedMs.value.end - clippedMs.value.start, 'ms')
-  )
+    $dayjs.duration(clippedMs.value.end - clippedMs.value.start, 'ms'),
+  ),
 )
 const formatDuration = (duration: Duration) => {
   if (duration.hours() > 0) {
@@ -276,7 +277,7 @@ watch(
       clipped.value = val
       setTime()
     }
-  }
+  },
 )
 const isClipped = computed(() => {
   return !(
@@ -318,7 +319,7 @@ const clippedMs = computed(() => {
           milliseconds: parseInt(clipped.value.start.split('.')[1]),
         })
         .asMilliseconds()
-        .toFixed(0)
+        .toFixed(0),
     ),
     end: parseInt(
       $dayjs
@@ -329,7 +330,7 @@ const clippedMs = computed(() => {
           milliseconds: parseInt(clipped.value.end.split('.')[1]),
         })
         .asMilliseconds()
-        .toFixed(0)
+        .toFixed(0),
     ),
   }
 })

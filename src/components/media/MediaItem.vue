@@ -36,12 +36,12 @@
           {{ titleParts[1] }}
         </span>
         <v-chip v-if="titleParts[2]" color="warning" class="mr-3">
-          <v-icon>mdi-asterisk</v-icon>
+          <v-icon>i-mdi:asterisk</v-icon>
         </v-chip>
         <v-chip
           v-if="titleParts[4]"
           color="song"
-          prepend-icon="mdi-music-note"
+          prepend-icon="i-mdi:music-note"
           :text="titleParts[4]"
           class="mr-3 font-weight-bold text-subtitle-1 number-chip"
           :title="`${translate('song')} ${cleanTitle(titleParts[4])}`"
@@ -51,7 +51,7 @@
           v-if="titleParts[6]"
           color="paragraph"
           :text="titleParts[6]"
-          prepend-icon="mdi-image-text"
+          prepend-icon="i-mdi:image-text"
           class="mr-3 font-weight-bold text-subtitle-1 number-chip"
           :title="`${translate('paragraph')} ${cleanTitle(titleParts[6])}`"
         />
@@ -234,11 +234,11 @@ const titleParts = computed(() => {
   return (props.streamingFile?.safeName || basename(props.src)).split(
     new RegExp(
       `^((?:\\d{1,2}-?){0,3})[ -]*(${translate(
-        'footnote'
+        'footnote',
       )}[ -]*){0,1}(${translate('song')} (\\d+)[ -]*){0,1}(${translate(
-        'paragraph'
-      )} (\\d+)[ -]*){0,1}(.*)(\\.[0-9a-z]+$)`
-    )
+        'paragraph',
+      )} (\\d+)[ -]*){0,1}(.*)(\\.[0-9a-z]+$)`,
+    ),
   )
 })
 
@@ -372,7 +372,7 @@ watch(
       current.value = true
       play()
     }
-  }
+  },
 )
 
 watch(
@@ -381,7 +381,7 @@ watch(
     if (val) {
       stop()
     }
-  }
+  },
 )
 
 watch(
@@ -392,7 +392,7 @@ watch(
       active.value = false
       emit('deactivated')
     }
-  }
+  },
 )
 
 // Get sign language video markers
@@ -426,7 +426,7 @@ const getMarkers = async () => {
           minutes: +duration.format('m'),
           seconds: +duration.format('s'),
           milliseconds: +duration.format('SSS'),
-        })
+        }),
       )
       .subtract(
         $dayjs.duration({
@@ -434,7 +434,7 @@ const getMarkers = async () => {
           minutes: +transition.format('m'),
           seconds: +transition.format('s'),
           milliseconds: +transition.format('SSS'),
-        })
+        }),
       )
       .format('HH:mm:ss.SSS')
   })

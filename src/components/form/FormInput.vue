@@ -109,7 +109,7 @@
       >
         {{ item.title }}
       </v-btn>
-      <v-btn v-if="isLocked(id)" icon="mdi-lock" size="small" disabled />
+      <v-btn v-if="isLocked(id)" icon="i-mdi:lock" size="small" disabled />
     </v-btn-toggle>
     <!-- </v-col> -->
     <!-- <v-col
@@ -198,7 +198,7 @@ const props = withDefaults(
     groupItems: () => [],
     labelSuffix: '',
     field: 'text',
-  }
+  },
 )
 const { t } = useI18n()
 const emit = defineEmits(['update:modelValue'])
@@ -222,7 +222,7 @@ const rules = computed(() => {
       (v: string) =>
         !v ||
         v.length <= props.max ||
-        t<string>('fieldMax').replace('XX', props.max.toString())
+        t<string>('fieldMax').replace('XX', props.max.toString()),
     )
   }
   return rules
@@ -230,7 +230,9 @@ const rules = computed(() => {
 
 // Password
 const passwordVisible = ref(false)
-const passIcon = computed(() => `mdi-eye${passwordVisible.value ? '' : '-off'}`)
+const passIcon = computed(
+  () => `i-mdi:eye${passwordVisible.value ? '' : '-off'}`,
+)
 
 // Slider
 const formattedSlider = computed(() => {

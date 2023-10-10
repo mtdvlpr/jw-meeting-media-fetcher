@@ -39,7 +39,7 @@ const props = withDefaults(
     min: null,
     format: 'YYYY-MM-DD',
     allowedDates: () => true,
-  }
+  },
 )
 
 const { isDark } = useTheme()
@@ -50,7 +50,7 @@ const disabledDates = (date: Date) => !props.allowedDates(date)
 const value = ref(props.modelValue)
 watch(
   () => props.modelValue,
-  (val) => (value.value = val)
+  (val) => (value.value = val),
 )
 watch(value, (val) => {
   if (!val) emit('update:modelValue', null)
@@ -85,7 +85,7 @@ watch(value, (val) => {
         v-on="on"
       >
         <template v-if="!locked" #append>
-          <v-icon icon="mdi-calendar" style="margin-top: 2px" />
+          <v-icon icon="i-mdi:calendar" style="margin-top: 2px" />
         </template>
       </form-input>
     </template>

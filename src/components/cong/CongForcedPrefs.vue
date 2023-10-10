@@ -17,7 +17,7 @@
             v-if="item.value !== null"
             v-model="item.forced"
             hide-details="auto"
-            true-icon="mdi-shield-lock"
+            true-icon="i-mdi:shield-lock"
             @update:model-value="change = true"
           >
             <template #label>
@@ -52,7 +52,7 @@
   </v-dialog>
 </template>
 <script setup lang="ts">
-import { writeJSON } from 'fs-extra';
+import { writeJSON } from 'fs-extra'
 import { join } from 'upath'
 
 const emit = defineEmits(['update:modelValue'])
@@ -169,14 +169,18 @@ const updatePrefs = async () => {
     log.debug('prefs', JSON.stringify(forcedPrefs))
     if (getPrefs('cloud.enable')) {
       try {
-        await writeJSON(join(getPrefs('cloud.path'), 'Settings', 'forcedPrefs.json'), forcedPrefs, { spaces: 2 })
+        await writeJSON(
+          join(getPrefs('cloud.path'), 'Settings', 'forcedPrefs.json'),
+          forcedPrefs,
+          { spaces: 2 },
+        )
       } catch (error) {
         log.error(error)
       }
     } else if (store.client) {
       await store.client.putFileContents(
         join(getPrefs<string>('cong.dir'), 'forcedPrefs.json'),
-        JSON.stringify(forcedPrefs, null, 2)
+        JSON.stringify(forcedPrefs, null, 2),
       )
     }
     await forcePrefs(true)
@@ -184,7 +188,7 @@ const updatePrefs = async () => {
     error(
       'errorForcedSettingsEnforce',
       e,
-      join(getPrefs<string>('cong.dir'), 'forcedPrefs.json')
+      join(getPrefs<string>('cong.dir'), 'forcedPrefs.json'),
     )
   } finally {
     loading.value = false

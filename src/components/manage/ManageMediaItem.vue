@@ -35,7 +35,7 @@
               <template #activator="{ props: attrs }">
                 <v-icon
                   v-bind="attrs"
-                  icon="mdi-calendar-sync"
+                  icon="i-mdi:calendar-sync"
                   class="mx-2"
                   color="secondary"
                 ></v-icon>
@@ -44,7 +44,7 @@
           </template>
           <v-btn
             v-else-if="(item.congSpecific || item.isLocal) && !item.hidden"
-            icon="mdi-form-textbox"
+            icon="i-mdi:form-textbox"
             size="small"
             variant="text"
             aria-label="rename file"
@@ -55,14 +55,14 @@
               <template v-if="!item.isLocal">
                 <v-btn
                   v-if="item.hidden"
-                  icon="mdi-eye-off"
+                  icon="i-mdi:eye-off"
                   size="small"
                   variant="text"
                   @click="unhide(item)"
                 />
                 <v-btn
                   v-else
-                  icon="mdi-eye"
+                  icon="i-mdi:eye"
                   size="small"
                   variant="text"
                   @click="hide(item)"
@@ -71,7 +71,7 @@
               <template v-else>
                 <v-btn
                   color="red-lighten-1"
-                  icon="mdi-delete"
+                  icon="i-mdi:delete"
                   variant="text"
                   size="small"
                   :loading="item.loading"
@@ -92,7 +92,7 @@
               <template #activator="{ props: attrs }">
                 <v-btn
                   color="red-lighten-1"
-                  icon="mdi-delete"
+                  icon="i-mdi:delete"
                   variant="text"
                   :loading="item.loading"
                   v-bind="attrs"
@@ -103,7 +103,7 @@
             <v-btn
               v-else
               color="red-lighten-1"
-              icon="mdi-delete"
+              icon="i-mdi:delete"
               variant="text"
               :loading="item.loading"
               @click="atClick(item)"
@@ -125,7 +125,7 @@
                       : 'warning'
                   "
                   :icon="
-                    'mdi-' +
+                    'i-mdi:' +
                     (item.isLocal === undefined
                       ? 'plus'
                       : item.hidden
@@ -148,7 +148,7 @@
                   : 'warning'
               "
               :icon="
-                'mdi-' +
+                'i-mdi:' +
                 (item.isLocal === undefined
                   ? 'plus'
                   : item.hidden
@@ -211,8 +211,8 @@ const unhide = (item: MeetingFile | LocalFile) => {
     normalize(item.filepath),
     normalize(item.filepath).replace(
       join(getPrefs('cloud.path'), 'Hidden'),
-      normalize(mediaPath()!)
-    )
+      normalize(mediaPath()!),
+    ),
   )
   item.hidden = false
 }
@@ -223,8 +223,8 @@ const hide = (item: MeetingFile | LocalFile) => {
     normalize(item.filepath),
     normalize(item.filepath).replace(
       normalize(mediaPath()!),
-      join(getPrefs('cloud.path'), 'Hidden')
-    )
+      join(getPrefs('cloud.path'), 'Hidden'),
+    ),
   )
   item.hidden = true
 }
@@ -234,8 +234,8 @@ const remove = (item: MeetingFile | LocalFile) => {
   rm(
     normalize(item.filepath).replace(
       normalize(mediaPath()!),
-      join(getPrefs('cloud.path'), 'Additional')
-    )
+      join(getPrefs('cloud.path'), 'Additional'),
+    ),
   )
 }
 
@@ -338,20 +338,20 @@ const typeIcon = (filename: string) => {
   const ext = filename ? extname(filename).toLowerCase() : ''
   switch (ext) {
     case '.pdf':
-      return 'mdi-file-pdf-box'
+      return 'i-mdi:file-pdf-box'
     case '.vtt':
-      return 'mdi-closed-caption'
+      return 'i-mdi:closed-caption'
     case '.json':
     case '.xspf':
-      return 'mdi-file-code'
+      return 'i-mdi:file-code'
     default:
       return isImage(filename)
-        ? 'mdi-image'
+        ? 'i-mdi:image'
         : isVideo(filename)
-        ? 'mdi-movie-open'
+        ? 'i-mdi:movie-open'
         : isAudio(filename)
-        ? 'mdi-headphones'
-        : 'mdi-file-question'
+        ? 'i-mdi:headphones'
+        : 'i-mdi:file-question'
   }
 }
 </script>

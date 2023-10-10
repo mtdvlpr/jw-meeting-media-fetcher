@@ -42,11 +42,11 @@
       :locked="isLocked('app.localAppLang')"
     />
     <v-row>
-      <v-col cols="auto" class="pr-0 text-left">
+      <v-col cols="auto" class="pr-0 mt-1 text-left">
         <v-btn
           id="app.localOutputPathBtn"
           color="primary"
-          style="height: 40px"
+          style="height: 44px"
           :disabled="isLocked('app.localOutputPath')"
           @click="setLocalOutputPath"
         >
@@ -60,16 +60,17 @@
           :label="$t('mediaSaveFolder')"
           readonly
           required
+          hide-details="auto"
           :locked="isLocked('app.localOutputPath')"
         />
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="auto" class="pr-0 text-left">
+      <v-col cols="auto" class="pr-0 mt-1 text-left">
         <v-btn
           id="app.customCachePathBtn"
           color="primary"
-          style="height: 40px"
+          style="height: 44px"
           :disabled="isLocked('app.customCachePath')"
           @click="setCustomCachePath"
         >

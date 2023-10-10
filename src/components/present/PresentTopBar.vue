@@ -3,7 +3,7 @@
     <template #prepend>
       <v-app-bar-nav-icon
         :disabled="navDisabled"
-        icon="mdi-arrow-left"
+        icon="i-mdi:arrow-left"
         @click="clearDate()"
       />
     </template>
@@ -30,7 +30,7 @@
         :disabled="!mediaActive && currentIndex < 1"
         @click="emit('previous')"
       >
-        <v-icon icon="mdi-skip-backward" />
+        <v-icon icon="i-mdi:skip-backward" />
         <v-tooltip activator="parent" location="bottom">
           {{ getPrefs('media.ppBackward') }}
         </v-tooltip>
@@ -45,7 +45,7 @@
         <v-tooltip activator="parent" location="bottom">
           {{ getPrefs('media.ppForward') }}
         </v-tooltip>
-        <v-icon icon="mdi-skip-forward" />
+        <v-icon icon="i-mdi:skip-forward" />
       </v-btn>
     </template>
     <v-progress-circular
@@ -60,7 +60,7 @@
     <v-menu v-else location="bottom">
       <template #activator="{ props }">
         <v-btn
-          icon="mdi-dots-vertical"
+          icon="i-mdi:dots-vertical"
           variant="text"
           v-bind="props"
           aria-label="More actions"
@@ -137,7 +137,7 @@ const globalDownloadProgress = computed(() => {
 const ccAvailable = ref(false)
 const ccEnable = inject(ccEnableKey, ref(false))
 const ccIcon = computed(
-  () => `mdi-closed-caption${ccEnable.value ? '' : '-outline'}`
+  () => `i-mdi:closed-caption${ccEnable.value ? '' : '-outline'}`,
 )
 const setCcAvailable = () => {
   ccAvailable.value = findAll(join(mediaPath(), date.value, '*.vtt')).length > 0
@@ -178,7 +178,7 @@ const openWebsite = () => {
   }
   useIpcRenderer().send(
     'openWebsite',
-    `https://www.jw.org/${getPrefs<string>('app.localAppLang')}/`
+    `https://www.jw.org/${getPrefs<string>('app.localAppLang')}/`,
   )
 }
 const resetSort = () => {
@@ -194,38 +194,38 @@ const resetSort = () => {
 const actions = [
   {
     title: t('manageMedia'),
-    icon: 'mdi-movie-open-edit',
+    icon: 'i-mdi:movie-open-edit',
     action: () => {
       emit('manageMedia')
     },
   },
   {
     title: t('toggleQuickSong'),
-    icon: 'mdi-music',
+    icon: 'i-mdi:music',
     action: () => {
       emit('toggleQuickSong')
     },
   },
   {
     title: t('resetSort'),
-    icon: 'mdi-sort-alphabetical-variant',
+    icon: 'i-mdi:sort-alphabetical-variant',
     divider: true,
     action: resetSort,
   },
   // toggleQuickSong
   {
     title: t('openFolder'),
-    icon: 'mdi-folder-open',
+    icon: 'i-mdi:folder-open',
     action: openFolder,
   },
   // {
   //   title: t('showPrefix'),
-  //   icon: 'mdi-numeric',
+  //   icon: 'i-mdi:numeric',
   //   action: () => emit('showPrefix'),
   // },
   {
     title: t('openJWorg') + ' [BETA]',
-    icon: 'mdi-web',
+    icon: 'i-mdi:web',
     divider: true,
     action: openWebsite,
     disabled: true,

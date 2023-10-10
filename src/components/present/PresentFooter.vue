@@ -3,7 +3,7 @@
     <v-col v-if="scene && zoomScene" cols="auto">
       <v-btn icon variant="text" size="medium" @click="emit('zoomPart')">
         <v-icon
-          :icon="zoomPart ? 'mdi-video-box' : 'mdi-lectern'"
+          :icon="zoomPart ? 'i-mdi:video-box' : 'i-mdi:lectern'"
           :color="zoomPart ? 'success' : undefined"
         />
         <v-tooltip location="top" activator="parent">
@@ -19,7 +19,7 @@
         :loading="obsLoading"
         @click="initOBS()"
       >
-        <v-icon icon="mdi-rotate-right" />
+        <v-icon icon="i-mdi:rotate-right" />
         <v-tooltip location="top" activator="parent">
           {{ $t('obsRefresh') }}
         </v-tooltip>
@@ -104,7 +104,7 @@ const scenes = computed(() => {
         !!s &&
         s !== getPrefs<string>('app.obs.mediaScene') &&
         s !== getPrefs<string>('app.obs.zoomScene') &&
-        s !== getPrefs<string>('app.obs.imageScene')
+        s !== getPrefs<string>('app.obs.imageScene'),
     )
     .map((s, i) => {
       let shortcut = `Alt+${i + 1}`
@@ -148,10 +148,10 @@ const zoomScene = computed(() => {
 
 // Computed width of the buttons
 const showButtons = computed(
-  () => shortScenesLength.value < availableWidth.value
+  () => shortScenesLength.value < availableWidth.value,
 )
 const showShortButtons = computed(
-  () => combinedScenesLength.value > availableWidth.value
+  () => combinedScenesLength.value > availableWidth.value,
 )
 
 const windowSize = inject(windowSizeKey, { width: ref(0), height: ref(0) })

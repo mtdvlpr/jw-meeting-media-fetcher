@@ -1,6 +1,6 @@
 <template>
   <v-col cols="1" class="text-center" align-self="center">
-    <v-icon icon="mdi-sort-numeric-variant" />
+    <v-icon icon="i-mdi:sort-numeric-variant" />
   </v-col>
   <v-col cols="11" class="d-flex" align-self="center">
     <form-input v-model="value" :disabled="loading" hide-details="auto" />
@@ -18,7 +18,7 @@ const value = useVModel(props, 'modelValue', emit)
 <!--<template>
   <v-row align="center" class="my-n4" style="width: 100%">
     <v-col cols="1" class="text-center" align-self="center">
-      <v-icon icon="mdi-sort-numeric-variant" />
+      <v-icon icon="i-mdi:sort-numeric-variant" />
     </v-col>
     <v-col cols="11" class="d-flex">
       <v-col cols="4">
