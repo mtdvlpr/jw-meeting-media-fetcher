@@ -441,21 +441,6 @@ const getMarkers = async () => {
   markers.value = markerArray
 }
 
-// Show prefix
-// const showPrefix = inject(showPrefixKey, ref(false))
-// watch(showPrefix, (val) => {
-//   const prefix = document.querySelector<HTMLSpanElement>(
-//     `#${id.value} .sort-prefix`
-//   )
-//   if (prefix) {
-//     if (val) {
-//       prefix.style.display = 'inline'
-//     } else {
-//       prefix.style.display = 'none'
-//     }
-//   }
-// })
-
 // Zoom and pan image
 const panzoom = ref<PanzoomObject | null>(null)
 const imgPreview: { value: HTMLElement | null } = ref(null)
@@ -533,29 +518,28 @@ const resetZoom = () => {
     }
   }
 
-  .v-list-item {
-    border-left: 8px solid transparent;
-    transition: border-left 0.5s;
-    &:hover {
-      cursor: default;
-    }
+  border-left: 8px solid transparent;
+  transition: border-left 0.5s;
+  &:hover {
+    cursor: default;
+  }
 
-    &.media-played {
-      border-left: 8px solid rgba(55, 90, 127, 0.75) !important;
-    }
-    &.current-media-item {
-      border-left: 8px solid orange !important;
-    }
+  &.media-played {
+    border-left: 8px solid rgba(55, 90, 127, 0.75) !important;
+  }
+  &.current-media-item {
+    border-left: 8px solid orange !important;
+  }
 
-    .media-title {
-      font-size: 1rem !important;
-      .clamp-lines {
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-      }
+  .media-title {
+    font-size: 1rem !important;
+    .clamp-lines {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
     }
   }
+
   .video-progress {
     position: absolute;
     bottom: 0;
