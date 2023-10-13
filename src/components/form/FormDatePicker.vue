@@ -11,8 +11,8 @@
     :dark="isDark"
     :disabled="locked"
     :required="required"
+    teleport
     teleport-center
-    :teleport="true"
     :state="required && !value ? false : undefined"
     :clearable="!required"
     :select-text="$t('confirm')"
@@ -40,7 +40,9 @@ const props = withDefaults(
     allowedDates: () => true,
   },
 )
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', modelValue: string | null): void
+}>()
 const { isDark } = useTheme()
 const { localeProperties } = useI18n()
 const { $getWeekStart } = useNuxtApp()

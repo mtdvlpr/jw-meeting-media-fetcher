@@ -8,7 +8,7 @@
     rounded
     color="bg"
     vertical
-    :model-value="true"
+    model-value
     min-width="350px"
     width="30%"
     :timeout="m.persistent ? -1 : 10000"

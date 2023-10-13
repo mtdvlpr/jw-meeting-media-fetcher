@@ -76,7 +76,10 @@ const props = defineProps<{
   max: string
 }>()
 
-const emit = defineEmits(['update:modelValue', 'valid'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', modelValue: string): void
+  (e: 'valid', valid: boolean): void
+}>()
 
 watch(
   () => props.modelValue,

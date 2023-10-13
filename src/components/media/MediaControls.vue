@@ -372,7 +372,7 @@ const customSort = ref(false)
 const customSortOrder = ref()
 const setIndex = (index: number) => {
   const previousItem = items.value[currentIndex.value]
-  if (previousItem && currentIndex.value !== index) {
+  if (currentIndex.value !== index) {
     previousItem.deactivate = true
   }
   currentIndex.value = index

@@ -59,7 +59,7 @@ import { ObsPrefs } from '~~/types'
 defineProps<{
   participant: Participant | null
 }>()
-const emit = defineEmits(['zoomPart'])
+const emit = defineEmits<{ (e: 'zoomPart'): void }>()
 const obsStore = useObsStore()
 onMounted(() => {
   if (obsEnabled.value) {
@@ -127,10 +127,9 @@ const scenes = computed(() => {
 useIpcRendererOn('setObsScene', (_e, key: number) => {
   log.debug('Set obs scene via shortcut', key)
   const index = key === 0 ? 9 : key - 1
+  if (index + 1 > scenes.value.length) return
   const s = scenes.value[index]
-  if (s) {
-    scene.value = s.value
-  }
+  scene.value = s.value
 })
 const obsEnabled = computed(() => {
   const { enable, port, password } = getPrefs<ObsPrefs>('app.obs')

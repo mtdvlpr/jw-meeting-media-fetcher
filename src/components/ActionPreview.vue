@@ -1,6 +1,6 @@
 <!-- A preview overlay of an automatic action that is about to happen (e.g. auto fetch media or auto quit app) -->
 <template>
-  <v-dialog :model-value="true" fullscreen>
+  <v-dialog model-value fullscreen>
     <v-sheet>
       <v-container class="d-flex flex-column justify-center fill-height">
         <h1 class="mb-6 text-center">{{ $t(text) }}</h1>
@@ -17,7 +17,10 @@ defineProps<{
   icon: string
 }>()
 
-const emit = defineEmits(['abort', 'perform'])
+const emit = defineEmits<{
+  (e: 'abort'): void
+  (e: 'perform'): void
+}>()
 const timer = ref(5)
 onMounted(() => {
   setInterval(() => {

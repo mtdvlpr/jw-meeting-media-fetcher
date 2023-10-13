@@ -116,7 +116,6 @@ import { ipcRenderer } from 'electron'
 
 import { readFile, stat, writeJSON } from 'fs-extra'
 import { basename, changeExt, extname, join } from 'upath'
-import type { Database } from '@stephen/sql.js'
 import {
   LocalFile,
   MeetingFile,
@@ -130,7 +129,10 @@ const props = defineProps<{
   uploadMedia?: Boolean
   media: (MeetingFile | LocalFile)[]
 }>()
-const emit = defineEmits(['refresh', 'cancel'])
+const emit = defineEmits<{
+  (e: 'refresh'): void
+  (e: 'cancel'): void
+}>()
 // File prefix
 const prefix = ref('')
 const { t } = useI18n()
@@ -223,7 +225,7 @@ const processPlaylist = async (filePath: string) => {
   // Get correct extension
   media
     .map((m) => {
-      if (!extname(m.Label ?? '')) {
+      if (!extname(m.Label || '')) {
         if (extname(m.FilePath ?? '')) {
           m.Label += extname(m.FilePath!)
         } else if (m.MimeType) {

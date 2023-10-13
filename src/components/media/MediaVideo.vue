@@ -72,7 +72,7 @@
         v-if="clickedOnce"
         activator="parent"
         location="right"
-        :model-value="true"
+        model-value
         @update:model-value="() => {}"
       >
         {{ $t('clickAgain') }}

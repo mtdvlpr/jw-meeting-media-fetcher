@@ -21,7 +21,7 @@ const props = defineProps<{
   video?: boolean
 }>()
 
-const emit = defineEmits(['click'])
+const emit = defineEmits<{ (e: 'click'): void }>()
 
 const pauseIcon = computed(() => (props.toggled ? 'i-mdi:play' : 'i-mdi:pause'))
 const pauseImageIcon = computed(

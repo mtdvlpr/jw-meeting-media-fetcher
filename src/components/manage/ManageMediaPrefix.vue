@@ -11,7 +11,9 @@ const props = defineProps<{
   modelValue: string
   loading?: boolean
 }>()
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{
+  (e: 'update:modelValue', modelValue: string): void
+}>()
 const value = useVModel(props, 'modelValue', emit)
 </script>
 <!--<template>

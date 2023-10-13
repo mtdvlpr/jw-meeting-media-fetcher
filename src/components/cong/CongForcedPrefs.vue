@@ -55,10 +55,10 @@
 import { writeJSON } from 'fs-extra'
 import { join } from 'upath'
 
-const props = defineProps<{
-  modelValue: boolean
+const props = defineProps<{ modelValue: boolean }>()
+const emit = defineEmits<{
+  (e: 'update:modelValue', modelValue: any): boolean
 }>()
-const emit = defineEmits(['update:modelValue'])
 const active = useVModel(props, 'modelValue', emit)
 
 const flattenObject = (ob: any) => {

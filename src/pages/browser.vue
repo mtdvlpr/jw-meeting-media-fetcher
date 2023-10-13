@@ -143,7 +143,7 @@ const initWebsite = (iframe: HTMLIFrameElement) => {
 
   useIpcRendererOn('moveMouse', (_e, pos: Point) => {
     const win = iframe.contentWindow
-    const pointer = document.querySelector('.pointer')!
+    const pointer = document.querySelector<HTMLElement>('.pointer')
     if (win && pointer) {
       pointer.style.left = `${
         pos.x * getWinWidth(win) - getElWidth(pointer) / 2
@@ -171,9 +171,9 @@ const initWebsite = (iframe: HTMLIFrameElement) => {
       } else if (className && text) {
         const selector = `${tag}.${className.trim().replaceAll(/\s+/g, '.')}`
         el =
-          (Array.from(doc.querySelectorAll(selector)).find(
+          Array.from(doc.querySelectorAll<HTMLElement>(selector)).find(
             (e) => e.textContent === text,
-          ) as HTMLElement) ?? null
+          ) ?? null
       } else if (src) {
         el = doc.querySelector(`${tag}[src="${src}"]`)
       } else if (alt) {

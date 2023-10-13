@@ -30,6 +30,10 @@ const props = defineProps<{
   description: string
   modelValue: boolean
 }>()
-const emit = defineEmits(['confirm', 'cancel', 'update:modelValue'])
+const emit = defineEmits<{
+  (e: 'confirm'): void
+  (e: 'cancel'): void
+  (e: 'update:modelValue', modelValue: boolean): void
+}>()
 const active = useVModel(props, 'modelValue', emit)
 </script>

@@ -21,8 +21,8 @@ export default function <
   const { t } = useNuxtApp().$i18n
   const computedLabel = computed(() => {
     const value = subKey
-      ? (unref(ref)[key] as S)[subKey] ?? fallback
-      : unref(ref)[key] ?? fallback
+      ? (unref(ref)[key] as S)[subKey] || fallback
+      : unref(ref)[key] || fallback
     return t(label).replace('<span>XX</span>', value.toString())
   })
 

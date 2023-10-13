@@ -25,7 +25,7 @@ interface Pos {
 function onMove() {
   if (!getMediaWin()) return
   const screenInfo = getScreenInfo()
-  if (screenInfo.winMidpoints && screenInfo.otherScreens.length > 0) {
+  if (screenInfo.otherScreens.length > 0) {
     const mainWinSameAsMedia = Object.entries(screenInfo.winMidpoints)
       .map((item) => screen.getDisplayNearestPoint(item[1]))
       .every((val, _i, arr) => val.id === arr[0].id)

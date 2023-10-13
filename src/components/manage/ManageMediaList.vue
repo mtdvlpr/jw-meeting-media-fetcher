@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-if="edit"
-    :model-value="true"
+    model-value
     max-width="700px"
     @click:outside="edit = null"
   >
@@ -60,7 +60,7 @@ const props = defineProps<{
   // showPrefix?: boolean
   showInput?: boolean
 }>()
-const emit = defineEmits(['refresh'])
+const emit = defineEmits<{ (e: 'refresh'): void }>()
 onMounted(() => {
   setMediaList()
 })
@@ -82,8 +82,8 @@ watch(
 const mediaList = ref<(MeetingFile | LocalFile)[]>([])
 const setMediaList = () => {
   // If new files are being uploaded, add them to the list
-  if (props.newFile || (props.newFiles && props.newFiles.length > 0)) {
-    const media = [...(props.newFiles ?? []), ...(props.media ?? [])]
+  if (props.newFile || props.newFiles.length > 0) {
+    const media = [...props.newFiles, ...props.media]
     if (props.newFile) {
       media.push(props.newFile)
     }
@@ -108,7 +108,7 @@ const setMediaList = () => {
       })
   } else {
     mediaList.value = [
-      ...(props.media ?? []).map((m) => {
+      ...props.media.map((m) => {
         m.color = 'warning'
         return m
       }),
@@ -170,7 +170,7 @@ const saveNewName = async () => {
 const atClick = (item: MeetingFile | LocalFile) => {
   if (item.isLocal !== undefined) {
     item.loading = true
-  } else if (item.isLocal === undefined) {
+  } else {
     item.ignored = !item.ignored
   }
 }

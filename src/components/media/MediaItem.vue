@@ -163,7 +163,7 @@ const props = defineProps<{
   deactivate?: boolean
   streamingFile?: VideoFile
 }>()
-const emit = defineEmits(['playing', 'deactivated'])
+const emit = defineEmits<{ (e: 'playing'): void; (e: 'deactivated'): void }>()
 onMounted(() => {
   // Sign language markers
   getMarkers()
@@ -299,7 +299,7 @@ const togglePaused = () => {
     enableMediaScene()
   } else if (scene.value) {
     const zoomScene = getPrefs<string>('app.obs.zoomScene')
-    setScene(zoomPart.value ? zoomScene ?? scene.value : scene.value)
+    setScene(zoomPart.value ? zoomScene || scene.value : scene.value)
   }
 
   if (isLongVideo.value) {

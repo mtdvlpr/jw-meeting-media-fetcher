@@ -21,7 +21,7 @@ import { VideoFile } from '~~/types'
 const props = defineProps<{
   modelValue: any
 }>()
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{ (e: 'update:modelValue', modelValue: any): void }>()
 const value = useVModel(props, 'modelValue', emit)
 const loading = ref(true)
 const songs = ref<VideoFile[]>([])

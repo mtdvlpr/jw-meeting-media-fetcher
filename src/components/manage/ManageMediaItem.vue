@@ -279,7 +279,7 @@ const { atClick, clickedOnce } = useClickTwice(() => {
     (props.item.isLocal || props.item.congSpecific)
   ) {
     emit('remove')
-  } else if (props.item.isLocal !== undefined) {
+  } else {
     toggleVisibility(props.item)
   }
 })

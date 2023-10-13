@@ -15,10 +15,8 @@
   />
 </template>
 <script setup lang="ts">
-const props = defineProps<{
-  modelValue: any
-}>()
-const emit = defineEmits(['update:modelValue'])
+const props = defineProps<{ modelValue: any }>()
+const emit = defineEmits<{ (e: 'update:modelValue', modelValue: any): void }>()
 const loading = ref(true)
 const value = useVModel(props, 'modelValue', emit)
 const publications = ref()

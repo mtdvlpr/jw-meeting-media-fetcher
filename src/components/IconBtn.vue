@@ -50,7 +50,7 @@ const props = withDefaults(
 )
 
 // Emit click event
-const emit = defineEmits(['click'])
+const emit = defineEmits<{ (e: 'click'): void }>()
 const atClick = () => {
   if (props.clickTwice) {
     atFirstClick()

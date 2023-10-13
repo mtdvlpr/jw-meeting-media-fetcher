@@ -424,7 +424,6 @@ const formats = dateFormats.map((f) => {
 watch(
   () => app.value.outputFolderDateFormat,
   (val, oldVal) => {
-    if (!val || !oldVal) return
     const mPath = mediaPath()
     if (mPath) {
       renameAll(mPath, oldVal, val, 'rename', 'date')
@@ -440,7 +439,6 @@ watch(
 watch(
   () => app.value.betaUpdates,
   (val) => {
-    if (val === null || val === undefined) return
     ipcRenderer.send('toggleBetaUpdates', val)
   },
 )

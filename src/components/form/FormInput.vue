@@ -200,7 +200,7 @@ const props = withDefaults(
     field: 'text',
   },
 )
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{ (e: 'update:modelValue', modelValue: any): void }>()
 const { t } = useI18n()
 const value = useVModel(props, 'modelValue', emit)
 const safeId = computed(() => (props.id ? strip(props.id) : undefined))
@@ -208,7 +208,7 @@ const hasSlot = (name = 'default') => !!useSlots()[name]
 
 // Rules
 const rules = computed(() => {
-  const rules = (useAttrs().rules as any[]) ?? []
+  const rules = (useAttrs().rules as any[] | undefined) ?? []
   if (props.required) {
     rules.unshift((v: unknown) => {
       if (typeof v === 'string') {

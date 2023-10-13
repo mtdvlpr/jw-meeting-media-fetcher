@@ -9,8 +9,8 @@
     :select-text="$t('confirm')"
     :cancel-text="$t('cancel')"
     time-picker
+    teleport
     teleport-center
-    :teleport="true"
     minutes-increment="5"
   />
 </template>
@@ -20,7 +20,7 @@ const props = defineProps<{
   locked?: boolean
   required?: boolean
 }>()
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits<{ (e: 'update:modelValue', modelValue: any): void }>()
 const { isDark } = useTheme()
 const stringToTime = (str: string | null) => {
   if (!str) return null

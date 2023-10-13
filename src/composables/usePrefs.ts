@@ -5,12 +5,11 @@ import {
   MeetingPrefs,
   PrefStore,
 } from '~~/types'
-import { PREFS } from '~/constants/prefs'
 
 export default function <
   T extends AppPrefs | CongPrefs | MediaPrefs | MeetingPrefs,
 >(scope: keyof PrefStore, emit: { (e: 'refresh', val: T): void }) {
-  const prefs = ref<T>(getPrefs<T>(scope) ?? PREFS[scope]) as Ref<T>
+  const prefs = ref<T>(getPrefs<T>(scope)) as Ref<T>
   watch(
     prefs,
     (val) => {

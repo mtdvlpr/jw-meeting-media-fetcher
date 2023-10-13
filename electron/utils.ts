@@ -10,33 +10,27 @@ export function getScreenInfo(): ScreenInfo {
   let displays: Screen[] = []
   const winMidpoints: { main?: Point; media?: Point } = {}
   const winCoordinates: { main?: Point; media?: Point } = {}
-  if (win) {
-    try {
-      let posSize = win.getPosition().concat(win.getSize())
-      winMidpoints.main = {
+  try {
+    let posSize = win.getPosition().concat(win.getSize())
+    winMidpoints.main = {
+      x: posSize[0] + posSize[2] / 2,
+      y: posSize[1] + posSize[3] / 2,
+    }
+    if (mediaWin) {
+      posSize = mediaWin.getPosition().concat(win.getSize())
+      winMidpoints.media = {
         x: posSize[0] + posSize[2] / 2,
         y: posSize[1] + posSize[3] / 2,
       }
-      if (mediaWin) {
-        posSize = mediaWin.getPosition().concat(win.getSize())
-        winMidpoints.media = {
-          x: posSize[0] + posSize[2] / 2,
-          y: posSize[1] + posSize[3] / 2,
-        }
-      }
-      displays = screen.getAllDisplays().map((display, i) => {
-        return {
-          ...display,
-          humanFriendlyNumber: i + 1,
-        }
-      })
-    } catch (err) {
-      win?.webContents.send('notifyUser', [
-        'errorUnknown',
-        { type: 'error' },
-        err,
-      ])
     }
+    displays = screen.getAllDisplays().map((display, i) => {
+      return {
+        ...display,
+        humanFriendlyNumber: i + 1,
+      }
+    })
+  } catch (err) {
+    win.webContents.send('notifyUser', ['errorUnknown', { type: 'error' }, err])
   }
   return {
     displays,
@@ -44,8 +38,7 @@ export function getScreenInfo(): ScreenInfo {
     winCoordinates,
     otherScreens: displays.filter(
       (display) =>
-        display.id !==
-        screen.getDisplayNearestPoint(winMidpoints.main as Point).id,
+        display.id !== screen.getDisplayNearestPoint(winMidpoints.main!).id,
     ),
   }
 }
