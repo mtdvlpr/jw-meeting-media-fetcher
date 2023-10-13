@@ -32,7 +32,7 @@ export interface MultiMediaItem {
   SizeConstraint?: number | null
   SuppressZoom?: number
   tableQuestionIsUsed?: boolean
-  TargetParagraphNumberLabel: number
+  TargetParagraphNumberLabel: number | null
   Track?: number | null
   Width?: number | null
 }

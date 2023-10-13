@@ -2,13 +2,12 @@
   <manage-media
     :media="media"
     :loading="loading"
-    :upload-media="true"
+    upload-media
     @refresh="getExistingMedia()"
     @cancel="useRouter().back()"
   />
 </template>
 <script setup lang="ts">
-// eslint-disable-next-line import/named
 import { existsSync, readdirSync } from 'fs-extra'
 import { extname, join } from 'upath'
 import { DateFormat, LocalFile, MeetingFile } from '~~/types'
@@ -79,7 +78,7 @@ const getMeetingData = async () => {
 const media = ref<(MeetingFile | LocalFile)[]>([])
 const getExistingMedia = () => {
   try {
-    if (useCongStore().client && online) {
+    if (useCongStore().client && online.value) {
       const day = $dayjs(
         date.value,
         getPrefs<DateFormat>('app.outputFolderDateFormat'),

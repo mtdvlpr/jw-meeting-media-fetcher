@@ -10,6 +10,7 @@
   </v-container>
 </template>
 <script setup lang="ts">
+// eslint-disable-next-line vue/define-props-declaration
 const props = defineProps({ error: { type: Object, required: true } })
 const pageNotFound = '404 Not Found'
 const otherError = 'An unexpected error occurred'

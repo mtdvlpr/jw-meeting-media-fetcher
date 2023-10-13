@@ -114,7 +114,7 @@ async function extractMediaItems({
       lang:
         extract.Lang === mediaLang
           ? fallbackLang
-          : extract.Lang ?? fallbackLang,
+          : extract.Lang || fallbackLang,
       date,
     })
   }

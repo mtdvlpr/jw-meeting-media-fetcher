@@ -18,6 +18,7 @@ const logs: Logs = {
 
 function logger(type: keyof Logs, args: [msg: any, ...args: any[]]): void {
   const now = +new Date()
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!logs[type][now]) logs[type][now] = []
   logs[type][now].push(
     typeof args[0] === 'string'

@@ -26,10 +26,8 @@ test.afterAll(async () => {
     return
   }
 
-  if (page) {
-    await page.locator('[aria-label="home"]').click()
-  }
-  if (electronApp) await electronApp.close()
+  await page.locator('[aria-label="home"]').click()
+  await electronApp.close()
 })
 
 test('render the presentation mode page correctly', async () => {

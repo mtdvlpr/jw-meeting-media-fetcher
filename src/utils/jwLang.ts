@@ -67,7 +67,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
     mediaLang &&
     langPrefInLangs &&
     (langPrefInLangs.mwbAvailable === undefined ||
-      langPrefInLangs.mwbAvailable === undefined)
+      langPrefInLangs.wAvailable === undefined)
   ) {
     const availability = await getPubAvailability(mediaLang, langs)
     langPrefInLangs.wAvailable = availability.w
@@ -79,7 +79,7 @@ export async function getJWLangs(forceReload = false): Promise<ShortJWLang[]> {
     fallbackLang &&
     fallbackLangObj &&
     (fallbackLangObj.mwbAvailable === undefined ||
-      fallbackLangObj.mwbAvailable === undefined)
+      fallbackLangObj.wAvailable === undefined)
   ) {
     const availability = await getPubAvailability(fallbackLang, langs)
     fallbackLangObj.wAvailable = availability.w
@@ -153,6 +153,7 @@ export async function getPubAvailability(
     const wResult = result[1]
 
     if (mwbResult.status === 'fulfilled') {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (mwbResult.value.choices) {
         mwb = mwbResult.value.choices.some(
           (c: Choice) => c.optionValue === new Date().getFullYear(),
@@ -162,6 +163,7 @@ export async function getPubAvailability(
       }
     }
     if (wResult.status === 'fulfilled') {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (wResult.value.choices) {
         w = wResult.value.choices.some((c: Choice) => c.optionValue === 'w')
       } else {

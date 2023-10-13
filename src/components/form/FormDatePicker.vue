@@ -54,6 +54,7 @@ watch(
   (val) => (value.value = val),
 )
 watch(value, (val) => {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!val) emit('update:modelValue', null)
   emit('update:modelValue', useNuxtApp().$dayjs(val).format('YYYY-MM-DD'))
 })

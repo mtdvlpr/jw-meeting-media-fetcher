@@ -125,7 +125,7 @@ const forcible = ref([
     return {
       key,
       value: getPrefs(key),
-      forced: forced.value && forced.value[key] !== undefined,
+      forced: forced.value[key] !== undefined,
       description: getDescription(key),
     }
   }),

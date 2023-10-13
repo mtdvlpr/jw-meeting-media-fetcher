@@ -144,7 +144,8 @@ export async function getWeMedia(date: string) {
         )
         .filter((v) => {
           return (
-            !excludeFootnotes || v.TargetParagraphNumberLabel < FOOTNOTE_TAR_PAR
+            !excludeFootnotes ||
+            v.TargetParagraphNumberLabel! < FOOTNOTE_TAR_PAR
           )
         }),
     )
@@ -260,7 +261,7 @@ async function addSongToPart(
     lang: fallbackLang ? mediaLang : songLangs[i],
   })
 
-  if (fallbackLang && (!songMedia || songMedia.length === 0)) {
+  if (fallbackLang && songMedia.length === 0) {
     songMedia = await getMediaLinks({
       pubSymbol: song.KeySymbol ?? '',
       track: song.Track ?? 0,
@@ -271,7 +272,7 @@ async function addSongToPart(
   if (songMedia.length > 0) {
     const songObj = songMedia[0]
     songObj.queryInfo = song
-    await addMediaItemToPart(date, 2 * i, songObj)
+    addMediaItemToPart(date, 2 * i, songObj)
   } else {
     error('errorGetWeMedia', new Error('No WE songs found!'))
   }

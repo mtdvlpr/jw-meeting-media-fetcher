@@ -5,7 +5,7 @@ import { pathExists } from 'fs-extra'
 import { join } from 'upath'
 import { JW_ICONS_FONT } from '~/constants/general'
 
-const intervals: Record<string, NodeJS.Timer> = {}
+const intervals: Record<string, NodeJS.Timeout> = {}
 
 export const cloneDeep = _cloneDeep
 
@@ -55,11 +55,12 @@ export function executeBeforeMeeting(
   mins: number,
   action: () => void,
 ) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!intervals[name]) {
     const day = isMeetingDay()
     if (!day) return
-    const startTime = getPrefs<string>(`meeting.${day}StartTime`)
-    const meetingStarts = startTime.split(':') ?? ['0', '0']
+    const startTime = getPrefs<string | null>(`meeting.${day}StartTime`)
+    const meetingStarts = startTime?.split(':') ?? ['0', '0']
     const { $dayjs } = useNuxtApp()
     const timeToStop = $dayjs()
       .hour(+meetingStarts[0])

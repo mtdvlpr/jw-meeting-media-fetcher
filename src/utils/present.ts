@@ -19,7 +19,7 @@ export async function setShortcut({ key, fn, scope }: Shortcut) {
     const match = shortcuts.find((s) => s.key === key)
     if (match) {
       res = match.scope === scope && match.fn === fn
-    } else if (key && fn && scope) {
+    } else if (key) {
       store.addShortcut({ key, scope, fn })
       res = await ipcRenderer.invoke('registerShortcut', {
         key,

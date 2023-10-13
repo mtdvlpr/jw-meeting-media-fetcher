@@ -8,6 +8,7 @@ export function executeQuery<T extends Record<string, any>>(
 ) {
   const result = db.exec(query)[0]
   const results: T[] = []
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (result) {
     for (let v = 0; v < result.values.length; v++) {
       results[v] = {} as T
@@ -71,6 +72,7 @@ export async function getDbFromJWPUB({
         })
       )[0]
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!jwpub) {
         log.debug(`No JWPUB file found for ${pub} ${issue}`)
         return null

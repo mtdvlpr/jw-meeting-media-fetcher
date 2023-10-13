@@ -47,7 +47,7 @@ export function initMediaWinListeners() {
       } | null,
     ) => {
       mediaWin?.webContents.send('showMedia', media)
-      getMainWindow()?.webContents.send('showingMedia', [
+      getMainWindow().webContents.send('showingMedia', [
         !!media,
         !!media?.start,
       ])
@@ -67,7 +67,7 @@ export function initMediaWinListeners() {
   ipcMain.removeAllListeners('hideMedia')
   ipcMain.on('hideMedia', () => {
     mediaWin?.webContents.send('hideMedia')
-    getMainWindow()?.webContents.send('showingMedia', false)
+    getMainWindow().webContents.send('showingMedia', false)
   })
 
   ipcMain.removeAllListeners('pauseVideo')
@@ -150,11 +150,11 @@ async function initMediaWindow(mediaWinOptions: {
       x:
         (screenInfo.displays.find(
           (display) => display.id === mediaWinOptions.destination,
-        )?.bounds?.x ?? 0) + STARTING_POSITION,
+        )?.bounds.x ?? 0) + STARTING_POSITION,
       y:
         (screenInfo.displays.find(
           (display) => display.id === mediaWinOptions.destination,
-        )?.bounds?.y ?? 0) + STARTING_POSITION,
+        )?.bounds.y ?? 0) + STARTING_POSITION,
     }
 
     mediaWinHandler = createMediaWindow(windowOptions)
@@ -214,7 +214,7 @@ function createMediaWindow(windowOpts: BrowserWindowConstructorOptions) {
     ...windowOpts,
   })
 
-  const win = winHandler.browserWindow as BrowserWindow
+  const win = winHandler.browserWindow!
   win.setAspectRatio(AR_WIDTH / AR_HEIGHT)
   if (platform() !== 'darwin') {
     win.setAlwaysOnTop(true, 'screen-saver')
@@ -257,11 +257,11 @@ function setMediaWindowPosition(
         x:
           (screenInfo.displays.find(
             (display) => display.id === mediaWinOptions.destination,
-          )?.bounds?.x ?? 0) + STARTING_POSITION,
+          )?.bounds.x ?? 0) + STARTING_POSITION,
         y:
           (screenInfo.displays.find(
             (display) => display.id === mediaWinOptions.destination,
-          )?.bounds?.y ?? 0) + STARTING_POSITION,
+          )?.bounds.y ?? 0) + STARTING_POSITION,
         ...(mediaWinOptions.type === 'window' && { width: 1280 }),
         ...(mediaWinOptions.type === 'window' && { height: 720 }),
       })

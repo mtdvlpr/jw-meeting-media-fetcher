@@ -7,7 +7,7 @@ export interface PanzoomChangeEvent {
 
 export declare global {
   interface Window {
-    sockets: WebSocket[]
+    sockets?: WebSocket[]
   }
 
   interface HTMLElementEventMap {

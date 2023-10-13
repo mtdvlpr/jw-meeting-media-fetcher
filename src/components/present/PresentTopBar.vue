@@ -99,7 +99,13 @@ defineProps<{
   currentIndex: number
   customSort: boolean
 }>()
-const emit = defineEmits(['cc', 'previous', 'next', 'manageMedia', 'resetSort'])
+const emit = defineEmits<{
+  (e: 'cc'): void
+  (e: 'previous'): void
+  (e: 'next'): void
+  (e: 'manageMedia'): void
+  (e: 'resetSort'): void
+}>()
 const { $dayjs } = useNuxtApp()
 $dayjs.extend(LocalizedFormat)
 

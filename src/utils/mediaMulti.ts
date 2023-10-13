@@ -191,6 +191,7 @@ async function processMultiMediaItem(
         )
       )[0]
 
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!json && fallbackLang) {
         json = (
           await getMediaLinks(
@@ -204,6 +205,7 @@ async function processMultiMediaItem(
             silent,
           )
         )[0]
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       } else if (!json) {
         json = <VideoFile>{}
       }

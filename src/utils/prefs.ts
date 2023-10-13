@@ -496,9 +496,11 @@ export function migrate2290(key: string, newVal: any) {
       .replace('serverPass', 'password')
       .replace('serverPort', 'port')
       .replace('serverUser', 'user') as keyof CongPrefs
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   } else if (PREFS.media[key as keyof MediaPrefs] !== undefined) {
     root = 'media'
     isMediaPref = true
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   } else if (PREFS.meeting[key as keyof MeetingPrefs] !== undefined) {
     root = 'meeting'
     isMeetingPref = true
@@ -532,6 +534,7 @@ export function migrate2290(key: string, newVal: any) {
 
   // Validate enums
   const match = ENUMS[key as keyof typeof ENUMS]
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (match && !match.includes(newVal)) {
     setDefaultValue()
   }
@@ -648,6 +651,7 @@ export function getPrefs<T = unknown>(key: string) {
 }
 
 export function getAllPrefs() {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return store ? (readJsonSync(store.path) as PrefStore) : PREFS
 }
 

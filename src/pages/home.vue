@@ -390,10 +390,10 @@ const syncCongServerMedia = async () => {
   }
 }
 
-const syncLocalRecurring = () => {
+const syncLocalRecurring = async () => {
   try {
     recurringColor.value = 'warning'
-    if (!congSync && existsSync(join(mediaPath(), 'Recurring'))) {
+    if (!congSync.value && existsSync(join(mediaPath(), 'Recurring'))) {
       syncLocalRecurringMedia(baseDate.value)
     }
     recurringColor.value = 'success'

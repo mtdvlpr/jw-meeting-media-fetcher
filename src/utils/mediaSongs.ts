@@ -116,9 +116,9 @@ export async function shuffleMusic(stop = false, immediately = false) {
 
         if (day && !getPrefs<boolean>('meeting.specialCong')) {
           // Set stop time depending on mw or we day
-          const meetingStarts = getPrefs<string>(
+          const meetingStarts = getPrefs<string | null>(
             `meeting.${day}StartTime`,
-          ).split(':') ?? ['0', '0']
+          )?.split(':') ?? ['0', '0']
 
           const timeToStop = now
             .hour(+meetingStarts[0])
@@ -259,7 +259,9 @@ async function createAudioElement(
       await downloadIfRequired({ file: songs[index] as VideoFile }),
     ).href
   } else {
-    source.src = pathToFileURL((songs[index] as LocalSong).path ?? '').href
+    source.src = pathToFileURL(
+      (songs[index] as LocalSong | undefined)?.path ?? '',
+    ).href
   }
   audio.appendChild(source)
   document.body.appendChild(audio)

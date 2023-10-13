@@ -233,6 +233,7 @@ export async function getSmallMediaFiles(
     const publication = result as Publication | null
     if (publication?.files) {
       const categories = Object.values(publication.files)[0]
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       mediaFiles = categories.MP4 ?? Object.values(categories)[0]
 
       // Filter on max resolution

@@ -27,7 +27,7 @@ export function initWebsiteListeners() {
     )
     websiteController?.webContents.send(
       'winSize',
-      websiteController?.getContentSize(),
+      websiteController.getContentSize(),
     )
   })
 
@@ -60,7 +60,7 @@ async function openWebsite(url: string) {
   const win = getMainWindow()
   const mediaWin = getMediaWin()
   const mediaWinHandler = getMediaWinHandler()
-  win?.webContents.send('showingMedia', [true, true])
+  win.webContents.send('showingMedia', [true, true])
   if (websiteControllerWinHandler) {
     mediaWinHandler?.loadPage('/browser?url=' + url)
     websiteControllerWinHandler.loadPage('/browser?controller=true&url=' + url)
@@ -73,8 +73,8 @@ async function openWebsite(url: string) {
   mediaWinHandler?.loadPage('/browser?url=' + url)
 
   const windowOpts: BrowserWindowConstructorOptions = {
-    x: win?.getBounds().x,
-    y: win?.getBounds().y,
+    x: win.getBounds().x,
+    y: win.getBounds().y,
   }
 
   const mediaFullscreen = mediaWin?.isFullScreen()
@@ -99,7 +99,7 @@ async function openWebsite(url: string) {
         )
         websiteController?.webContents.send(
           'winSize',
-          websiteController?.getContentSize(),
+          websiteController.getContentSize(),
         )
       }
     })
@@ -114,7 +114,7 @@ async function openWebsite(url: string) {
       )
       websiteController?.webContents.send(
         'winSize',
-        websiteController?.getContentSize(),
+        websiteController.getContentSize(),
       )
     })
     .on('maximize', () => {
@@ -122,7 +122,7 @@ async function openWebsite(url: string) {
       websiteController?.webContents.send('winSize', [0, 0])
     })
     .on('close', () => {
-      win?.webContents.send('showingMedia', [false, false])
+      win.webContents.send('showingMedia', [false, false])
       mediaWinHandler?.loadPage('/media')
       const MIN_WIDTH = 195
       const MIN_HEIGHT = 110
@@ -161,7 +161,7 @@ function createWebsiteController(
     ...opts,
   })
 
-  const win = winHandler.browserWindow as BrowserWindow
+  const win = winHandler.browserWindow!
   win.on('ready-to-show', () => {
     if (platform() === 'linux') {
       win.setAspectRatio(AR_WIDTH / AR_HEIGHT)

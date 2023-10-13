@@ -197,7 +197,7 @@ watch(
 )
 
 // Prefs
-const prefs = ref({ ...PREFS })
+const prefs = ref<PrefStore>({ ...PREFS })
 watch(prefs, () => calcCache(), { deep: true })
 const refreshPrefs = (key: keyof PrefStore, val: any) => {
   prefs.value[key] = val

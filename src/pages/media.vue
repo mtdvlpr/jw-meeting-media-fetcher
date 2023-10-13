@@ -139,7 +139,7 @@ const loadMedia = (media: Media) => {
 
       const subsPath = changeExt(media.src, 'vtt')
 
-      if (withSubtitles && existsSync(subsPath)) {
+      if (withSubtitles.value && existsSync(subsPath)) {
         log.debug('Adding subtitles', subsPath)
         const track = document.createElement('track')
         track.kind = 'subtitles'
@@ -153,7 +153,7 @@ const loadMedia = (media: Media) => {
       video.oncanplay = () => {
         log.debug('canplay start')
         if (
-          withSubtitles &&
+          withSubtitles.value &&
           existsSync(subsPath) &&
           video.textTracks.length > 0
         ) {
@@ -168,12 +168,7 @@ const loadMedia = (media: Media) => {
 
       video.onplay = () => {
         interval.value = setInterval(() => {
-          if (video) {
-            ipcRenderer.send('videoProgress', [
-              video.currentTime,
-              video.duration,
-            ])
-          }
+          ipcRenderer.send('videoProgress', [video.currentTime, video.duration])
         }, 0.5 * MS_IN_SEC)
       }
 
@@ -356,19 +351,17 @@ useIpcRendererOn(
     withSubtitles.value = enabled
     const video = document.querySelector('video')
     if (!video) return
-    if (video && video.textTracks.length > 0) {
+    if (video.textTracks.length > 0) {
       video.textTracks[0].mode = enabled ? 'showing' : 'hidden'
       const cues = video.textTracks[0].cues
       if (cues) {
         for (let i = 0; i < cues.length; i++) {
           const cue = cues[i]
-          if (cue) {
-            const newLine =
-              // @ts-expect-error
-              +cue.line?.toString().replace('auto', '-1') * -1
+          const newLine =
             // @ts-expect-error
-            cue.line = toggle ? newLine : 'auto'
-          }
+            +cue.line?.toString().replace('auto', '-1') * -1
+          // @ts-expect-error
+          cue.line = toggle ? newLine : 'auto'
         }
       }
     }

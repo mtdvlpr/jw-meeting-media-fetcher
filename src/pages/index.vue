@@ -89,7 +89,7 @@ const createCong = () => {
 
 const autoSelectCong = async () => {
   if (congs.value.length === 0) {
-    await createCong()
+    createCong()
   } else if (congs.value.length === 1) {
     initPrefs(basename(congs.value[0].path, '.json'))
   } else {
@@ -192,7 +192,7 @@ const initPrefs = (name: string, isNew = false) => {
   )
 
   ipcRenderer.send('toggleUpdateChannel', getPrefs<boolean>('app.betaUpdates'))
-  if (online) {
+  if (online.value) {
     ipcRenderer.send('checkForUpdates')
   }
 
