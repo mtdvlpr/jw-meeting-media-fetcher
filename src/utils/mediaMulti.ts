@@ -183,7 +183,7 @@ async function processMultiMediaItem(
           {
             pubSymbol: mmItem.KeySymbol ?? '',
             track: mmItem.Track ?? 0,
-            issue: (mmItem.IssueTagNumber ?? 0)?.toString(),
+            issue: (mmItem.IssueTagNumber ?? 0).toString(),
             docId: mmItem.MultiMeps ?? 0,
             lang: fallbackLang ? mediaLang : lang,
           },
@@ -197,7 +197,7 @@ async function processMultiMediaItem(
             {
               pubSymbol: mmItem.KeySymbol ?? '',
               track: mmItem.Track ?? 0,
-              issue: (mmItem.IssueTagNumber ?? 0)?.toString(),
+              issue: (mmItem.IssueTagNumber ?? 0).toString(),
               docId: mmItem.MultiMeps ?? 0,
               lang: lang === mediaLang ? fallbackLang : lang ?? fallbackLang,
             },

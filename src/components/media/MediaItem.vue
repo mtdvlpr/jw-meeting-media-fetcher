@@ -156,7 +156,6 @@ import { pathExists, readJson } from 'fs-extra'
 import { Marker, Times, TimeString, VideoFile } from '~~/types'
 import { PanzoomChangeEvent } from '~~/types/global'
 
-const emit = defineEmits(['playing', 'deactivated'])
 const props = defineProps<{
   src: string
   playNow?: boolean
@@ -164,7 +163,7 @@ const props = defineProps<{
   deactivate?: boolean
   streamingFile?: VideoFile
 }>()
-
+const emit = defineEmits(['playing', 'deactivated'])
 onMounted(() => {
   // Sign language markers
   getMarkers()
@@ -344,7 +343,9 @@ const newProgress = ref(0)
 watch(newProgress, () => {
   if (paused.value) scrubVideo()
 })
-const scrubVideo = () => useIpcRenderer().send('scrubVideo', newProgress.value)
+const scrubVideo = () => {
+  useIpcRenderer().send('scrubVideo', newProgress.value)
+}
 
 // Set custom start/end times for video
 const start = ref<string | null>(null)

@@ -14,20 +14,21 @@
 </template>
 <script setup lang="ts">
 import { CongFile } from '~~/types'
-interface TreeObj {
-  [key: string]: {
+type TreeObj = Record<
+  string,
+  {
     text: string
     dir: boolean
     state: Record<string, boolean>
     children: string[]
   }
-}
+>
 
-const emit = defineEmits<{
-  open: [filename: string]
-}>()
 const props = defineProps<{
   contents: CongFile[]
+}>()
+const emit = defineEmits<{
+  open: [filename: string]
 }>()
 const tree = ref({})
 onMounted(() => {

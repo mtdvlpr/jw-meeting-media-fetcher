@@ -130,14 +130,14 @@ async function extractMediaItems({
     )
   )
     .filter((mmItem) => {
-      if (imagesOnly && isVideo(mmItem?.queryInfo?.FilePath ?? '')) {
+      if (imagesOnly && isVideo(mmItem.queryInfo?.FilePath ?? '')) {
         return false
       }
 
       if (
-        mmItem?.queryInfo?.tableQuestionIsUsed &&
+        mmItem.queryInfo?.tableQuestionIsUsed &&
         mmItem.queryInfo.NextParagraphOrdinal &&
-        !mmItem?.queryInfo?.TargetParagraphNumberLabel
+        !mmItem.queryInfo.TargetParagraphNumberLabel
       ) {
         mmItem.BeginParagraphOrdinal = mmItem.queryInfo.NextParagraphOrdinal
       }
@@ -146,9 +146,9 @@ async function extractMediaItems({
       const mediaLang = useMediaStore().mediaLang
       if (
         mediaLang?.isSignLanguage &&
-        !!mmItem?.queryInfo?.FilePath &&
-        isVideo(mmItem?.queryInfo?.FilePath) &&
-        !mmItem?.queryInfo?.TargetParagraphNumberLabel
+        !!mmItem.queryInfo?.FilePath &&
+        isVideo(mmItem.queryInfo.FilePath) &&
+        !mmItem.queryInfo.TargetParagraphNumberLabel
       ) {
         return true
       }

@@ -59,7 +59,7 @@ export function executeBeforeMeeting(
     const day = isMeetingDay()
     if (!day) return
     const startTime = getPrefs<string>(`meeting.${day}StartTime`)
-    const meetingStarts = startTime?.split(':') ?? ['0', '0']
+    const meetingStarts = startTime.split(':') ?? ['0', '0']
     const { $dayjs } = useNuxtApp()
     const timeToStop = $dayjs()
       .hour(+meetingStarts[0])

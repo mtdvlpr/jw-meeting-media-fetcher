@@ -1,8 +1,6 @@
 import { arch, release, type } from 'os'
 
-interface Log {
-  [key: number]: any[]
-}
+type Log = Record<number, any[]>
 
 interface Logs {
   error: Log

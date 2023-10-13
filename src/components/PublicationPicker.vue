@@ -18,8 +18,8 @@
 const props = defineProps<{
   modelValue: any
 }>()
-const loading = ref(true)
 const emit = defineEmits(['update:modelValue'])
+const loading = ref(true)
 const value = useVModel(props, 'modelValue', emit)
 const publications = ref()
 const loadPublications = async () => {

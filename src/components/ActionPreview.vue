@@ -17,9 +17,8 @@ defineProps<{
   icon: string
 }>()
 
-const timer = ref(5)
 const emit = defineEmits(['abort', 'perform'])
-
+const timer = ref(5)
 onMounted(() => {
   setInterval(() => {
     timer.value--

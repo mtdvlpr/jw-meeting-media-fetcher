@@ -76,6 +76,8 @@ const props = defineProps<{
   max: string
 }>()
 
+const emit = defineEmits(['update:modelValue', 'valid'])
+
 watch(
   () => props.modelValue,
   (val) => {
@@ -89,8 +91,6 @@ onMounted(() => {
   emit('valid', valid.value)
 })
 
-const emit = defineEmits(['update:modelValue', 'valid'])
-
 const hourRef = ref<VOtpInputRef | null>(null)
 const minRef = ref<VOtpInputRef | null>(null)
 const secRef = ref<VOtpInputRef | null>(null)
@@ -103,11 +103,11 @@ const ms = ref('')
 
 const isTimestamp = (val: string) =>
   !!val && /\d{2}:\d{2}:\d{2}.\d{3}/.test(val)
-const getHours = (val: string) => Number(val?.split(':')[0] || '0')
-const getMinutes = (val: string) => Number(val?.split(':')[1] || '0')
-const getMs = (val: string) => Number(val?.split(':')[2]?.split('.')[1] || '0')
+const getHours = (val: string) => Number(val.split(':')[0] || '0')
+const getMinutes = (val: string) => Number(val.split(':')[1] || '0')
+const getMs = (val: string) => Number(val.split(':')[2]?.split('.')[1] || '0')
 const getSeconds = (val: string) => {
-  return Number(val?.split(':')[2]?.split('.')[0] || '0')
+  return Number(val.split(':')[2]?.split('.')[0] || '0')
 }
 
 const disableHours = computed(() => {
@@ -183,7 +183,9 @@ const valid = computed(() => {
     validMs.value
   )
 })
-watch(valid, (val) => emit('valid', val))
+watch(valid, (val) => {
+  emit('valid', val)
+})
 
 const setValue = (val: string) => {
   console.log('h', hours.value)

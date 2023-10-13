@@ -313,7 +313,7 @@ export async function cleanup() {
       const file = prefFiles[i]
       const prefs = <PrefStore>await readJson(file)
       // @ts-expect-error: congregationName doesn't exist in ElectronStore
-      if (!prefs.congregationName && !prefs.app?.congregationName) {
+      if (!prefs.congregationName && !prefs.app.congregationName) {
         rm(file)
       }
     }

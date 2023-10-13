@@ -127,12 +127,6 @@ type MediaItem = {
   deactivate: boolean
   size?: number
 }
-const emit = defineEmits<{
-  index: [id: number]
-  deactivate: [index: number]
-  customSort: [boolean]
-}>()
-
 const props = defineProps<{
   items: MediaItem[]
   showQuickSong: boolean
@@ -140,6 +134,12 @@ const props = defineProps<{
   customSortOrder: object | undefined
   zoomPart: boolean
   ccEnable: boolean
+}>()
+
+const emit = defineEmits<{
+  index: [id: number]
+  deactivate: [index: number]
+  customSort: [boolean]
 }>()
 
 const date = useRouteQuery<string>('date', '')

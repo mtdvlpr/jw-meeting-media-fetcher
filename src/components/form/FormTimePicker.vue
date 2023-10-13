@@ -15,13 +15,12 @@
   />
 </template>
 <script setup lang="ts">
-const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
   modelValue: any
   locked?: boolean
   required?: boolean
 }>()
-
+const emit = defineEmits(['update:modelValue'])
 const { isDark } = useTheme()
 const stringToTime = (str: string | null) => {
   if (!str) return null

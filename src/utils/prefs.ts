@@ -567,9 +567,9 @@ export function migrate2290(key: string, newVal: any) {
   // Final check against the schema
   const schemaType = isObsPref
     ? // @ts-expect-error: newkey is not defined as a key of properties
-      schema?.app?.properties?.obs?.properties[newKey]?.type
+      schema.app.properties?.obs?.properties[newKey]?.type
     : // @ts-expect-error: newkey is not defined as a key of properties
-      schema[root]?.properties[newKey]?.type
+      schema[root].properties[newKey].type
   if (schemaType) {
     if (typeof schemaType === 'string') {
       if (typeof newVal !== 'string') {
@@ -599,7 +599,7 @@ export async function getCongPrefs() {
         id: basename(file, '.json').replace('prefs-', ''),
         name:
           // @ts-expect-error: 'app.congregationName' is not defined as a key of PrefStore
-          prefs?.app?.congregationName ?? (prefs?.congregationName as string),
+          prefs.app.congregationName ?? (prefs.congregationName as string),
         path: file,
       }
     })
@@ -608,7 +608,7 @@ export async function getCongPrefs() {
 }
 
 export function storePath() {
-  return store?.path ? normalizeSafe(store.path) : undefined
+  return store.path ? normalizeSafe(store.path) : undefined
 }
 
 export function initStore(name: string) {
@@ -630,7 +630,7 @@ export function setPrefs(key: string, value: any) {
   const prefs = readJsonSync(store.path) as PrefStore
   useNuxtApp().$sentry.setContext('prefs', {
     ...prefs,
-    obs: prefs.app?.obs,
+    obs: prefs.app.obs,
   })
   return prefs
 }
@@ -644,7 +644,7 @@ export function switchCong(path: string) {
 }
 
 export function getPrefs<T = unknown>(key: string) {
-  return store?.get(key) as T
+  return store.get(key) as T
 }
 
 export function getAllPrefs() {
@@ -652,5 +652,5 @@ export function getAllPrefs() {
 }
 
 export function setAllPrefs(prefs: PrefStore) {
-  store?.set(prefs)
+  store.set(prefs)
 }

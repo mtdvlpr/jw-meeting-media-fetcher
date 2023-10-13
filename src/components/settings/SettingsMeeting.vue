@@ -210,8 +210,12 @@ const meetingDaysValid = computed(() => {
       !!meeting.value.weStartTime)
   )
 })
-watch(valid, (val) => emit('valid', val && meetingDaysValid.value))
-watch(meetingDaysValid, (val) => emit('valid', valid.value && val))
+watch(valid, (val) => {
+  emit('valid', val && meetingDaysValid.value)
+})
+watch(meetingDaysValid, (val) => {
+  emit('valid', valid.value && val)
+})
 
 // Cache
 watch(

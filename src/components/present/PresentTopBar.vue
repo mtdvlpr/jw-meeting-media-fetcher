@@ -94,16 +94,14 @@ import { useRouteQuery } from '@vueuse/router'
 import { join } from 'upath'
 import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 
-const { $dayjs } = useNuxtApp()
-$dayjs.extend(LocalizedFormat)
-
 defineProps<{
   mediaCount: number
   currentIndex: number
   customSort: boolean
 }>()
-
 const emit = defineEmits(['cc', 'previous', 'next', 'manageMedia', 'resetSort'])
+const { $dayjs } = useNuxtApp()
+$dayjs.extend(LocalizedFormat)
 
 const { t } = useI18n()
 const mediaActive = inject(mediaActiveKey, ref(false))

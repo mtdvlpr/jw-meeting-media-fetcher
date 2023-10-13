@@ -186,18 +186,17 @@ import { pathToFileURL } from 'url'
 import { extname, join, normalize } from 'upath'
 import { LocalFile, MeetingFile } from '~~/types'
 
+const props = defineProps<{
+  date: string
+  prefix: string
+  item: MeetingFile | LocalFile
+}>()
 const emit = defineEmits<{
   refresh: []
   atClick: []
   edit: []
   remove: []
 }>()
-const props = defineProps<{
-  date: string
-  prefix: string
-  item: MeetingFile | LocalFile
-}>()
-
 // Get media preview
 const loading = ref(false)
 const preview = ref('')

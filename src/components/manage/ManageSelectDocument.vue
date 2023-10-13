@@ -91,13 +91,13 @@ const getDocuments = async () => {
   const table =
     executeQuery(
       database,
-      "SELECT * FROM sqlite_master WHERE type='table' AND name='DocumentMultimedia'"
+      "SELECT * FROM sqlite_master WHERE type='table' AND name='DocumentMultimedia'",
     ).length === 0
       ? 'Multimedia'
       : 'DocumentMultimedia'
   const suppressZoom = executeQuery<{ CNT_REC: number }>(
     database,
-    "SELECT COUNT(*) AS CNT_REC FROM pragma_table_info('Multimedia') WHERE name='SuppressZoom'"
+    "SELECT COUNT(*) AS CNT_REC FROM pragma_table_info('Multimedia') WHERE name='SuppressZoom'",
   ).map((item) => {
     return item.CNT_REC > 0
   })[0]
@@ -114,7 +114,7 @@ const getDocuments = async () => {
       }
     WHERE Multimedia.CategoryType <> 9
     ${suppressZoom ? 'AND Multimedia.SuppressZoom = 0' : ''}
-    ORDER BY ${table}.DocumentId`
+    ORDER BY ${table}.DocumentId`,
   )
   loading.value = false
 }
@@ -129,7 +129,7 @@ watch(
       finish()
     }
   },
-  { deep: true }
+  { deep: true },
 )
 const selectDoc = async (id: number) => {
   loading.value = true
@@ -143,7 +143,7 @@ const selectDoc = async (id: number) => {
       undefined,
       undefined,
       true,
-      true
+      true,
     )
     for (const [i, mm] of mmItems.entries()) {
       if (props.setProgress) props.setProgress(i + 1, mmItems.length)
@@ -220,7 +220,7 @@ const finish = () => {
     'select',
     mediaFiles.value
       .filter((m) => !missingMedia.value.includes(m.filename!))
-      .sort((a, b) => a.safeName!.localeCompare(b.safeName!))
+      .sort((a, b) => a.safeName!.localeCompare(b.safeName!)),
   )
 }
 </script>

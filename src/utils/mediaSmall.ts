@@ -46,7 +46,7 @@ export async function getMediaLinks(
     if (
       subtitlesEnabled &&
       mediaLang !== subsLang &&
-      subsResult?.status === 'fulfilled'
+      subsResult.status === 'fulfilled'
     ) {
       smallMediaFiles.forEach((file) => {
         const matchingFile = subsResult.value.find(
@@ -133,9 +133,9 @@ export async function getSmallMediaFiles(
     const fallbackObj = store.fallbackLang
     if (mediaItem.pubSymbol === 'sjj' || mediaItem.pubSymbol === 'sjjm') {
       if (mediaLangObj?.langcode === mediaLang) {
-        mediaItem.pubSymbol = mediaLangObj?.isSignLanguage ? 'sjj' : 'sjjm'
+        mediaItem.pubSymbol = mediaLangObj.isSignLanguage ? 'sjj' : 'sjjm'
       } else if (fallbackObj?.langcode === mediaLang) {
-        mediaItem.pubSymbol = fallbackObj?.isSignLanguage ? 'sjj' : 'sjjm'
+        mediaItem.pubSymbol = fallbackObj.isSignLanguage ? 'sjj' : 'sjjm'
       }
     }
 
@@ -314,9 +314,9 @@ async function getAdditionalData(item: SmallMediaFile, id: string) {
   } else {
     const result = await fetchMedia(`E/${id}_VIDEO`)
 
-    if (result?.media?.length > 0) {
-      item.thumbnail = result?.media[0]?.images?.wss?.sm
-      item.primaryCategory = result?.media[0]?.primaryCategory
+    if (result.media.length > 0) {
+      item.thumbnail = result.media[0]?.images?.wss?.sm
+      item.primaryCategory = result.media[0]?.primaryCategory
     }
   }
 }

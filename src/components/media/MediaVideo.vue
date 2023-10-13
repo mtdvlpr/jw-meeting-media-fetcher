@@ -108,18 +108,17 @@ import { ipcRenderer, type IpcRendererEvent } from 'electron'
 import { useRouteQuery } from '@vueuse/router'
 import { Time, Times, TimeString } from '~~/types'
 
-const emit = defineEmits<{
-  resetClipped: []
-  clipped: [time: Times]
-  progress: [percentage: number]
-}>()
 const props = defineProps<{
   src: string
   playing?: boolean
   stream?: boolean
   tempClipped: TimeString | null
 }>()
-
+const emit = defineEmits<{
+  resetClipped: []
+  clipped: [time: Times]
+  progress: [percentage: number]
+}>()
 const { $dayjs } = useNuxtApp()
 const { meetings } = storeToRefs(useMediaStore())
 const date = useRouteQuery<string>('date', '')

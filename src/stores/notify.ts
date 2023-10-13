@@ -49,7 +49,9 @@ export const useNotifyStore = defineStore('notify', {
       }
     },
     dismissByMessages(msgs: string[]) {
-      msgs.forEach((msg) => this.dismissByMessage(msg))
+      msgs.forEach((msg) => {
+        this.dismissByMessage(msg)
+      })
     },
   },
 })

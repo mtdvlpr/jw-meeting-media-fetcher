@@ -5,7 +5,7 @@ export interface MediaCategory {
   type: string
   name: string
   description: string
-  tags: { [key: number]: string }
+  tags: Record<number, string>
   images: Images
   parentCategory?: MediaCategory | null
   subcategories?: MediaCategory[]

@@ -81,8 +81,8 @@ try {
   console.error(e)
 }
 
-let win: BrowserWindow
-let winHandler: BrowserWinHandler
+let win: BrowserWindow | undefined
+let winHandler: BrowserWinHandler | undefined
 
 async function boot() {
   winHandler = await initMainWindow()
@@ -123,13 +123,11 @@ async function boot() {
       details.responseHeaders['x-frame-options'] = ['ALLOWALL']
       details.responseHeaders['content-security-policy'] = []
       const setCookie = details.responseHeaders['set-cookie']
-      if (setCookie) {
-        details.responseHeaders['set-cookie'] = setCookie.map((c) =>
-          c
-            .replace('HttpOnly', 'Secure')
-            .replace('Secure', 'SameSite=None; Secure'),
-        )
-      }
+      details.responseHeaders['set-cookie'] = setCookie.map((c) =>
+        c
+          .replace('HttpOnly', 'Secure')
+          .replace('Secure', 'SameSite=None; Secure'),
+      )
       resolve({ responseHeaders: details.responseHeaders })
     },
   )

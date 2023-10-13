@@ -12,7 +12,7 @@ export type Field =
 export interface SubSetting {
   type?: Field
   key: string
-  props?: { [key: string]: any }
+  props?: Record<string, any>
   onChange?: (val: any, oldVal: any) => void
 }
 export interface Setting extends SubSetting {
@@ -28,7 +28,7 @@ export interface Action {
   label: string
   icon?: boolean
   explanation?: string
-  props?: { [key: string]: any }
+  props?: Record<string, any>
   action: () => void
   depends?: string
 }

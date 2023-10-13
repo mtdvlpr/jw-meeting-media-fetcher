@@ -109,7 +109,9 @@ const {
   started: zoomStarted,
   participants: allParticipants,
 } = storeToRefs(zoomStore)
-whenever(coHost, () => useNotifyStore().dismissByMessage('remindNeedCoHost'))
+whenever(coHost, () => {
+  useNotifyStore().dismissByMessage('remindNeedCoHost')
+})
 const participant = ref<Participant | null>(null)
 const participants = computed(() =>
   allParticipants.value.filter(
@@ -187,7 +189,7 @@ const listenToZoomSocket = () => {
       window.sockets.push(this)
       log.info('sockets', window.sockets)
     }
-    return originalSend.call(this, ...args)
+    originalSend.call(this, ...args)
   }
 }
 </script>

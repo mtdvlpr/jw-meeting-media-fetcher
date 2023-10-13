@@ -415,15 +415,17 @@ const zoom = (scale: number) => {
 }
 
 // Resizing
-useIpcRendererOn('windowResizing', (_e, size: number[]) =>
-  resizingNow(size[0], size[1]),
-)
+useIpcRendererOn('windowResizing', (_e, size: number[]) => {
+  resizingNow(size[0], size[1])
+})
 const resizingNow = (width: number, height: number) => {
   if (!resizeOverlay.value || !dimensions.value) return
   resizeOverlay.value.style.opacity = '1'
   dimensions.value.innerText = `${width}x${height}`
 }
-useIpcRendererOn('windowResized', () => resizingDone())
+useIpcRendererOn('windowResized', () => {
+  resizingDone()
+})
 const resizingDone = () => {
   if (!resizeOverlay.value) return
   resizeOverlay.value.style.opacity = '0'

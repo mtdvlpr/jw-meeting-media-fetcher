@@ -35,9 +35,9 @@ const { mediaLang, fallbackLang } = storeToRefs(useMediaStore())
 const jwSync = computed(() => {
   let jwSyncString = ''
   if (mediaLang.value?.vernacularName) {
-    jwSyncString = `JW.org (${mediaLang.value?.vernacularName}`
+    jwSyncString = `JW.org (${mediaLang.value.vernacularName}`
     if (fallbackLang.value?.vernacularName) {
-      jwSyncString += ` / ${fallbackLang.value?.vernacularName}`
+      jwSyncString += ` / ${fallbackLang.value.vernacularName}`
     }
     jwSyncString += ')'
   }

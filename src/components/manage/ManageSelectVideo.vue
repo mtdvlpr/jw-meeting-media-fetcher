@@ -148,7 +148,7 @@ const filteredVideos = computed(() => {
     return latestVideos.value
   }
   return allVideos.value.filter((video) =>
-    video.title.toLowerCase().includes(query)
+    video.title.toLowerCase().includes(query),
   )
 })
 </script>

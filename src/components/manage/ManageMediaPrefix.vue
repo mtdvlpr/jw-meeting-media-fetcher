@@ -7,12 +7,11 @@
   </v-col>
 </template>
 <script setup lang="ts">
-const emit = defineEmits(['update:modelValue'])
 const props = defineProps<{
   modelValue: string
   loading?: boolean
 }>()
-
+const emit = defineEmits(['update:modelValue'])
 const value = useVModel(props, 'modelValue', emit)
 </script>
 <!--<template>

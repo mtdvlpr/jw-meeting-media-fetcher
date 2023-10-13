@@ -265,7 +265,9 @@ export async function syncCongMedia(
   )
 
   let total = 0
-  meetings.forEach((parts) => parts.forEach((media) => (total += media.length)))
+  meetings.forEach((parts) => {
+    parts.forEach((media) => (total += media.length))
+  })
 
   initProgress(total)
   const promises: Promise<void>[] = []
@@ -423,7 +425,7 @@ export async function renameCongFile(
     const date = useNuxtApp().$dayjs(
       file.basename,
       dateFormat,
-      oldLocale?.dayjs ?? oldVal,
+      oldLocale.dayjs ?? oldVal,
     )
 
     if (date.isValid()) {

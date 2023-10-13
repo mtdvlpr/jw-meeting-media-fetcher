@@ -29,7 +29,7 @@ const controller = useRouteQuery<string>('controller', '')
 definePageMeta({ layout: 'media' })
 useHead({
   title: computed(() =>
-    controller.value ? 'Website Controller' : 'Media Window'
+    controller.value ? 'Website Controller' : 'Media Window',
   ),
 })
 
@@ -109,7 +109,7 @@ const initController = (iframe: HTMLIFrameElement) => {
             typeof el.className === 'string'
               ? el.className
               : // @ts-expect-error
-                el.className?.baseVal, // SVGAnimatedString
+                el.className.baseVal, // SVGAnimatedString
           text: el.textContent,
           alt: el.getAttribute('alt'),
           src: el.getAttribute('src'),
@@ -143,7 +143,7 @@ const initWebsite = (iframe: HTMLIFrameElement) => {
 
   useIpcRendererOn('moveMouse', (_e, pos: Point) => {
     const win = iframe.contentWindow
-    const pointer = document.querySelector('.pointer') as HTMLElement
+    const pointer = document.querySelector('.pointer')!
     if (win && pointer) {
       pointer.style.left = `${
         pos.x * getWinWidth(win) - getElWidth(pointer) / 2
@@ -172,7 +172,7 @@ const initWebsite = (iframe: HTMLIFrameElement) => {
         const selector = `${tag}.${className.trim().replaceAll(/\s+/g, '.')}`
         el =
           (Array.from(doc.querySelectorAll(selector)).find(
-            (e) => e.textContent === text
+            (e) => e.textContent === text,
           ) as HTMLElement) ?? null
       } else if (src) {
         el = doc.querySelector(`${tag}[src="${src}"]`)

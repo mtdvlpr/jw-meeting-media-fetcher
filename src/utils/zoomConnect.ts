@@ -101,7 +101,7 @@ const setUserProps = () => {
   } else if (!userIsHost) {
     const host = participants.find((user) => user.isHost)
     log.debug('host', host)
-    if (host) store.setHostID(host?.userId)
+    if (host) store.setHostID(host.userId)
   }
   store.setParticipants(participants)
   const user = store.client.getCurrentUser()

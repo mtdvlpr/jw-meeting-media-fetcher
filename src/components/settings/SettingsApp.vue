@@ -317,16 +317,17 @@ import type { LocaleObject } from '#i18n'
 import { existsSync } from 'fs-extra'
 import { AppPrefs, VFormRef, PrefStore } from '~~/types'
 
+const props = defineProps<{
+  prefs: PrefStore
+}>()
 const emit = defineEmits<{
   valid: [val: boolean]
   refresh: [val: AppPrefs]
 }>()
-const props = defineProps<{
-  prefs: PrefStore
-}>()
-
 const valid = ref(true)
-watch(valid, (val) => emit('valid', val))
+watch(valid, (val) => {
+  emit('valid', val)
+})
 const appForm = ref<VFormRef | null>()
 const localesMapped = ref<{ name: string; code: string }[]>([])
 const { locale, locales, localeProperties } = useI18n()
@@ -396,7 +397,7 @@ watch(
     const oldLocale = (locales.value as LocaleObject[]).find(
       (l) => l.code === oldVal,
     )
-    $dayjs.locale(newLocale?.dayjs ?? val)
+    $dayjs.locale(newLocale.dayjs ?? val)
     if (oldLocale && val !== oldVal) {
       useMediaStore().clear()
       renamePubs(oldLocale, newLocale)

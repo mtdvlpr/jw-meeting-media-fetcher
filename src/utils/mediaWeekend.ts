@@ -240,7 +240,7 @@ async function addMediaToPart(
       track: mediaItem.Track!,
       issue: mediaItem.IssueTagNumber?.toString(),
     })
-    if (media?.length > 0) {
+    if (media.length > 0) {
       addMediaItemToPart(date, 1, { ...media[0], queryInfo: mediaItem })
     }
   }
@@ -268,7 +268,7 @@ async function addSongToPart(
     })
   }
 
-  if (songMedia?.length > 0) {
+  if (songMedia.length > 0) {
     const songObj = songMedia[0]
     songObj.queryInfo = song
     await addMediaItemToPart(date, 2 * i, songObj)

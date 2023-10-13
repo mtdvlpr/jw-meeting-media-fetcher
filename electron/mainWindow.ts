@@ -31,7 +31,7 @@ function onMove() {
       .every((val, _i, arr) => val.id === arr[0].id)
 
     if (mainWinSameAsMedia) {
-      win?.webContents.send('moveMediaWindowToOtherScreen')
+      win.webContents.send('moveMediaWindowToOtherScreen')
     }
   }
 }
@@ -44,7 +44,7 @@ function onClose(e: Event) {
   }
   if (!allowClose && closeAttempts < 2) {
     e.preventDefault()
-    win?.webContents.send('notifyUser', ['cantCloseMediaWindowOpen'])
+    win.webContents.send('notifyUser', ['cantCloseMediaWindowOpen'])
     closeAttempts++
     setTimeout(() => {
       closeAttempts--
@@ -108,47 +108,47 @@ export async function initMainWindow() {
 
 function registerListeners() {
   ipcMain.on('videoProgress', (_e, percent: number[]) => {
-    win?.webContents.send('videoProgress', percent)
+    win.webContents.send('videoProgress', percent)
   })
   ipcMain.on('videoEnd', () => {
-    win?.webContents.send('videoEnd')
-    win?.webContents.send('showingMedia', false)
+    win.webContents.send('videoEnd')
+    win.webContents.send('showingMedia', false)
   })
   ipcMain.on('videoPaused', () => {
-    win?.webContents.send('videoPaused')
+    win.webContents.send('videoPaused')
   })
   ipcMain.on('readyToListen', () => {
-    win?.webContents.send('readyToListen')
+    win.webContents.send('readyToListen')
   })
   ipcMain.on('allowQuit', (_e, val: boolean) => {
     allowClose = val
   })
   screen.on('display-removed', () => {
-    win?.webContents.send('displaysChanged')
+    win.webContents.send('displaysChanged')
   })
   screen.on('display-added', () => {
-    win?.webContents.send('displaysChanged')
+    win.webContents.send('displaysChanged')
   })
 
   ipcMain.handle('registerShortcut', (_e, { key, fn }: Shortcut) => {
-    const functions: { [key: string]: () => void } = {
+    const functions: Record<string, () => void> = {
       toggleMediaWindow: () => {
         fadeWindow()
       },
       openPresentMode: () => {
-        win?.webContents.send('openPresentMode')
+        win.webContents.send('openPresentMode')
       },
       toggleMusicShuffle: () => {
-        win?.webContents.send('toggleMusicShuffle')
+        win.webContents.send('toggleMusicShuffle')
       },
       setObsScene: () => {
-        win?.webContents.send('setObsScene', +key.split('+')[1])
+        win.webContents.send('setObsScene', +key.split('+')[1])
       },
       previousMediaItem: () => {
-        win?.webContents.send('play', 'previous')
+        win.webContents.send('play', 'previous')
       },
       nextMediaItem: () => {
-        win?.webContents.send('play', 'next')
+        win.webContents.send('play', 'next')
       },
     }
     if (globalShortcut.isRegistered(key)) {

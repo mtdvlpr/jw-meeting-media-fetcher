@@ -33,14 +33,14 @@
 </template>
 <script setup lang="ts">
 import { LocalFile, VideoFile } from '~~/types'
-const emit = defineEmits<{
-  click: []
-  reset: []
-  remove: [index: number]
-}>()
 defineProps<{
   type: string
   files: (LocalFile | VideoFile)[]
   loading?: boolean
+}>()
+const emit = defineEmits<{
+  click: []
+  reset: []
+  remove: [index: number]
 }>()
 </script>

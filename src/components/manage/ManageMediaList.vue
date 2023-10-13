@@ -51,7 +51,6 @@
 import { extname, join, trimExt } from 'upath'
 import { LocalFile, MeetingFile, VideoFile } from '~~/types'
 
-const emit = defineEmits(['refresh'])
 const props = defineProps<{
   media: (LocalFile | MeetingFile)[]
   date: string
@@ -61,7 +60,7 @@ const props = defineProps<{
   // showPrefix?: boolean
   showInput?: boolean
 }>()
-
+const emit = defineEmits(['refresh'])
 onMounted(() => {
   setMediaList()
 })
@@ -76,7 +75,7 @@ watch(
   () => {
     setMediaList()
   },
-  { deep: true }
+  { deep: true },
 )
 
 // Set media list
@@ -104,7 +103,7 @@ const setMediaList = () => {
             ? props.prefix + ' '
             : '') + b.safeName,
           undefined,
-          { numeric: true }
+          { numeric: true },
         )
       })
   } else {
@@ -139,10 +138,10 @@ const saveNewName = async () => {
         ? join(getPrefs('cloud.path'), 'Additional')
         : mediaPath(),
       props.date,
-      edit.value.safeName
+      edit.value.safeName,
     ),
     edit.value.safeName,
-    cleanName
+    cleanName,
   )
 
   if (props.date === 'Recurring') {
@@ -158,7 +157,7 @@ const saveNewName = async () => {
     if (!contents.value.find((c) => c.filename === join(dirPath, cleanName))) {
       await client.value.moveFile(
         join(dirPath, edit.value.safeName),
-        join(dirPath, cleanName)
+        join(dirPath, cleanName),
       )
     }
     await updateContent()

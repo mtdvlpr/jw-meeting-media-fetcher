@@ -109,9 +109,9 @@ export async function convertUnusableFilesByDate(date: string) {
     const cloudPdfFiles = findAll(join(cloudPath, date, '*pdf'))
     const cloudSvgFiles = findAll(join(cloudPath, date, '*svg'))
     const cloudHeicFiles = findAll(join(cloudPath, date, '*heic'))
-    const cloudConvertSvgPromises = cloudSvgFiles.map((svgFile) =>
-      convertSvg(svgFile),
-    )
+    const cloudConvertSvgPromises = cloudSvgFiles.map((svgFile) => {
+      convertSvg(svgFile)
+    })
     const cloudConvertPdfPromises = cloudPdfFiles.map((pdfFile) =>
       convertPdf(pdfFile),
     )
@@ -129,7 +129,9 @@ export async function convertUnusableFilesByDate(date: string) {
   const pdfFiles = findAll(join(mPath, date, '*pdf'))
   const svgFiles = findAll(join(mPath, date, '*svg'))
   const heicFiles = findAll(join(mPath, date, '*heic'))
-  const convertSvgPromises = svgFiles.map((svgFile) => convertSvg(svgFile))
+  const convertSvgPromises = svgFiles.map((svgFile) => {
+    convertSvg(svgFile)
+  })
   const convertPdfPromises = pdfFiles.map((pdfFile) => convertPdf(pdfFile))
   const convertHEICPromises = heicFiles.map((heicFile) => convertHEIC(heicFile))
   await Promise.all([
@@ -448,7 +450,7 @@ function createVideo(
                   if (!getPrefs<boolean>('media.keepOriginalsAfterConversion'))
                     rm(file)
                   if (setProgress) increaseProgress(setProgress)
-                  return resolve()
+                  resolve()
                 })
             })
             .catch((e) => {
@@ -458,7 +460,7 @@ function createVideo(
                 e,
               )
               increaseProgress(setProgress!)
-              return resolve()
+              resolve()
             })
         })
       } else {
@@ -526,7 +528,7 @@ function createVideo(
                     rm(file)
                   }
                   if (setProgress) increaseProgress(setProgress)
-                  return resolve()
+                  resolve()
                 }
                 img.src = pathToFileURL(file).href
               })
@@ -539,7 +541,8 @@ function createVideo(
     } catch (e) {
       warn('warnMp4ConversionFailure', { identifier: basename(file) }, e)
       increaseProgress(setProgress!)
-      return resolve()
+      resolve()
+      return
     }
   })
 }

@@ -76,7 +76,7 @@ export function createMediaNamesByDate(date: string) {
                 ? translate('footnote')
                 : translate('paragraph') +
                   ' ' +
-                  item.queryInfo?.TargetParagraphNumberLabel) +
+                  item.queryInfo.TargetParagraphNumberLabel) +
               ' -'
           }
           if (item.pub?.includes('sjj')) {
@@ -140,8 +140,9 @@ export function createMediaNames() {
             .padStart(2, '0')}-${(j + 1).toString().padStart(2, '0')} -`
           if (!item.congSpecific) {
             if (item.queryInfo?.TargetParagraphNumberLabel) {
-              item.safeName += ` ${translate('paragraph')} ${item.queryInfo
-                ?.TargetParagraphNumberLabel} -`
+              item.safeName += ` ${translate('paragraph')} ${
+                item.queryInfo.TargetParagraphNumberLabel
+              } -`
             }
             if (item.pub?.includes('sjj')) {
               item.safeName += ` ${translate('song')}`
@@ -345,7 +346,9 @@ export async function syncJWMedia(
   )
 
   let total = 0
-  meetings.forEach((parts) => parts.forEach((media) => (total += media.length)))
+  meetings.forEach((parts) => {
+    parts.forEach((media) => (total += media.length))
+  })
 
   initProgress(total)
   const promises: Promise<void>[] = []

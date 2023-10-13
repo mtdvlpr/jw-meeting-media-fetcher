@@ -18,7 +18,7 @@ interface Stats {
 interface StatStore {
   online: boolean
   navDisabled: boolean
-  syncInProgress: Array<string>
+  syncInProgress: string[]
   showMediaPlayback: boolean
   showMusicButton: boolean
   initialLoad: boolean
@@ -122,7 +122,7 @@ export const useStatStore = defineStore('stats', {
             log.info(
               `%c[perf] [${origin} Fetch] from ${source}: ${(
                 (files as MeetingFile[])
-                  .map((file) => file.filesize as number)
+                  .map((file) => file.filesize!)
                   .reduce((a, b) => a + b, 0) /
                 BYTES_IN_KIBI_BYTE /
                 BYTES_IN_KIBI_BYTE

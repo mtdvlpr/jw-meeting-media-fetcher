@@ -26,7 +26,7 @@ export async function startApp(options: any = {}) {
   })
 
   electronApp.on('window', (page) => {
-    const filename = page.url()?.split('/').pop()
+    const filename = page.url().split('/').pop()
     console.log(`Window opened: ${filename}`)
 
     // capture errors

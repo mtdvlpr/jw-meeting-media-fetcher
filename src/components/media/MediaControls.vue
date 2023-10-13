@@ -135,7 +135,7 @@ const mPath = mediaPath()
 const items = reactive(ref<MediaItem[]>([]))
 const watchers = ref<fileWatcher.FSWatcher[]>([])
 onBeforeUnmount(() => {
-  watchers.value?.forEach((watcher) => {
+  watchers.value.forEach((watcher) => {
     watcher.close()
   })
 })
@@ -230,7 +230,7 @@ onMounted(() => {
   )
   if (getPrefs('cloud.enable')) {
     // additional files
-    watchers.value?.push(
+    watchers.value.push(
       fileWatcher
         .watch(join(getPrefs('cloud.path'), 'Additional', date.value), {
           depth: 1,
@@ -253,7 +253,7 @@ onMounted(() => {
         }),
     )
     // hidden files
-    watchers.value?.push(
+    watchers.value.push(
       fileWatcher
         .watch(join(getPrefs('cloud.path'), 'Hidden', date.value), {
           depth: 1,
@@ -264,7 +264,7 @@ onMounted(() => {
         }),
     )
     // recurring files
-    watchers.value?.push(
+    watchers.value.push(
       fileWatcher
         .watch(join(getPrefs('cloud.path'), 'Recurring'), {
           depth: 1,

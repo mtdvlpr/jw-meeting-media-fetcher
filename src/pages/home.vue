@@ -114,7 +114,9 @@ const {
   weDayObject,
   weFormatted,
 } = useMeetingDays(currentWeek)
-watch(currentWeek, () => resetColors())
+watch(currentWeek, () => {
+  resetColors()
+})
 
 const weekLength = computed(() => {
   let days = 0

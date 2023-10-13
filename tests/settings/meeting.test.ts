@@ -44,7 +44,9 @@ test('screenshot settings', async () => {
   await page.locator('button', { hasText: locale.optionsMeetings }).click()
 
   // Scroll to the bottom of the page
-  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight))
+  await page.evaluate(() => {
+    window.scrollTo(0, document.body.scrollHeight)
+  })
 
   if (platform() === 'linux') {
     await delay(MS_IN_SEC)

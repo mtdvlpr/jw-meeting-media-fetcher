@@ -52,7 +52,7 @@ async function getCategoryMedia(
         detailed: 1,
       },
     )
-    const categoryMedia = result.category?.media || []
+    const categoryMedia = result.category.media || []
     const subcategoriesMedia =
       result.category.subcategories
         ?.filter((subcategory) => subcategory.media)

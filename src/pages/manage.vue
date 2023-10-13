@@ -21,7 +21,7 @@ useHead({
       ? date.value === 'Recurring'
         ? t('recurring')
         : `Manage ${date.value}`
-      : 'Manage Media'
+      : 'Manage Media',
   ),
 })
 
@@ -54,7 +54,7 @@ const getMeetingData = async () => {
   try {
     const day = $dayjs(
       date.value,
-      getPrefs('app.outputFolderDateFormat') as string
+      getPrefs('app.outputFolderDateFormat') as string,
     )
 
     const meetingDay = isMeetingDay(day)
@@ -82,12 +82,12 @@ const getExistingMedia = () => {
     if (useCongStore().client && online) {
       const day = $dayjs(
         date.value,
-        getPrefs<DateFormat>('app.outputFolderDateFormat')
+        getPrefs<DateFormat>('app.outputFolderDateFormat'),
       )
 
       getCongMedia(
         day.isValid() ? day.startOf('week') : now.startOf('week'),
-        now
+        now,
       )
     }
 
@@ -111,7 +111,7 @@ const getExistingMedia = () => {
           .filter((f) => extname(f) !== '.title')
           .forEach((filename) => {
             const jwMatch = jwMedia.find(
-              ({ safeName }) => safeName === filename
+              ({ safeName }) => safeName === filename,
             )
             if (jwMatch) {
               jwMatch.isLocal = true
@@ -127,7 +127,7 @@ const getExistingMedia = () => {
     }
 
     media.value = [...jwMedia, ...localMedia].sort((a, b) => {
-      return (a.safeName as string).localeCompare(b.safeName as string)
+      return a.safeName!.localeCompare(b.safeName!)
     })
   } catch (e: unknown) {
     error('errorAdditionalMediaList', e)

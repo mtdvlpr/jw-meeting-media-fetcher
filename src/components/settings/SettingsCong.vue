@@ -103,7 +103,9 @@ const store = useCongStore()
 const forcingPrefs = ref(false)
 const valid = ref(true)
 const congForm = ref<VFormRef | null>()
-watch(valid, (val) => emit('valid', val))
+watch(valid, (val) => {
+  emit('valid', val)
+})
 const loading = ref(false)
 const { online } = useOnline()
 

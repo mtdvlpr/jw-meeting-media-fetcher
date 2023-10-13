@@ -48,7 +48,7 @@
             addFiles(
               type === 'custom',
               type === 'custom' ? '*' : type,
-              type === 'custom' ? '*' : type.toUpperCase()
+              type === 'custom' ? '*' : type.toUpperCase(),
             )
           "
         />
@@ -125,13 +125,12 @@ import {
   VideoFile,
 } from '~~/types'
 
-const emit = defineEmits(['refresh', 'cancel'])
 const props = defineProps<{
   loading?: boolean
   uploadMedia?: Boolean
   media: (MeetingFile | LocalFile)[]
 }>()
-
+const emit = defineEmits(['refresh', 'cancel'])
 // File prefix
 const prefix = ref('')
 const { t } = useI18n()
@@ -198,8 +197,8 @@ const isLoneJwpub = computed(
     extname(
       (files.value[0]?.filename ||
         files.value[0]?.filepath ||
-        files.value[0]?.safeName)!
-    ).toLowerCase() === '.jwpub'
+        files.value[0]?.safeName)!,
+    ).toLowerCase() === '.jwpub',
 )
 const addMedia = (media: LocalFile[]) => {
   files.value = media
@@ -209,7 +208,7 @@ const processPlaylist = async (filePath: string) => {
   processing.value = true
   const db = (await getDb({
     file: (await getZipContentsByExt(filePath, '.db', false)) ?? undefined,
-  })) as Database
+  }))!
   const media = executeQuery(
     db,
     `SELECT Label, FilePath, MimeType, DocumentId, Track, IssueTagNumber, KeySymbol, MepsLanguage
@@ -217,7 +216,7 @@ const processPlaylist = async (filePath: string) => {
           LEFT JOIN PlaylistItemLocationMap PILM ON PI.PlaylistItemId = PILM.PlaylistItemId
           LEFT JOIN Location L ON PILM.LocationId = L.LocationId
           LEFT JOIN PlaylistItemIndependentMediaMap PIIMM ON PI.PlaylistItemId = PIIMM.PlaylistItemId
-          LEFT JOIN IndependentMedia IM ON PIIMM.IndependentMediaId = IM.IndependentMediaId`
+          LEFT JOIN IndependentMedia IM ON PIIMM.IndependentMediaId = IM.IndependentMediaId`,
   ) as PlaylistItem[]
 
   const promises: Promise<void>[] = []
@@ -244,7 +243,7 @@ const processPlaylist = async (filePath: string) => {
 const processPlaylistItem = async (
   index: number,
   m: PlaylistItem,
-  filePath: string
+  filePath: string,
 ) => {
   console.log(m)
 
@@ -252,7 +251,7 @@ const processPlaylistItem = async (
     files.value.push({
       safeName: `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
         m.Label,
-        true
+        true,
       )}`,
       contents:
         (await getZipContentsByName(filePath, m.FilePath, false)) ?? undefined,
@@ -270,9 +269,9 @@ const processPlaylistItem = async (
         ...f,
         safeName: `${(index + 1).toString().padStart(2, '0')} - ${sanitize(
           `${f.title || ''}${extname(f.url || f.filepath || '')}`,
-          true
+          true,
         )}`,
-      }))
+      })),
     )
   }
 }
@@ -354,7 +353,7 @@ const saveFiles = async () => {
     error(
       'errorAdditionalMedia',
       e,
-      files.value.map((f) => f.filepath || f.filename || f.safeName).join(', ')
+      files.value.map((f) => f.filepath || f.filename || f.safeName).join(', '),
     )
   } finally {
     reset()
@@ -364,7 +363,7 @@ const saveFiles = async () => {
 
 // Process single file
 const processFile = async (file: LocalFile | VideoFile) => {
-  if (!file?.safeName || file.ignored) {
+  if (!file.safeName || file.ignored) {
     increaseProgress()
     return
   }
@@ -378,7 +377,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
       ? join(getPrefs('cloud.path'), 'Additional')
       : mediaPath(),
     date.value,
-    file.safeName
+    file.safeName,
   )
 
   // JWPUB extract
@@ -409,16 +408,16 @@ const processFile = async (file: LocalFile | VideoFile) => {
     if (file.markers && file.folder && file.safeName) {
       const markers = Array.from(
         new Set(
-          file.markers?.markers?.map(
+          file.markers.markers.map(
             ({ duration, label, startTime, endTransitionDuration }) =>
               JSON.stringify({
                 duration,
                 label,
                 startTime,
                 endTransitionDuration,
-              })
-          )
-        )
+              }),
+          ),
+        ),
       ).map((m) => JSON.parse(m))
 
       const markerPath = join(
@@ -426,7 +425,7 @@ const processFile = async (file: LocalFile | VideoFile) => {
           ? join(getPrefs('cloud.path'), 'Additional')
           : mediaPath(),
         file.folder,
-        changeExt(file.safeName, 'json')
+        changeExt(file.safeName, 'json'),
       )
       try {
         await writeJSON(markerPath, markers)
@@ -467,7 +466,7 @@ const uploadFile = async (path: string) => {
     getPrefs<string>('cong.dir'),
     'Media',
     date.value,
-    basename(path)
+    basename(path),
   )
 
   try {

@@ -22,7 +22,9 @@ export default function <
 
   const { client, prefs: forcedPrefs } = storeToRefs(useCongStore())
   watch(forcedPrefs, () => (prefs.value = getPrefs<T>(scope)))
-  onMounted(() => emit('refresh', prefs.value))
+  onMounted(() => {
+    emit('refresh', prefs.value)
+  })
 
   return { prefs, client }
 }

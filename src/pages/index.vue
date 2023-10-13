@@ -96,7 +96,7 @@ const autoSelectCong = async () => {
     const { default: getUsername } = await import('fullname')
     const username = (await getUsername()) ?? userInfo().username
     const match = congs.value.find(
-      (c) => c.name?.toLowerCase().trim() === username.toLowerCase().trim(),
+      (c) => c.name.toLowerCase().trim() === username.toLowerCase().trim(),
     )
     if (match) {
       initPrefs(basename(match.path, '.json'))

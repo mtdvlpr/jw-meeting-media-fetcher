@@ -67,7 +67,7 @@ test('render the presentation mode page correctly', async () => {
 
   const mediaWin = electronApp
     .windows()
-    .find((win) => win.url()?.split('/').pop() === 'media')
+    .find((win) => win.url().split('/').pop() === 'media')
   if (mediaWin) {
     await mediaWin.screenshot({ path: 'img/present/default-bg.png' })
   }

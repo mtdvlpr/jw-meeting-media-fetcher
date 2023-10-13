@@ -24,7 +24,6 @@
   />
 </template>
 <script setup lang="ts">
-const emit = defineEmits(['update:modelValue'])
 const props = withDefaults(
   defineProps<{
     modelValue: string | null
@@ -41,7 +40,7 @@ const props = withDefaults(
     allowedDates: () => true,
   },
 )
-
+const emit = defineEmits(['update:modelValue'])
 const { isDark } = useTheme()
 const { localeProperties } = useI18n()
 const { $getWeekStart } = useNuxtApp()

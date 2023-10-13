@@ -56,11 +56,10 @@ import { useIpcRendererOn } from '@vueuse/electron'
 import type { Participant } from '@zoomus/websdk/embedded'
 import { ObsPrefs } from '~~/types'
 
-const emit = defineEmits(['zoomPart'])
 defineProps<{
   participant: Participant | null
 }>()
-
+const emit = defineEmits(['zoomPart'])
 const obsStore = useObsStore()
 onMounted(() => {
   if (obsEnabled.value) {

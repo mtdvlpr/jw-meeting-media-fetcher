@@ -232,7 +232,7 @@ export async function getMediaWindowDestination() {
           id: screen.id,
           class: 'display',
           title: `${t('screen')} ${screen.humanFriendlyNumber} ${
-            screen.size?.width && screen.size?.height
+            screen.size.width && screen.size.height
               ? ` (${screen.size.width}x${screen.size.height}) (ID: ${screen.id})`
               : ''
           }`,

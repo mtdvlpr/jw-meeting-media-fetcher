@@ -81,17 +81,15 @@ export interface MediaFile extends BaseMediaFile {
   trackImage: PubImage
 }
 
-export interface FileTypes {
-  [key: string]: MediaFile[]
-}
+export type FileTypes = Record<string, MediaFile[]>
 
 export interface Publication {
   booknum: number | null
   fileformat: string[]
-  files: { [key: string]: FileTypes }
+  files: Record<string, FileTypes>
   formattedDate: string
   issue: string
-  languages: { [key: string]: Lang }
+  languages: Record<string, Lang>
   parentPubName: string
   pub: string
   pubImage: PubImage

@@ -247,13 +247,13 @@ import { extname, join } from 'upath'
 import { ipcRenderer } from 'electron'
 import { MediaPrefs, PrefStore, ShortJWLang, VFormRef } from '~~/types'
 
+const props = defineProps<{
+  prefs: PrefStore
+}>()
+
 const emit = defineEmits<{
   (e: 'valid', val: boolean): void
   (e: 'refresh', prefs: MediaPrefs): void
-}>()
-
-const props = defineProps<{
-  prefs: PrefStore
 }>()
 
 const { client, prefs: media } = usePrefs<MediaPrefs>('media', emit)
@@ -278,7 +278,9 @@ const loading = ref(true)
 const jwLangs = ref<ShortJWLang[]>([])
 const mediaForm = ref<VFormRef | null>()
 const valid = ref(true)
-watch(valid, (val) => emit('valid', val))
+watch(valid, (val) => {
+  emit('valid', val)
+})
 const getLangs = async () => {
   jwLangs.value = await getJWLangs()
   if (
@@ -421,7 +423,9 @@ watch(
 // Shortcuts
 watch(
   () => media.value.mediaWinShortcut,
-  (val) => changeShortcut(val, 'toggleMediaWindow'),
+  (val) => {
+    changeShortcut(val, 'toggleMediaWindow')
+  },
 )
 
 watch(
