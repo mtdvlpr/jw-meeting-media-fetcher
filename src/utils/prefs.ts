@@ -370,7 +370,7 @@ const schema: Schema<PrefStore> = {
   },
 }
 
-let store: Store<PrefStore>
+let store: Store<PrefStore> | undefined
 
 function storeOptions(name = 'prefs'): Store.Options<PrefStore> {
   return {
@@ -611,7 +611,7 @@ export async function getCongPrefs() {
 }
 
 export function storePath() {
-  return store.path ? normalizeSafe(store.path) : undefined
+  return store?.path ? normalizeSafe(store.path) : undefined
 }
 
 export function initStore(name: string) {
@@ -629,6 +629,7 @@ export function initStore(name: string) {
 }
 
 export function setPrefs(key: string, value: any) {
+  if (!store) return
   store.set(key, value)
   const prefs = readJsonSync(store.path) as PrefStore
   useNuxtApp().$sentry.setContext('prefs', {
@@ -647,14 +648,13 @@ export function switchCong(path: string) {
 }
 
 export function getPrefs<T = unknown>(key: string) {
-  return store.get(key) as T
+  return store?.get(key) as T
 }
 
 export function getAllPrefs() {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   return store ? (readJsonSync(store.path) as PrefStore) : PREFS
 }
 
 export function setAllPrefs(prefs: PrefStore) {
-  store.set(prefs)
+  store?.set(prefs)
 }

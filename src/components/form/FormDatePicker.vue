@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <span class="text-body-2" v-html="$t(label)" />
+  <span class="text-body-2" v-html="label" />
   <VueDatePicker
     v-model="value"
     :locale="locale"
@@ -21,9 +21,11 @@
     :week-start="$getWeekStart()"
     :enable-time-picker="false"
     prevent-min-max-navigation
+    v-bind="$attrs"
   />
 </template>
 <script setup lang="ts">
+defineOptions({ inheritAttrs: false })
 const props = withDefaults(
   defineProps<{
     modelValue: string | null

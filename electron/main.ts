@@ -122,12 +122,16 @@ async function boot() {
       if (!details.responseHeaders) details.responseHeaders = {}
       details.responseHeaders['x-frame-options'] = ['ALLOWALL']
       details.responseHeaders['content-security-policy'] = []
-      const setCookie = details.responseHeaders['set-cookie']
-      details.responseHeaders['set-cookie'] = setCookie.map((c) =>
-        c
-          .replace('HttpOnly', 'Secure')
-          .replace('Secure', 'SameSite=None; Secure'),
-      )
+      const setCookie = details.responseHeaders['set-cookie'] as
+        | string[]
+        | undefined
+      if (setCookie) {
+        details.responseHeaders['set-cookie'] = setCookie.map((c) =>
+          c
+            .replace('HttpOnly', 'Secure')
+            .replace('Secure', 'SameSite=None; Secure'),
+        )
+      }
       resolve({ responseHeaders: details.responseHeaders })
     },
   )
