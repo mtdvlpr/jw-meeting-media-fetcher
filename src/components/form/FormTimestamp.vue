@@ -11,7 +11,6 @@
         :rules="[(v: string) => validHours]"
         :disabled="disableHours"
         @update:model-value="handleChange"
-        @finish="focus('min')"
       />
     </v-col>
     <v-col
@@ -30,7 +29,6 @@
         length="2"
         :rules="[(v: string) => validMinutes]"
         @update:model-value="handleChange"
-        @finish="focus('sec')"
       />
     </v-col>
     <v-col cols="auto" class="py-0 px-1 d-flex align-center justify-center">
@@ -45,7 +43,6 @@
         length="2"
         :rules="[(v: string) => validSeconds]"
         @update:model-value="handleChange"
-        @finish="focus('ms')"
       />
     </v-col>
     <v-col cols="auto" class="py-0 px-1 d-flex align-center justify-center">
@@ -62,7 +59,7 @@
         @update:model-value="handleChange"
       />
     </v-col>
-    <v-col class="pa-0">
+    <v-col class="pa-0 px-6 d-flex align-center justify-end">
       <slot />
     </v-col>
   </v-col>
