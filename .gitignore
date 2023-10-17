@@ -37,9 +37,9 @@ src/**/pdf.worker*
 
 # Playwright
 img
-test-results
-playwright-report
-playwright/.cache
+/test-results/
+/playwright-report/
+/playwright/.cache/
 
 .env*
 .flaskenv*
