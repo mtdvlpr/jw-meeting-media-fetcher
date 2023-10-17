@@ -16,7 +16,8 @@
     ".vscode/*",
     "src/locales/*",
     "!src/locales/en.json",
-    "LICENSE.md"
+    "LICENSE.md",
+    "yarn.lock"
   ],
   "cSpell.enabled": true,
   "cSpell.words": [
