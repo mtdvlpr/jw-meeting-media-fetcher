@@ -2,7 +2,9 @@ import type { LocaleObject } from '#i18n'
 import { ShortJWLang } from '~~/types'
 
 export const DAYJS_LOCALES = [
+  'af',
   'de',
+  'el',
   'en',
   'es',
   'et',
@@ -19,6 +21,7 @@ export const DAYJS_LOCALES = [
   'sk',
   'sv',
   'uk',
+  // 'rmn-x-rmg', // not yet supported by dayjs
   // 'wes-x-pgw', // not yet supported by dayjs
 ]
 
@@ -27,11 +30,25 @@ export const STALE_LANGS: string[] = ['pt-pt']
 
 export const LOCALES = [
   {
+    code: 'af',
+    iso: 'af-ZA',
+    file: 'af.json',
+    jw: 'AF',
+    name: 'Afrikaans (Afrikaans)',
+  },
+  {
     code: 'de',
     iso: 'de-DE',
     file: 'de.json',
     jw: 'X',
     name: 'Deutsch (German)',
+  },
+  {
+    code: 'el',
+    iso: 'el-GR',
+    file: 'el.json',
+    jw: 'G',
+    name: 'Ελληνικά (Greek)',
   },
   {
     code: 'en',
@@ -112,6 +129,13 @@ export const LOCALES = [
     jw: 'T',
     dayjs: 'pt-br',
     name: 'Português - Brasil (Portuguese - Brazil)',
+  },
+  {
+    code: 'rmn-x-rmg',
+    iso: 'rmn-x-rmg',
+    file: 'rmn-x-rmg.json',
+    jw: 'RMG',
+    name: 'Ρομανί - Νότια Ελλάδα (Romany - Southern Greece)',
   },
   {
     code: 'ro',
