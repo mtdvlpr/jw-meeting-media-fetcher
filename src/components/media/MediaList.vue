@@ -2,7 +2,7 @@
   <div id="media-list-container" style="width: 100%">
     <song-picker ref="songPicker" v-model="song" class="ma-4" clearable />
     <v-expand-transition>
-      <v-list v-if="song && showQuickSong" class="ma-4">
+      <v-list v-if="song" class="ma-4">
         <media-item
           :key="song.url"
           :src="song.url"
@@ -129,7 +129,6 @@ type MediaItem = {
 }
 const props = defineProps<{
   items: MediaItem[]
-  showQuickSong: boolean
   customSort: boolean
   customSortOrder: object | undefined
   zoomPart: boolean

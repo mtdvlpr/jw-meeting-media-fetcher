@@ -16,7 +16,6 @@
         @cc="ccEnable = !ccEnable"
         @previous="previous()"
         @next="next()"
-        @toggle-quick-song="toggleQuickSong()"
         @reset-sort="customSort = false"
         @manage-media="managingMedia = true"
       />
@@ -28,7 +27,6 @@
           :media-active="mediaActive"
           :zoom-part="zoomPart"
           :cc-enable="ccEnable"
-          :show-quick-song="showQuickSong"
           :custom-sort="customSort"
           :custom-sort-order="customSortOrder"
           @index="setIndex"
@@ -64,46 +62,9 @@ const localMedia = computed((): LocalFile[] => [
       return {
         safeName: basename(item.path),
         filepath: item.path,
-        isLocal: getPrefs('cloud.enable')
-          ? !!findOne(
-              join(
-                getPrefs('cloud.path'),
-                'Additional',
-                date.value,
-                basename(item.path),
-              ),
-            )
-          : true,
+        isLocal: true,
       }
     })
-    .concat(
-      getPrefs('cloud.enable')
-        ? findAll(join(getPrefs('cloud.path'), 'Hidden', date.value, '*')).map(
-            (item) => {
-              return {
-                safeName: basename(item),
-                filepath: item,
-                hidden: true,
-                isLocal: true,
-              }
-            },
-          )
-        : [],
-    )
-    .concat(
-      getPrefs('cloud.enable')
-        ? findAll(join(getPrefs('cloud.path'), 'Recurring', '*')).map(
-            (item) => {
-              return {
-                safeName: basename(item),
-                filepath: item,
-                recurring: true,
-                isLocal: true,
-              }
-            },
-          )
-        : [],
-    )
     .sort((a, b) => {
       const nameA = a.safeName.toUpperCase()
       const nameB = b.safeName.toUpperCase()
@@ -354,11 +315,6 @@ watch(mediaActive, (val) => {
   }
 })
 
-// Quick song
-const showQuickSong = ref(false)
-const toggleQuickSong = () => {
-  showQuickSong.value = !showQuickSong.value
-}
 // Media playback with shortcuts
 const currentIndex = ref(-1)
 useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {

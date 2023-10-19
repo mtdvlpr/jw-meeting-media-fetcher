@@ -184,9 +184,9 @@ const listenToZoomSocket = () => {
     if (
       this.url.includes('zoom') &&
       this.url.includes('dn2') &&
-      !window.sockets.includes(this)
+      !window.sockets?.includes(this)
     ) {
-      window.sockets.push(this)
+      window.sockets?.push(this)
       log.info('sockets', window.sockets)
     }
     originalSend.call(this, ...args)
