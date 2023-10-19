@@ -327,8 +327,8 @@ useIpcRendererOn('play', (_e, type: 'next' | 'previous') => {
 const customSort = ref(false)
 const customSortOrder = ref()
 const setIndex = (index: number) => {
-  const previousItem = items.value[currentIndex.value]
-  if (currentIndex.value !== index) {
+  const previousItem = items.value[currentIndex.value] as MediaItem | undefined
+  if (previousItem && currentIndex.value !== index) {
     previousItem.deactivate = true
   }
   currentIndex.value = index
