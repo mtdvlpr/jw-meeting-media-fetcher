@@ -40,7 +40,7 @@ export async function getMwMedia(date: string) {
   )
   let livingTitle = living[0].FeatureTitle
   if (living.length > 1) {
-    livingTitle = living[living.length / 2].FeatureTitle
+    livingTitle = living[Math.floor(living.length / 2)].FeatureTitle
   }
 
   writeJson(join(pubPath()!, 'mwb', 'headings.json'), {
