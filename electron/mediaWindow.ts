@@ -14,7 +14,7 @@ import {
   getWebsiteController,
   getWebsiteControllerWinHandler,
 } from './websiteController'
-import { PrefStore } from '~~/types'
+import type { PrefStore } from '~~/types'
 
 const isDev = process.env.NODE_ENV === 'development'
 

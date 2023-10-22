@@ -1,7 +1,7 @@
 import { Point, screen } from 'electron'
 import { getMainWindow } from './mainWindow'
 import { getMediaWin } from './mediaWindow'
-import { Screen, ScreenInfo } from '~~/types'
+import type { Screen, ScreenInfo } from '~~/types'
 
 // Get screen information
 export function getScreenInfo(): ScreenInfo {

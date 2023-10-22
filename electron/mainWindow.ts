@@ -5,7 +5,7 @@ import BrowserWinHandler from './BrowserWinHandler'
 import { fadeWindow, getMediaWin } from './mediaWindow'
 import { getScreenInfo } from './utils'
 import { getWebsiteController } from './websiteController'
-import { Shortcut } from '~~/types'
+import type { Shortcut } from '~~/types'
 
 const isDev = process.env.NODE_ENV === 'development'
 
