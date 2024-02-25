@@ -1,5 +1,36 @@
 # Changelog
 
+## 24.2.0
+
+### Bug fixes
+
+- Correctly sanitize filenames with an apostrophe
+- Correctly save time values when only changing the hour
+- Disabled save button while saving
+- Exclude songs with described audio from song picker
+
+## 24.1.0
+
+### New or improved features
+
+- New language: Pangasinan (thanks [@lorenpajarits](https://github.com/lorenpajarits)!)
+
+### Bug fixes
+
+- Exclude songs with described audio from background music playback
+
+## 23.12.0
+
+### New or improved features
+
+- New language: Iloko / Ilokano (thanks [@bridenkenn](https://github.com/bridenkenn)!)
+- New language: Tagalog (thanks [@bridenkenn](https://github.com/bridenkenn)!)
+
+### Bug fixes
+
+- Correctly process JWL playlist items with special characters
+- Correctly validate video timestamp
+
 ## 23.11.0
 
 ### New or improved features
