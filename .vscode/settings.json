@@ -1,8 +1,8 @@
 {
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true,
-    "source.fixAll.markdownlint": true
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.markdownlint": "explicit"
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.ignoreWords": ["transform", "PDF", "TERMS", "shorthand"],
@@ -43,6 +43,7 @@
     "domcontentloaded",
     "dont",
     "dryrun",
+    "edwinhuish",
     "eesti",
     "EPUB",
     "esbenp",
@@ -62,6 +63,8 @@
     "iasn",
     "icns",
     "iconfont",
+    "Ilokano",
+    "Iloko",
     "italiano",
     "jekyll",
     "jfif",
@@ -140,6 +143,7 @@
     "yeartext",
     "yzhang",
     "zipball",
+    "zoomus",
     "русский",
     "українська"
   ]
