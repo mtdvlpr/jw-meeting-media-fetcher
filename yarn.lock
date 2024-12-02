@@ -2376,9 +2376,9 @@ __metadata:
   linkType: hard
 
 "@intlify/shared@npm:^9.0.0":
-  version: 9.10.2
-  resolution: "@intlify/shared@npm:9.10.2"
-  checksum: d46d0d20a6a046929c34bb443a198eb8fe54b3565e5161b744cf58fbbaaa56491c12a066362135a0f8e9dc016a8bdb98aafe22b90adb87d3eed7828e87b8b4ac
+  version: 9.14.2
+  resolution: "@intlify/shared@npm:9.14.2"
+  checksum: 8befe0c605ed2b55fe3058d83c63a2d4831d6f9b786129ae04206009d9bd63111f0db3c645ebcd7addb9aa15296380be3f0f9daa37b5bae4b832c73fd41e2b39
   languageName: node
   linkType: hard
 
